@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
@@ -24,9 +23,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import it.cnr.iit.epas.models.base.BaseModel;
-//import org.hibernate.envers.Audited;
-
+import org.hibernate.envers.Audited;
+import it.cnr.iit.epas.models.base.BaseEntity;
 
 /**
  * Associazione di un ruolo per un utente per una determinata sede.
@@ -37,8 +35,8 @@ import it.cnr.iit.epas.models.base.BaseModel;
  */
 @Entity
 @Table(name = "users_roles_offices")
-//@Audited
-public class UsersRolesOffices extends BaseModel {
+@Audited
+public class UsersRolesOffices extends BaseEntity {
 
   private static final long serialVersionUID = -1403683534643592790L;
 

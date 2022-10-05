@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
@@ -41,6 +40,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 
 /**
@@ -49,7 +49,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-//@Audited
+@Audited
 public class Office extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private static final long serialVersionUID = -8689432709728656660L;

@@ -14,16 +14,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dao.common;
 
-import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class PeriodModelDto extends BaseModelDto {
-
-  private LocalDate beginDate;
-  private LocalDate endDate;
+public enum DaoArg {
+  TERM,
+  DESCRIZIONE,
+  TIPO,
+  DATA,
+  INIZIO,
+  FINE,
+  
+  PERSONA,
+  UTENTE,
+  USERNAME,
+  PEOPLE_ONLY,
+  
+  ENTITAORGANIZZATIVA,
+  ENTITAORGANIZZATIVA_SORGENTE,
+  ENTITAORGANIZZATIVA_DEST,
+  PADRE,
+  FIGLIO,
+  
+  RUOLO,
+  CONTESTO,
+  
+  FORZA_PADRE_NULL
 }

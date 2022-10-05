@@ -14,17 +14,16 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.base;
 
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 
-
 /**
  * Il modello è un periodo del contratto con un valore.
  *
+ * @author Cristian Lucchesi
  * @author Alessandro Martelli
  */
 public interface IPeriodModel {

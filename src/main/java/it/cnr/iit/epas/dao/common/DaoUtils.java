@@ -14,16 +14,27 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dao.common;
 
-import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.reflect.Field;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import it.cnr.iit.epas.models.base.QBaseEntity;
 
-@Getter
-@Setter
-public class PeriodModelDto extends BaseModelDto {
+public class DaoUtils {
 
-  private LocalDate beginDate;
-  private LocalDate endDate;
+  public static QBaseEntity getQBase(EntityPathBase<?> qSuper) {
+    try {
+      while (qSuper instanceof QBaseEntity == false) {
+        Field field = qSuper.getClass().getDeclaredField("_super");
+        if (field == null) {
+          throw new Exception();
+        }
+        qSuper = (EntityPathBase<?>)field.get(qSuper);
+      }
+      return (QBaseEntity)qSuper;
+    } catch (Exception ex) {
+      throw new IllegalStateException("QBaseEntity non riconosciuto");  
+    }
+  }
+
 }

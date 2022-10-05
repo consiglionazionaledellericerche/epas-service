@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,12 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
-import it.cnr.iit.epas.models.base.BaseModel;
+import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,15 +41,16 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
+import org.hibernate.envers.Audited;
 
 /**
  * Un utente di ePAS.
  */
 @Entity
-//@Audited
+@Audited
+
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
-public class User extends BaseModel {
+public class User extends BaseEntity {
 
   private static final long serialVersionUID = -6039180733038072891L;
 

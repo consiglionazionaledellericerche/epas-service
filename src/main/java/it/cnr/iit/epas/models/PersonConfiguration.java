@@ -14,9 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
+import it.cnr.iit.epas.manager.configurations.EpasParam;
+import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
+import it.cnr.iit.epas.models.base.PropertyInPeriod;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,17 +29,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import it.cnr.iit.epas.manager.configurations.EpasParam;
-import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
-import it.cnr.iit.epas.models.base.PropertyInPeriod;
-//import org.hibernate.envers.Audited;
+import org.hibernate.envers.Audited;
 
 /**
  * Singola configurazione associata ad una persona.
  */
 @Getter
 @Setter
-//@Audited
+@Audited
 @Entity
 @Table(name = "person_configurations")
 public class PersonConfiguration extends PropertyInPeriod {

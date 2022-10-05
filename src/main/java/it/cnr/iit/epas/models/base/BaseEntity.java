@@ -14,13 +14,9 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
-//import dao.wrapper.IWrapperFactory;
-//import dao.wrapper.IWrapperModel;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,23 +24,23 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-//import org.hibernate.annotations.TypeDef;
-//import org.hibernate.annotations.TypeDefs;
-//import org.jadira.usertype.dateandtime.joda.PersistentYearMonthAsString;
-//import org.joda.time.YearMonth;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.ToString;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Default base class per sovrascrivere la generazione delle nuove chiavi primarie.
  *
- * @author Marco Andreini
+ * @author Cristian Lucchesi
  */
+@ToString
+@EqualsAndHashCode
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class BaseModel implements Serializable {
+public abstract class BaseEntity implements Serializable {
 
   private static final long serialVersionUID = 4849404810311166199L;
 
@@ -53,7 +49,7 @@ public abstract class BaseModel implements Serializable {
   private Long id;
 
   @JsonIgnore
-  //@NotAudited
+  @NotAudited
   @Version
   private Integer version;
 
@@ -67,22 +63,4 @@ public abstract class BaseModel implements Serializable {
     return toString();
   }
 
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).add("id", id).toString();
-  }
-
-  /**
-   * Costruisce una istanza del wrapper se esiste.
-   *
-   * @param wrapperFactory wrapperFactory
-   * @return wrapper model
-   */
-//  @Transient
-//  public IWrapperModel<?> getWrapper(IWrapperFactory wrapperFactory) {
-//    if (this instanceof Person) {
-//      return wrapperFactory.create((Person) this);
-//    }
-//    return null;
-//  }
 }

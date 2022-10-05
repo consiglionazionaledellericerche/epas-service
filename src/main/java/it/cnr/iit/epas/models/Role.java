@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
@@ -23,16 +22,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import it.cnr.iit.epas.models.base.BaseModel;
-//import org.hibernate.envers.Audited;
+import org.hibernate.envers.Audited;
+import it.cnr.iit.epas.models.base.BaseEntity;
 
 /**
  * Ruolo all'interno di ePAS.
  */
 @Entity
-//@Audited
+@Audited
 @Table(name = "roles")
-public class Role extends BaseModel {
+public class Role extends BaseEntity {
 
   private static final long serialVersionUID = 6717202212924325368L;
 

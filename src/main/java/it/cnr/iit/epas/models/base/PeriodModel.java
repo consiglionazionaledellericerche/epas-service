@@ -14,10 +14,8 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.base;
 
-//import helpers.validators.PeriodEndDateCheck;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -26,16 +24,14 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-//import org.hibernate.envers.Audited;
-//import play.data.validation.CheckWith;
-//import play.data.validation.Required;
+import org.hibernate.envers.Audited;
 
 /**
  * Una entity con data di inizio e fine.
  */
-//@Audited
+@Audited
 @MappedSuperclass
-public abstract class PeriodModel extends BaseModel 
+public abstract class PeriodModel extends BaseEntity 
     implements IPeriodModel, Comparable<PeriodModel> {
 
   private static final long serialVersionUID = 701063571599514955L;

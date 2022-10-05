@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.base;
 
 import java.time.LocalDateTime;
@@ -31,7 +30,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class MutableModel extends BaseModel {
+public abstract class MutableModel extends BaseEntity {
 
   private static final long serialVersionUID = 4890911962768274977L;
   

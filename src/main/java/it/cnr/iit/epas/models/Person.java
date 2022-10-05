@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
@@ -43,6 +42,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Entity per le persone.
@@ -52,7 +53,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-//@Audited
+@Audited
 @Table(name = "persons")
 public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
@@ -114,7 +115,7 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private boolean wantEmail;
 
-  //@NotAudited
+  @NotAudited
   private LocalDateTime updatedAt;
 
   @ManyToOne

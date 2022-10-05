@@ -14,14 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.base;
 
 import java.time.LocalDate;
 
 /**
- * Il modello è un periodo del contratto con un valore.
+ * Il modello è un periodo (per esempio del contratto) con un valore.
  *
+ * @author Cristian Lucchesi
  * @author Alessandro Martelli
  */
 public interface IPropertyInPeriod extends IPeriodModel {
