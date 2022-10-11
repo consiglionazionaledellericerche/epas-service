@@ -39,7 +39,6 @@ public abstract class PeriodModel extends BaseEntity
   @Getter
   @Setter
   @NotNull
-//  @Required
   @Column(name = "begin_date")
   private LocalDate beginDate;
 
