@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,11 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.CertificationType;
+import java.time.YearMonth;
 import java.util.Comparator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +30,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
-import org.joda.time.YearMonth;
 
 
 /**
@@ -116,7 +115,7 @@ public class Certification extends BaseEntity {
    * YearMonth costruito da anno e mese.
    */
   public YearMonth getYearMonth() {
-    return new YearMonth(year, month);
+    return YearMonth.of(year, month);
   }
 
   /**

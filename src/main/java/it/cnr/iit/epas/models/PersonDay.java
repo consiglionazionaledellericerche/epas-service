@@ -21,11 +21,10 @@ import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
 import it.cnr.iit.epas.models.enumerate.Troubles;
-import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,12 +36,8 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.LocalDate;
-import org.springframework.beans.BeanUtils;
-
 
 /**
  * Classe che rappresenta un giorno, sia esso lavorativo o festivo di una persona.
@@ -56,7 +51,6 @@ import org.springframework.beans.BeanUtils;
     uniqueConstraints = {@UniqueConstraint(columnNames = {"person_id", "date"})})
 @Getter
 @Setter
-@Slf4j
 public class PersonDay extends BaseEntity {
 
   private static final long serialVersionUID = -5013385113251848310L;

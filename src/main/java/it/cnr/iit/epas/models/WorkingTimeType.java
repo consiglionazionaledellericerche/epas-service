@@ -14,11 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +37,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.DateTimeConstants;
-
 
 /**
  * Modello per le tipologie di orario di lavoro.
@@ -204,17 +202,14 @@ public class WorkingTimeType extends BaseEntity {
     int totalDays = 0;
     for (WorkingTimeTypeDay workingTimeTypeDay : this.workingTimeTypeDays) {
       if (!workingTimeTypeDay.holiday) {
-        totalMinutes += workingTimeTypeDay.workingTime;        
+        totalMinutes += workingTimeTypeDay.workingTime;
       }
-      if (workingTimeTypeDay.dayOfWeek != DateTimeConstants.SATURDAY 
-          && workingTimeTypeDay.dayOfWeek != DateTimeConstants.SUNDAY) {
+      if (workingTimeTypeDay.dayOfWeek != DayOfWeek.SATURDAY.getValue() 
+          && workingTimeTypeDay.dayOfWeek != DayOfWeek.SUNDAY.getValue()) {
         totalDays++;
       }
-      
     }
     return totalMinutes / totalDays;
   }
-    
 
 }
-

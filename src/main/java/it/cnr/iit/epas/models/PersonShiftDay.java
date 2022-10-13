@@ -14,13 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.ShiftSlot;
 import it.cnr.iit.epas.models.enumerate.ShiftTroubles;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -36,8 +37,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 /**
  * Giornata in turno di una persona.

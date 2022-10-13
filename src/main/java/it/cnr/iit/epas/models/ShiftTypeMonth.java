@@ -14,10 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.MutableModel;
+import java.time.YearMonth;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -28,7 +28,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.joda.time.YearMonth;
 
 /**
  * Oggetto che contiene l'approvazione delle ore di turno.

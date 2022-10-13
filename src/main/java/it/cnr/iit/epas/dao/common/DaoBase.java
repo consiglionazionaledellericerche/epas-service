@@ -14,39 +14,36 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.models;
 
-import it.cnr.iit.epas.models.base.BaseEntity;
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
+package it.cnr.iit.epas.dao.common;
+
+import com.querydsl.jpa.JPQLQueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Entità di check green pass.
+ * Base dao which provides the JPQLQueryFactory and the EntityManager.
  *
- * @author dario
- *
+ * @author Marco Andreini
  */
-@Getter
-@Setter
-@Entity
-@Audited
-public class CheckGreenPass extends BaseEntity {
-  
-  private static final long serialVersionUID = 4909012051833782360L;
+public abstract class DaoBase {
 
-  private LocalDate checkDate;
-  
-  @Getter
-  @NotNull
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "person_id", nullable = false)
-  private Person person;
-  
-  private boolean checked;
+  protected final JPQLQueryFactory queryFactory;
+  protected final Provider<EntityManager> emp;
+
+  @Autowired
+  public DaoBase(Provider<EntityManager> emp) {
+    this.emp = emp;
+    this.queryFactory = new JPAQueryFactory(emp.get());
+
+  }
+  protected JPQLQueryFactory getQueryFactory() {
+    return queryFactory;
+  }
+
+  protected EntityManager getEntityManager() {
+    return emp.get();
+  }
 }

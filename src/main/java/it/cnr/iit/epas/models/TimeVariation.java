@@ -14,11 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -27,7 +27,6 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
 
 /**
  * Variazione nel monte orario di un dipendente in relazione ad alcune

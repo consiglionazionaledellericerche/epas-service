@@ -318,7 +318,7 @@ public abstract class CommonBaseEntityDao<T extends BaseEntity> implements IBase
    * @param entity entity da berificare
    * @return True se esiste con id diverso rispetto a quello specificato
    */
-  protected boolean alreadyPresent(Integer id, T entity) {
+  protected boolean alreadyPresent(Long id, T entity) {
     return entity != null && !entity.getId().equals(id);
   }
 

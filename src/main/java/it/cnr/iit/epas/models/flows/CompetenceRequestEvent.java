@@ -20,6 +20,7 @@ package it.cnr.iit.epas.models.flows;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestEventType;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -32,7 +33,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.joda.time.LocalDateTime;
 
 /**
  * Eventi relativi al flusso di approvazione delle competenze mensili.

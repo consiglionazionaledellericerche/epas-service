@@ -27,9 +27,9 @@ import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.WorkingTimeType;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
 
 /**
  * Oggetto persone con molte funzionalità aggiuntive.

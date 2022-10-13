@@ -33,8 +33,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
-import org.springframework.beans.factory.annotation.Required;
-
 
 /**
  * Gruppi di badge.

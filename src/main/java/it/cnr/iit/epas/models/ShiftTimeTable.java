@@ -19,6 +19,7 @@ package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.CalculationType;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -33,7 +34,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.joda.time.LocalTime;
 
 /**
  * Tabella orario di un turno.

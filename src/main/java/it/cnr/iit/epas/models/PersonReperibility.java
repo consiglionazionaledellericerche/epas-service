@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,11 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Range;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import it.cnr.iit.epas.utils.DateUtility;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -32,9 +34,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
-
 
 /**
  * Contiene le informazioni per l'eventuale "reperibilità" svolta dalla persona.
@@ -124,7 +123,7 @@ public class PersonReperibility extends BaseEntity {
   @Transient
   public boolean isActive(YearMonth yearMonth) {
     return (startDate == null 
-        || !startDate.isAfter(yearMonth.toLocalDate(1).dayOfMonth().withMaximumValue())) 
-        && endDate == null || !endDate.isBefore(yearMonth.toLocalDate(1));
+        || !startDate.isAfter(DateUtility.endOfMonth(yearMonth.atDay(1))) 
+        && endDate == null || !endDate.isBefore(yearMonth.atDay(1)));
   }
 }

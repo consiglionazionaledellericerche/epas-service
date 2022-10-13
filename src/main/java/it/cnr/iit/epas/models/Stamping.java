@@ -14,12 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,8 +35,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDateTime;
-import org.joda.time.YearMonth;
 
 
 /**
@@ -207,7 +207,7 @@ public class Stamping extends BaseEntity implements Comparable<Stamping> {
   @Transient
   public String formattedHour() {
     if (this.date != null) {
-      return date.toString("HH:mm");
+      return DateTimeFormatter.ofPattern("HH:mm").format(date);
     } else {
       return "";
     }
@@ -241,7 +241,7 @@ public class Stamping extends BaseEntity implements Comparable<Stamping> {
    * @return il mese relativo alla data della timbratura.
    */
   public YearMonth getYearMonth() {
-    return new YearMonth(date.getYear(), date.getMonthOfYear());
+    return YearMonth.of(date.getYear(), date.getMonthValue());
   }
 
   /**

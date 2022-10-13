@@ -21,17 +21,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
-//import java.util.ArrayList;
-//import java.util.List;
-//import org.joda.time.DateTimeFieldType;
-//import org.joda.time.Days;
-//import org.joda.time.LocalDateTime;
-//import org.joda.time.LocalTime;
-//import org.joda.time.MonthDay;
-//import org.joda.time.Months;
-//import org.joda.time.YearMonth;
-//import org.joda.time.format.DateTimeFormat;
-//import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Classe di utilità per la gestione delle date.
