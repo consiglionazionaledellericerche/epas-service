@@ -20,10 +20,12 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  * Tipologie di possibili problemi nei controlli effettuati sui turni.
  */
+@Getter
 public enum ShiftTroubles {
 
   //persona non assegnata all'attività

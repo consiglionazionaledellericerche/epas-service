@@ -16,10 +16,11 @@
  */
 package it.cnr.iit.epas.utils;
 
-//import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.YearMonth;
 //import java.util.ArrayList;
 //import java.util.List;
 //import org.joda.time.DateTimeFieldType;
@@ -43,6 +44,13 @@ public class DateUtility {
   static final int MINUTE_IN_HOUR = 60;
   static final LocalDate MAX_DATE = LocalDate.of(9999, 12, 1);
 
+  /**
+   * Ritorna l'ultimo giorno del mese relativo alla data passata.
+   */
+  public static final LocalDate endOfMonth(LocalDate date) {
+    return date.withDayOfMonth(date.getMonth().length(date.isLeapYear()));
+  }
+  
   /**
    * Metodo che calcola la data della pasqua nell'anno passato come parametro.
    *
@@ -172,70 +180,70 @@ public class DateUtility {
 //  }
 //
 //
-//  /**
-//   * Se la data è contenuta nell'intervallo.
-//   *
-//   * @param date     data
-//   * @param interval intervallo
-//   * @return true se la data ricade nell'intervallo estremi compresi
-//   */
-//  public static boolean isDateIntoInterval(final LocalDate date, final DateInterval interval) {
-//    
-//    if (interval == null) {
-//      return false;
-//    }
-//    LocalDate dateToCheck = date;
-//    if (dateToCheck == null) {
-//      dateToCheck = MAX_DATE;
-//    }
-//
-//    if (dateToCheck.isBefore(interval.getBegin()) || dateToCheck.isAfter(interval.getEnd())) {
-//      return false;
-//    }
-//    return true;
-//  }
-//
-//  /**
-//   * L'intervallo di date contenente l'intersezione fra inter1 e inter2.
-//   *
-//   * @param inter1 primo intervallo
-//   * @param inter2 secondo intervallo
-//   * @return l'intervallo contenente l'intersezione fra inter1 e inter2, null in caso di
-//   *         intersezione vuota.
-//   */
-//  public static DateInterval intervalIntersection(final DateInterval inter1, 
-//      final DateInterval inter2) {
-//  
-//    if (inter1 == null || inter2 == null) {
-//      return null;
-//    }
-//    
-//    // un intervallo contenuto nell'altro
-//    if (isIntervalIntoAnother(inter1, inter2)) {
-//      return new DateInterval(inter1.getBegin(), inter1.getEnd());
-//    }
-//
-//    if (isIntervalIntoAnother(inter2, inter1)) {
-//      return new DateInterval(inter2.getBegin(), inter2.getEnd());
-//    }
-//
-//    DateInterval copy1 = new DateInterval(inter1.getBegin(), inter1.getEnd());
-//    DateInterval copy2 = new DateInterval(inter2.getBegin(), inter2.getEnd());
-//
-//    // ordino
-//    if (!inter1.getBegin().isBefore(inter2.getBegin())) {
-//      DateInterval aux = new DateInterval(inter1.getBegin(), inter1.getEnd());
-//      copy1 = inter2;
-//      copy2 = aux;
-//    }
-// 
-//    // fine di inter1 si interseca con inizio di inter2
-//    if (copy1.getEnd().isBefore(copy2.getBegin())) {
-//      return null;
-//    } else {
-//      return new DateInterval(copy2.getBegin(), copy1.getEnd());
-//    }
-//  }
+  /**
+   * Se la data è contenuta nell'intervallo.
+   *
+   * @param date     data
+   * @param interval intervallo
+   * @return true se la data ricade nell'intervallo estremi compresi
+   */
+  public static boolean isDateIntoInterval(final LocalDate date, final DateInterval interval) {
+    
+    if (interval == null) {
+      return false;
+    }
+    LocalDate dateToCheck = date;
+    if (dateToCheck == null) {
+      dateToCheck = MAX_DATE;
+    }
+
+    if (dateToCheck.isBefore(interval.getBegin()) || dateToCheck.isAfter(interval.getEnd())) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * L'intervallo di date contenente l'intersezione fra inter1 e inter2.
+   *
+   * @param inter1 primo intervallo
+   * @param inter2 secondo intervallo
+   * @return l'intervallo contenente l'intersezione fra inter1 e inter2, null in caso di
+   *         intersezione vuota.
+   */
+  public static DateInterval intervalIntersection(final DateInterval inter1, 
+      final DateInterval inter2) {
+  
+    if (inter1 == null || inter2 == null) {
+      return null;
+    }
+    
+    // un intervallo contenuto nell'altro
+    if (isIntervalIntoAnother(inter1, inter2)) {
+      return new DateInterval(inter1.getBegin(), inter1.getEnd());
+    }
+
+    if (isIntervalIntoAnother(inter2, inter1)) {
+      return new DateInterval(inter2.getBegin(), inter2.getEnd());
+    }
+
+    DateInterval copy1 = new DateInterval(inter1.getBegin(), inter1.getEnd());
+    DateInterval copy2 = new DateInterval(inter2.getBegin(), inter2.getEnd());
+
+    // ordino
+    if (!inter1.getBegin().isBefore(inter2.getBegin())) {
+      DateInterval aux = new DateInterval(inter1.getBegin(), inter1.getEnd());
+      copy1 = inter2;
+      copy2 = aux;
+    }
+ 
+    // fine di inter1 si interseca con inizio di inter2
+    if (copy1.getEnd().isBefore(copy2.getBegin())) {
+      return null;
+    } else {
+      return new DateInterval(copy2.getBegin(), copy1.getEnd());
+    }
+  }
 //    
 //  
 //  /**
@@ -309,23 +317,23 @@ public class DateUtility {
 //  public static int monthsInInterval(final DateInterval inter) {
 //    return Months.monthsBetween(inter.getBegin(), inter.getEnd()).getMonths() + 1;
 //  }
-//
-//  /**
-//   * Se il primo intervallo di date è contenuto nel secondo intervallo.
-//   *
-//   * @param first  il primo intervallo
-//   * @param second il secondo intervallo
-//   * @return se il primo intervallo di date è contenuto nel secondo intervallo.
-//   */
-//  public static boolean isIntervalIntoAnother(final DateInterval first, final DateInterval second) {
-//
-//    if (first.getBegin().isBefore(second.getBegin()) 
-//        || first.getEnd().isAfter(second.getEnd())) {
-//      return false;
-//    }
-//    return true;
-//  }
-//  
+
+  /**
+   * Se il primo intervallo di date è contenuto nel secondo intervallo.
+   *
+   * @param first  il primo intervallo
+   * @param second il secondo intervallo
+   * @return se il primo intervallo di date è contenuto nel secondo intervallo.
+   */
+  public static boolean isIntervalIntoAnother(final DateInterval first, final DateInterval second) {
+
+    if (first.getBegin().isBefore(second.getBegin()) 
+        || first.getEnd().isAfter(second.getEnd())) {
+      return false;
+    }
+    return true;
+  }
+
 //  /**
 //   * Se il primo intervallo di orari è contenuto nel secondo intervallo.
 //   *
@@ -342,20 +350,20 @@ public class DateUtility {
 //    return true;
 //  }
 //  
-//  /**
-//   * Se i due inervalli coincidono.
-//   *
-//   * @param first first
-//   * @param second second
-//   * @return esito
-//   */
-//  public static boolean areIntervalsEquals(final DateInterval first, final DateInterval second) {
-//    if (first.getBegin().isEqual(second.getBegin()) 
-//        && first.getEnd().isEqual(second.getEnd())) {
-//      return true;
-//    }
-//    return false;
-//  }
+  /**
+   * Se i due inervalli coincidono.
+   *
+   * @param first first
+   * @param second second
+   * @return esito
+   */
+  public static boolean areIntervalsEquals(final DateInterval first, final DateInterval second) {
+    if (first.getBegin().isEqual(second.getBegin()) 
+        && first.getEnd().isEqual(second.getEnd())) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * La data massima che equivale a infinito.
@@ -376,29 +384,29 @@ public class DateUtility {
   public static boolean isInfinity(final LocalDate date) {
     return date.equals(MAX_DATE);
   }
-  
-//  /**
-//   * L'intervallo dell'anno.
-//   *
-//   * @param year anno
-//   * @return l'intervallo
-//   */
-//  public static DateInterval getYearInterval(int year) {
-//    return new DateInterval(new LocalDate(year, 1, 1), new LocalDate(year, 12, 31));
-//  }
-//  
-//  /**
-//   * L'intervallo del mese.
-//   *
-//   * @param year anno
-//   * @param month mese
-//   * @return intervallo
-//   */
-//  public static DateInterval getMonthInterval(int year, int month) {
-//    return new DateInterval(new LocalDate(year, month, 1), 
-//        new LocalDate(year, month, 1).dayOfMonth().withMaximumValue());
-//  }
-//
+
+  /**
+   * L'intervallo dell'anno.
+   *
+   * @param year anno
+   * @return l'intervallo
+   */
+  public static DateInterval getYearInterval(int year) {
+    return new DateInterval(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
+  }
+
+  /**
+   * L'intervallo del mese.
+   *
+   * @param year anno
+   * @param month mese
+   * @return intervallo
+   */
+  public static DateInterval getMonthInterval(int year, int month) {
+    return new DateInterval(LocalDate.of(year, month, 1), 
+        endOfMonth(LocalDate.of(year, month, 1)));
+  }
+
 //  /**
 //   * Trasforma in nome il numero del mese passato come parametro.
 //   *
@@ -410,52 +418,52 @@ public class DateUtility {
 //    return date.monthOfYear().getAsText();
 //  }
 //  
-//  /**
-//   * Trasforma in stringa il numero del mese aggiungendo '""' davanti.
-//   *
-//   * @param month il mese da formattare
-//   * @return il mese se maggiore di 10, con lo 0 davanti se minore di 10.
-//   */
-//  public static String checkMonth(int month) {
-//    if (month < 10) {
-//      return "0" + month;
-//    } else {
-//      return "" + month;
-//    }
-//  }
-//
-//  /**
-//   * Ritorna la stringa nel formato HH:MM della quantità di minuti passata come parametro.
-//   *
-//   * @param minute minuti da formattare.
-//   * @return stringa contente la formattazione -?HH:MM
-//   */
-//  public static String fromMinuteToHourMinute(final int minute) {
-//    if (minute == 0) {
-//      return "00:00";
-//    }
-//    String string = "";
-//    int positiveMinute = minute;
-//    if (minute < 0) {
-//      string = string + "-";
-//      positiveMinute = minute * -1;
-//    }
-//    int hour = positiveMinute / MINUTE_IN_HOUR;
-//    int min = positiveMinute % MINUTE_IN_HOUR;
-//
-//    if (hour < 10) {
-//      string = string + "0" + hour;
-//    } else {
-//      string = string + hour;
-//    }
-//    string = string + ":";
-//    if (min < 10) {
-//      string = string + "0" + min;
-//    } else {
-//      string = string + min;
-//    }
-//    return string;
-//  }
+  /**
+   * Trasforma in stringa il numero del mese aggiungendo '""' davanti.
+   *
+   * @param month il mese da formattare
+   * @return il mese se maggiore di 10, con lo 0 davanti se minore di 10.
+   */
+  public static String checkMonth(int month) {
+    if (month < 10) {
+      return "0" + month;
+    } else {
+      return "" + month;
+    }
+  }
+
+  /**
+   * Ritorna la stringa nel formato HH:MM della quantità di minuti passata come parametro.
+   *
+   * @param minute minuti da formattare.
+   * @return stringa contente la formattazione -?HH:MM
+   */
+  public static String fromMinuteToHourMinute(final int minute) {
+    if (minute == 0) {
+      return "00:00";
+    }
+    String string = "";
+    int positiveMinute = minute;
+    if (minute < 0) {
+      string = string + "-";
+      positiveMinute = minute * -1;
+    }
+    int hour = positiveMinute / MINUTE_IN_HOUR;
+    int min = positiveMinute % MINUTE_IN_HOUR;
+
+    if (hour < 10) {
+      string = string + "0" + hour;
+    } else {
+      string = string + hour;
+    }
+    string = string + ":";
+    if (min < 10) {
+      string = string + "0" + min;
+    } else {
+      string = string + min;
+    }
+    return string;
+  }
 //
 //
 //  /**
@@ -475,28 +483,27 @@ public class DateUtility {
 //    }
 //    return LocalDate.parse(date, dtf);
 //  }
-//
-//  /**
-//   * Ritorna la data del primo giorno del mese.
-//   *
-//   * @param yearMonth il mese da considerare.
-//   * @return il primo giorno del mese da considerare formato LocalDate.
-//   */
-//  public static LocalDate getMonthFirstDay(final YearMonth yearMonth) {
-//    return new LocalDate(yearMonth.getYear(), yearMonth.getMonthOfYear(), 1);
-//  }
-//
-//  /**
-//   * Ritorna la data dell'ultimo giorno del mese.
-//   *
-//   * @param yearMonth il mese da considerare.
-//   * @return l'ultimo giorno del mese da considerare formato LocalDate.
-//   */
-//  public static LocalDate getMonthLastDay(final YearMonth yearMonth) {
-//    return new LocalDate(yearMonth.getYear(), yearMonth.getMonthOfYear(), 1).dayOfMonth()
-//            .withMaximumValue();
-//  }
-//
+
+  /**
+   * Ritorna la data del primo giorno del mese.
+   *
+   * @param yearMonth il mese da considerare.
+   * @return il primo giorno del mese da considerare formato LocalDate.
+   */
+  public static LocalDate getMonthFirstDay(final YearMonth yearMonth) {
+    return LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1);
+  }
+
+  /**
+   * Ritorna la data dell'ultimo giorno del mese.
+   *
+   * @param yearMonth il mese da considerare.
+   * @return l'ultimo giorno del mese da considerare formato LocalDate.
+   */
+  public static LocalDate getMonthLastDay(final YearMonth yearMonth) {
+    return endOfMonth(LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1));
+  }
+
 //  /**
 //   * Ritorna la quantità di minuti trascorsi dall'inizio del giorno all'ora.
 //   *
@@ -523,26 +530,27 @@ public class DateUtility {
 //    }
 //    return dateToMinute;
 //  }
-//
-//  /**
-//   * Ritorna la differenza in minuti tra due orari.
-//   *
-//   * @param begin orario di ingresso.
-//   * @param end   orario di uscita.
-//   * @return minuti lavorati.
-//   */
-//  public static Integer getDifferenceBetweenLocalTime(final LocalTime begin, final LocalTime end) {
-//
-//    int timeToMinute = 0;
-//    if (end != null && begin != null) {
-//      int hourBegin = begin.getHourOfDay();
-//      int minuteBegin = begin.getMinuteOfHour();
-//      int hourEnd = end.getHourOfDay();
-//      int minuteEnd = end.getMinuteOfHour();
-//      timeToMinute =
-//              ((MINUTE_IN_HOUR * hourEnd + minuteEnd) - (MINUTE_IN_HOUR * hourBegin + minuteBegin));
-//    }
-//
-//    return timeToMinute;
-//  }
+
+  /**
+   * Ritorna la differenza in minuti tra due orari.
+   *
+   * @param begin orario di ingresso.
+   * @param end   orario di uscita.
+   * @return minuti lavorati.
+   */
+  public static Integer getDifferenceBetweenLocalTime(final LocalTime begin, final LocalTime end) {
+
+    int timeToMinute = 0;
+    if (end != null && begin != null) {
+      int hourBegin = begin.getHour();
+      int minuteBegin = begin.getMinute();
+      int hourEnd = end.getHour();
+      int minuteEnd = end.getMinute();
+      timeToMinute =
+              ((MINUTE_IN_HOUR * hourEnd + minuteEnd) - (MINUTE_IN_HOUR * hourBegin + minuteBegin));
+    }
+
+    return timeToMinute;
+  }
+
 }

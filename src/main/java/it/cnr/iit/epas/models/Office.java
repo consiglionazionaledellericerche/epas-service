@@ -22,6 +22,7 @@ import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.base.PeriodModel;
+import it.cnr.iit.epas.models.flows.Group;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,8 +32,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-//import javax.persistence.FetchType;
-//import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -41,6 +42,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 
 /**
@@ -75,59 +77,58 @@ public class Office extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private LocalDate joiningDate;
 
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  public Institute institute;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Institute institute;
 
-  public boolean headQuarter = false;
+  private boolean headQuarter = false;
 
   @OneToMany(mappedBy = "owner", cascade = {CascadeType.REMOVE})
-  public List<User> users = Lists.newArrayList();
-
-//  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-//  public List<BadgeSystem> badgeSystems = Lists.newArrayList();
+  private List<User> users = Lists.newArrayList();
 
   @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-  public List<Person> persons = Lists.newArrayList();
+  private List<BadgeSystem> badgeSystems = Lists.newArrayList();
 
   @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-  public List<Configuration> configurations = Lists.newArrayList();
+  private List<Person> persons = Lists.newArrayList();
 
-//  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-//  public List<PersonReperibilityType> personReperibilityTypes = Lists.newArrayList();
-//  
-//  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-//  public List<ShiftCategories> shiftCategories = Lists.newArrayList();
+  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
+  private List<Configuration> configurations = Lists.newArrayList();
 
+  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
+  private List<PersonReperibilityType> personReperibilityTypes = Lists.newArrayList();
   
   @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-  public List<UsersRolesOffices> usersRolesOffices = Lists.newArrayList();
+  private List<ShiftCategories> shiftCategories = Lists.newArrayList();
 
-//  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
-//  public List<Group> groups = Lists.newArrayList();
-//
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<WorkingTimeType> workingTimeType = Lists.newArrayList();
-//
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<TimeSlot> timeSlots = Lists.newArrayList();
-//
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<ShiftTimeTable> shiftTimeTable = Lists.newArrayList();
-//
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<TotalOvertime> totalOvertimes = Lists.newArrayList();
-//
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<Attachment> attachments = Lists.newArrayList();
-//  
-//  @NotAudited
-//  @OneToMany(mappedBy = "office")
-//  public List<MealTicket> tickets = Lists.newArrayList();
+  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
+  private List<UsersRolesOffices> usersRolesOffices = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "office", cascade = {CascadeType.REMOVE})
+  private List<Group> groups = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<WorkingTimeType> workingTimeType = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<TimeSlot> timeSlots = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<ShiftTimeTable> shiftTimeTable = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<TotalOvertime> totalOvertimes = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<Attachment> attachments = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "office")
+  private List<MealTicket> tickets = Lists.newArrayList();
 
   //@NotAudited
   private LocalDateTime updatedAt;

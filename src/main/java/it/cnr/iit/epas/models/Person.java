@@ -19,9 +19,12 @@ package it.cnr.iit.epas.models;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
+import it.cnr.iit.epas.models.absences.InitializationGroup;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.base.PeriodModel;
+import it.cnr.iit.epas.models.flows.Affiliation;
+import it.cnr.iit.epas.models.flows.Group;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -40,6 +44,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -66,10 +71,10 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private Long perseoId;
 
-  //@Required
+  @NotNull
   private String name;
 
-  //@Required
+  @NotNull
   private String surname;
 
   private String othersSurnames;
@@ -83,7 +88,7 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 //  @Email
 //  @Unique
 //  @As(binder = NullStringBinder.class)
-//  @Required
+  @NotNull
   private String email;
 
   @OneToOne(optional = false, fetch = FetchType.LAZY)
@@ -115,18 +120,133 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private boolean wantEmail;
 
+  /**
+   * Le affiliazioni di una persona sono le appartenenze ai gruppi con percentuale
+   * e date.
+   */
+  @OneToMany(mappedBy = "person")
+  public List<Affiliation> affiliations = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "manager")
+  public List<Group> groupsPeople = Lists.newArrayList();
+
+  /**
+   * relazione con i turni.
+   */
+  @OneToMany(mappedBy = "supervisor")
+  public List<ShiftCategories> shiftCategories = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "supervisor")
+  private List<PersonReperibilityType> reperibilityTypes = Lists.newArrayList();
+
+  @Getter
   @NotAudited
-  private LocalDateTime updatedAt;
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<Contract> contracts = Lists.newArrayList();
+
+  /**
+   * relazione con la tabella dei figli del personale.
+   */
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private Set<PersonChildren> personChildren = Sets.newHashSet();
+
+  /**
+   * relazione con la nuova tabella dei person day.
+   */
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<PersonDay> personDays = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<CertificatedData> certificatedData = Lists.newArrayList();
+
+  /**
+   * Dati derivanti dall'invio col nuovo sistema degli attestati.
+   */
+  @OneToMany(mappedBy = "person")
+  public List<Certification> certifications = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "admin")
+  private List<MealTicket> mealTicketsAdmin = Lists.newArrayList();
+
+  /**
+   * relazione con la nuova tabella dei person_month.
+   */
+  @NotAudited
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<PersonMonthRecap> personMonths = Lists.newArrayList();
+
+  /**
+   * relazione con la tabella Competence.
+   */
+  @NotAudited
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<Competence> competences = Lists.newArrayList();
+
+  @NotAudited
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private Set<PersonCompetenceCodes> personCompetenceCodes = Sets.newHashSet();
+
+  @OneToOne(mappedBy = "person")
+  private PersonHourForOvertime personHourForOvertime;
+
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private Set<PersonReperibility> reperibility = Sets.newHashSet();
+
+  @NotAudited
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private List<PersonShift> personShifts = Lists.newArrayList();
 
   @ManyToOne
-  //@Required
+  @NotNull
+  private Qualification qualification;
+
+  @ManyToOne
+  @NotNull
   private Office office;
+
+  /**
+   * TODO: da rimuovere quando si userà lo storico per intercettare il cambio di sede per adesso è
+   * popolato dal valore su perseo alla costruzione dell'oggetto.
+   */
+  @Transient
+  private Long perseoOfficeId = null;
+
+  /**
+   * Sono stati implementati i metodi Equals e HashCode sulla classe Badge in modo che Se sono
+   * presenti più badge per la persona che differiscono solo per il campo badgeReader venga
+   * restituito un solo elemento (effettivamente per noi è lo stesso badge).Quindi person.badges non
+   * restituisce i duplicati
+   */
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
+  private Set<Badge> badges = Sets.newHashSet();
 
   /**
    * Le configurazioni della persona.
    */
   @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
-  public List<PersonConfiguration> personConfigurations = Lists.newArrayList();
+  private List<PersonConfiguration> personConfigurations = Lists.newArrayList();
+
+
+  @ManyToMany(mappedBy = "managers")
+  private List<ShiftCategories> categories = Lists.newArrayList();
+
+  @ManyToMany(mappedBy = "managers")
+  private List<PersonReperibilityType> reperibilities = Lists.newArrayList();
+
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+  private Set<InitializationGroup> initializationGroups;
+
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+  private Set<TeleworkValidation> teleworkValidations;
+
+  /**
+   * Nuova relazione con la tabella di check giornaliero del green pass.
+   */
+  @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
+  private Set<CheckGreenPass> checkGreenPass;
+
+  @NotAudited
+  private LocalDateTime updatedAt;
 
   public String getName() {
     return this.name;
@@ -155,21 +275,21 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
     return getFullname();
   }
 
-//  @Transient
-//  public Institute getInstitute() {
-//    return office == null ? null : office.getInstitute();
-//  }
-  
+  @Transient
+  public Institute getInstitute() {
+    return office == null ? null : office.getInstitute();
+  }
+
   /**
    * Lista dei gruppi di una persona alla data odierna.
    *
    * @return la lista dei gruppi a cui appartiente oggi una persona. 
    */
-//  @Transient
-//  public List<Group> getGroups() {
-//    return getGroups(java.time.LocalDate.now());
-//  }
-  
+  @Transient
+  public List<Group> getGroups() {
+    return getGroups(LocalDate.now());
+  }
+
   /**
    * Lista dei gruppi di una persona alla data indicata.
    *
@@ -177,13 +297,13 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    *     passata per parametro.
    */
   @Transient
-//  public List<Group> getGroups(java.time.LocalDate date) {
-//    return affiliations.stream()
-//        .filter(a -> a.getBeginDate().isBefore(date) 
-//            && (a.getEndDate() == null || a.getEndDate().isAfter(date)))
-//        .map(a -> a.getGroup()).collect(Collectors.toList());
-//  }
-  
+  public List<Group> getGroups(java.time.LocalDate date) {
+    return affiliations.stream()
+        .filter(a -> a.getBeginDate().isBefore(date) 
+            && (a.getEndDate() == null || a.getEndDate().isAfter(date)))
+        .map(a -> a.getGroup()).collect(Collectors.toList());
+  }
+
   @Override
   public Collection<IPropertyInPeriod> periods(Object type) {
 
@@ -254,10 +374,10 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    * @return true se la persona contiene il parametro di configurazione specificato con il valore
    *     indicato.
    */
-//  public boolean checkConf(EpasParam param, String value) {
-//    return personConfigurations.stream().filter(conf -> conf.epasParam == param
-//        && conf.fieldValue.equals(value)).findFirst().isPresent();
-//  }
+  public boolean checkConf(EpasParam param, String value) {
+    return personConfigurations.stream().filter(conf -> conf.getEpasParam() == param
+        && conf.getFieldValue().equals(value)).findFirst().isPresent();
+  }
 
   /**
    * Verifica se il mese passato come parametro è successivo all'ultimo mese inviato con gli
@@ -288,22 +408,22 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    *
    * @return la lista delle ZoneToZones associate ai badge della persona.
    */
-//  public List<ZoneToZones> getZones() {
-//    return badges.stream().<ZoneToZones>flatMap(b -> b.badgeReader.zones.stream()
-//        .map(z -> z.zoneLinkedAsMaster.stream().findAny().orElse(null)))
-//        .collect(Collectors.toList());
-//  }
+  public List<ZoneToZones> getZones() {
+    return badges.stream().<ZoneToZones>flatMap(b -> b.getBadgeReader().getZones().stream()
+        .map(z -> z.zoneLinkedAsMaster.stream().findAny().orElse(null)))
+        .collect(Collectors.toList());
+  }
 
   /**
    * Verifica se è un livello I-III.
    *
    * @return true se è un livello I-III, false altrimenti.
    */
-//  @Transient
-//  public boolean isTopQualification() {
-//    return qualification != null && qualification.isTopQualification();
-//  }
-  
+  @Transient
+  public boolean isTopQualification() {
+    return qualification != null && qualification.isTopQualification();
+  }
+
   @Transient
   public boolean isGroupManager() {
     return user.hasRoles(Role.GROUP_MANAGER);
@@ -314,7 +434,7 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
     return user.hasRoles(Role.SEAT_SUPERVISOR);
   }
 
-//  public List<Person> getPersonsInCharge() {
-//    return groupsPeople.stream().flatMap(g -> g.getPeople().stream()).collect(Collectors.toList());
-//  }
+  public List<Person> getPersonsInCharge() {
+    return groupsPeople.stream().flatMap(g -> g.getPeople().stream()).collect(Collectors.toList());
+  }
 }
