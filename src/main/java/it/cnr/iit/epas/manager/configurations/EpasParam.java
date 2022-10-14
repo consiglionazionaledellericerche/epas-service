@@ -17,25 +17,24 @@
 package it.cnr.iit.epas.manager.configurations;
 
 import com.google.common.base.Joiner;
-//import com.google.common.base.Splitter;
-//import com.google.common.collect.ImmutableSet;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.util.List;
-//import java.util.Set;
-//import lombok.extern.slf4j.Slf4j;
-//import lombok.val;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.IpList;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.LocalTimeInterval;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.enumerate.BlockType;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * I Parametri di ePAS.
  */
+@Slf4j
 public enum EpasParam {
 
   //#######################################
@@ -1064,9 +1063,9 @@ public enum EpasParam {
         return value.toString();
       }
 
-//      if (value instanceof LocalTime) {
-//        return ((LocalTime) value).toString(LOCALTIME_FORMATTER);
-//      }
+      if (value instanceof LocalTime) {
+        DateTimeFormatter.ofPattern(LOCALTIME_FORMATTER).format((LocalTime) value);
+      }
 
       if (value instanceof LocalDate) {
         return ((LocalDate) value).toString();
@@ -1078,10 +1077,10 @@ public enum EpasParam {
             + formatValue(((LocalTimeInterval) value).to);
       }
 
-//      if (value instanceof MonthDay) {
-//        return ((MonthDay) value).getDayOfMonth() + DAY_MONTH_SEPARATOR
-//            + ((MonthDay) value).getMonthOfYear();
-//      }
+      if (value instanceof MonthDay) {
+        return ((MonthDay) value).getDayOfMonth() + DAY_MONTH_SEPARATOR
+            + ((MonthDay) value).getMonthValue();
+      }
 
       if (value instanceof IpList) {
         return Joiner.on(IP_LIST_SEPARATOR + "\n").join(((IpList) value).ipList);
@@ -1093,56 +1092,55 @@ public enum EpasParam {
 
       return null;
     }
+    
+    /**
+     * Converte il valore in oggetto.
+     */
+    public static Object parseValue(final EpasParamValueType type, final String value) {
+      try {
+        switch (type) {
+          case LOCALDATE:
+            return LocalDate.parse(value);
+          case LOCALTIME:
+            return LocalTime.parse(value, DateTimeFormatter.ofPattern(LOCALTIME_FORMATTER));
+          case LOCALTIME_INTERVAL:
+            LocalTimeInterval interval = new LocalTimeInterval(
+                (LocalTime) parseValue(
+                    LOCALTIME, value.trim().split(LOCALTIME_INTERVAL_SEPARATOR)[0]),
+                (LocalTime) parseValue(
+                    LOCALTIME, value.trim().split(LOCALTIME_INTERVAL_SEPARATOR)[1]));
+            if (interval.to.isBefore(interval.from)) {
+              return null;
+            } else {
+              return interval;
+            }
+          case DAY_MONTH:
+            return MonthDay.of(
+                Integer.parseInt(value.split(DAY_MONTH_SEPARATOR)[1]),
+                Integer.parseInt(value.split(DAY_MONTH_SEPARATOR)[0]));
+          case MONTH:
+            return Integer.parseInt(value);
+          case EMAIL:
+            return value;
+          case IP_LIST:
+            return new IpList(
+                Splitter.on(IP_LIST_SEPARATOR)
+                .trimResults().omitEmptyStrings().splitToList(value.trim()));
+          case INTEGER:
+            return Integer.parseInt(value);
+          case BOOLEAN:
+            return Boolean.parseBoolean(value);
+          case ENUM:
+            return BlockType.valueOf(value);
+          default:
+            log.warn("Tipo non riconosciuto: {}", type);
+        }
+      } catch (Exception ex) {
+        return null;
+      }
+      return null;
+    }
   }
-
-//    /**
-//     * Converte il valore in oggetto.
-//     */
-//    public static Object parseValue(final EpasParamValueType type, final String value) {
-//      try {
-//        switch (type) {
-//          case LOCALDATE:
-//            return  LocalDate.parse(value);
-//          case LOCALTIME:
-//            return LocalTime.parse(value, DateTimeFormat.forPattern(LOCALTIME_FORMATTER));
-//          case LOCALTIME_INTERVAL:
-//            LocalTimeInterval interval = new LocalTimeInterval(
-//                (LocalTime) parseValue(
-//                    LOCALTIME, value.trim().split(LOCALTIME_INTERVAL_SEPARATOR)[0]),
-//                (LocalTime) parseValue(
-//                    LOCALTIME, value.trim().split(LOCALTIME_INTERVAL_SEPARATOR)[1]));
-//            if (interval.to.isBefore(interval.from)) {
-//              return null;
-//            } else {
-//              return interval;
-//            }
-//          case DAY_MONTH:
-//            return new MonthDay(
-//                Integer.parseInt(value.split(DAY_MONTH_SEPARATOR)[1]),
-//                Integer.parseInt(value.split(DAY_MONTH_SEPARATOR)[0]));
-//          case MONTH:
-//            return Integer.parseInt(value);
-//          case EMAIL:
-//            return value;
-//          case IP_LIST:
-//            return new IpList(
-//                Splitter.on(IP_LIST_SEPARATOR)
-//                .trimResults().omitEmptyStrings().splitToList(value.trim()));
-//          case INTEGER:
-//            return Integer.parseInt(value);
-//          case BOOLEAN:
-//            return Boolean.parseBoolean(value);
-//          case ENUM:
-//            return BlockType.valueOf(value);
-//          default:
-//            log.warn("Tipo non riconosciuto: {}", type);
-//        }
-//      } catch (Exception ex) {
-//        return null;
-//      }
-//      return null;
-//    }
-//  }
 
   /**
    * Verifica la lista dei cds non abilitati a visualizzare la 

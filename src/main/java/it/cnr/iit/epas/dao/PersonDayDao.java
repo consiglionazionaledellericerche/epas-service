@@ -16,9 +16,6 @@
  */
 package it.cnr.iit.epas.dao;
 
-import com.google.common.base.Optional;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -37,13 +34,18 @@ import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Il dao dei personDay.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class PersonDayDao extends DaoBase {
 
   @Inject
@@ -82,7 +84,7 @@ public class PersonDayDao extends DaoBase {
         .selectFrom(personDay)
         .where(personDay.person.eq(person).and(personDay.date.eq(date))).fetchOne();
 
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
 
@@ -222,7 +224,7 @@ public class PersonDayDao extends DaoBase {
     LocalDate begin = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1);
     LocalDate end = DateUtility.endOfMonth(begin);
 
-    return getPersonDaysFetched(person, begin, Optional.fromNullable(end),
+    return getPersonDaysFetched(person, begin, Optional.ofNullable(end),
         false, false, false);
   }
 
@@ -305,7 +307,7 @@ public class PersonDayDao extends DaoBase {
     QPersonDay personDay = QPersonDay.personDay;
     final PersonDay result = getQueryFactory().selectFrom(personDay)
         .where(personDay.absences.contains(abs)).fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
   
   /**

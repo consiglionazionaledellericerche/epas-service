@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.models;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -54,23 +54,25 @@ import org.hibernate.envers.NotAudited;
 /**
  * Contratto di un dipendente.
  */
+@Getter
+@Setter
 @Entity
 @Table(name = "contracts")
 @Audited
 public class Contract extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private static final long serialVersionUID = -4472102414284745470L;
-  
-  public String perseoId;
 
-  public String externalId;
-  
+  private String perseoId;
+
+  private String externalId;
+
   /**
    * Patch per gestire i contratti con dati mancanti da dcp. E' true unicamente per segnalare tempo
    * determinato senza data fine specificata.
    */
   @Column(name = "is_temporary")
-  public boolean isTemporaryMissing;
+  private boolean isTemporaryMissing;
 
   /*
    * Quando viene valorizzata la sourceDateResidual, deve essere valorizzata
@@ -210,10 +212,10 @@ public class Contract extends PeriodModel implements IPropertiesInPeriodOwner {
 
     for (ContractStampProfile csp : contractStampProfile) {
       if (csp.dateRange().contains(date)) {
-        return Optional.fromNullable(csp);
+        return Optional.ofNullable(csp);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**

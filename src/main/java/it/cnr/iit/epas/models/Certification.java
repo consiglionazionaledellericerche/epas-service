@@ -29,6 +29,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 
@@ -38,6 +40,8 @@ import org.hibernate.envers.Audited;
  *
  * @author Alessandro Martelli
  */
+@Getter
+@Setter
 @Audited
 @Entity
 @Table(name = "certifications")

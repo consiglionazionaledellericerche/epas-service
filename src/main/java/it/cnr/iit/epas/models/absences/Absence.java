@@ -59,39 +59,39 @@ public class Absence extends BaseEntity {
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
-  private PersonDay personDay;
+  public PersonDay personDay;
 
   // Nuova Modellazione
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private AbsenceType absenceType;
+  public AbsenceType absenceType;
 
 //  @Column(name = "absence_file", nullable = true)
 //  public Blob absenceFile;
 
-  private Integer justifiedMinutes;
+  public Integer justifiedMinutes;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private JustifiedType justifiedType;
+  public JustifiedType justifiedType;
 
   @NotAudited
   @OneToMany(mappedBy = "absence", cascade = {CascadeType.REMOVE})
-  private Set<AbsenceTrouble> troubles = Sets.newHashSet();
+  public Set<AbsenceTrouble> troubles = Sets.newHashSet();
 
   //Nuovo campo per la gestione delle missioni in caso di modifica delle date
   //@Unique(value = "externalIdentifier,personDay")
-  private Long externalIdentifier;
+  public Long externalIdentifier;
 
   //Nuovi campi per la possibilità di inserire le decurtazioni di tempo per i 91s
-  private LocalDate expireRecoverDate;
+  public LocalDate expireRecoverDate;
 
-  private int timeToRecover;
+  public int timeToRecover;
 
   @Audited
   @OneToMany(mappedBy = "absence", cascade = {CascadeType.ALL})
-  private Set<TimeVariation> timeVariations = Sets.newHashSet();
+  public Set<TimeVariation> timeVariations = Sets.newHashSet();
 
-  private String note;
+  public String note;
 
   @NotAudited
   private LocalDateTime updatedAt;

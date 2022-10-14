@@ -17,6 +17,7 @@
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
@@ -38,10 +39,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * Un utente di ePAS.
@@ -65,6 +68,10 @@ public class User extends BaseEntity {
   //@NotAudited
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
   public Person person;
+
+  @NotAudited
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  public List<BadgeReader> badgeReaders = Lists.newArrayList();
 
   @ElementCollection
   @Enumerated(EnumType.STRING)
@@ -92,6 +99,19 @@ public class User extends BaseEntity {
   public Office owner;
 
   public String keycloakId;
+
+  /**
+   * Ritorna il badgeReader associato all'utente se ne ha almeno uno associato.
+   *
+   * @return il badgeReader associato all'utente se ne ha almeno uno associato.
+   */
+  @Transient
+  public BadgeReader getBadgeReader() {
+    if (badgeReaders.size() > 0) {
+      return badgeReaders.get(0);
+    }
+    return null;
+  }
 
   @Override
   public String toString() {

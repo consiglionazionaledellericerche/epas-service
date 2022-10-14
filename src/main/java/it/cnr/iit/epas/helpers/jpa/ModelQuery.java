@@ -24,8 +24,9 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Classe per le model query.
@@ -33,11 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Marco Andreini
  * @author Cristian Lucchesi
  */
+@Component
 public class ModelQuery {
 
-  @Autowired
+  @Inject
   protected JPQLQueryFactory query;
-  @Autowired
+  @Inject
   protected EntityManagerFactory entityManagerFactory;
   
  public JPQLQuery<?> createQuery() {

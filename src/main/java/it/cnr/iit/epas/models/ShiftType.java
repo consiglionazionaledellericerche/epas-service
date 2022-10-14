@@ -53,73 +53,73 @@ public class ShiftType extends BaseEntity {
 
   private static final long serialVersionUID = 3156856871540530483L;
 
-  private String type;
+  public String type;
 
-  private String description;
+  public String description;
 
   @Column(name = "allow_unpair_slots")
-  private boolean allowUnpairSlots = false;
+  public boolean allowUnpairSlots = false;
 
   @Min(0)
   @Column(name = "entrance_tolerance")
-  private int entranceTolerance;
+  public int entranceTolerance;
 
   @Min(0)
   @Column(name = "entrance_max_tolerance")
-  private int entranceMaxTolerance;
+  public int entranceMaxTolerance;
 
   @Min(0)
   @Column(name = "exit_tolerance")
-  private int exitTolerance;
+  public int exitTolerance;
 
   @Min(0)
   @Column(name = "exit_max_tolerance")
-  private int exitMaxTolerance;
+  public int exitMaxTolerance;
 
   //quantità massima di tolleranze concesse all'interno dell'attività
   @Max(3)
   @Min(0)
   @Column(name = "max_tolerance_allowed")
-  private int maxToleranceAllowed;
+  public int maxToleranceAllowed;
 
   @Min(0)
   @Column(name = "break_in_shift")
-  private int breakInShift;
+  public int breakInShift;
 
   @Min(0)
   @Column(name = "break_max_in_shift")
-  private int breakMaxInShift;
+  public int breakMaxInShift;
 
   @NotAudited
   @OneToMany(mappedBy = "shiftType")
-  private List<PersonShiftShiftType> personShiftShiftTypes = new ArrayList<>();
+  public List<PersonShiftShiftType> personShiftShiftTypes = new ArrayList<>();
 
   @NotAudited
   @OneToMany(mappedBy = "shiftType")
-  private List<PersonShiftDay> personShiftDays = new ArrayList<>();
+  public List<PersonShiftDay> personShiftDays = new ArrayList<>();
 
   @NotAudited
   @OneToMany(mappedBy = "type")
-  private List<ShiftCancelled> shiftCancelled = new ArrayList<>();
+  public List<ShiftCancelled> shiftCancelled = new ArrayList<>();
 
   @NotAudited
   @ManyToOne
   @JoinColumn(name = "shift_time_table_id")
-  private ShiftTimeTable shiftTimeTable;
+  public ShiftTimeTable shiftTimeTable;
 
   @NotAudited
   @ManyToOne
   @JoinColumn(name = "organization_shift_time_table_id")
-  private OrganizationShiftTimeTable organizaionShiftTimeTable;
+  public OrganizationShiftTimeTable organizaionShiftTimeTable;
   
   //@Required
   @ManyToOne(optional = false)
   @JoinColumn(name = "shift_categories_id")
-  private ShiftCategories shiftCategories;
+  public ShiftCategories shiftCategories;
 
   @OneToMany(mappedBy = "shiftType", cascade = CascadeType.REMOVE)
   @OrderBy("yearMonth DESC")
-  private Set<ShiftTypeMonth> monthsStatus = new HashSet<>();
+  public Set<ShiftTypeMonth> monthsStatus = new HashSet<>();
 
   @Override
   public String toString() {
