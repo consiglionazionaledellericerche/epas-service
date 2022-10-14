@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.base.Optional;
@@ -94,7 +93,12 @@ public enum DefaultTakable {
       ImmutableSet.of(DefaultAbsenceType.A_21P2), 
       ImmutableSet.of(DefaultAbsenceType.A_21P2), 
       20, null),
-  
+
+  T_22(AmountType.units,
+      ImmutableSet.of(DefaultAbsenceType.A_22), 
+      ImmutableSet.of(DefaultAbsenceType.A_22), 
+      -1, null),
+
   T_26(AmountType.units,
       ImmutableSet.of(DefaultAbsenceType.A_26, DefaultAbsenceType.A_26BP), 
       ImmutableSet.of(DefaultAbsenceType.A_26, DefaultAbsenceType.A_26BP), 

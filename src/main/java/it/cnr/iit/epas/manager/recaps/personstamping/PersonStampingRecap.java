@@ -14,7 +14,6 @@
  */
 package it.cnr.iit.epas.manager.recaps.personstamping;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 //import controllers.Resecure;
@@ -35,13 +34,15 @@ import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
+import it.cnr.iit.epas.utils.DateUtility;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
+import java.time.LocalDate;
+import java.time.YearMonth;
 
 /**
  * Oggetto che modella il contenuto della vista contenente il tabellone timbrature. Gerarchia:
@@ -114,9 +115,11 @@ public class PersonStampingRecap {
       boolean considerExitingNow) {
 
     // DATI DELLA PERSONA
-    if (Session.current() != null && Security.getUser() != null && Security.getUser().isPresent()) {
-      canEditStampings = Resecure.check("Stampings.edit", null);
-    }
+    //FIXME: da correggere prima dell'utilizzo di spring boot
+    canEditStampings = true;
+//    if (Session.current() != null && Security.getUser() != null && Security.getUser().isPresent()) {
+//      canEditStampings = Resecure.check("Stampings.edit", null);
+//    }
     final long start = System.currentTimeMillis();
     log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {}",
         person.getFullname(), year, month);
@@ -124,16 +127,16 @@ public class PersonStampingRecap {
     this.month = month;
     this.year = year;
 
-    if (new YearMonth(year, month).equals(new YearMonth(LocalDate.now()))) {
+    if (YearMonth.of(year, month).compareTo(YearMonth.from(LocalDate.now())) == 0) {
       this.currentMonth = true;
     }
 
-    LocalDate begin = new LocalDate(year, month, 1);
-    LocalDate end = begin.dayOfMonth().withMaximumValue();
+    LocalDate begin = LocalDate.of(year, month, 1);
+    LocalDate end = DateUtility.endOfMonth(begin);
 
 
     List<PersonDay> personDays =
-        personDayDao.getPersonDayInPeriod(person, begin, Optional.fromNullable(end));
+        personDayDao.getPersonDayInPeriod(person, begin, Optional.ofNullable(end));
 
 
     this.numberOfInOut =
@@ -147,7 +150,7 @@ public class PersonStampingRecap {
 
     for (Contract contract : monthContracts) {
       Optional<ContractMonthRecap> cmr =
-          wrapperFactory.create(contract).getContractMonthRecap(new YearMonth(year, month));
+          wrapperFactory.create(contract).getContractMonthRecap(YearMonth.of(year, month));
 
       if (cmr.isPresent()) {
 
@@ -170,39 +173,39 @@ public class PersonStampingRecap {
       personDayManager.setValidPairStampings(pd.getStampings());
 
       PersonStampingDayRecap dayRecap = stampingDayRecapFactory.create(pd, this.numberOfInOut,
-          considerExitingNow, Optional.fromNullable(monthContracts));
+          considerExitingNow, Optional.ofNullable(monthContracts));
       this.daysRecap.add(dayRecap);
 
       this.totalWorkingTime += pd.getTimeAtWork();
 
-      if (pd.stampModificationType != null && !pd.date.isAfter(today)) {
+      if (pd.getStampModificationType() != null && !pd.getDate().isAfter(today)) {
 
-        stampModificationTypeSet.add(pd.stampModificationType);
+        stampModificationTypeSet.add(pd.getStampModificationType());
       }
 
-      for (Stamping stamp : pd.stampings) {
-        if (stamp.stampType != null) {
-          stampTypeSet.add(stamp.stampType);
+      for (Stamping stamp : pd.getStampings()) {
+        if (stamp.getStampType() != null) {
+          stampTypeSet.add(stamp.getStampType());
         }
-        if (stamp.markedByAdmin) {
+        if (stamp.isMarkedByAdmin()) {
           StampModificationType smt = stampingDayRecapFactory.stampTypeManager
               .getStampMofificationType(StampModificationTypeCode.MARKED_BY_ADMIN);
           stampModificationTypeSet.add(smt);
         }
-        if (stamp.markedByEmployee) {
+        if (stamp.isMarkedByEmployee()) {
           StampModificationType smt = stampingDayRecapFactory.stampTypeManager
               .getStampMofificationType(StampModificationTypeCode.MARKED_BY_EMPLOYEE);
           stampModificationTypeSet.add(smt);
         }
-        if (stamp.markedByTelework) {
+        if (stamp.isMarkedByTelework()) {
           StampModificationType smt = stampingDayRecapFactory.stampTypeManager
               .getStampMofificationType(StampModificationTypeCode.MARKED_BY_TELEWORK);
           stampModificationTypeSet.add(smt);
         }
-        if (stamp.stampModificationType != null) {
-          if (stamp.stampModificationType.code
+        if (stamp.getStampModificationType() != null) {
+          if (stamp.getStampModificationType().getCode()
               .equals(StampModificationTypeCode.TO_CONSIDER_TIME_AT_TURN_OF_MIDNIGHT.getCode())) {
-            stampModificationTypeSet.add(stamp.stampModificationType);
+            stampModificationTypeSet.add(stamp.getStampModificationType());
           }
         }
       }
@@ -220,7 +223,7 @@ public class PersonStampingRecap {
     this.basedWorkingDays = personManager.basedWorkingDays(personDays, monthContracts, end);
     this.absenceCodeMap = personManager.countAbsenceCodes(totalPersonDays);
     this.absenceList = personManager.listAbsenceCodes(totalPersonDays);
-    LocalDate from = person.office.getBeginDate();
+    LocalDate from = person.getOffice().getBeginDate();
     List<Absence> list = personManager.absencesToRecover(person, from, LocalDate.now(),
         JustifiedTypeName.recover_time);
     this.absencesToRecoverList = personManager.dtoList(list);
