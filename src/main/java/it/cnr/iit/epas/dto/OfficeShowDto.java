@@ -14,39 +14,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.models;
 
-import it.cnr.iit.epas.models.base.BaseEntity;
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
+package it.cnr.iit.epas.dto;
+
+import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 /**
- * Entità di check green pass.
+ * Informazioni esportate in Json per l'ufficio.
  *
- * @author dario
+ * @author Cristian Lucchesi
  *
  */
-@Getter
-@Setter
-@Entity
-@Audited
-public class CheckGreenPass extends BaseEntity {
-  
-  private static final long serialVersionUID = 4909012051833782360L;
+@ToString
+@Builder
+@Data
+public class OfficeShowDto {
 
-  private LocalDate checkDate;
-  
-  @Getter
-  @NotNull
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "person_id", nullable = false)
-  private Person person;
-  
-  private boolean checked;
+  private Long id;
+  private String name;
+  private String code;
+  private String codeId;
+  private LocalDateTime updatedAt;
+
 }

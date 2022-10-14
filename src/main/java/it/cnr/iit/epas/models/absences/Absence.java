@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences;
 
 import com.google.common.base.Optional;
@@ -25,7 +24,9 @@ import it.cnr.iit.epas.models.TimeVariation;
 import it.cnr.iit.epas.models.absences.JustifiedBehaviour.JustifiedBehaviourName;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -41,8 +42,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
 
 /**
  * Modello per le assenze.
@@ -282,7 +281,7 @@ public class Absence extends BaseEntity {
    * @return il mese relativo alla data della timbratura.
    */
   public YearMonth getYearMonth() {
-    return new YearMonth(personDay.getDate().getYear(), personDay.getDate().getMonthOfYear());
+    return YearMonth.of(personDay.getDate().getYear(), personDay.getDate().getMonthValue());
   }
 
   /**

@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.flows;
 
 import com.google.common.collect.Lists;
@@ -22,6 +21,8 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.base.MutableModel;
 import it.cnr.iit.epas.models.enumerate.ShiftSlot;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,8 +37,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 /**
  * Richiesta di attribuzione di una competenza mensile.

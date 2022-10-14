@@ -18,6 +18,8 @@
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,8 +40,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
 
 /**
  * Tipologia di turno.
@@ -153,7 +153,7 @@ public class ShiftType extends BaseEntity {
    */
   @Transient
   public Optional<ShiftTypeMonth> monthStatusByDate(LocalDate date) {
-    final YearMonth requestedMonth = new YearMonth(date);
+    final YearMonth requestedMonth = YearMonth.from(date);
     return monthsStatus.stream()
         .filter(shiftTypeMonth -> shiftTypeMonth.getYearMonth().equals(requestedMonth)).findFirst();
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,15 +14,15 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.wrapper;
 
 import com.google.common.base.Optional;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
+
 
 /**
  * Office potenziato.

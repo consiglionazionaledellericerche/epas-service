@@ -14,11 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,9 +37,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
-import org.joda.time.YearMonth;
-
 
 /**
  * Tipo di reperibilità.
@@ -96,7 +94,7 @@ public class PersonReperibilityType extends BaseEntity {
    */
   @Transient
   public Optional<ReperibilityTypeMonth> monthStatusByDate(LocalDate date) {
-    final YearMonth requestedMonth = new YearMonth(date);
+    final YearMonth requestedMonth = YearMonth.from(date);
     return monthsStatus.stream()
         .filter(reperibilityTypeMonth -> reperibilityTypeMonth
             .getYearMonth().equals(requestedMonth)).findFirst();

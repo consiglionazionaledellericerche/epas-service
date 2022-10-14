@@ -21,6 +21,7 @@ import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.base.InformationRequest;
 import it.cnr.iit.epas.models.flows.enumerate.InformationRequestEventType;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,7 +32,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.ToString;
-import org.joda.time.LocalDateTime;
 
 /**
  * Evento del flusso di approvazione di una richiesta informativa.

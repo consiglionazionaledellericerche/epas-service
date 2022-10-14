@@ -14,11 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Range;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -28,8 +28,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.joda.time.LocalDate;
-
 
 /**
  * Associazione tra persone e tipi di turno (con date di inizio e fine).

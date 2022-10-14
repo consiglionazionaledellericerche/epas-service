@@ -14,10 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -29,7 +29,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
 
 /**
  * Rappresenta un giorno di reperibilità di una persona reperibile.
@@ -65,7 +64,7 @@ public class PersonReperibilityDay extends BaseEntity {
   
   @Transient
   public String getLabel() {
-    return this.date.dayOfMonth().getAsText() + " " + this.date.monthOfYear().getAsText();
+    return this.date.getDayOfMonth() + " " + this.date.getMonthValue();
   }
 
 }

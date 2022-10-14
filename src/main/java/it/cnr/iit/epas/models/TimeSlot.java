@@ -14,12 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,10 +33,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.joda.time.LocalTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 
 /**
  * Modello per le fasce di orario lavorativo dei dipendenti.
@@ -82,11 +79,11 @@ public class TimeSlot extends BaseEntity {
    */
   @Transient
   public String getLabel() {
-    DateTimeFormatter dtf = DateTimeFormat.forPattern("HH:mm");
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
     return Strings.isNullOrEmpty(description)
-        ? String.format("%s - %s", dtf.print(beginSlot), dtf.print(endSlot)) 
+        ? String.format("%s - %s", dtf.format(beginSlot), dtf.format(endSlot)) 
           : 
-        String.format("%s (%s - %s)", description, dtf.print(beginSlot), dtf.print(endSlot));
+        String.format("%s (%s - %s)", description, dtf.format(beginSlot), dtf.format(endSlot));
   }
 
   @Override
