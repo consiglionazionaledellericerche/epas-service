@@ -23,9 +23,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -402,17 +404,18 @@ public class DateUtility {
         endOfMonth(LocalDate.of(year, month, 1)));
   }
 
-//  /**
-//   * Trasforma in nome il numero del mese passato come parametro.
-//   *
-//   * @param monthNumber mese da formattare.
-//   * @return il nome del mese con valore monthNumber, null in caso di argomento non valido.
-//   */
-//  public static String fromIntToStringMonth(final Integer monthNumber) {
-//    LocalDate date = new LocalDate().withMonthOfYear(monthNumber);
-//    return date.monthOfYear().getAsText();
-//  }
-//  
+  /**
+   * Trasforma in nome il numero del mese passato come parametro.
+   *
+   * @param monthNumber mese da formattare.
+   * @return il nome del mese con valore monthNumber, null in caso di argomento non valido.
+   */
+  public static String fromIntToStringMonth(final Integer monthNumber) {
+    LocalDate date = LocalDate.of(2022, monthNumber, 1);
+    return date.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALY);
+    //return date.monthOfYear().getAsText();
+  }
+  
   /**
    * Trasforma in stringa il numero del mese aggiungendo '""' davanti.
    *

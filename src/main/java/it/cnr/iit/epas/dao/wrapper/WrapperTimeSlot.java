@@ -18,6 +18,7 @@ package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMandatoryTimeSlot;
 import it.cnr.iit.epas.models.Office;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import manager.ContractManager;
 import org.springframework.stereotype.Component;
 
 /**

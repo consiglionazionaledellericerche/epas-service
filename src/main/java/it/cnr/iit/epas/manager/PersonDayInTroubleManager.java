@@ -258,8 +258,8 @@ public class PersonDayInTroubleManager {
    *
    * @param person persona
    */
-  //FIXME: da correggere per il passaggio a Spring Boot
-//  public final void cleanPersonDayInTrouble(Person person) {
+  public final void cleanPersonDayInTrouble(Person person) {
+    //FIXME: da correggere per il passaggio a Spring Boot
 //    new Job<Void>() {
 //      @Override
 //      public void doJob() {
@@ -282,5 +282,5 @@ public class PersonDayInTroubleManager {
 //        }         
 //      }
 //    }.now();
-//  }
+  }
 }

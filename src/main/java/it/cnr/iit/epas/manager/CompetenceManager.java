@@ -32,7 +32,10 @@ import it.cnr.iit.epas.dao.PersonShiftDayDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.helpers.jpa.ModelQuery.SimpleResults;
+import it.cnr.iit.epas.manager.competences.ShiftTimeTableDto;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
+import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
+import it.cnr.iit.epas.messages.Messages;
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.CompetenceCodeGroup;
@@ -62,23 +65,28 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import manager.competences.ShiftTimeTableDto;
-import manager.recaps.personstamping.PersonStampingRecapFactory;
-import models.dto.TimeTableDto;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import it.cnr.iit.epas.models.dto.TimeTableDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Manager per la gestione delle competenze.
  *
  * @author Alessandro Martelli
  */
+@Component
 public class CompetenceManager {
 
 
@@ -94,7 +102,7 @@ public class CompetenceManager {
   private final PersonShiftDayDao personShiftDayDao;
 
   private final PersonDao personDao;
-
+  private final Provider<EntityManager> emp;
 
   /**
    * Costruttore.
@@ -112,7 +120,8 @@ public class CompetenceManager {
       PersonDayDao personDayDao, IWrapperFactory wrapperFactory,
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
-      SecureManager secureManager, PersonDao personDao) {
+      PersonDao personDao,
+      Provider<EntityManager> emp) {
 
     this.competenceCodeDao = competenceCodeDao;
     this.officeDao = officeDao;
@@ -124,6 +133,7 @@ public class CompetenceManager {
     this.stampingsRecapFactory = stampingsRecapFactory;   
     this.personShiftDayDao = personshiftDayDao;    
     this.personDao = personDao;
+    this.emp = emp;
   }
 
   public static Predicate<CompetenceCode> isReperibility() {
@@ -214,7 +224,8 @@ public class CompetenceManager {
     } catch (Exception ex) {
       return false;
     }
-    total.save();
+    emp.get().persist(total);
+    //total.save();
     return true;
 
   }
@@ -242,7 +253,7 @@ public class CompetenceManager {
       Integer overtime = 0;
 
       List<PersonDay> personDayList = personDayDao.getPersonDayInPeriod(p,
-          beginMonth, DateUtility.endOfMonth(beginMonth));
+          beginMonth, Optional.of(DateUtility.endOfMonth(beginMonth)));
       for (PersonDay pd : personDayList) {
         if (pd.getStampings().size() > 0) {
           daysAtWork = daysAtWork + 1;
@@ -312,7 +323,7 @@ public class CompetenceManager {
     List<Contract> monthContracts = wrapperFactory
         .create(person).orderedMonthContracts(year, month);
     int differenceForShift = 0;
-    List<PersonDay> pdList = personDayDao.getPersonDayInMonth(person, new YearMonth(year, month));
+    List<PersonDay> pdList = personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
     for (Contract contract : monthContracts) {
 
       IWrapperContract wrContract = wrapperFactory.create(contract);
@@ -320,7 +331,7 @@ public class CompetenceManager {
       if (wrContract.isLastInMonth(month, year)) {
 
         Optional<ContractMonthRecap> recap =
-            wrContract.getContractMonthRecap(new YearMonth(year, month));
+            wrContract.getContractMonthRecap(YearMonth.of(year, month));
         if (recap.isPresent()) {
           /*
            * FIXME: in realtà bisogna controllare che la persona nell'arco
@@ -370,7 +381,7 @@ public class CompetenceManager {
         //Caso Reperibilità:
         if (StringUtils.containsIgnoreCase(comp.competenceCode.competenceCodeGroup.label,
             "reperibili")) {
-          if (!servicesActivated(comp.person.office)) {
+          if (!servicesActivated(comp.person.getOffice())) {
             result = Messages.get("CompManager.notConfigured");
             return result;
           }
@@ -435,7 +446,8 @@ public class CompetenceManager {
    */
   public void saveCompetence(Competence competence, Integer value) {
     competence.valueApproved = value;
-    competence.save();
+    emp.get().merge(competence);
+    //competence.save();
     log.debug("Salvata la competenza {} con il nuovo valore {}", competence, value);
   }
 
@@ -454,8 +466,8 @@ public class CompetenceManager {
         ? reperibilityDao.getReperibilityTypeByOffice(
             office, Optional.ofNullable(false)).size()
             : 0;
-    return numbers * (DateUtility.endOfMonth(LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1)
-        .dayOfMonth().getMaximumValue()));
+    return numbers * 
+        (DateUtility.endOfMonth(LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1))).getDayOfMonth();
   }
 
   /**
@@ -589,7 +601,7 @@ public class CompetenceManager {
       });
     } else {
       pccList.forEach(item -> {
-        if (!codeListIds.contains(item.competenceCode.id)) {
+        if (!codeListIds.contains(item.competenceCode.getId())) {
           codeToRemove.add(item.competenceCode);
         }
       });
@@ -624,23 +636,25 @@ public class CompetenceManager {
         boolean found = false;
         while (counter < pccList.size() && found == false) {
           DateInterval interval = null;
-          if (pccList.get(counter).endDate != null) {            
-            interval = new DateInterval(pccList.get(counter).beginDate, 
-                pccList.get(counter).endDate);
+          if (pccList.get(counter).getEndDate() != null) {
+            interval = new DateInterval(pccList.get(counter).getBeginDate(),
+                pccList.get(counter).getEndDate());
           } else {
-            interval = DateInterval.withBegin(pccList.get(counter).beginDate, 
+            interval = DateInterval.withBegin(pccList.get(counter).getBeginDate(),
                 Optional.<LocalDate>empty());
           }
 
           if (DateUtility.isDateIntoInterval(date, interval)) {
             if (temp == null) {
-              pccList.get(counter).endDate = null;
-              pccList.get(counter).beginDate = date;
-              pccList.get(counter).save();
+              pccList.get(counter).setEndDate(null);
+              pccList.get(counter).setBeginDate(date);
+              emp.get().merge(pccList.get(counter));
+              //pccList.get(counter).save();
             } else {
-              pccList.get(counter).beginDate = date;
-              pccList.get(counter).endDate = temp.beginDate.minusDays(1);
-              pccList.get(counter).save();
+              pccList.get(counter).setBeginDate(date);
+              pccList.get(counter).setEndDate(temp.getBeginDate().minusDays(1));
+              emp.get().merge(pccList.get(counter));
+              //pccList.get(counter).save();
             }
 
             found = true;
@@ -651,26 +665,26 @@ public class CompetenceManager {
           PersonCompetenceCodes pccRecent = pccList.get(0);
           PersonCompetenceCodes pccAncient = pccList.get(pccList.size() - 1);
           if (pccRecent != pccAncient) {            
-            if (!pccAncient.beginDate.isBefore(date)) {
+            if (!pccAncient.getBeginDate().isBefore(date)) {
               createPersonCompetenceCode(person, date, 
-                  Optional.ofNullable(pccAncient.beginDate.minusDays(1)), item);
-            } else if (!pccRecent.beginDate.isAfter(date)) {
+                  Optional.ofNullable(pccAncient.getBeginDate().minusDays(1)), item);
+            } else if (!pccRecent.getBeginDate().isAfter(date)) {
               createPersonCompetenceCode(person, date, Optional.<LocalDate>empty(), item);
             } else {
               Optional<PersonCompetenceCodes> pcc = 
                   competenceCodeDao.getNearFuture(person, item, date);
               if (pcc.isPresent()) {
                 createPersonCompetenceCode(person, date, 
-                    Optional.ofNullable(pcc.get().beginDate.minusDays(1)), item);
+                    Optional.ofNullable(pcc.get().getBeginDate().minusDays(1)), item);
               }
             }            
           } else {
             // esiste un solo personcompetencecodes 
-            if (!pccRecent.beginDate.isAfter(date) 
-                && (pccRecent.endDate == null || pccRecent.endDate.isAfter(date))) {
+            if (!pccRecent.getBeginDate().isAfter(date) 
+                && (pccRecent.getEndDate() == null || pccRecent.getEndDate().isAfter(date))) {
               log.debug("Si intende creare un personCompetenceCode sovrascrivendo "
                   + "la data di inizio di uno già esistente.");
-            } else if (pccRecent.beginDate.isAfter(date)) {
+            } else if (pccRecent.getBeginDate().isAfter(date)) {
               updatePersonCompetenceCode(pccRecent, Optional.ofNullable(date), 
                   Optional.<LocalDate>empty());
             } else if (pccRecent.getEndDate() != null && !pccRecent.getEndDate().isAfter(date)) {
@@ -692,18 +706,21 @@ public class CompetenceManager {
       if (pcc.isPresent()) {
 
         if (pcc.get().getBeginDate().getMonth().equals(date.getMonth())) {
-          pcc.get().delete();
+          emp.get().remove(pcc.get());
+          //pcc.get().delete();
         } else {
           pcc.get().setEndDate(endMonth);
-          pcc.get().save();
+          emp.get().merge(pcc.get());
+          //pcc.get().save();
         }
 
         if (item.code.equals("T1") || item.code.equals("T2") || item.code.equals("T3")) {
           PersonShift personShift = 
-              personShiftDayDao.getPersonShiftByPerson(pcc.get().person, pcc.get().beginDate);
+              personShiftDayDao.getPersonShiftByPerson(pcc.get().person, pcc.get().getBeginDate());
           if (personShift != null) {
             personShift.setEndDate(endMonth);
-            personShift.save();
+            emp.get().merge(personShift);
+            //personShift.save();
           } else {
             log.warn("Non è presente in tabella person_shift l'utente {}", person.fullName());
           }
@@ -732,7 +749,8 @@ public class CompetenceManager {
     psst.setJolly(jolly);
     psst.setPersonShift(person);
     psst.setEndDate(null);
-    psst.save();
+    emp.get().persist(psst);
+    //psst.save();
   }
 
   /**
@@ -745,11 +763,11 @@ public class CompetenceManager {
   public void persistPersonReperibilityType(Person person, LocalDate beginDate, 
       PersonReperibilityType type) {
     PersonReperibility rep = new PersonReperibility();
-    rep.person = person;
-    rep.startDate = beginDate;
-    rep.personReperibilityType = type;
-    rep.save();
-
+    rep.setPerson(person);
+    rep.setStartDate(beginDate);
+    rep.setPersonReperibilityType(type);
+    emp.get().persist(rep);
+    //rep.save();
   }
 
   /**
@@ -810,6 +828,8 @@ public class CompetenceManager {
    */
   public List<ShiftTimeTableDto> convertFromShiftTimeTable(List<ShiftTimeTable> list) {
     final String stamping_format = "HH:mm";
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern(stamping_format);
+    
     List<ShiftTimeTableDto> dtoList = list.stream().map(shiftTimeTable -> {
       ShiftTimeTableDto dto = new ShiftTimeTableDto();
       if (shiftTimeTable.office != null) {
@@ -817,25 +837,24 @@ public class CompetenceManager {
       } else {
         dto.isOfficeTimeTable = false;
       }
-      dto.id = shiftTimeTable.id;
+      dto.id = shiftTimeTable.getId();
       dto.calculationType = shiftTimeTable.calculationType.getName();
-      dto.endAfternoon = shiftTimeTable.endAfternoon.toString(stamping_format);
-      dto.endAfternoonLunchTime = shiftTimeTable.endAfternoonLunchTime.toString(stamping_format);
-      dto.endMorning = shiftTimeTable.endMorning.toString(stamping_format);
-      dto.endMorningLunchTime = shiftTimeTable.endMorningLunchTime.toString(stamping_format);
-      dto.startAfternoon = shiftTimeTable.startAfternoon.toString(stamping_format);
-      dto.startAfternoonLunchTime = shiftTimeTable
-          .startAfternoonLunchTime.toString(stamping_format);
-      dto.startMorning = shiftTimeTable.startMorning.toString(stamping_format);
-      dto.startMorningLunchTime = shiftTimeTable.startMorningLunchTime.toString(stamping_format);
+      dto.endAfternoon = dtf.format(shiftTimeTable.endAfternoon);
+      dto.endAfternoonLunchTime = dtf.format(shiftTimeTable.endAfternoonLunchTime);
+      dto.endMorning = dtf.format(shiftTimeTable.endMorning);
+      dto.endMorningLunchTime = dtf.format(shiftTimeTable.endMorningLunchTime);
+      dto.startAfternoon = dtf.format(shiftTimeTable.startAfternoon);
+      dto.startAfternoonLunchTime = dtf.format(shiftTimeTable.startAfternoonLunchTime);
+      dto.startMorning = dtf.format(shiftTimeTable.startMorning);
+      dto.startMorningLunchTime = dtf.format(shiftTimeTable.startMorningLunchTime);
       dto.startEvening = shiftTimeTable.startEvening != null 
-          ? shiftTimeTable.startEvening.toString(stamping_format) : "";
+          ? dtf.format(shiftTimeTable.startEvening) : "";
       dto.endEvening = shiftTimeTable.endEvening != null 
-              ? shiftTimeTable.endEvening.toString(stamping_format) : "";
+              ? dtf.format(shiftTimeTable.endEvening) : "";
       dto.startEveningLunchTime = shiftTimeTable.startEveningLunchTime != null 
-              ? shiftTimeTable.startEveningLunchTime.toString(stamping_format) : "";
+              ? dtf.format(shiftTimeTable.startEveningLunchTime) : "";
       dto.endEveningLunchTime = shiftTimeTable.endEveningLunchTime != null 
-              ? shiftTimeTable.endEveningLunchTime.toString(stamping_format) : "";
+              ? dtf.format(shiftTimeTable.endEveningLunchTime) : "";
       return dto;
     }).collect(Collectors.toList());
     return dtoList;
@@ -894,8 +913,8 @@ public class CompetenceManager {
       st.entranceTolerance = service.entranceTolerance;
       st.maxToleranceAllowed = service.maxToleranceAllowed;
     }
-
-    st.save();
+    emp.get().persist(st);
+    //st.save();
   }
 
   /**
@@ -941,8 +960,8 @@ public class CompetenceManager {
     } else {
       stt.endEveningLunchTime = null; 
     }
-
-    stt.save();
+    emp.get().persist(stt);
+    //stt.save();
   }
 
 
@@ -1036,7 +1055,8 @@ public class CompetenceManager {
         .getCompetence(person, yearMonth.getYear(), yearMonth.getMonthValue(), code);
     if (competence.isPresent()) {
       competence.get().valueApproved = value;
-      competence.get().save();
+      emp.get().merge(competence.get());
+      //competence.get().save();
     } else {
       Competence comp = new Competence();
       comp.competenceCode = code;
@@ -1044,7 +1064,8 @@ public class CompetenceManager {
       comp.year = yearMonth.getYear();
       comp.month = yearMonth.getMonthValue();
       comp.valueApproved = value;
-      comp.save();
+      emp.get().persist(comp);
+      //comp.save();
     }
     log.debug("Assegnata competenza a {}", person.fullName());
   }
@@ -1067,7 +1088,8 @@ public class CompetenceManager {
       personShift.setDescription("Turni di " + person.fullName());
       personShift.setDisabled(false);
       personShift.setBeginDate(date);
-      personShift.save();
+      emp.get().persist(personShift);
+      //personShift.save();
       //TODO: capire come gestire eventuali buchi nel tempo...
       //es.: personShift abilitato a gennaio, non presente a febbraio, abilitato a marzo
     }
@@ -1089,8 +1111,8 @@ public class CompetenceManager {
     if (dateEnd.isPresent()) {
       newPcc.setEndDate(dateEnd.get());
     }
-
-    newPcc.save();
+    emp.get().persist(newPcc);
+    //newPcc.save();
   }
 
   /**
@@ -1108,7 +1130,8 @@ public class CompetenceManager {
     if (endDate.isPresent()) {
       pcc.setEndDate(endDate.get());
     }
-    pcc.save();
+    emp.get().merge(pcc);
+    //pcc.save();
   }
 
 
