@@ -23,12 +23,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao per l'accesso alle informazioni dei Role.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class RoleDao extends DaoBase {
 
   @Inject

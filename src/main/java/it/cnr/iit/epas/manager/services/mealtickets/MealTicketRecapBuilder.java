@@ -23,12 +23,14 @@ import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 /**
  * Costruisce il recap dei buoni pasto.
  *
  * @author Alessandro Martelli
  */
+@Component
 public class MealTicketRecapBuilder {
 
   /**

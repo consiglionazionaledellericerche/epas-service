@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -67,7 +68,7 @@ public class ContractMonthRecapManager {
   @Inject
   private AbsenceDao absenceDao;
   @Inject
-  private IWrapperFactory wrapperFactory;
+  private Provider<IWrapperFactory> wrapperFactory;
   @Inject
   private ConfigurationManager configurationManager;
 
@@ -159,7 +160,7 @@ public class ContractMonthRecapManager {
 
     //////////////////////////////////////////////////////////////////////////
     //Inizio Algoritmo
-    cmr.wrContract = wrapperFactory.create(contract);
+    cmr.wrContract = wrapperFactory.get().create(contract);
     cmr.person = contract.person;
     cmr.qualifica = cmr.person.getQualification().getQualification();
 
@@ -212,7 +213,7 @@ public class ContractMonthRecapManager {
     DateInterval validDataForMealTickets = buildIntervalForMealTicket(yearMonth,
         contract);
 
-    IWrapperContract wrContract = wrapperFactory.create(cmr.contract);
+    IWrapperContract wrContract = wrapperFactory.get().create(cmr.contract);
 
     setMealTicketsInformation(cmr, validDataForMealTickets);
     setPersonDayInformation(cmr, validDataForPersonDay, otherCompensatoryRest);
@@ -262,7 +263,7 @@ public class ContractMonthRecapManager {
         new DateInterval(firstDayOfRequestedMonth, calcolaFinoA);
 
     DateInterval contractDatabaseInterval =
-        wrapperFactory.create(contract).getContractDatabaseInterval();
+        wrapperFactory.get().create(contract).getContractDatabaseInterval();
 
     LocalDate today = LocalDate.now();
 
@@ -310,7 +311,7 @@ public class ContractMonthRecapManager {
       Contract contract) {
 
     DateInterval contractDatabaseInterval =
-        wrapperFactory.create(contract).getContractDatabaseInterval();
+        wrapperFactory.get().create(contract).getContractDatabaseInterval();
 
     LocalDate today = LocalDate.now();
 
@@ -370,7 +371,7 @@ public class ContractMonthRecapManager {
 
     //Filtro per dati nel database, estremi del contratto, inizio utilizzo buoni pasto
     DateInterval contractIntervalForMealTicket =
-        wrapperFactory.create(contract).getContractDatabaseIntervalForMealTicket();
+        wrapperFactory.get().create(contract).getContractDatabaseIntervalForMealTicket();
     DateInterval mealTicketIntervalInOffice =
         DateInterval.withBegin(dateStartMealTicketInOffice, Optional.<LocalDate>empty());
 
@@ -544,7 +545,7 @@ public class ContractMonthRecapManager {
               wrContract.getValue().getContractWorkingTimeType()) {
 
             if (DateUtility.isDateIntoInterval(date,
-                wrapperFactory.create(cwtt).getDateInverval())) {
+                wrapperFactory.get().create(cwtt).getDateInverval())) {
 
               WorkingTimeTypeDay wttd = cwtt.workingTimeType.getWorkingTimeTypeDays()
                   .get(date.getDayOfWeek().getValue() - 1);
@@ -563,7 +564,7 @@ public class ContractMonthRecapManager {
           absenceDao.absenceInPeriod(cmr.person, begin, end, "91");
 
       for (Absence abs : riposi) {
-        cmr.riposiCompensativiMinuti += wrapperFactory.create(abs.personDay)
+        cmr.riposiCompensativiMinuti += wrapperFactory.get().create(abs.personDay)
             .getWorkingTimeTypeDay().get().workingTime;
         cmr.recoveryDayUsed++;
       }

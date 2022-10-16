@@ -39,6 +39,7 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.stereotype.Component;
 
 /**
  * Manager per user.
@@ -47,6 +48,7 @@ import org.apache.commons.codec.binary.Hex;
  * @since 13/10/15
  */
 @Slf4j
+@Component
 public class UserManager {
 
   private final UserDao userDao;

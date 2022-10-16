@@ -10,6 +10,8 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -85,5 +87,4 @@ public class WrapperFactory implements IWrapperFactory {
   public IWrapperContractWorkingTimeType create(ContractWorkingTimeType cwtt) {
     return wrapperContractWorkingTimeType.setValue(cwtt);
   }
-
 }

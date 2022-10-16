@@ -61,7 +61,7 @@ public class PersonManager {
   private final ContractDao contractDao;
   private final PersonDayDao personDayDao;
   public final PersonDayManager personDayManager;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactory;
   private final AbsenceDao absenceDao;
   private final OfficeManager officeManager;
   private final UserManager userManager;
@@ -81,7 +81,7 @@ public class PersonManager {
       PersonDayDao personDayDao,
       AbsenceDao absenceDao,
       PersonDayManager personDayManager,
-      IWrapperFactory wrapperFactory,
+      Provider<IWrapperFactory> wrapperFactory,
       UsersRolesOfficesDao uroDao,
       OfficeManager officeManager,
       UserManager userManager, 
@@ -193,7 +193,7 @@ public class PersonManager {
       if (!find) {
         continue;
       }
-      IWrapperPersonDay day = wrapperFactory.create(pd);
+      IWrapperPersonDay day = wrapperFactory.get().create(pd);
       boolean fixed = day.isFixedTimeAtWork();
       
       if (fixed && !personDayManager.isAllDayAbsences(pd)) {

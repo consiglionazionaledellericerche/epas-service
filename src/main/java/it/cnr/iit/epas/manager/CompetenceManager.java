@@ -95,7 +95,7 @@ public class CompetenceManager {
   private final OfficeDao officeDao;
   private final PersonDayDao personDayDao;
   private final CompetenceDao competenceDao;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactory;
   private final PersonDayManager personDayManager;
   private final PersonReperibilityDayDao reperibilityDao;
   private final PersonStampingRecapFactory stampingsRecapFactory;
@@ -117,7 +117,7 @@ public class CompetenceManager {
   @Inject
   public CompetenceManager(CompetenceCodeDao competenceCodeDao,
       OfficeDao officeDao, CompetenceDao competenceDao,
-      PersonDayDao personDayDao, IWrapperFactory wrapperFactory,
+      PersonDayDao personDayDao, Provider<IWrapperFactory> wrapperFactory,
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
       PersonDao personDao,
@@ -321,12 +321,12 @@ public class CompetenceManager {
   public Integer positiveResidualInMonth(Person person, int year, int month) {
 
     List<Contract> monthContracts = wrapperFactory
-        .create(person).orderedMonthContracts(year, month);
+        .get().create(person).orderedMonthContracts(year, month);
     int differenceForShift = 0;
     List<PersonDay> pdList = personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
     for (Contract contract : monthContracts) {
 
-      IWrapperContract wrContract = wrapperFactory.create(contract);
+      IWrapperContract wrContract = wrapperFactory.get().create(contract);
 
       if (wrContract.isLastInMonth(month, year)) {
 

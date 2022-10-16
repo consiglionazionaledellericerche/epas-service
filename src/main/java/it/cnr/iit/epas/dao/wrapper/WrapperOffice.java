@@ -26,12 +26,14 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 /**
  * Wrapper sede.
  *
  * @author Alessandro Martelli
  */
+@Component
 public class WrapperOffice implements IWrapperOffice {
 
   private Office value;

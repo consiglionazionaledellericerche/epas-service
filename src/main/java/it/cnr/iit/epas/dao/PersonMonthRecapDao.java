@@ -30,12 +30,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao relativo ai PersonMonthRecap.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class PersonMonthRecapDao extends DaoBase {
 
   @Inject

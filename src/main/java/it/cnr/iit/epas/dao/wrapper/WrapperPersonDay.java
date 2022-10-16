@@ -33,6 +33,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
   private PersonDay value;
   private final ContractDao contractDao;
   private final PersonDayDao personDayDao;
-  private final IWrapperFactory factory;
+  private final Provider<IWrapperFactory> factory;
   private Optional<PersonDay> previousForProgressive = null;
   private Optional<PersonDay> previousForNightStamp = null;
   private Optional<Contract> personDayContract = null;
@@ -58,7 +59,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
 
   @Inject
   WrapperPersonDay(ContractDao contractDao,
-                   PersonDayDao personDayDao, IWrapperFactory factory) {
+                   PersonDayDao personDayDao, Provider<IWrapperFactory> factory) {
     this.contractDao = contractDao;
     this.personDayDao = personDayDao;
     this.factory = factory;
@@ -140,7 +141,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
     //Non stesso contratto
     // TODO: (equivalente a caso this.value.equals(beginDate)
     if (!DateUtility.isDateIntoInterval(candidate.getDate(),
-            factory.create(this.getPersonDayContract().get()).getContractDateInterval())) {
+            factory.get().create(this.getPersonDayContract().get()).getContractDateInterval())) {
       return;
     }
     this.previousForProgressive = Optional.ofNullable(candidate);
@@ -270,7 +271,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
               this.getPersonDayContract().get().getContractWorkingTimeType()) {
 
         if (DateUtility.isDateIntoInterval(this.value.getDate(),
-                factory.create(cwtt).getDateInverval())) {
+                factory.get().create(cwtt).getDateInverval())) {
 
           WorkingTimeTypeDay wttd = cwtt.workingTimeType.getWorkingTimeTypeDays()
                   .get(this.value.getDate().getDayOfWeek().getValue() - 1);

@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dao;
 
 import com.google.common.base.Splitter;
@@ -35,12 +34,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao per l'accesso alle informazioni dei BadgeReader.
  *
  * @author Alessandro Martelli
  */
+@Component
 public class BadgeReaderDao extends DaoBase {
 
   public static final Splitter TOKEN_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings();

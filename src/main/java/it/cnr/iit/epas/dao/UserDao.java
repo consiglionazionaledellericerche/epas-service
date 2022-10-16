@@ -43,12 +43,14 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 /**
  * DAO per gli User.
  *
  * @author Cristian Lucchesi
  */
+@Component
 public class UserDao extends DaoBase {
 
   @Inject

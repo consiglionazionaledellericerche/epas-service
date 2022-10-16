@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.models.Contract;

@@ -84,7 +84,7 @@ public class ConsistencyManager {
   private final PersonDayManager personDayManager;
   private final ContractMonthRecapManager contractMonthRecapManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactory;
   private final PersonDayDao personDayDao;
   private final PersonShiftDayDao personShiftDayDao;
   private final StampTypeManager stampTypeManager;
@@ -125,7 +125,7 @@ public class ConsistencyManager {
       //ShiftManager2 shiftManager2,
       //AbsenceService absenceService,
       AbsenceComponentDao absenceComponentDao,
-      IWrapperFactory wrapperFactory, AbsenceDao absenceDao,
+      Provider<IWrapperFactory> wrapperFactory, AbsenceDao absenceDao,
       Provider<EntityManager> emp) {
 
     //this.secureManager = secureManager;
@@ -260,7 +260,7 @@ public class ConsistencyManager {
    */
   public void updateContractSituation(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
     updatePersonSituationEngine(contract.person.getId(), from, Optional.ofNullable(to), false);
   }
 
@@ -272,7 +272,7 @@ public class ConsistencyManager {
    */
   public void updateContractRecaps(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
     updatePersonSituationEngine(contract.person.getId(), from, Optional.ofNullable(to), true);
   }
 
@@ -326,7 +326,7 @@ public class ConsistencyManager {
       return;
     }
 
-    IWrapperPerson wrPerson = wrapperFactory.create(person);
+    IWrapperPerson wrPerson = wrapperFactory.get().create(person);
 
     // Gli intervalli di ricalcolo dei person day.
     LocalDate lastPersonDayToCompute = LocalDate.now();
@@ -364,7 +364,7 @@ public class ConsistencyManager {
           personDay = new PersonDay(person, date);
         }
 
-        IWrapperPersonDay wrPersonDay = wrapperFactory.create(personDay);
+        IWrapperPersonDay wrPersonDay = wrapperFactory.get().create(personDay);
 
         if (previous != null) {
           // set previous for progressive
@@ -551,7 +551,7 @@ public class ConsistencyManager {
 
     PersonDay previous = pd.getPreviousForNightStamp().get();
 
-    Stamping lastStampingPreviousDay = wrapperFactory.create(previous).getLastStamping();
+    Stamping lastStampingPreviousDay = wrapperFactory.get().create(previous).getLastStamping();
 
     if (lastStampingPreviousDay != null && lastStampingPreviousDay.isIn()) {
 
@@ -584,7 +584,7 @@ public class ConsistencyManager {
         emp.get().merge(previous);
         //previous.save();
 
-        populatePersonDay(wrapperFactory.create(previous));
+        populatePersonDay(wrapperFactory.get().create(previous));
 
         // timbratura apertura giorno attuale
         Stamping enterStamp =
@@ -614,7 +614,7 @@ public class ConsistencyManager {
     
     for (Contract contract : person.getContracts()) {
 
-      IWrapperContract wrContract = wrapperFactory.create(contract);
+      IWrapperContract wrContract = wrapperFactory.get().create(contract);
       DateInterval contractDateInterval = wrContract.getContractDateInterval();
       YearMonth endContractYearMonth = YearMonth.from(contractDateInterval.getEnd());
 

@@ -63,7 +63,7 @@ public class WrapperPerson implements IWrapperPerson {
   private final PersonDao personDao;
   private final PersonDayDao personDayDao;
   private final PersonMonthRecapDao personMonthRecapDao;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactory;
   private final CompetenceDao competenceDao;
   private final Provider<EntityManager> emp;
 
@@ -84,7 +84,7 @@ public class WrapperPerson implements IWrapperPerson {
       PersonManager personManager,
       PersonDao personDao, PersonMonthRecapDao personMonthRecapDao,
       PersonDayDao personDayDao, CompetenceDao competenceDao,
-      IWrapperFactory wrapperFactory, Provider<EntityManager> emp) {
+      Provider<IWrapperFactory> wrapperFactory, Provider<EntityManager> emp) {
     this.contractDao = contractDao;
     //this.competenceManager = competenceManager;
     this.personManager = personManager;
@@ -151,7 +151,7 @@ public class WrapperPerson implements IWrapperPerson {
 
     for (Contract contract : orderedContracts()) {
       if (DateUtility.intervalIntersection(monthInterval, wrapperFactory
-          .create(contract).getContractDateInterval()) != null) {
+          .get().create(contract).getContractDateInterval()) != null) {
         contracts.add(contract);
       }
     }
@@ -167,7 +167,7 @@ public class WrapperPerson implements IWrapperPerson {
 
     for (Contract contract : orderedContracts()) {
       if (DateUtility.intervalIntersection(yearInterval, wrapperFactory
-          .create(contract).getContractDateInterval()) != null) {
+          .get().create(contract).getContractDateInterval()) != null) {
         contracts.add(contract);
       }
     }
@@ -432,7 +432,7 @@ public class WrapperPerson implements IWrapperPerson {
   public boolean currentContractInitializationMissing() {
     getCurrentContract();
     if (currentContract.isPresent()) {
-      return wrapperFactory.create(currentContract.get()).initializationMissing();
+      return wrapperFactory.get().create(currentContract.get()).initializationMissing();
     }
     return false;
   }
@@ -442,7 +442,7 @@ public class WrapperPerson implements IWrapperPerson {
     getCurrentContract();
     if (currentContract.isPresent()) {
       YearMonth now = YearMonth.from(LocalDate.now());
-      return wrapperFactory.create(currentContract.get())
+      return wrapperFactory.get().create(currentContract.get())
           .monthRecapMissing(now);
     }
     return false;

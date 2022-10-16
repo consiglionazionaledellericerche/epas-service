@@ -37,10 +37,12 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * DAO per UsersRolesOffices.
  */
+@Component
 public class UsersRolesOfficesDao extends DaoBase {
 
   @Inject

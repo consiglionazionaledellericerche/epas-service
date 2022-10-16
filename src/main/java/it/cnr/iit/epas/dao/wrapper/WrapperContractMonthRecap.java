@@ -20,6 +20,7 @@ import it.cnr.iit.epas.models.ContractMonthRecap;
 import java.time.YearMonth;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,12 +32,12 @@ import org.springframework.stereotype.Component;
 public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
   private ContractMonthRecap value;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactoryProvider;
 
   @Inject
   WrapperContractMonthRecap(
-      IWrapperFactory wrapperFactory) {
-    this.wrapperFactory = wrapperFactory;
+      Provider<IWrapperFactory> wrapperFactoryProvider) {
+    this.wrapperFactoryProvider = wrapperFactoryProvider;
   }
 
   public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr) {
@@ -49,10 +50,10 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
     return value;
   }
 
-  @Override
-  public IWrapperContract getContract() {
-    return wrapperFactory.create(value.getContract());
-  }
+//  @Override
+//  public IWrapperContract getContract() {
+//    return wrapperFactory.create(value.getContract());
+//  }
 
 
   /**
@@ -60,11 +61,11 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
    */
   @Override
   public Optional<ContractMonthRecap> getPreviousRecap() {
-    return wrapperFactory.create(value.contract)
+    return wrapperFactoryProvider.get().create(value.getContract())
               .getContractMonthRecap(YearMonth.of(value.year, value.month)
                       .minusMonths(1));
   }
-  
+
   /**
    * Il recap precedente se presente.
    */
@@ -72,7 +73,7 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
   public Optional<ContractMonthRecap> getPreviousRecapInYear() {
     
     if (this.value.month != 1) {
-      return wrapperFactory.create(value.contract)
+      return wrapperFactoryProvider.get().create(value.contract)
               .getContractMonthRecap(YearMonth.of(value.year, value.month)
                       .minusMonths(1));
     }

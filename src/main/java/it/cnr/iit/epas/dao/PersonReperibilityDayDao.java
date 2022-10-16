@@ -32,12 +32,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao per i PersonReperibilityDay.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class PersonReperibilityDayDao extends DaoBase {
 
   @Inject

@@ -28,7 +28,7 @@ public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthR
 
   public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr);
 
-  public IWrapperContract getContract();
+  //public IWrapperContract getContract();
 
   public Optional<ContractMonthRecap> getPreviousRecap();
 

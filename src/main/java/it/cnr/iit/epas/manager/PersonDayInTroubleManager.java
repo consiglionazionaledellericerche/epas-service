@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonDayInTroubleManager {
 
-  private final IWrapperFactory factory;
+  private final Provider<IWrapperFactory> factory;
   private final PersonDayInTroubleDao personDayInTroubleDao;
   private final ConfigurationManager configurationManager;
   private final Provider<EntityManager> emp;
@@ -67,7 +67,7 @@ public class PersonDayInTroubleManager {
   public PersonDayInTroubleManager(
       PersonDayInTroubleDao personDayInTroubleDao,
       ConfigurationManager configurationManager,
-      IWrapperFactory factory,
+      Provider<IWrapperFactory> factory,
       WrapperModelFunctionFactory wrapperModelFunctionFactory,
       Provider<EntityManager> emp) {
 
@@ -139,14 +139,14 @@ public class PersonDayInTroubleManager {
 
     for (Person person : personList) {
 
-      final Optional<Contract> currentContract = factory.create(person).getCurrentContract();
+      final Optional<Contract> currentContract = factory.get().create(person).getCurrentContract();
       if (!currentContract.isPresent()) {
         log.error("Nessun contratto trovato attivo alla data odierna per {} - {} ", person,
             person.getOffice());
         continue;
       }
       DateInterval intervalToCheck = DateUtility.intervalIntersection(
-          factory.create(currentContract.get()).getContractDatabaseInterval(),
+          factory.get().create(currentContract.get()).getContractDatabaseInterval(),
           new DateInterval(fromDate, toDate));
       if (intervalToCheck == null) {
         continue;

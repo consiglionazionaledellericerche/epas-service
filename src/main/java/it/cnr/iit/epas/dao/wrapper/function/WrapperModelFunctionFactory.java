@@ -31,6 +31,7 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,10 +40,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperModelFunctionFactory {
 
-  private final IWrapperFactory factory;
+  private final Provider<IWrapperFactory> factory;
 
   @Inject
-  WrapperModelFunctionFactory(IWrapperFactory factory) {
+  WrapperModelFunctionFactory(Provider<IWrapperFactory> factory) {
     this.factory = factory;
   }
 
@@ -57,7 +58,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperWorkingTimeType apply(WorkingTimeType input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }
@@ -72,7 +73,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperTimeSlot apply(TimeSlot input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }
@@ -87,7 +88,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperPerson apply(Person input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }
@@ -102,7 +103,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperOffice apply(Office input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }
@@ -118,7 +119,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContract apply(Contract input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }
@@ -134,7 +135,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContractMonthRecap apply(ContractMonthRecap input) {
-        return factory.create(input);
+        return factory.get().create(input);
       }
     };
   }

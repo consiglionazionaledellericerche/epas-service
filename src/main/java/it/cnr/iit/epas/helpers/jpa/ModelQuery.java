@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.helpers.jpa;
 
 import com.google.common.base.Function;
@@ -22,10 +21,11 @@ import com.querydsl.core.QueryModifiers;
 import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import java.util.List;
-import javax.inject.Inject;
-import javax.persistence.EntityManagerFactory;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,13 +37,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class ModelQuery {
 
-  @Inject
-  protected JPQLQueryFactory query;
-  @Inject
-  protected EntityManagerFactory entityManagerFactory;
-  
+  protected final JPQLQueryFactory queryFactory;
+  protected final Provider<EntityManager> emp;
+
+  public ModelQuery(Provider<EntityManager> emp) {
+   this.emp = emp;
+   this.queryFactory = new JPAQueryFactory(emp.get());
+ }
+
  public JPQLQuery<?> createQuery() {
-    return query.query();
+    return queryFactory.query();
   }
 
    /**
@@ -56,7 +59,7 @@ public class ModelQuery {
   }
 
   public boolean isPersistent(BaseEntity model) {
-    return entityManagerFactory.createEntityManager().contains(model);
+    return emp.get().contains(model);
   }
 
   public boolean isNotEmpty(BaseEntity model) {
@@ -78,7 +81,7 @@ public class ModelQuery {
    * @return la funzione per ottenere un oggetto via em.find().
    */
   public <T extends BaseEntity> Function<Integer, T> jpaFind(final Class<T> model) {
-    return id -> entityManagerFactory.createEntityManager().find(model, id);
+    return id -> emp.get().find(model, id);
   }
 
   /**

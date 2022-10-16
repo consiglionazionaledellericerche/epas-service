@@ -42,17 +42,19 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * Manager per Contract.
  *
  * @author alessandro
  */
-@Slf4j  
+@Slf4j
+@Component
 public class ContractManager {
 
   private final ConsistencyManager consistencyManager;
-  private final IWrapperFactory wrapperFactory;
+  private final Provider<IWrapperFactory> wrapperFactory;
   private final PeriodManager periodManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
   private final WorkingTimeTypeDao workingTimeTypeDao;
@@ -72,7 +74,7 @@ public class ContractManager {
       final ConsistencyManager consistencyManager,
       final PeriodManager periodManager, final PersonDayInTroubleManager personDayInTroubleManager, 
       final WorkingTimeTypeDao workingTimeTypeDao,
-      final IWrapperFactory wrapperFactory, final ContractDao contractDao,
+      final Provider<IWrapperFactory> wrapperFactory, final ContractDao contractDao,
       Provider<EntityManager> emp) {
 
     this.consistencyManager = consistencyManager;
@@ -92,7 +94,7 @@ public class ContractManager {
    */
   public final boolean isContractNotOverlapping(final Contract contract) {
 
-    DateInterval contractInterval = wrapperFactory.create(contract).getContractDateInterval();
+    DateInterval contractInterval = wrapperFactory.get().create(contract).getContractDateInterval();
     for (Contract c : contract.person.getContracts()) {
 
       if (contract.getId() != null && c.getId().equals(contract.getId())) {
@@ -100,7 +102,7 @@ public class ContractManager {
       }
 
       if (DateUtility.intervalIntersection(contractInterval,
-          wrapperFactory.create(c).getContractDateInterval()) != null) {
+          wrapperFactory.get().create(c).getContractDateInterval()) != null) {
         log.debug("Il contratto {} si sovrappone con il contratto {}", contract, c);
         return false;
       }
@@ -252,7 +254,7 @@ public class ContractManager {
   public final void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
       final boolean newContract, final boolean onlyRecaps) {
 
-    IWrapperContract wrContract = wrapperFactory.create(contract);
+    IWrapperContract wrContract = wrapperFactory.get().create(contract);
 
     LocalDate startDate = dateFrom
         .orElse(wrContract.getContractDatabaseInterval().getBegin());
@@ -457,7 +459,7 @@ public class ContractManager {
     VacationPeriod twentysixplus4 = null;
     VacationPeriod twentyeightplus4 = null;
     VacationPeriod other = null;
-    IWrapperContract wrappedContract = wrapperFactory.create(contract);
+    IWrapperContract wrappedContract = wrapperFactory.get().create(contract);
     List<VacationPeriod> vpList = previousContract.getVacationPeriods();    
     VacationPeriod vp = null;
     for (VacationPeriod vpPrevious : vpList) {
@@ -541,7 +543,7 @@ public class ContractManager {
    * Verifica se è possibile associare un precedente contratto al contratto attuale. 
    */
   public boolean canAppyPreviousContractLink(Contract contract) {
-    IWrapperPerson wrapperPerson = wrapperFactory.create(contract.person);
+    IWrapperPerson wrapperPerson = wrapperFactory.get().create(contract.person);
     Optional<Contract> previousContract = wrapperPerson.getPreviousContract();
     return previousContract.isPresent();
   }
@@ -560,7 +562,7 @@ public class ContractManager {
     //Controllo se il contratto deve essere linkato al precedente...
     if (linkedToPreviousContract) {
       if (contract.getPreviousContract() == null) {
-        IWrapperPerson wrapperPerson = wrapperFactory.create(contract.person);
+        IWrapperPerson wrapperPerson = wrapperFactory.get().create(contract.person);
         Optional<Contract> previousContract = wrapperPerson.getPreviousContract();
         if (previousContract.isPresent()) {
           contract.setPreviousContract(previousContract.get());          

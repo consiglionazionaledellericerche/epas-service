@@ -18,10 +18,12 @@ package it.cnr.iit.epas.dao.wrapper;
 
 import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.utils.DateInterval;
+import org.springframework.stereotype.Component;
 
 /**
  * Il ContractWorkingTimeType con funzionalità aggiuntive.
  */
+@Component
 public class WrapperContractWorkingTimeType implements IWrapperContractWorkingTimeType {
 
   private ContractWorkingTimeType value;
