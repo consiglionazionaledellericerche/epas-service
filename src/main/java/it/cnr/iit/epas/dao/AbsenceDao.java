@@ -22,9 +22,7 @@ import com.google.inject.Inject;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.helpers.jpa.ModelQuery;
-import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.QPersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
@@ -35,7 +33,6 @@ import it.cnr.iit.epas.models.absences.QAbsenceType;
 import it.cnr.iit.epas.models.absences.QJustifiedType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.models.exports.FrequentAbsenceCode;
-import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,12 +54,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class AbsenceDao extends DaoBase {
 
-  private final IWrapperFactory factory;
+  //private final IWrapperFactory factory;
 
   @Inject
-  AbsenceDao(Provider<EntityManager> emp, IWrapperFactory factory) {
+  AbsenceDao(Provider<EntityManager> emp
+      //, IWrapperFactory factory
+      ) {
     super(emp);
-    this.factory = factory;
+    //this.factory = factory;
   }
 
   /**
@@ -340,30 +339,6 @@ public class AbsenceDao extends DaoBase {
         .orderBy(absence.personDay.person.id.asc(), absence.personDay.date.asc()).fetch();
   }
 
-
-  /**
-   * Ritorna la lista delle assenze nell'intervallo di tempo relative al tipo ab.
-   *
-   * @return la lista di assenze effettuate dal titolare del contratto del tipo ab nell'intervallo
-   *     temporale inter.
-   */
-  public List<Absence> getAbsenceDays(DateInterval inter, Contract contract, AbsenceType ab) {
-
-    DateInterval contractInterInterval =
-        DateUtility.intervalIntersection(inter, factory.create(contract).getContractDateInterval());
-    if (contractInterInterval == null) {
-      return new ArrayList<Absence>();
-    }
-
-    List<Absence> absences =
-        getAbsenceByCodeInPeriod(
-            Optional.ofNullable(contract.person), Optional.ofNullable(ab.getCode()),
-            contractInterInterval.getBegin(), contractInterInterval.getEnd(),
-            Optional.<JustifiedTypeName>empty(), false, true);
-
-    return absences;
-
-  }
 
   /**
    * Ritorna le assenze frequenti nel periodo da from a to.

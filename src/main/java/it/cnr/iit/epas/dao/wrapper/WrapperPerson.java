@@ -19,13 +19,11 @@ package it.cnr.iit.epas.dao.wrapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.CompetenceDao;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.PersonMonthRecapDao;
-import it.cnr.iit.epas.manager.CompetenceManager;
 import it.cnr.iit.epas.manager.PersonManager;
 import it.cnr.iit.epas.models.CertificatedData;
 import it.cnr.iit.epas.models.Certification;
@@ -58,9 +56,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperPerson implements IWrapperPerson {
 
-  private final Person value;
+  private Person value;
   private final ContractDao contractDao;
-  private final CompetenceManager competenceManager;
+  //private final CompetenceManager competenceManager;
   private final PersonManager personManager;
   private final PersonDao personDao;
   private final PersonDayDao personDayDao;
@@ -80,14 +78,15 @@ public class WrapperPerson implements IWrapperPerson {
   private Optional<Boolean> properSynchronized = Optional.empty();
 
   @Inject
-  WrapperPerson(@Assisted Person person, ContractDao contractDao,
-      CompetenceManager competenceManager, PersonManager personManager,
+  WrapperPerson( 
+      ContractDao contractDao,
+      //CompetenceManager competenceManager,
+      PersonManager personManager,
       PersonDao personDao, PersonMonthRecapDao personMonthRecapDao,
       PersonDayDao personDayDao, CompetenceDao competenceDao,
       IWrapperFactory wrapperFactory, Provider<EntityManager> emp) {
-    value = person;
     this.contractDao = contractDao;
-    this.competenceManager = competenceManager;
+    //this.competenceManager = competenceManager;
     this.personManager = personManager;
     this.personDao = personDao;
     this.personMonthRecapDao = personMonthRecapDao;
@@ -102,6 +101,11 @@ public class WrapperPerson implements IWrapperPerson {
     return value;
   }
 
+  public IWrapperPerson setValue(Person person) {
+    this.value = person;
+    return this;
+  }
+  
   @Override
   public boolean isActiveInDay(LocalDate date) {
     for (Contract contract : orderedMonthContracts(date.getYear(), date.getMonthValue())) {
@@ -403,10 +407,12 @@ public class WrapperPerson implements IWrapperPerson {
   /**
    * Il residuo positivo del mese fatto dalla person.
    */
+  
   @Override
   public Integer getPositiveResidualInMonth(int year, int month) {
-
-    return competenceManager.positiveResidualInMonth(value, year, month) / 60;
+    return null;
+  //FIXME: dipendenza circolare da capire come risolvere
+    //return competenceManager.positiveResidualInMonth(value, year, month) / 60;
   }
 
   /**

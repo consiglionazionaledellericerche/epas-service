@@ -23,5 +23,14 @@ import it.cnr.iit.epas.models.CompetenceCode;
  * Interfaccia per l'estensione con Wrapper del CompetenceCode.
  */
 public interface IWrapperCompetenceCode extends IWrapperModel<CompetenceCode> {
-  //Empty Interface
+  
+  public IWrapperCompetenceCode setValue(CompetenceCode cc);
+
+  /**
+   * Il totale delle competenze per quel mese.
+   *
+   * @return il totale per quel mese e quell'anno di ore/giorni relativi a quel codice competenza.
+   */
+  public int totalFromCompetenceCode(int month, int year, Long officeId);
+
 }

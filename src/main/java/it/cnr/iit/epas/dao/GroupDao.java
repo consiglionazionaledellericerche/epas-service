@@ -20,7 +20,6 @@ package it.cnr.iit.epas.dao;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.flows.Group;
@@ -41,8 +40,7 @@ import org.springframework.stereotype.Component;
 public class GroupDao extends DaoBase {
 
   @Inject
-  GroupDao(Provider<EntityManager> emp,
-      IWrapperFactory wrapperFactory) {
+  GroupDao(Provider<EntityManager> emp) {
     super(emp);
   }
 

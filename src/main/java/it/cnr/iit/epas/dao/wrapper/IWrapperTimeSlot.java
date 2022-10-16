@@ -28,6 +28,8 @@ import java.util.List;
  */
 public interface IWrapperTimeSlot extends IWrapperModel<TimeSlot> {
 
+  public IWrapperTimeSlot setValue(TimeSlot ts);
+
   /**
    * I contratti attivi che attualmente hanno impostato il TimeSlot.
    */

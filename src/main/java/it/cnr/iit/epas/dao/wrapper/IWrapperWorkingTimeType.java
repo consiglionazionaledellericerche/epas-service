@@ -28,6 +28,8 @@ import java.util.List;
  */
 public interface IWrapperWorkingTimeType extends IWrapperModel<WorkingTimeType> {
 
+  public IWrapperWorkingTimeType setValue(WorkingTimeType wtt);
+
   /**
    * La lista dei contratti attivi che hanno un periodo attivo con hanno associato
    * il tipo di orario di lavoro indicato.

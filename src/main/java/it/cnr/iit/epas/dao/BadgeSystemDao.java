@@ -17,7 +17,6 @@
 package it.cnr.iit.epas.dao;
 
 import com.google.common.base.Splitter;
-import com.google.inject.Provider;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -33,6 +32,7 @@ import it.cnr.iit.epas.models.QBadgeSystem;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 

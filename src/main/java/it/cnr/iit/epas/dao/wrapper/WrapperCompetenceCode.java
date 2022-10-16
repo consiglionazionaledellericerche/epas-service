@@ -17,7 +17,6 @@
 package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.common.collect.Lists;
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.CompetenceDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.models.Competence;
@@ -33,16 +32,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperCompetenceCode implements IWrapperCompetenceCode {
 
-  private final CompetenceCode value;
+  private CompetenceCode value;
   private final CompetenceDao competenceDao;
   private final OfficeDao officeDao;
 
   @Inject
   WrapperCompetenceCode(
-      @Assisted CompetenceCode cc, OfficeDao officeDao, CompetenceDao competenceDao) {
-    this.value = cc;
+       OfficeDao officeDao, CompetenceDao competenceDao) {
     this.competenceDao = competenceDao;
     this.officeDao = officeDao;
+  }
+
+  public IWrapperCompetenceCode setValue(CompetenceCode cc) {
+    this.value = cc;
+    return this;
   }
 
   @Override

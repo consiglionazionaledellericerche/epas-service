@@ -18,15 +18,20 @@ package it.cnr.iit.epas.dao.wrapper;
 
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
+import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Interfaccia per l'estensione con Wrapper del Contract.
  */
 public interface IWrapperContract extends IWrapperModel<Contract> {
+
+  public IWrapperContract setValue(Contract contract);
 
   /**
    * True se il contratto è l'ultimo contratto della persona per mese e anno selezionati.
@@ -165,5 +170,13 @@ public interface IWrapperContract extends IWrapperModel<Contract> {
    * @return esito
    */
   public boolean hasMonthRecapForVacationsRecap(int yearToRecap);
+
+  /**
+   * Ritorna la lista delle assenze nell'intervallo di tempo relative al tipo ab.
+   *
+   * @return la lista di assenze effettuate dal titolare del contratto del tipo ab nell'intervallo
+   *     temporale inter.
+   */
+  public List<Absence> getAbsenceDays(DateInterval inter, Contract contract, AbsenceType ab);
 
 }

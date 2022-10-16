@@ -16,12 +16,12 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.common.base.Optional;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.UsersRolesOffices;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -30,6 +30,8 @@ import java.util.List;
  * @author Alessandro Martelli
  */
 public interface IWrapperOffice extends IWrapperModel<Office> {
+
+  public IWrapperOffice setValue(Office office);
 
   /**
    * La data di creazione della sede.

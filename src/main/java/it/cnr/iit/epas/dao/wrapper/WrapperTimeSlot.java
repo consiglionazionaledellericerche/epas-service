@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.models.Contract;
@@ -39,16 +38,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperTimeSlot implements IWrapperTimeSlot {
 
-  private final TimeSlot value;
+  private TimeSlot value;
   private final ContractManager contractManager;
   private final ContractDao contractDao;
 
   @Inject
-  WrapperTimeSlot(@Assisted TimeSlot ts, ContractManager contractManager, 
+  WrapperTimeSlot(ContractManager contractManager, 
       ContractDao contractDao) {
-    this.value = ts;
     this.contractManager = contractManager;
     this.contractDao = contractDao;
+  }
+
+  public IWrapperTimeSlot setValue(TimeSlot ts) {
+    this.value = ts;
+    return this;
   }
 
   @Override

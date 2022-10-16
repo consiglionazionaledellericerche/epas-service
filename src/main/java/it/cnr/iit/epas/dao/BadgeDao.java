@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.dao;
 
-import com.google.inject.Provider;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.Badge;
@@ -28,6 +27,7 @@ import it.cnr.iit.epas.models.QBadge;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 

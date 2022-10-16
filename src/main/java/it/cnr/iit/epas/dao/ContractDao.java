@@ -20,7 +20,6 @@ import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import com.querydsl.core.BooleanBuilder;
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMandatoryTimeSlot;
 import it.cnr.iit.epas.models.ContractStampProfile;
@@ -31,7 +30,6 @@ import it.cnr.iit.epas.models.QContractMandatoryTimeSlot;
 import it.cnr.iit.epas.models.QContractStampProfile;
 import it.cnr.iit.epas.models.QContractWorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeType;
-import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,14 +48,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ContractDao extends DaoBase {
 
-  private final IWrapperFactory factory;
+  //private final IWrapperFactory factory;
   private final PersonDao personDao;
 
   @Inject
-  ContractDao(Provider<EntityManager> emp, IWrapperFactory factory,
+  ContractDao(Provider<EntityManager> emp,
       PersonDao personDao) {
     super(emp);
-    this.factory = factory;
+    //this.factory = factory;
     this.personDao = personDao;
   }
 
@@ -217,11 +215,12 @@ public class ContractDao extends DaoBase {
     // allineati con tutti i record presenti sul db e capita che viene restituito un valore nullo
     // incongruente con i dati presenti
     // TODO da sostituire con una query?
-    for (Contract c : person.getContracts()) {
-      if (DateUtility.isDateIntoInterval(date, factory.create(c).getContractDateInterval())) {
-        return c;
-      }
-    }
+    //FIXME: da sostituire con una query
+//    for (Contract c : person.getContracts()) {
+//      if (DateUtility.isDateIntoInterval(date, factory.create(c).getContractDateInterval())) {
+//        return c;
+//      }
+//    }
     return null;
   }
 

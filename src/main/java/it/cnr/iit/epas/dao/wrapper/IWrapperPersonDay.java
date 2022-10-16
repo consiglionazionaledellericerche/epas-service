@@ -29,6 +29,8 @@ import java.util.Optional;
  */
 public interface IWrapperPersonDay extends IWrapperModel<PersonDay> {
 
+  public IWrapperPersonDay setValue(PersonDay pd);
+
   /**
    * Il contratto cui appartiene il person day. Istanzia una variabile Lazy.
    *

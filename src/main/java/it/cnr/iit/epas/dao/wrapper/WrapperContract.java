@@ -16,13 +16,18 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.inject.assistedinject.Assisted;
+import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
+import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -35,14 +40,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperContract implements IWrapperContract {
 
-  private final Contract value;
-  private final IWrapperFactory wrapperFactory;
-
+  private Contract value;
+  private final AbsenceDao absenceDao;
+  
   @Inject
-  WrapperContract(@Assisted Contract contract,
-                  IWrapperFactory wrapperFactory) {
-    this.value = contract;
-    this.wrapperFactory = wrapperFactory;
+  WrapperContract(AbsenceDao absenceDao) {
+    this.absenceDao = absenceDao;
   }
 
   @Override
@@ -50,6 +53,10 @@ public class WrapperContract implements IWrapperContract {
     return value;
   }
 
+  public IWrapperContract setValue(Contract contract) {
+    value = contract;
+    return this;
+  }
   /**
    * True se il contratto è l'ultimo contratto della persona per mese e anno selezionati.
    *
@@ -67,8 +74,7 @@ public class WrapperContract implements IWrapperContract {
       if (contract.getId().equals(value.getId())) {
         continue;
       }
-      DateInterval contractInterval = wrapperFactory.create(contract)
-          .getContractDateInterval();
+      DateInterval contractInterval = getContractDateInterval();
       if (DateUtility.intervalIntersection(monthInterval, contractInterval) != null) {
         if (value.getBeginDate().isBefore(contract.getBeginDate())) {
           return false;
@@ -377,5 +383,27 @@ public class WrapperContract implements IWrapperContract {
     return false;
   }
 
+  /**
+   * Ritorna la lista delle assenze nell'intervallo di tempo relative al tipo ab.
+   *
+   * @return la lista di assenze effettuate dal titolare del contratto del tipo ab nell'intervallo
+   *     temporale inter.
+   */
+  public List<Absence> getAbsenceDays(DateInterval inter, Contract contract, AbsenceType ab) {
 
+    DateInterval contractInterInterval =
+        DateUtility.intervalIntersection(inter, getContractDateInterval());
+    if (contractInterInterval == null) {
+      return new ArrayList<Absence>();
+    }
+
+    List<Absence> absences =
+        absenceDao.getAbsenceByCodeInPeriod(
+            Optional.ofNullable(contract.person), Optional.ofNullable(ab.getCode()),
+            contractInterInterval.getBegin(), contractInterInterval.getEnd(),
+            Optional.<JustifiedTypeName>empty(), false, true);
+
+    return absences;
+
+  }
 }

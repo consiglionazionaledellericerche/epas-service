@@ -16,10 +16,8 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;
@@ -27,6 +25,7 @@ import it.cnr.iit.epas.models.UsersRolesOffices;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Wrapper sede.
@@ -35,16 +34,19 @@ import java.util.List;
  */
 public class WrapperOffice implements IWrapperOffice {
 
-  private final Office value;
+  private Office value;
   private final RoleDao roleDao;
 
   @Inject
-  WrapperOffice(@Assisted Office office,
-      RoleDao roleDao) {
-    value = office;
+  WrapperOffice(RoleDao roleDao) {
     this.roleDao = roleDao;
   }
 
+  public IWrapperOffice setValue(Office office) {
+    this.value = office;
+    return this;
+  }
+  
   @Override
   public final Office getValue() {
     return value;
@@ -120,7 +122,7 @@ public class WrapperOffice implements IWrapperOffice {
 
     LocalDate officeInitUse = this.value.getBeginDate();
 
-    return Optional.fromNullable(YearMonth.from(officeInitUse));
+    return Optional.ofNullable(YearMonth.from(officeInitUse));
 
   }
 
@@ -175,13 +177,13 @@ public class WrapperOffice implements IWrapperOffice {
 
     Optional<YearMonth> first = getFirstMonthUploadable();
     if (!first.isPresent()) {
-      return Optional.<YearMonth>absent();
+      return Optional.<YearMonth>empty();
     }
 
     if (previousYearMonth.isBefore(first.get())) {
       return first;
     }
-    return Optional.fromNullable(previousYearMonth);
+    return Optional.ofNullable(previousYearMonth);
   }
 
   /**

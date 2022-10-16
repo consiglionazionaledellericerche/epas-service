@@ -14,11 +14,8 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.utils.DateInterval;
 
@@ -27,13 +24,15 @@ import it.cnr.iit.epas.utils.DateInterval;
  */
 public class WrapperContractWorkingTimeType implements IWrapperContractWorkingTimeType {
 
-  private final ContractWorkingTimeType value;
+  private ContractWorkingTimeType value;
 
-  @Inject
-  WrapperContractWorkingTimeType(@Assisted ContractWorkingTimeType cwtt) {
-    value = cwtt;
+  WrapperContractWorkingTimeType() {
   }
 
+  public IWrapperContractWorkingTimeType setValue(ContractWorkingTimeType cwtt) {
+    this.value = cwtt;
+    return this;
+  }
   @Override
   public ContractWorkingTimeType getValue() {
     return value;

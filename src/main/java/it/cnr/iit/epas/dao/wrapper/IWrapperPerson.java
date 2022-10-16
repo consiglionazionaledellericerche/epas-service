@@ -37,6 +37,8 @@ import java.util.Optional;
  */
 public interface IWrapperPerson extends IWrapperModel<Person> {
 
+  public IWrapperPerson setValue(Person person);
+  
   /**
    * Se la persona ha contratto attivo nella data.
    */

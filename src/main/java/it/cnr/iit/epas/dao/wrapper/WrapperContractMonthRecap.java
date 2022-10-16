@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.dao.wrapper;
 
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.models.ContractMonthRecap;
 import java.time.YearMonth;
 import java.util.Optional;
@@ -31,16 +30,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
-  private final ContractMonthRecap value;
-  private final IWrapperContract contract;
+  private ContractMonthRecap value;
   private final IWrapperFactory wrapperFactory;
 
   @Inject
-  WrapperContractMonthRecap(@Assisted ContractMonthRecap cmr,
+  WrapperContractMonthRecap(
       IWrapperFactory wrapperFactory) {
     this.wrapperFactory = wrapperFactory;
-    this.contract = wrapperFactory.create(cmr.contract);
+  }
+
+  public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr) {
     this.value = cmr;
+    return this;
   }
 
   @Override
@@ -50,7 +51,7 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
   @Override
   public IWrapperContract getContract() {
-    return contract;
+    return wrapperFactory.create(value.getContract());
   }
 
 

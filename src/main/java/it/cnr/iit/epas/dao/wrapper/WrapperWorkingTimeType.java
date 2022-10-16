@@ -40,16 +40,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
 
-  private final WorkingTimeType value;
+  private WorkingTimeType value;
   private final ContractManager contractManager;
   private final ContractDao contractDao;
 
   @Inject
-  WrapperWorkingTimeType(@Assisted WorkingTimeType wtt,
-                         ContractManager contractManager, ContractDao contractDao) {
-    this.value = wtt;
+  WrapperWorkingTimeType(ContractManager contractManager, ContractDao contractDao) {
     this.contractManager = contractManager;
     this.contractDao = contractDao;
+  }
+
+  public IWrapperWorkingTimeType setValue(WorkingTimeType wtt) {
+    this.value = wtt;
+    return this;
   }
 
   @Override

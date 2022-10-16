@@ -17,7 +17,6 @@
 package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.common.base.Preconditions;
-import com.google.inject.assistedinject.Assisted;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.models.Contract;
@@ -46,7 +45,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WrapperPersonDay implements IWrapperPersonDay {
 
-  private final PersonDay value;
+  private PersonDay value;
   private final ContractDao contractDao;
   private final PersonDayDao personDayDao;
   private final IWrapperFactory factory;
@@ -58,12 +57,16 @@ public class WrapperPersonDay implements IWrapperPersonDay {
   private Optional<PersonalWorkingTime> personalWorkingTime = null;
 
   @Inject
-  WrapperPersonDay(@Assisted PersonDay pd, ContractDao contractDao,
+  WrapperPersonDay(ContractDao contractDao,
                    PersonDayDao personDayDao, IWrapperFactory factory) {
-    this.value = pd;
     this.contractDao = contractDao;
     this.personDayDao = personDayDao;
     this.factory = factory;
+  }
+
+  public IWrapperPersonDay setValue(PersonDay pd) {
+    this.value = pd;
+    return this;
   }
 
   @Override

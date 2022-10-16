@@ -26,6 +26,8 @@ import java.util.Optional;
  */
 public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthRecap> {
 
+  public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr);
+
   public IWrapperContract getContract();
 
   public Optional<ContractMonthRecap> getPreviousRecap();
