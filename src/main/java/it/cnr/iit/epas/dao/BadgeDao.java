@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  * DAO per i badge.
  */
 @Component
-public class BadgeDao extends DaoBase {
+public class BadgeDao extends DaoBase<Badge> {
 
   @Inject
   BadgeDao(Provider<EntityManager> emp) {

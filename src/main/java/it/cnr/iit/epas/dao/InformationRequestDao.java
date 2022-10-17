@@ -52,7 +52,7 @@ import org.springframework.stereotype.Component;
  * @author dario
  */
 @Component
-public class InformationRequestDao extends DaoBase {
+public class InformationRequestDao extends DaoBase<InformationRequest> {
 
   @Inject
   InformationRequestDao(Provider<EntityManager> emp) {

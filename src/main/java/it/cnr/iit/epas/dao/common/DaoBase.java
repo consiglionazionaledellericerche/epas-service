@@ -14,36 +14,55 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dao.common;
 
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base dao which provides the JPQLQueryFactory and the EntityManager.
  *
  * @author Marco Andreini
  */
-public abstract class DaoBase {
+public abstract class DaoBase<T> {
 
   protected final JPQLQueryFactory queryFactory;
   protected final Provider<EntityManager> emp;
 
-  @Autowired
+  @Inject
   public DaoBase(Provider<EntityManager> emp) {
     this.emp = emp;
     this.queryFactory = new JPAQueryFactory(emp.get());
-
   }
+
+  public void persist(T object) {
+    emp.get().persist(object);
+  }
+
+  public T merge(T object) {
+    return emp.get().<T>merge(object);
+  }
+
+  public void delete(T object) {
+    emp.get().remove(object);
+  }
+
+  public void refresh(T object) {
+    emp.get().refresh(object);
+  }
+
+  public boolean isPersisten(T object) {
+    return emp.get().contains(object);
+  }
+
   protected JPQLQueryFactory getQueryFactory() {
     return queryFactory;
   }
 
-  protected EntityManager getEntityManager() {
+  public EntityManager getEntityManager() {
     return emp.get();
   }
 }

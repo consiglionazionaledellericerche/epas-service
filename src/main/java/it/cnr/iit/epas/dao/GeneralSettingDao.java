@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class GeneralSettingDao extends DaoBase {
+public class GeneralSettingDao extends DaoBase<GeneralSetting> {
 
   LoadingCache<String, GeneralSetting> generalSettingCache;
   private static final String cacheKey = "gs";

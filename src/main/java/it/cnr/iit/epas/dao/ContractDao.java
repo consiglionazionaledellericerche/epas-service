@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class ContractDao extends DaoBase {
+public class ContractDao extends DaoBase<Contract> {
 
   //private final IWrapperFactory factory;
   private final PersonDao personDao;

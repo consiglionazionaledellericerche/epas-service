@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class InstituteDao extends DaoBase {
+public class InstituteDao extends DaoBase<Institute> {
 
   @Inject
   InstituteDao(Provider<EntityManager> emp) {

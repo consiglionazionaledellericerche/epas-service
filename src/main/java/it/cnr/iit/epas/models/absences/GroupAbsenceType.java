@@ -53,51 +53,51 @@ public class GroupAbsenceType extends BaseEntity {
   public static final String EMPLOYEE_NAME = "EMPLOYEE";
 
   @NotNull
-  private String name;
+  public String name;
   
   //Astensione facoltativa post partum 100% primo figlio 0-12 anni 30 giorni 
   @NotNull
-  private String description;
+  public String description;
 
   //Se i gruppi sono concatenati e si vuole una unica etichetta (da assegnare alla radice)
   // Esempio Congedi primo figlio 100%, Congedi primo figlio 30% hanno una unica chainDescription
-  private String chainDescription;
+  public String chainDescription;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_type_id")
-  private CategoryGroupAbsenceType category;
+  public CategoryGroupAbsenceType category;
 
-  private int priority;
-
-  @NotNull
-  @Enumerated(EnumType.STRING)
-  private GroupAbsenceTypePattern pattern;
+  public int priority;
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  private PeriodType periodType;
+  public GroupAbsenceTypePattern pattern;
+
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  public PeriodType periodType;
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "takable_behaviour_id")
-  private TakableAbsenceBehaviour takableAbsenceBehaviour;
+  public TakableAbsenceBehaviour takableAbsenceBehaviour;
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "complation_behaviour_id")
-  private ComplationAbsenceBehaviour complationAbsenceBehaviour;
+  public ComplationAbsenceBehaviour complationAbsenceBehaviour;
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "next_group_to_check_id")
-  private GroupAbsenceType nextGroupToCheck;
+  public GroupAbsenceType nextGroupToCheck;
 
   @OneToMany(mappedBy = "nextGroupToCheck", fetch = FetchType.LAZY)
-  private Set<GroupAbsenceType> previousGroupChecked = Sets.newHashSet();
+  public Set<GroupAbsenceType> previousGroupChecked = Sets.newHashSet();
 
-  private boolean automatic = false;
+  public boolean automatic = false;
 
-  private boolean initializable = false;
+  public boolean initializable = false;
 
   /**
    * Label.

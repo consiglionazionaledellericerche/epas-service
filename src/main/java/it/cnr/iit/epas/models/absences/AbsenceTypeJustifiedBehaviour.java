@@ -47,16 +47,16 @@ public class AbsenceTypeJustifiedBehaviour extends BaseEntity {
   @NotNull
   @ManyToOne
   @JoinColumn(name = "absence_type_id")
-  private AbsenceType absenceType;
+  public AbsenceType absenceType;
 
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "justified_behaviour_id")
-  private JustifiedBehaviour justifiedBehaviour;
+  public JustifiedBehaviour justifiedBehaviour;
   
   @Getter
   @Column
-  private Integer data;
+  public Integer data;
   
   /**
    * Stampa la quantità di ore e minuti giustificata.

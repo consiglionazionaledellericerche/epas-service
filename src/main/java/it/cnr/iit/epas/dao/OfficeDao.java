@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class OfficeDao extends DaoBase {
+public class OfficeDao extends DaoBase<Office> {
 
   public static final Splitter TOKEN_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();

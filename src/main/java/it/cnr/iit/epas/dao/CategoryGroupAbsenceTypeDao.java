@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class CategoryGroupAbsenceTypeDao extends DaoBase {
+public class CategoryGroupAbsenceTypeDao extends DaoBase<CategoryGroupAbsenceType> {
 
   @Inject
   CategoryGroupAbsenceTypeDao(Provider<EntityManager> emp) {

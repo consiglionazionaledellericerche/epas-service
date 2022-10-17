@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  */
 @Component
-public class WorkingTimeTypeDao extends DaoBase {
+public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
 
   private final ContractDao contractDao;
 
@@ -52,6 +52,10 @@ public class WorkingTimeTypeDao extends DaoBase {
   WorkingTimeTypeDao(Provider<EntityManager> emp, ContractDao contractDao) {
     super(emp);
     this.contractDao = contractDao;
+  }
+
+  public WorkingTimeTypeDay merge(WorkingTimeTypeDay wttd) {
+    return emp.get().merge(wttd);
   }
 
   /**

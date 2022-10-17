@@ -52,20 +52,20 @@ public class TakableAbsenceBehaviour extends BaseEntity {
 
   public static final String NAME_PREFIX = "T_";
 
-  private String name;
+  public String name;
   
   @OneToMany(mappedBy = "takableAbsenceBehaviour", fetch = FetchType.LAZY)
-  private Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
+  public Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
   
   @Enumerated(EnumType.STRING)
-  private AmountType amountType;
+  public AmountType amountType;
 
   @ManyToMany
   @JoinTable(name = "taken_codes_group", 
       joinColumns = { @JoinColumn(name = "takable_behaviour_id") }, 
         inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  private Set<AbsenceType> takenCodes = Sets.newHashSet();
+  public Set<AbsenceType> takenCodes = Sets.newHashSet();
   
   //  @Column(name = "takable_count_behaviour")
   //  @Enumerated(EnumType.STRING)
@@ -77,12 +77,12 @@ public class TakableAbsenceBehaviour extends BaseEntity {
       joinColumns = { @JoinColumn(name = "takable_behaviour_id") }, 
       inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  private Set<AbsenceType> takableCodes = Sets.newHashSet();
+  public Set<AbsenceType> takableCodes = Sets.newHashSet();
 
-  private Integer fixedLimit;
+  public Integer fixedLimit;
 
   @Enumerated(EnumType.STRING)
-  private TakeAmountAdjustment takableAmountAdjustment;
+  public TakeAmountAdjustment takableAmountAdjustment;
  
   /**
    * Tipologia di comportamento per i codici di assenza presi. 

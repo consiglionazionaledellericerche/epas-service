@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  * @author Alessandro Martelli
  */
 @Component
-public class CertificationDao extends DaoBase {
+public class CertificationDao extends DaoBase<CertificationDao> {
 
   @Inject
   CertificationDao(Provider<EntityManager> emp) {

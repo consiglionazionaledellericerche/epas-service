@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
  * @author Alessandro Martelli
  */
 @Component
-public class BadgeReaderDao extends DaoBase {
+public class BadgeReaderDao extends DaoBase<BadgeReader> {
 
   public static final Splitter TOKEN_SPLITTER = Splitter.on(' ').trimResults().omitEmptyStrings();
 

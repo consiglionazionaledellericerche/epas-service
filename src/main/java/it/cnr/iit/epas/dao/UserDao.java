@@ -51,7 +51,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class UserDao extends DaoBase {
+public class UserDao extends DaoBase<User> {
 
   @Inject
   UserDao(Provider<EntityManager> emp) {

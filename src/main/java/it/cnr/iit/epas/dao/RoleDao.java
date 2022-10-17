@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  */
 @Component
-public class RoleDao extends DaoBase {
+public class RoleDao extends DaoBase<Role> {
 
   @Inject
   RoleDao(Provider<EntityManager> emp) {

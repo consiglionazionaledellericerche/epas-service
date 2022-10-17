@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  * DAO per i gruppi.
  */
 @Component
-public class GroupDao extends DaoBase {
+public class GroupDao extends DaoBase<GroupDao> {
 
   @Inject
   GroupDao(Provider<EntityManager> emp) {

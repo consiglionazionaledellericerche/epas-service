@@ -56,10 +56,10 @@ public class JustifiedBehaviour extends BaseEntity {
   }
 
   @Enumerated(EnumType.STRING)
-  private JustifiedBehaviourName name;
+  public JustifiedBehaviourName name;
   
   @OneToMany(mappedBy = "justifiedBehaviour")
-  private Set<AbsenceTypeJustifiedBehaviour> absenceTypesJustifiedBehaviours = Sets.newHashSet();
+  public Set<AbsenceTypeJustifiedBehaviour> absenceTypesJustifiedBehaviours = Sets.newHashSet();
 
   @Override
   public String toString() {

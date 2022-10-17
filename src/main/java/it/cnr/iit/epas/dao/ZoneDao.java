@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.BadgeReader;
 import it.cnr.iit.epas.models.QZoneToZones;
+import it.cnr.iit.epas.models.Zone;
 import it.cnr.iit.epas.models.ZoneToZones;
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,11 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
-
 /**
  * DAO per le Zone.
  */
 @Component
-public class ZoneDao extends DaoBase {
+public class ZoneDao extends DaoBase<Zone> {
 
   @Inject
   ZoneDao(Provider<EntityManager> emp) {

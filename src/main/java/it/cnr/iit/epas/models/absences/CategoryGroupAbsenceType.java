@@ -52,22 +52,22 @@ public class CategoryGroupAbsenceType extends BaseEntity
 
   private static final long serialVersionUID = 4580659910825885894L;
 
-  private String name;
+  public String name;
 
-  private String description;
+  public String description;
   
-  private int priority;
+  public int priority;
 
   @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-  private Set<GroupAbsenceType> groupAbsenceTypes;
+  public Set<GroupAbsenceType> groupAbsenceTypes;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_tab_id")
-  private CategoryTab tab;
+  public CategoryTab tab;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contractual_clause_id")
-  private ContractualClause contractualClause;
+  public ContractualClause contractualClause;
 
   @Override
   public int compareTo(CategoryGroupAbsenceType obj) {

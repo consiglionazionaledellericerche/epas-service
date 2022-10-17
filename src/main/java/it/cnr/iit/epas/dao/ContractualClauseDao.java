@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class ContractualClauseDao extends DaoBase {
+public class ContractualClauseDao extends DaoBase<ContractualClause> {
 
   @Inject
   ContractualClauseDao(Provider<EntityManager> emp) {

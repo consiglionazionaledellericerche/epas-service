@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  */
 @Component
-public class PersonReperibilityDayDao extends DaoBase {
+public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
 
   @Inject
   PersonReperibilityDayDao(Provider<EntityManager> emp) {

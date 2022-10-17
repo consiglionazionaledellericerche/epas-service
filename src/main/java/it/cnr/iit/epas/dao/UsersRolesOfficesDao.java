@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
  * DAO per UsersRolesOffices.
  */
 @Component
-public class UsersRolesOfficesDao extends DaoBase {
+public class UsersRolesOfficesDao extends DaoBase<UsersRolesOffices> {
 
   @Inject
   UsersRolesOfficesDao(Provider<EntityManager> emp) {

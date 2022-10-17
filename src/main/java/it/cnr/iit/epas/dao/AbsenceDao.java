@@ -52,7 +52,7 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-public class AbsenceDao extends DaoBase {
+public class AbsenceDao extends DaoBase<Absence> {
 
   //private final IWrapperFactory factory;
 

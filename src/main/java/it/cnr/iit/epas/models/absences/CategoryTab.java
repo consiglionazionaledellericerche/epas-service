@@ -42,16 +42,16 @@ public class CategoryTab extends BaseEntity implements Comparable<CategoryTab> {
 
   private static final long serialVersionUID = 4580659910825885894L;
 
-  private String name;
+  public String name;
 
-  private String description;
+  public String description;
   
-  private int priority;
+  public int priority;
 
-  private boolean isDefault = false;
+  public boolean isDefault = false;
 
   @OneToMany(mappedBy = "tab", fetch = FetchType.LAZY)
-  private Set<CategoryGroupAbsenceType> categoryGroupAbsenceTypes = Sets.newHashSet();
+  public Set<CategoryGroupAbsenceType> categoryGroupAbsenceTypes = Sets.newHashSet();
 
   @Override
   public int compareTo(CategoryTab obj) {

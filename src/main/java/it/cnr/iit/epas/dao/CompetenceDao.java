@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class CompetenceDao extends DaoBase {
+public class CompetenceDao extends DaoBase<Competence> {
 
   @Inject
   CompetenceDao(Provider<EntityManager> emp) {

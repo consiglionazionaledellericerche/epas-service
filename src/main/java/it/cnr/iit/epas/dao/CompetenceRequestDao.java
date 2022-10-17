@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
  * DAO per le CompetenceRequest.
  */
 @Component
-public class CompetenceRequestDao extends DaoBase {
+public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
 
   @Inject
   CompetenceRequestDao(Provider<EntityManager> emp) {

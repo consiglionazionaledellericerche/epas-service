@@ -73,11 +73,15 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class AbsenceComponentDao extends DaoBase {
+public class AbsenceComponentDao extends DaoBase<Absence> {
 
   @Inject
   AbsenceComponentDao(Provider<EntityManager> emp) {
     super(emp);
+  }
+
+  public Absence merge(Absence absence) {
+    return emp.get().merge(absence);
   }
 
   /**

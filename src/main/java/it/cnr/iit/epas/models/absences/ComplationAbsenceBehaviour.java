@@ -53,27 +53,27 @@ public class ComplationAbsenceBehaviour extends BaseEntity {
   public static final String NAME_PREFIX = "C_";
 
   @Column(name = "name")
-  private String name;
+  public String name;
   
   @OneToMany(mappedBy = "complationAbsenceBehaviour", fetch = FetchType.LAZY)
-  private Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
+  public Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
 
   @Enumerated(EnumType.STRING)
-  private AmountType amountType;
+  public AmountType amountType;
 
   @ManyToMany
   @JoinTable(name = "complation_codes_group", 
         joinColumns = { @JoinColumn(name = "complation_behaviour_id") }, 
         inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  private Set<AbsenceType> complationCodes = Sets.newHashSet();
+  public Set<AbsenceType> complationCodes = Sets.newHashSet();
 
   @ManyToMany
   @JoinTable(name = "replacing_codes_group", 
         joinColumns = { @JoinColumn(name = "complation_behaviour_id") }, 
         inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  private Set<AbsenceType> replacingCodes = Sets.newHashSet();
+  public Set<AbsenceType> replacingCodes = Sets.newHashSet();
 
   /**
    * Se esiste fra gli enumerati un corrispondente e se è correttamente modellato.

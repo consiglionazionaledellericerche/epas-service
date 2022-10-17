@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  * DAO per i PersonDayInTrouble.
  */
 @Component
-public class PersonDayInTroubleDao extends DaoBase {
+public class PersonDayInTroubleDao extends DaoBase<PersonDayInTrouble> {
 
   @Inject
   PersonDayInTroubleDao(Provider<EntityManager> emp) {

@@ -62,9 +62,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-//import manager.services.absences.AbsenceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 //import play.db.jpa.JPA;
 //import play.libs.F.Promise;
@@ -74,10 +72,10 @@ import org.springframework.stereotype.Component;
  *
  * @author Alessandro Martelli
  */
+@Slf4j
 @Component
 public class ConsistencyManager {
 
-  private static final Logger log = LoggerFactory.getLogger(ConsistencyManager.class);
   //private final SecureManager secureManager;
   private final OfficeDao officeDao;
   private final PersonDao personDao;
@@ -417,7 +415,7 @@ public class ConsistencyManager {
 //    if (psd.isPresent()) {
 //      shiftManager2.checkShiftValid(psd.get());
 //    }
-        
+
     log.trace("... ricalcolo dei riepiloghi conclusa.");
   }
 

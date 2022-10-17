@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
  * @author Alessandro Martelli
  */
 @Component
-public class ContractMonthRecapDao extends DaoBase {
+public class ContractMonthRecapDao extends DaoBase<ContractMonthRecap> {
 
   @Inject
   ContractMonthRecapDao(Provider<EntityManager> emp) {

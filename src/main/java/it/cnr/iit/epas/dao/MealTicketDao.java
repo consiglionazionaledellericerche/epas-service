@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * @author Alessandro Martelli
  */
 @Component
-public class MealTicketDao extends DaoBase {
+public class MealTicketDao extends DaoBase<MealTicket> {
 
   @Inject
   MealTicketDao(Provider<EntityManager> emp) {

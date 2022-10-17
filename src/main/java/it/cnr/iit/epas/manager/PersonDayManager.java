@@ -106,7 +106,11 @@ public class PersonDayManager {
     this.absenceComponentDao = absenceComponentDao;
     this.emp = emp;
   }
-  
+
+  public PersonDayDao getPersonDayDao() {
+    return personDayDao;
+  }
+
   /**
    * Assenza che impedisce la maturazione del buono pasto.
    */

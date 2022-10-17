@@ -17,7 +17,6 @@
 package it.cnr.iit.epas.dao;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
@@ -76,7 +75,7 @@ import org.springframework.stereotype.Component;
  * @author Marco Andreini
  */
 @Component
-public final class PersonDao extends DaoBase {
+public final class PersonDao extends DaoBase<Person> {
 
   @Inject
   public PersonDayDao personDayDao;
