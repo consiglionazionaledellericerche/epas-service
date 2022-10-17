@@ -14,11 +14,9 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-
 package it.cnr.iit.epas.models.flows.enumerate;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +37,8 @@ public enum AbsenceRequestType {
       Optional.of(EpasParam.VACATION_REQUEST_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.VACATION_REQUEST_I_III_MANAGER_APPROVAL_REQUIRED),
       Optional.of(EpasParam.VACATION_REQUEST_IV_VIII_MANAGER_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent(),
+      Optional.empty(),
+      Optional.empty(),
       Optional.of(EpasParam.VACATION_REQUEST_MANAGER_OFFICE_HEAD_APPROVAL_REQUIRED),
       true),
   
@@ -50,8 +48,8 @@ public enum AbsenceRequestType {
       Optional.of(EpasParam.COMPENSATORY_REST_REQUEST_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.COMPENSATORY_REST_REQUEST_I_III_MANAGER_APPROVAL_REQUIRED),
       Optional.of(EpasParam.COMPENSATORY_REST_REQUEST_IV_VIII_MANAGER_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent(),
+      Optional.empty(),
+      Optional.empty(),
       Optional.of(EpasParam.VACATION_REQUEST_MANAGER_OFFICE_HEAD_APPROVAL_REQUIRED),
       true),
   
@@ -61,8 +59,8 @@ public enum AbsenceRequestType {
       Optional.of(EpasParam.PERSONAL_PERMISSION_REQUEST_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.PERSONAL_PERMISSION_REQUEST_I_III_MANAGER_APPROVAL_REQUIRED),
       Optional.of(EpasParam.PERSONAL_PERMISSION_REQUEST_IV_VIII_MANAGER_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent(),
+      Optional.empty(),
+      Optional.empty(),
       Optional.of(EpasParam.VACATION_REQUEST_MANAGER_OFFICE_HEAD_APPROVAL_REQUIRED),
       false),
   
@@ -72,20 +70,20 @@ public enum AbsenceRequestType {
       Optional.of(EpasParam.VACATION_REQUEST_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.VACATION_REQUEST_I_III_MANAGER_APPROVAL_REQUIRED),
       Optional.of(EpasParam.VACATION_REQUEST_IV_VIII_MANAGER_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent(),
+      Optional.empty(),
+      Optional.empty(),
       Optional.of(EpasParam.VACATION_REQUEST_MANAGER_OFFICE_HEAD_APPROVAL_REQUIRED),
       true),
   
   //Permessso breve
   SHORT_TERM_PERMIT(false, false, false, false, false, false,
-      Optional.absent(),
-      Optional.absent(),
-      Optional.absent(),
-      Optional.absent(),
-      Optional.absent(),
-      Optional.absent(),
-      Optional.absent(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
       false);
   
   public final boolean allDay;

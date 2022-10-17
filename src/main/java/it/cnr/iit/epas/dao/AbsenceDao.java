@@ -18,7 +18,6 @@ package it.cnr.iit.epas.dao;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -40,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.val;

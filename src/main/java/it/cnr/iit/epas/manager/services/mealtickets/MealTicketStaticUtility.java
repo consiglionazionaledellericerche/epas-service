@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.manager.services.mealtickets;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.Contract;
@@ -25,6 +24,7 @@ import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 
 /**

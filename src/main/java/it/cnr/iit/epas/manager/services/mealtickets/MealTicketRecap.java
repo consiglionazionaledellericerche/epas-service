@@ -16,13 +16,13 @@
  */
 package it.cnr.iit.epas.manager.services.mealtickets;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.MealTicket;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +71,7 @@ public class MealTicketRecap {
 
     return MealTicketStaticUtility.getBlockMealTicketFromOrderedList(
         this.getMealTicketsReceivedExpireOrderedAsc(),
-        Optional.fromNullable(this.getMealTicketInterval()));
+        Optional.ofNullable(this.getMealTicketInterval()));
   }
 
   /**
@@ -102,7 +102,7 @@ public class MealTicketRecap {
         new DateInterval(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
 
     return MealTicketStaticUtility.getBlockMealTicketFromOrderedList(
-        this.getMealTicketsReceivedExpireOrderedAsc(), Optional.fromNullable(yearInterval));
+        this.getMealTicketsReceivedExpireOrderedAsc(), Optional.ofNullable(yearInterval));
   }
 
   /**
@@ -114,7 +114,7 @@ public class MealTicketRecap {
 
     return MealTicketStaticUtility.getBlockMealTicketFromOrderedList(
         this.getMealTicketsReceivedDeliveryOrderedDesc(),
-        Optional.fromNullable(this.getMealTicketInterval()));
+        Optional.ofNullable(this.getMealTicketInterval()));
   }
 
   /**
@@ -123,7 +123,7 @@ public class MealTicketRecap {
   public List<BlockMealTicket> getBlockMealTicketReturnedDeliveryDesc() {
     return MealTicketStaticUtility.getBlockMealTicketFromOrderedList(
         this.getMealTicketReturnedDeliveryOrderDesc(),
-        Optional.fromNullable(this.getMealTicketInterval()));
+        Optional.ofNullable(this.getMealTicketInterval()));
   }
 
 

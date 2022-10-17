@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.models.absences;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
@@ -27,6 +26,7 @@ import it.cnr.iit.epas.models.base.BaseEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

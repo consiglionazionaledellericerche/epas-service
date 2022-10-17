@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -2536,7 +2536,7 @@ public enum DefaultAbsenceType {
         return Optional.of(defaultAbsenceType);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
 }

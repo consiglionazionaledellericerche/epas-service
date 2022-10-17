@@ -17,11 +17,11 @@
 
 package it.cnr.iit.epas.models.absences;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultComplation;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -96,7 +96,7 @@ public class ComplationAbsenceBehaviour extends BaseEntity {
         return Optional.of(true);
       } 
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**

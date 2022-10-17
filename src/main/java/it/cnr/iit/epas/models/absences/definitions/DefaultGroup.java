@@ -17,12 +17,12 @@
 
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.GroupAbsenceTypePattern;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -487,7 +487,7 @@ public enum DefaultGroup {
         return Optional.of(defaultGroup);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**

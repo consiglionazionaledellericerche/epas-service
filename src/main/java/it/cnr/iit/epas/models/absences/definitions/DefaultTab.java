@@ -17,10 +17,10 @@
 
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -97,6 +97,6 @@ public enum DefaultTab {
         return Optional.of(defaultTab);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 }

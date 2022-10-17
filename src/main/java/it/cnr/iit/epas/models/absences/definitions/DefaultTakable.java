@@ -16,13 +16,13 @@
  */
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour.TakeAmountAdjustment;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 
@@ -841,7 +841,7 @@ public enum DefaultTakable {
         return Optional.of(defaultTakable);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
 }

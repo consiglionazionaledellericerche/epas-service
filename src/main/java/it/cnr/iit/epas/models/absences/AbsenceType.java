@@ -18,7 +18,6 @@
 package it.cnr.iit.epas.models.absences;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Lists;
@@ -36,6 +35,7 @@ import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -268,7 +268,7 @@ public class AbsenceType extends BaseEntity {
         return Optional.of(entity);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**
@@ -480,7 +480,7 @@ public class AbsenceType extends BaseEntity {
         }
       } 
     }
-    return Optional.absent();
+    return Optional.empty();
   }
   
   /**

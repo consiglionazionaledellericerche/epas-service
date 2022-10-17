@@ -14,13 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.absences.definitions.DefaultTakable;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -146,7 +145,7 @@ public class TakableAbsenceBehaviour extends BaseEntity {
         return Optional.of(true);
       } 
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
 }
