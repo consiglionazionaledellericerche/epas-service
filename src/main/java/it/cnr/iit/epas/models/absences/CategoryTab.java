@@ -17,10 +17,10 @@
 
 package it.cnr.iit.epas.models.absences;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.absences.definitions.DefaultTab;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -89,7 +89,7 @@ public class CategoryTab extends BaseEntity implements Comparable<CategoryTab> {
         }
       } 
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**

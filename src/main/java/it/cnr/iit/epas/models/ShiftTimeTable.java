@@ -47,69 +47,69 @@ public class ShiftTimeTable extends BaseEntity {
   private static final long serialVersionUID = -7869931573320174606L;
 
   @OneToMany(mappedBy = "shiftTimeTable")
-  private List<ShiftType> shiftTypes = new ArrayList<>();
+  public List<ShiftType> shiftTypes = new ArrayList<>();
 
   // start time of morning shift
   @Column(name = "start_morning", columnDefinition = "VARCHAR")
-  private LocalTime startMorning;
+  public LocalTime startMorning;
 
   // end time of morning shift
   @Column(name = "end_morning", columnDefinition = "VARCHAR")
-  private LocalTime endMorning;
+  public LocalTime endMorning;
 
   // start time of afternoon shift
   @Column(name = "start_afternoon", columnDefinition = "VARCHAR")
-  private LocalTime startAfternoon;
+  public LocalTime startAfternoon;
 
   // end time of afternoon shift
   @Column(name = "end_afternoon", columnDefinition = "VARCHAR")
-  private LocalTime endAfternoon;
+  public LocalTime endAfternoon;
 
   @Column(name = "start_evening", columnDefinition = "VARCHAR")
-  private LocalTime startEvening;
+  public LocalTime startEvening;
 
   @Column(name = "end_evening", columnDefinition = "VARCHAR")
-  private LocalTime endEvening;
+  public LocalTime endEvening;
 
   // start time for morning lunch break
   @Column(name = "start_morning_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime startMorningLunchTime;
+  public LocalTime startMorningLunchTime;
 
   // end time for the morning lunch break
   @Column(name = "end_morning_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime endMorningLunchTime;
+  public LocalTime endMorningLunchTime;
 
   // start time for the lunch break
   @Column(name = "start_afternoon_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime startAfternoonLunchTime;
+  public LocalTime startAfternoonLunchTime;
 
   // end time for the lunch break
   @Column(name = "end_afternoon_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime endAfternoonLunchTime;
+  public LocalTime endAfternoonLunchTime;
 
   // start time for the lunch break
   @Column(name = "start_evening_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime startEveningLunchTime;
+  public LocalTime startEveningLunchTime;
 
   // end time for the lunch break
   @Column(name = "end_evening_lunch_time", columnDefinition = "VARCHAR")
-  private LocalTime endEveningLunchTime;
+  public LocalTime endEveningLunchTime;
 
   // total amount of working minutes
   @Column(name = "total_working_minutes")
-  private Integer totalWorkMinutes;
+  public Integer totalWorkMinutes;
 
   // Paid minuts per shift
   @Column(name = "paid_minutes")
-  private Integer paidMinutes;
+  public Integer paidMinutes;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "office_id")
-  private Office office;
+  public Office office;
   
   @Enumerated(EnumType.STRING)
   @Column(name = "calculation_type")
-  private CalculationType calculationType;
+  public CalculationType calculationType;
 
   /**
    * Quanti slot ci sono nella timetable.

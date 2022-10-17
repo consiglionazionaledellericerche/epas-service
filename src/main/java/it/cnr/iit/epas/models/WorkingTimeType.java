@@ -35,6 +35,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -44,6 +45,8 @@ import org.hibernate.envers.NotAudited;
  * @author Cristian Lucchesi
  * @author Dario Tagliaferri
  */
+@Getter
+@Setter
 @Entity
 @Audited
 @Table(name = "working_time_types")
@@ -58,44 +61,44 @@ public class WorkingTimeType extends BaseEntity {
   @NotNull
   @Column(nullable = false)
   //@Unique("office")
-  public String description;
+  private String description;
 
   @Getter
   @NotNull
-  public Boolean horizontal;
+  private Boolean horizontal;
 
   /**
    * True se il tipo di orario corrisponde ad un "turno di lavoro" false altrimenti.
    */
-  public boolean shift = false;
+  private boolean shift = false;
 
   @Column(name = "meal_ticket_enabled")
-  public boolean mealTicketEnabled = true;    //inutile
+  private boolean mealTicketEnabled = true;    //inutile
 
   @NotAudited
   @OneToMany(mappedBy = "workingTimeType")
-  public List<ContractWorkingTimeType> contractWorkingTimeType = Lists.newArrayList();
+  private List<ContractWorkingTimeType> contractWorkingTimeType = Lists.newArrayList();
 
   //@Required
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "office_id")
-  public Office office;
+  private Office office;
 
   @Column(name = "disabled")
-  public boolean disabled = false;
+  private boolean disabled = false;
 
   @Getter
   @OneToMany(mappedBy = "workingTimeType", fetch = FetchType.EAGER)
   @OrderBy("dayOfWeek")
-  public List<WorkingTimeTypeDay> workingTimeTypeDays = new ArrayList<WorkingTimeTypeDay>();
+  private List<WorkingTimeTypeDay> workingTimeTypeDays = new ArrayList<WorkingTimeTypeDay>();
   
-  public boolean enableAdjustmentForQuantity = true;
+  private boolean enableAdjustmentForQuantity = true;
 
   //@Unique(value = "office, externalId")
-  public String externalId;
+  private String externalId;
 
   @NotAudited
-  public LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 
   @PreUpdate
   @PrePersist

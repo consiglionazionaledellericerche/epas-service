@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.models.enumerate;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
@@ -39,13 +39,13 @@ public enum InformationType {
   TELEWORK_INFORMATION(false, true,
       Optional.of(EpasParam.TELEWORK_INFORMATION_I_III_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.TELEWORK_INFORMATION_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent()),
+      Optional.empty(),
+      Optional.empty()),
   SERVICE_INFORMATION(false, true,
-      Optional.absent(),
+      Optional.empty(),
       Optional.of(EpasParam.SERVICE_INFORMATION_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
-      Optional.absent(),
-      Optional.absent());
+      Optional.empty(),
+      Optional.empty());
   
   public final boolean alwaysSkipOfficeHeadApproval;
   public final boolean alwaysSkipAdministrativeApproval;

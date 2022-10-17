@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
@@ -33,7 +32,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-
 
 /**
  * Un periodo contrattuale.
@@ -109,8 +107,7 @@ public class ContractWorkingTimeType extends PropertyInPeriod implements IProper
   
   @Override
   public String getLabel() {
-    return this.workingTimeType.description;
+    return this.workingTimeType.getDescription();
   }
-
 
 }

@@ -16,9 +16,9 @@
  */
 package it.cnr.iit.epas.dao.filter;
 
-import com.google.common.base.Optional;
 import com.querydsl.core.BooleanBuilder;
 import it.cnr.iit.epas.models.QPerson;
+import java.util.Optional;
 
 /**
  * Filtri per le query.

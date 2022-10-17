@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -278,6 +278,12 @@ public enum DefaultAbsenceType {
       false, ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0,
       JustifiedTypeName.all_day, Sets.newHashSet(), null, null, false, true, true),
+
+  A_22("22", "Permesso 2h per figlio portatore di handicap con età <= 3 anni", false,
+      ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 120, false, 
+      MealTicketBehaviour.notAllowMealTicket, 0, null,
+      Sets.newHashSet(new Behaviour(JustifiedBehaviourName.no_overtime)), 
+          null, null, false, true, true),
 
   // Il tempo per buono pasto in questo momento è disabilitato. Capire.
   A_26("26", "Permesso per dipendente disabile L. 104/92 due ore giornaliere", false,
@@ -2530,7 +2536,7 @@ public enum DefaultAbsenceType {
         return Optional.of(defaultAbsenceType);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
 }

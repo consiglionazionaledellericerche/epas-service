@@ -19,8 +19,16 @@ package it.cnr.iit.epas.utils;
 import com.google.common.base.Preconditions;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.MonthDay;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Classe di utilità per la gestione delle date.
@@ -80,95 +88,95 @@ public class DateUtility {
     }
   }
 
-//  /**
-//   * Festività generale.
-//   *
-//   * @param officePatron giorno del patrono
-//   * @param date data da verificare
-//   * @return esito
-//   */
-//  public static boolean isGeneralHoliday(
-//      final Optional<MonthDay> officePatron, final LocalDate date) {
-//
-//    LocalDate easter = findEaster(date.getYear());
-//    LocalDate easterMonday = easter.plusDays(1);
-//    if (date.getDayOfMonth() == easter.getDayOfMonth()
-//            && date.getMonthOfYear() == easter.getMonthOfYear()) {
-//      return true;
-//    }
-//    if (date.getDayOfMonth() == easterMonday.getDayOfMonth()
-//            && date.getMonthOfYear() == easterMonday.getMonthOfYear()) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 12) && (date.getDayOfMonth() == 25)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 12) && (date.getDayOfMonth() == 26)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 12) && (date.getDayOfMonth() == 8)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 6) && (date.getDayOfMonth() == 2)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 4) && (date.getDayOfMonth() == 25)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 5) && (date.getDayOfMonth() == 1)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 8) && (date.getDayOfMonth() == 15)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 1) && (date.getDayOfMonth() == 1)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 1) && (date.getDayOfMonth() == 6)) {
-//      return true;
-//    }
-//    if ((date.getMonthOfYear() == 11) && (date.getDayOfMonth() == 1)) {
-//      return true;
-//    }
-//
-//    if (officePatron.isPresent()) {
-//
-//      return (date.getMonthOfYear() == officePatron.get().getMonthOfYear()
-//              && date.getDayOfMonth() == officePatron.get().getDayOfMonth());
-//    }
-//
-//    /*
-//     * ricorrenza centocinquantenario dell'unità d'Italia.
-//     */
-//    if (date.isEqual(LocalDate.of(2011, 3, 17))) {
-//      return true;
-//    }
-//
-//    return false;
-//  }
-//
-//  /**
-//   * Metodo che ritorna la lista dei giorni contenuti nell'intervallo begin-end.
-//   *
-//   * @param begin data iniziale.
-//   * @param end   data finale
-//   * @return lista di tutti i giorni fisici contenuti nell'intervallo [begin,end] estremi compresi,
-//   *     escluse le general holiday
-//   */
-//  public static List<LocalDate> getGeneralWorkingDays(final LocalDate begin, final LocalDate end) {
-//
-//    LocalDate day = begin;
-//    List<LocalDate> generalWorkingDays = new ArrayList<LocalDate>();
-//    while (!day.isAfter(end)) {
-//      if (!DateUtility.isGeneralHoliday(Optional.<MonthDay>absent(), day)) {
-//        generalWorkingDays.add(day);
-//      }
-//      day = day.plusDays(1);
-//    }
-//    return generalWorkingDays;
-//  }
-//
-//
+  /**
+   * Festività generale.
+   *
+   * @param officePatron giorno del patrono
+   * @param date data da verificare
+   * @return esito
+   */
+  public static boolean isGeneralHoliday(
+      final Optional<MonthDay> officePatron, final LocalDate date) {
+
+    LocalDate easter = findEaster(date.getYear());
+    LocalDate easterMonday = easter.plusDays(1);
+    if (date.getDayOfMonth() == easter.getDayOfMonth()
+            && date.getMonthValue() == easter.getMonthValue()) {
+      return true;
+    }
+    if (date.getDayOfMonth() == easterMonday.getDayOfMonth()
+            && date.getMonthValue() == easterMonday.getMonthValue()) {
+      return true;
+    }
+    if ((date.getMonthValue() == 12) && (date.getDayOfMonth() == 25)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 12) && (date.getDayOfMonth() == 26)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 12) && (date.getDayOfMonth() == 8)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 6) && (date.getDayOfMonth() == 2)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 4) && (date.getDayOfMonth() == 25)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 5) && (date.getDayOfMonth() == 1)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 8) && (date.getDayOfMonth() == 15)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 1) && (date.getDayOfMonth() == 1)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 1) && (date.getDayOfMonth() == 6)) {
+      return true;
+    }
+    if ((date.getMonthValue() == 11) && (date.getDayOfMonth() == 1)) {
+      return true;
+    }
+
+    if (officePatron.isPresent()) {
+
+      return (date.getMonthValue() == officePatron.get().getMonthValue()
+              && date.getDayOfMonth() == officePatron.get().getDayOfMonth());
+    }
+
+    /*
+     * ricorrenza centocinquantenario dell'unità d'Italia.
+     */
+    if (date.isEqual(LocalDate.of(2011, 3, 17))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Metodo che ritorna la lista dei giorni contenuti nell'intervallo begin-end.
+   *
+   * @param begin data iniziale.
+   * @param end   data finale
+   * @return lista di tutti i giorni fisici contenuti nell'intervallo [begin,end] estremi compresi,
+   *     escluse le general holiday
+   */
+  public static List<LocalDate> getGeneralWorkingDays(final LocalDate begin, final LocalDate end) {
+
+    LocalDate day = begin;
+    List<LocalDate> generalWorkingDays = new ArrayList<LocalDate>();
+    while (!day.isAfter(end)) {
+      if (!DateUtility.isGeneralHoliday(Optional.<MonthDay>empty(), day)) {
+        generalWorkingDays.add(day);
+      }
+      day = day.plusDays(1);
+    }
+    return generalWorkingDays;
+  }
+
+
   /**
    * Se la data è contenuta nell'intervallo.
    *
@@ -396,17 +404,18 @@ public class DateUtility {
         endOfMonth(LocalDate.of(year, month, 1)));
   }
 
-//  /**
-//   * Trasforma in nome il numero del mese passato come parametro.
-//   *
-//   * @param monthNumber mese da formattare.
-//   * @return il nome del mese con valore monthNumber, null in caso di argomento non valido.
-//   */
-//  public static String fromIntToStringMonth(final Integer monthNumber) {
-//    LocalDate date = new LocalDate().withMonthOfYear(monthNumber);
-//    return date.monthOfYear().getAsText();
-//  }
-//  
+  /**
+   * Trasforma in nome il numero del mese passato come parametro.
+   *
+   * @param monthNumber mese da formattare.
+   * @return il nome del mese con valore monthNumber, null in caso di argomento non valido.
+   */
+  public static String fromIntToStringMonth(final Integer monthNumber) {
+    LocalDate date = LocalDate.of(2022, monthNumber, 1);
+    return date.getMonth().getDisplayName(TextStyle.FULL, Locale.ITALY);
+    //return date.monthOfYear().getAsText();
+  }
+  
   /**
    * Trasforma in stringa il numero del mese aggiungendo '""' davanti.
    *
@@ -493,32 +502,32 @@ public class DateUtility {
     return endOfMonth(LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1));
   }
 
-//  /**
-//   * Ritorna la quantità di minuti trascorsi dall'inizio del giorno all'ora.
-//   *
-//   * @param time ora.
-//   * @return il numero di minuti trascorsi dall'inizio del giorno all'ora.
-//   */
-//  public static int toMinute(final LocalDateTime time) {
-//    return toMinute(time.toLocalTime());
-//  }
-//  
-//  
-//  /**
-//   * Il tempo dalla mezzanotte.
-//   *
-//   * @param time orario
-//   * @return tempo
-//   */
-//  public static int toMinute(final LocalTime time) {
-//    int dateToMinute = 0;
-//    if (time != null) {
-//      int hour = time.get(DateTimeFieldType.hourOfDay());
-//      int minute = time.get(DateTimeFieldType.minuteOfHour());
-//      dateToMinute = (MINUTE_IN_HOUR * hour) + minute;
-//    }
-//    return dateToMinute;
-//  }
+  /**
+   * Ritorna la quantità di minuti trascorsi dall'inizio del giorno all'ora.
+   *
+   * @param time ora.
+   * @return il numero di minuti trascorsi dall'inizio del giorno all'ora.
+   */
+  public static int toMinute(final LocalDateTime time) {
+    return toMinute(time.toLocalTime());
+  }
+  
+  
+  /**
+   * Il tempo dalla mezzanotte.
+   *
+   * @param time orario
+   * @return tempo
+   */
+  public static int toMinute(final LocalTime time) {
+    int dateToMinute = 0;
+    if (time != null) {
+      int hour = time.get(ChronoField.CLOCK_HOUR_OF_DAY);
+      int minute =  time.get(ChronoField.MINUTE_OF_DAY);
+      dateToMinute = (MINUTE_IN_HOUR * hour) + minute;
+    }
+    return dateToMinute;
+  }
 
   /**
    * Ritorna la differenza in minuti tra due orari.

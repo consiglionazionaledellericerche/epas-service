@@ -17,12 +17,12 @@
 
 package it.cnr.iit.epas.models.absences.definitions;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.GroupAbsenceTypePattern;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,6 +68,10 @@ public enum DefaultGroup {
   G_19P("19P - Permesso provv. per dipendente disabile L. 104/92 tre giorni mese", "",
       DefaultCategoryType.PERMESSI_PROVVISORI_104, 0, GroupAbsenceTypePattern.programmed,
       PeriodType.month, DefaultTakable.T_19P, DefaultComplation.C_19P, null, false, false),
+
+  G_22("22 - Permesso 2h per figlio portatore di handicap con età <= 3 anni", "",
+      DefaultCategoryType.ALTRI_104, 0, GroupAbsenceTypePattern.programmed, PeriodType.always,
+      DefaultTakable.T_22, null, null, false, false),
 
   G_26("26 - Permesso per dipendente disabile L. 104/92 due ore giornaliere", "",
       DefaultCategoryType.ALTRI_104, 0, GroupAbsenceTypePattern.programmed, PeriodType.always,
@@ -483,7 +487,7 @@ public enum DefaultGroup {
         return Optional.of(defaultGroup);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   /**

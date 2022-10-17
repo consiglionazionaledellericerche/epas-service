@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,17 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dao;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.inject.Provider;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
@@ -66,15 +63,19 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * DAO per le person.
  *
  * @author Marco Andreini
  */
+@Component
 public final class PersonDao extends DaoBase {
 
   @Inject
@@ -95,7 +96,7 @@ public final class PersonDao extends DaoBase {
     final QPerson person = QPerson.person;
     final Person result = getQueryFactory().selectFrom(person).where(person.id.eq(id))
         .fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
   
   /**
@@ -109,10 +110,10 @@ public final class PersonDao extends DaoBase {
     int year = yearMonth.getYear();
     int month = yearMonth.getMonthValue();
 
-    Optional<LocalDate> beginMonth = Optional.fromNullable(LocalDate.of(year, month, 1));
-    Optional<LocalDate> endMonth = Optional.fromNullable(DateUtility.endOfMonth(beginMonth.get()));
-    return personQuery(Optional.absent(), offices, false, beginMonth, endMonth,
-        true, Optional.absent(), Optional.absent(), false).fetch();
+    Optional<LocalDate> beginMonth = Optional.ofNullable(LocalDate.of(year, month, 1));
+    Optional<LocalDate> endMonth = Optional.ofNullable(DateUtility.endOfMonth(beginMonth.get()));
+    return personQuery(Optional.empty(), offices, false, beginMonth, endMonth,
+        true, Optional.empty(), Optional.empty(), false).fetch();
   }
 
   /**
@@ -123,10 +124,10 @@ public final class PersonDao extends DaoBase {
    * @return la lista delle persone di un certo ufficio attive in quell'anno/mese.
    */
   public List<Person> getActiveTechnicianInMonth(Set<Office> offices, YearMonth yearMonth) {
-    return personQuery(Optional.absent(), offices, true, 
+    return personQuery(Optional.empty(), offices, true, 
         Optional.of(yearMonth.atDay(1)), 
         Optional.of(DateUtility.endOfMonth(yearMonth.atDay(1))),
-        true, Optional.absent(), Optional.absent(), false).fetch();
+        true, Optional.empty(), Optional.empty(), false).fetch();
   }
 
   
@@ -143,9 +144,9 @@ public final class PersonDao extends DaoBase {
 
     return ModelQuery.wrap(
         // JPQLQuery
-        personQuery(name, offices, onlyTechnician, Optional.fromNullable(start),
-            Optional.fromNullable(end), onlyOnCertificate, Optional.absent(),
-            Optional.absent(), false),
+        personQuery(name, offices, onlyTechnician, Optional.ofNullable(start),
+            Optional.ofNullable(end), onlyOnCertificate, Optional.empty(),
+            Optional.empty(), false),
         // Expression
         person);
   }
@@ -162,9 +163,9 @@ public final class PersonDao extends DaoBase {
     }
     return ModelQuery.wrap(
         // JPQLQuery
-        personQuery(Optional.absent(), offices, false, Optional.absent(),
-            Optional.absent(), false, Optional.absent(),
-            Optional.absent(), false),
+        personQuery(Optional.empty(), offices, false, Optional.empty(),
+            Optional.empty(), false, Optional.empty(),
+            Optional.empty(), false),
         // Expression
         person);
 
@@ -181,9 +182,9 @@ public final class PersonDao extends DaoBase {
 
     return ModelQuery.wrap(
         // JPQLQuery
-        personQuery(name, offices, onlyTechnician, Optional.fromNullable(start),
-            Optional.fromNullable(end), onlyOnCertificate, Optional.absent(),
-            Optional.absent(), false),
+        personQuery(name, offices, onlyTechnician, Optional.ofNullable(start),
+            Optional.ofNullable(end), onlyOnCertificate, Optional.empty(),
+            Optional.empty(), false),
         // Expression
         person);
   }
@@ -195,8 +196,8 @@ public final class PersonDao extends DaoBase {
    * @return Restituisce la lista delle persone appartenenti all'ufficio specificato.
    */
   public List<Person> byOffice(Office office) {
-    return personQuery(Optional.absent(), ImmutableSet.of(office), false, Optional.absent(),
-        Optional.absent(), false, Optional.absent(), Optional.absent(), false).fetch();
+    return personQuery(Optional.empty(), ImmutableSet.of(office), false, Optional.empty(),
+        Optional.empty(), false, Optional.empty(), Optional.empty(), false).fetch();
   }
 
   /**
@@ -233,9 +234,9 @@ public final class PersonDao extends DaoBase {
     final QPerson person = QPerson.person;
 
     JPQLQuery<Person> query = personQuery(name, offices, onlyTechnician,
-        Optional.fromNullable(start),
-        Optional.fromNullable(end), onlyOnCertificate, Optional.absent(),
-        Optional.absent(), false);
+        Optional.ofNullable(start),
+        Optional.ofNullable(end), onlyOnCertificate, Optional.empty(),
+        Optional.empty(), false);
 
     SimpleResults<Person> result = ModelQuery.wrap(
         // JPQLQuery
@@ -243,8 +244,8 @@ public final class PersonDao extends DaoBase {
         // Expression
         person);
 
-    fetchContracts(Sets.newHashSet(result.list()), Optional.fromNullable(start),
-        Optional.fromNullable(end));
+    fetchContracts(Sets.newHashSet(result.list()), Optional.ofNullable(start),
+        Optional.ofNullable(end));
 
     return result;
 
@@ -272,8 +273,8 @@ public final class PersonDao extends DaoBase {
     final QPerson person = QPerson.person;
 
     return ModelQuery.wrap(personQuery(name, offices, onlyTechnician,
-        Optional.fromNullable(start), Optional.fromNullable(end), true,
-        Optional.fromNullable(competenceCode), personInCharge, false), person);
+        Optional.ofNullable(start), Optional.ofNullable(end), true,
+        Optional.ofNullable(competenceCode), personInCharge, false), person);
 
   }
   
@@ -292,8 +293,8 @@ public final class PersonDao extends DaoBase {
 
     Optional<LocalDate> beginMonth = Optional.of(LocalDate.of(year, month, 1));
     Optional<LocalDate> endMonth = Optional.of(DateUtility.endOfMonth(beginMonth.get()));
-    return personQuery(Optional.absent(), offices, false, beginMonth, endMonth,
-        true, Optional.fromNullable(code), Optional.absent(), false)
+    return personQuery(Optional.empty(), offices, false, beginMonth, endMonth,
+        true, Optional.ofNullable(code), Optional.empty(), false)
         .fetch();
   }
   
@@ -327,13 +328,13 @@ public final class PersonDao extends DaoBase {
     
     filterOffices(condition, offices);
     filterOnlyTechnician(condition, onlyTechnician);
-    filterContract(condition, Optional.fromNullable(start), Optional.fromNullable(end));
+    filterContract(condition, Optional.ofNullable(start), Optional.ofNullable(end));
     if (temporary) {
       filterTemporary(condition);
     }
     
 
-    filterCompetenceCodeGroupEnabled(condition, Optional.fromNullable(group), start);
+    filterCompetenceCodeGroupEnabled(condition, Optional.ofNullable(group), start);
     
     return query.where(condition).fetch();
 
@@ -355,9 +356,9 @@ public final class PersonDao extends DaoBase {
       offices.add(office.get());
     }
 
-    return personQuery(Optional.absent(), offices, false, Optional.absent(),
-        Optional.absent(), false, Optional.absent(),
-        Optional.absent(), true)
+    return personQuery(Optional.empty(), offices, false, Optional.empty(),
+        Optional.empty(), false, Optional.empty(),
+        Optional.empty(), true)
         .transform(groupBy(person.perseoId).as(person));
 
   }
@@ -377,9 +378,9 @@ public final class PersonDao extends DaoBase {
         .orderBy(contract.beginDate.desc()).fetch();
 
     if (results.isEmpty()) {
-      return Optional.absent();
+      return Optional.empty();
     }
-    return Optional.fromNullable(results.get(0));
+    return Optional.ofNullable(results.get(0));
 
   }
 
@@ -514,7 +515,7 @@ public final class PersonDao extends DaoBase {
     final Person result = getQueryFactory().selectFrom(person).where(person.email.eq(email))
         .fetchOne();
 
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
 
@@ -531,7 +532,7 @@ public final class PersonDao extends DaoBase {
     final Person result = getQueryFactory().selectFrom(person).where(person.eppn.eq(eppn))
         .fetchOne();
 
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
   /**
@@ -546,7 +547,7 @@ public final class PersonDao extends DaoBase {
         .where(person.fiscalCode.equalsIgnoreCase(fiscalCode))
         .fetchOne();
 
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
   
   /**
@@ -563,10 +564,10 @@ public final class PersonDao extends DaoBase {
       Long id, String eppn, String email, Long perseoId, String fiscalCode, String number) {
     if (id == null && eppn == null && email == null && perseoId == null 
         && fiscalCode == null && number == null) {
-      return Optional.absent();
+      return Optional.empty();
     }
     if (id != null) {
-      return Optional.fromNullable(getPersonById(id));
+      return Optional.ofNullable(getPersonById(id));
     }
     if (!Strings.isNullOrEmpty(eppn)) {
       return byEppn(eppn);
@@ -575,15 +576,15 @@ public final class PersonDao extends DaoBase {
       return byEmail(email);  
     }
     if (perseoId != null) {
-      return Optional.fromNullable(getPersonByPerseoId(perseoId));  
+      return Optional.ofNullable(getPersonByPerseoId(perseoId));  
     }
     if (!Strings.isNullOrEmpty(fiscalCode)) {
       return byFiscalCode(fiscalCode);
     }
     if (!Strings.isNullOrEmpty(number)) {
-      return Optional.fromNullable(getPersonByNumber(number));
+      return Optional.ofNullable(getPersonByNumber(number));
     }
-    return Optional.absent();
+    return Optional.empty();
   }
   
   /**
@@ -674,9 +675,9 @@ public final class PersonDao extends DaoBase {
 
     final QPerson person = QPerson.person;
 
-    return personQuery(Optional.absent(), Sets.newHashSet(office), false,
-        Optional.fromNullable(LocalDate.now()), Optional.fromNullable(LocalDate.now()),
-        true, Optional.absent(), Optional.absent(), false)
+    return personQuery(Optional.empty(), Sets.newHashSet(office), false,
+        Optional.ofNullable(LocalDate.now()), Optional.ofNullable(LocalDate.now()),
+        true, Optional.empty(), Optional.empty(), false)
         .where(person.number.isNotNull()).fetch();
   }
 
@@ -984,7 +985,7 @@ public final class PersonDao extends DaoBase {
 
     final QPerson person = QPerson.person;
 
-    Optional<LocalDate> beginMonth = Optional.fromNullable(LocalDate.of(year, month, 1));
+    Optional<LocalDate> beginMonth = Optional.ofNullable(LocalDate.of(year, month, 1));
     Optional<LocalDate> endMonth = Optional.of(DateUtility.endOfMonth(beginMonth.get()));
 
     JPQLQuery<?> lightQuery =
@@ -992,8 +993,8 @@ public final class PersonDao extends DaoBase {
         .leftJoin(person.personConfigurations, QPersonConfiguration.personConfiguration)
             .orderBy(person.surname.asc(), person.name.asc()).distinct();
 
-    lightQuery = personQuery(lightQuery, Optional.absent(), offices, false, beginMonth,
-        endMonth, true, Optional.absent(), false, onlyPeopleInTelework);
+    lightQuery = personQuery(lightQuery, Optional.empty(), offices, false, beginMonth,
+        endMonth, true, Optional.empty(), false, onlyPeopleInTelework);
 
     return lightQuery
         .select(Projections.bean(PersonLite.class, person.id, person.name, person.surname)).fetch();
@@ -1013,8 +1014,8 @@ public final class PersonDao extends DaoBase {
         getQueryFactory().from(person).leftJoin(person.contracts, QContract.contract)
             .orderBy(person.surname.asc(), person.name.asc()).distinct();
 
-    lightQuery = personQuery(lightQuery, Optional.absent(), offices, false, Optional.absent(),
-        Optional.absent(), true, Optional.absent(), false, false);
+    lightQuery = personQuery(lightQuery, Optional.empty(), offices, false, Optional.empty(),
+        Optional.empty(), true, Optional.empty(), false, false);
 
     return lightQuery
         .select(Projections.bean(PersonLite.class, person.id, person.name, person.surname))

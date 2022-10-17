@@ -17,10 +17,10 @@
 
 package it.cnr.iit.epas.models;
 
+import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
-import it.cnr.iit.epas.wrapper.IWrapperContract;
 import java.time.LocalDate;
 import java.util.Optional;
 import javax.persistence.Column;
@@ -33,11 +33,14 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 /**
  * Riepilogo mensile di un contratto.
  */
+@Getter
+@Setter
 @Entity
 @Table(
     name = "contract_month_recap",

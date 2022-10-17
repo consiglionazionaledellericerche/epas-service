@@ -14,10 +14,8 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -25,6 +23,7 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultCategoryType;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.contractuals.ContractualClause;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
@@ -126,7 +125,7 @@ public class CategoryGroupAbsenceType extends BaseEntity
       } 
     }
     
-    return Optional.absent();
+    return Optional.empty();
   }
   
   /**

@@ -32,6 +32,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
@@ -40,6 +42,8 @@ import org.hibernate.envers.Audited;
  *
  * @author Cristian Lucchesi
  */
+@Getter
+@Setter
 @ToString
 @Audited
 @Entity

@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.dao;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.querydsl.core.BooleanBuilder;
@@ -35,8 +34,8 @@ import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,6 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  */
 @Component
-@Singleton
 public class OfficeDao extends DaoBase {
 
   public static final Splitter TOKEN_SPLITTER = Splitter.on(' ')
@@ -64,7 +62,7 @@ public class OfficeDao extends DaoBase {
    */
   public Optional<Office> byIdOrCodeOrCodeId(Long id, String code, String codeId) {
     if (id != null) {
-      return Optional.fromNullable(getOfficeById(id));
+      return Optional.ofNullable(getOfficeById(id));
     }
     if (!Strings.isNullOrEmpty(code)) {
       return byCode(code);
@@ -72,7 +70,7 @@ public class OfficeDao extends DaoBase {
     if (!Strings.isNullOrEmpty(codeId)) {
       return byCodeId(codeId);
     }
-    return Optional.absent();
+    return Optional.empty();
   }
   
   /**
@@ -127,7 +125,7 @@ public class OfficeDao extends DaoBase {
     final QOffice office = QOffice.office;
     final Office result = getQueryFactory().selectFrom(office)
         .where(office.code.eq(code)).fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
 
   }
 
@@ -142,7 +140,7 @@ public class OfficeDao extends DaoBase {
     final Office result =  getQueryFactory().selectFrom(office)
         .where(office.codeId.eq(codeId))
         .fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
   /**
@@ -155,7 +153,7 @@ public class OfficeDao extends DaoBase {
     final QOffice office = QOffice.office;
     final Office result = getQueryFactory().selectFrom(office)
         .where(office.perseoId.eq(perseoId)).fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
 
@@ -284,7 +282,7 @@ public class OfficeDao extends DaoBase {
     final QInstitute institute = QInstitute.institute;
     final Institute result = queryFactory.selectFrom(institute).where(institute.cds.eq(cds))
         .fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
   /**
@@ -298,7 +296,7 @@ public class OfficeDao extends DaoBase {
     final QInstitute institute = QInstitute.institute;
     final Institute result = queryFactory.selectFrom(institute).where(institute.id.eq(id))
         .fetchOne();
-    return Optional.fromNullable(result);
+    return Optional.ofNullable(result);
   }
 
   /**

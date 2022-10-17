@@ -34,16 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public abstract class CommonBaseEntityDao<T extends BaseEntity> implements IBaseDao<T> {
 
-  @Autowired
+  @Inject
   protected JPQLQueryFactory query;
-  @Autowired
+  @Inject
   public JpaRepository<T, Integer> repository;
 
   @Getter
