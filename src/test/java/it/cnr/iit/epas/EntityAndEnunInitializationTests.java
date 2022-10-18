@@ -36,8 +36,15 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * Test elementari sul salvataggio di alcune entity di base
+ * e sull'inizializzazione degli entity per la gestione
+ * delle assenze.
+ *
+ * @author Cristian Lucchesi
+ */
 @SpringBootTest
-class EpasApplicationTests {
+class EntityAndEnunInitializationTests {
 
   @Inject
   private PersonDao personDao;

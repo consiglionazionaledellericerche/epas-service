@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas;
+package it.cnr.iit.epas.absences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class Absences661Test { // extends UnitTest {
+public class Absences661Test {
   
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
   public static final LocalDate MID_2016 = LocalDate.of(2016, 7, 1);
@@ -111,7 +111,7 @@ public class Absences661Test { // extends UnitTest {
     assertEquals(periodChain.periods.get(0).getPeriodTakenAmount(), 120);
     
   }
-  
+
   /**
    * Quando un dipendente non lavora per tutto l'anno e/o ha un tempo a lavoro part time, le 18
    * ore annue di 661 si riducono proporzionalmente.
@@ -121,11 +121,11 @@ public class Absences661Test { // extends UnitTest {
   public void adjustmentLimit() {
         
     absenceService.enumInitializator();
-    
+
     //creare il gruppo
     GroupAbsenceType group661 = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
-    
+
     // CASO 1 
     //la persona inizia a lavorare a metà anno
     Person person = h2Examples.normalEmployee(MID_2016, Optional.empty());
@@ -141,7 +141,7 @@ public class Absences661Test { // extends UnitTest {
     //dal 2016-7-1 al 2016-12-31 sono 184 giorni su 366. 
     // Col corretto comportamento il codice 661 non si riproporziona
     assertEquals(periodChain.periods.get(0).getPeriodTakableAmount(), 1080);
-    
+
     //CASO 2 
     //la persona ha il part time 50%
     person = h2Examples.partTime50Employee(BEGIN_2016);
@@ -174,7 +174,7 @@ public class Absences661Test { // extends UnitTest {
 
     
   }
-  
+
   /**
    * Quando il mio orario di lavoro è 7:12 la conversione del 661G deve essere 6 ore.
    */

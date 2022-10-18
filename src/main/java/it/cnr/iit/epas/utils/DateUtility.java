@@ -17,7 +17,6 @@
 package it.cnr.iit.epas.utils;
 
 import com.google.common.base.Preconditions;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +24,7 @@ import java.time.MonthDay;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -292,8 +292,9 @@ public class DateUtility {
    * @return numero di giorni
    */
   public static long daysInInterval(final DateInterval inter) {
-
-    long days = Duration.between(inter.getBegin(), inter.getEnd()).toDays() + 1;
+    //Attenzione utilizzare sempre ChronoUnit.DAYS.betwee non Period.between,
+    //vedi https://www.baeldung.com/java-date-difference
+    long days = ChronoUnit.DAYS.between(inter.getBegin(), inter.getEnd()) + 1;
 
     //controllo compatibilità con vecchio algoritmo.
     if (inter.getBegin().getYear() == inter.getEnd().getYear()) {
@@ -551,4 +552,7 @@ public class DateUtility {
     return timeToMinute;
   }
 
+  public static void main(String[] args) {
+    System.out.println(daysInInterval(DateInterval.build(LocalDate.now(), LocalDate.now().plusDays(1))));
+  }
 }
