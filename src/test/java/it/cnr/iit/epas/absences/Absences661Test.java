@@ -42,18 +42,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class Absences661Test {
-  
+
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
   public static final LocalDate MID_2016 = LocalDate.of(2016, 7, 1);
   public static final LocalDate END_2016 = LocalDate.of(2016, 12, 31);
-  
+
   public static final LocalDate FERIAL_1_2016 = LocalDate.of(2016, 11, 7); //lun
   public static final LocalDate FERIAL_2_2016 = LocalDate.of(2016, 11, 8); //mar
   public static final LocalDate FERIAL_3_2016 = LocalDate.of(2016, 11, 9); //mer
-  
+
   public static final LocalDate BEGIN_2018 = LocalDate.of(2018, 1, 1);
   public static final LocalDate FERIAL_1_2018 = LocalDate.of(2018, 8, 6); //lun
-  
+
   @Inject 
   private H2Examples h2Examples;
   @Inject 
@@ -64,20 +64,20 @@ public class Absences661Test {
   private AbsenceComponentDao absenceComponentDao;
   @Inject
   private AbsenceService absenceService;
-  
+
   @Test
   @Transactional
   public void test() {
-    
+
     absenceService.enumInitializator();
-    
+
     //creare il gruppo
     GroupAbsenceType group661 = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
-    
+
     //creare la persona
     Person person = h2Examples.normalEmployee(BEGIN_2016, Optional.empty());
-    
+
     //creare la periodChain
     PeriodChain periodChain = serviceFactories.buildPeriodChainPhase1(person, group661, 
         LocalDate.of(2016, 11, 15), 
@@ -85,12 +85,12 @@ public class Absences661Test {
         person.getContracts(),
         Lists.newArrayList(), 
         Lists.newArrayList());
-    
+
     assertEquals(periodChain.from, BEGIN_2016);
     assertEquals(periodChain.to, END_2016);
     assertTrue(!periodChain.periods.isEmpty());
     assertEquals(periodChain.periods.get(0).getPeriodTakableAmount(), 1080);
-    
+
     //creare le assenze da considerare
     Absence absence1 = h2AbsenceSupport.absenceInstance(DefaultAbsenceType.A_661MO, 
         FERIAL_1_2016, Optional.of(JustifiedTypeName.specified_minutes), 80);
@@ -102,14 +102,14 @@ public class Absences661Test {
     //creare la assenza da inserire
     Absence toInsert = h2AbsenceSupport.absenceInstance(DefaultAbsenceType.A_661MO, 
         FERIAL_3_2016, Optional.of(JustifiedTypeName.specified_minutes), 40);
-    
+
     serviceFactories.buildPeriodChainPhase2(periodChain, toInsert, 
         allPersistedAbsences, groupPersistedAbsences, person.getContracts());
-    
+
     assertNotNull(periodChain.successPeriodInsert);
     assertEquals(periodChain.successPeriodInsert.attemptedInsertAbsence, toInsert);
     assertEquals(periodChain.periods.get(0).getPeriodTakenAmount(), 120);
-    
+
   }
 
   /**
@@ -205,5 +205,5 @@ public class Absences661Test {
     assertEquals(residual.periods.iterator().next().getPeriodTakenAmount(), 360);
     
   }
-  
+
 }

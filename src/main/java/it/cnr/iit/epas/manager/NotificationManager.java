@@ -1124,7 +1124,7 @@ public class NotificationManager {
    */
   private void notifyCompetence(Competence competence, User currentUser, Crud operation) {
     Verify.verifyNotNull(competence);
-    final Person person = competence.person;
+    final Person person = competence.getPerson();
     String template;
     if (Crud.CREATE == operation) {
       template = "%s ha inserito una nuova competenza: %s - %s";

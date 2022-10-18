@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.models.base;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,7 +23,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -36,7 +34,6 @@ import org.hibernate.envers.NotAudited;
  * @author Cristian Lucchesi
  */
 @ToString
-@EqualsAndHashCode
 @Getter
 @Setter
 @MappedSuperclass
@@ -48,7 +45,6 @@ public abstract class BaseEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @JsonIgnore
   @NotAudited
   @Version
   private Integer version;
@@ -61,6 +57,31 @@ public abstract class BaseEntity implements Serializable {
   @Transient
   public String getLabel() {
     return toString();
+  }
+
+  /**
+   * Due entity sono uguali se sono lo stesso oggetto o se hanno lo stesso id.
+   * Idee prelevate dal Play1.
+   */
+  @Override
+  public boolean equals(Object other) {
+    if (other == null) {
+      return false;
+    }
+    if (this == other) {
+      return true;
+    }
+
+    Long key = this.getId();
+    if (key == null) {
+      return false;
+    }
+
+    if (!this.getClass().isAssignableFrom(other.getClass())) {
+      return false;
+    }
+
+    return key.equals(((BaseEntity) other).getId());
   }
 
 }
