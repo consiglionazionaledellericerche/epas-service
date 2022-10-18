@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
@@ -24,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 
 
@@ -33,6 +33,7 @@ import org.hibernate.envers.Audited;
  *
  * @author Cristian Lucchesi
  */
+@NoArgsConstructor
 @Audited
 @Entity
 @Table(name = "certificated_data")

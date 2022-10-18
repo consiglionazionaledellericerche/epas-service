@@ -625,10 +625,10 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     List<Absence> absences = query.fetch();
     Map<Person, List<Absence>> map = Maps.newHashMap();
     for (Absence trouble : absences) {
-      List<Absence> personAbsences = map.get(trouble.personDay.getPerson());
+      List<Absence> personAbsences = map.get(trouble.getPersonDay().getPerson());
       if (personAbsences == null) {
         personAbsences = Lists.newArrayList();
-        map.put(trouble.personDay.getPerson(), personAbsences);
+        map.put(trouble.getPersonDay().getPerson(), personAbsences);
       }
       personAbsences.add(trouble);
     }

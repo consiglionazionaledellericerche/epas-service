@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.flows;
 
 import it.cnr.iit.epas.models.User;
@@ -30,8 +29,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -39,7 +42,10 @@ import lombok.ToString;
  *
  * @author Dario Tagliaferri
  */
-@Getter
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @ToString
 @Entity

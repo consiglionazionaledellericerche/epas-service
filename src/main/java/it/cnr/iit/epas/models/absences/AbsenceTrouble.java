@@ -24,20 +24,27 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.envers.Audited;
 
 /**
  * Problema su un'assenza.
  */
-@Getter
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @Audited
 @Entity
 @Table(name = "absence_troubles")
 public class AbsenceTrouble extends BaseEntity {
-
+  
   private static final long serialVersionUID = -5066077912284859060L;
 
   @Enumerated(EnumType.STRING)

@@ -73,19 +73,20 @@ public class AbsenceType extends BaseEntity {
   @NotNull
   public String code;
 
-  public String certificateCode;
+  @Column(name = "certification_code")
+  private String certificateCode;
 
-  public String description;
+  private String description;
 
-  public LocalDate validFrom;
+  private LocalDate validFrom;
 
-  public LocalDate validTo;
+  private LocalDate validTo;
 
   @Column(name = "internal_use")
-  public boolean internalUse = false;
+  private boolean internalUse = false;
 
   @Column(name = "considered_week_end")
-  public boolean consideredWeekEnd = false;
+  private boolean consideredWeekEnd = false;
   
 //  @Getter
 //  @Column(name = "time_for_mealticket")
@@ -94,56 +95,56 @@ public class AbsenceType extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "meal_ticket_behaviour")
-  public MealTicketBehaviour mealTicketBehaviour;
+  private MealTicketBehaviour mealTicketBehaviour;
 
-  public Integer justifiedTime;
+  private Integer justifiedTime;
 
-  public boolean toUpdate = true;
+  private boolean toUpdate = true;
 
   @ManyToMany
   @JoinTable(name = "absence_types_justified_types", 
       joinColumns = { @JoinColumn(name = "absence_types_id") }, 
       inverseJoinColumns = { @JoinColumn(name = "justified_types_id") })
-  public Set<JustifiedType> justifiedTypesPermitted = Sets.newHashSet();
+  private Set<JustifiedType> justifiedTypesPermitted = Sets.newHashSet();
 
   @OneToMany(mappedBy = "absenceType")
-  public Set<AbsenceTypeJustifiedBehaviour> justifiedBehaviours = Sets.newHashSet();
+  private Set<AbsenceTypeJustifiedBehaviour> justifiedBehaviours = Sets.newHashSet();
 
-  public Integer replacingTime;
+  private Integer replacingTime;
 
   @ManyToOne
   @JoinColumn(name = "replacing_type_id")
-  public JustifiedType replacingType;
+  private JustifiedType replacingType;
 
   @OneToMany(mappedBy = "absenceType")
   @LazyCollection(LazyCollectionOption.EXTRA)
-  public Set<Absence> absences = Sets.newHashSet();
+  private Set<Absence> absences = Sets.newHashSet();
 
   @ManyToMany(mappedBy = "takenCodes")
-  public Set<TakableAbsenceBehaviour> takenGroup = Sets.newHashSet();
+  private Set<TakableAbsenceBehaviour> takenGroup = Sets.newHashSet();
 
   @ManyToMany(mappedBy = "takableCodes")
-  public Set<TakableAbsenceBehaviour> takableGroup = Sets.newHashSet();
+  private Set<TakableAbsenceBehaviour> takableGroup = Sets.newHashSet();
 
   @ManyToMany(mappedBy = "complationCodes")
-  public Set<ComplationAbsenceBehaviour> complationGroup = Sets.newHashSet();
+  private Set<ComplationAbsenceBehaviour> complationGroup = Sets.newHashSet();
 
   @ManyToMany(mappedBy = "replacingCodes")
-  public Set<ComplationAbsenceBehaviour> replacingGroup = Sets.newHashSet();
+  private Set<ComplationAbsenceBehaviour> replacingGroup = Sets.newHashSet();
 
   /**
    * Eventuale documentazione specifica del codice da mostrare ai dipendenti ed
    * agli amministratori del personale.
    */
-  public String documentation; 
+  private String documentation; 
 
   /**
    * per il controllo della prendibilità della reperibilità sul giorno di assenza.
    */
   @Column(name = "reperibility_compatible")
-  public boolean reperibilityCompatible;
+  private boolean reperibilityCompatible;
 
-  public boolean isRealAbsence = true;
+  private boolean isRealAbsence = true;
 
   // Metodi
   

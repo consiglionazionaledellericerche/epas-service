@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.db.h2support.H2Examples;
 import it.cnr.iit.epas.db.h2support.base.H2AbsenceSupport;
@@ -36,10 +35,12 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@Component
+@SpringBootTest
 public class Absences661Test { // extends UnitTest {
   
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
@@ -54,17 +55,18 @@ public class Absences661Test { // extends UnitTest {
   public static final LocalDate FERIAL_1_2018 = LocalDate.of(2018, 8, 6); //lun
   
   @Inject 
-  private static H2Examples h2Examples;
+  private H2Examples h2Examples;
   @Inject 
-  private static H2AbsenceSupport h2AbsenceSupport;
+  private H2AbsenceSupport h2AbsenceSupport;
   @Inject 
-  private static ServiceFactories serviceFactories;
+  private ServiceFactories serviceFactories;
   @Inject
-  private static AbsenceComponentDao absenceComponentDao;
+  private AbsenceComponentDao absenceComponentDao;
   @Inject
-  private static AbsenceService absenceService;
+  private AbsenceService absenceService;
   
   @Test
+  @Transactional
   public void test() {
     
     absenceService.enumInitializator();
@@ -115,6 +117,7 @@ public class Absences661Test { // extends UnitTest {
    * ore annue di 661 si riducono proporzionalmente.
    */
   @Test
+  @Transactional
   public void adjustmentLimit() {
         
     absenceService.enumInitializator();
@@ -176,6 +179,7 @@ public class Absences661Test { // extends UnitTest {
    * Quando il mio orario di lavoro è 7:12 la conversione del 661G deve essere 6 ore.
    */
   @Test
+  @Transactional
   public void sixHourRule() {
 
     absenceService.enumInitializator();

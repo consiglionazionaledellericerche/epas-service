@@ -44,6 +44,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -85,9 +86,9 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private LocalDate birthday;
 
-//  @Email
 //  @Unique
 //  @As(binder = NullStringBinder.class)
+  @Email
   @NotNull
   private String email;
 
@@ -125,16 +126,16 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    * e date.
    */
   @OneToMany(mappedBy = "person")
-  public List<Affiliation> affiliations = Lists.newArrayList();
+  private List<Affiliation> affiliations = Lists.newArrayList();
 
   @OneToMany(mappedBy = "manager")
-  public List<Group> groupsPeople = Lists.newArrayList();
+  private List<Group> groupsPeople = Lists.newArrayList();
 
   /**
    * relazione con i turni.
    */
   @OneToMany(mappedBy = "supervisor")
-  public List<ShiftCategories> shiftCategories = Lists.newArrayList();
+  private List<ShiftCategories> shiftCategories = Lists.newArrayList();
 
   @OneToMany(mappedBy = "supervisor")
   private List<PersonReperibilityType> reperibilityTypes = Lists.newArrayList();

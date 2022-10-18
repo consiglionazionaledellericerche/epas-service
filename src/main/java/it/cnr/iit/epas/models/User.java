@@ -43,15 +43,19 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 /**
  * Un utente di ePAS.
  */
+@Getter
+@Setter
 @Entity
 @Audited
-
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
 public class User extends BaseEntity {
 
@@ -60,9 +64,9 @@ public class User extends BaseEntity {
   //@Unique
   @NotNull
   @Column(nullable = false)
-  public String username;
+  private String username;
 
-  @Min(5)
+  @Size(min=5)
   public String password;
 
   //@NotAudited

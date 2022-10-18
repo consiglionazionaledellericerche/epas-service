@@ -161,7 +161,7 @@ public class AbsenceManager {
       for (Absence absence : insertReport.absencesToPersist) {
         PersonDay personDay = personDayManager
             .getOrCreateAndPersistPersonDay(person, absence.getAbsenceDate());
-        absence.personDay = personDay;
+        absence.setPersonDay(personDay);
         if (justifiedType.getName().equals(JustifiedTypeName.recover_time)) {
 
           absence = handleRecoveryAbsence(absence, person, recoveryDate);
@@ -426,8 +426,8 @@ public class AbsenceManager {
     Absence absence = new Absence();
     absence.date = date;
     absence.absenceType = absenceType;
-    if (absence.absenceType.justifiedTypesPermitted.size() == 1) {
-      absence.justifiedType = absence.absenceType.justifiedTypesPermitted.iterator().next();
+    if (absence.absenceType.getJustifiedTypesPermitted().size() == 1) {
+      absence.justifiedType = absence.absenceType.getJustifiedTypesPermitted().iterator().next();
     } else if (justifiedMinutes.isPresent()) {
       absence.justifiedMinutes = justifiedMinutes.get();
       absence.justifiedType = absenceComponentDao
@@ -438,7 +438,7 @@ public class AbsenceManager {
     }
 
     //se non devo considerare festa ed è festa non inserisco l'assenza
-    if (!absenceType.consideredWeekEnd && personDayManager.isHoliday(person, date)) {
+    if (!absenceType.isConsideredWeekEnd() && personDayManager.isHoliday(person, date)) {
       ar.setHoliday(true);
       ar.setWarning(AbsencesResponse.NON_UTILIZZABILE_NEI_FESTIVI);
       ar.setAbsenceInError(absence);
@@ -469,7 +469,7 @@ public class AbsenceManager {
 
       if (persist) {
         //creo l'assenza e l'aggiungo
-        absence.personDay = pd;
+        absence.setPersonDay(pd);
         absence.absenceType = absenceType;
         PersonDay beginAbsence = personDayDao.getPersonDay(person, startAbsence).orElse(null);
       //FIXME: ripristinare prima del pasasggio a spring boot
@@ -484,8 +484,8 @@ public class AbsenceManager {
 //        }
 
         log.info("Inserita nuova assenza {} per {} in data: {}",
-            absence.absenceType.code, absence.personDay.getPerson().getFullname(),
-            absence.personDay.getDate());
+            absence.absenceType.code, absence.getPersonDay().getPerson().getFullname(),
+            absence.getPersonDay().getDate());
 
         pd.getAbsences().add(absence);
         personDayDao.merge(pd);
@@ -683,7 +683,7 @@ public class AbsenceManager {
    * @param absence l'assenza da rimuovere
    */
   public void removeAbsence(Absence absence) {
-    val pd = absence.personDay;
+    val pd = absence.getPersonDay();
       //FIXME: correggere prima del passaggio a spring boot 
 //    if (absence.absenceFile.exists()) {
 //      absence.absenceFile.getFile().delete();
@@ -772,8 +772,8 @@ public class AbsenceManager {
   public List<Person> getPersonsFromAbsentDays(List<Absence> absencePersonDays) {
     List<Person> absentPersons = new ArrayList<Person>();
     for (Absence abs : absencePersonDays) {
-      if (!absentPersons.contains(abs.personDay.getPerson())) {
-        absentPersons.add(abs.personDay.getPerson());
+      if (!absentPersons.contains(abs.getPersonDay().getPerson())) {
+        absentPersons.add(abs.getPersonDay().getPerson());
       }
     }
 
@@ -825,7 +825,7 @@ public class AbsenceManager {
 
     @Override
     public LocalDate apply(Absence absence) {
-      return absence.personDay.getDate();
+      return absence.getPersonDay().getDate();
     }
   }
 }

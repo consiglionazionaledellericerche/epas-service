@@ -784,7 +784,7 @@ public class AbsenceService {
         templateRow.groupAbsenceType = groupAbsenceType;
         insertReport.insertTemplateRows.add(templateRow);
         insertReport.absencesToPersist.add(templateRow.absence);
-        if (!templateRow.absence.absenceType.reperibilityCompatible
+        if (!templateRow.absence.absenceType.isReperibilityCompatible()
             && absenceResponse.isDayInReperibility()) {
           templateRow.absenceWarnings.add(AbsenceError.builder().absence(templateRow.absence)
               .absenceProblem(AbsenceProblem.InReperibility).build());
@@ -957,7 +957,7 @@ public class AbsenceService {
    * Inizializza il db.
    */
   public void enumInitializator() {
-
+    log.info("Initializing all epas enums (tab, category, absenceTypes, complations, takables, group");
     if (absenceTypeDao.findAll().size() > 0) {
       return;
     }
@@ -968,7 +968,7 @@ public class AbsenceService {
     enumAllineator.handleComplations(true);
     enumAllineator.handleTakables(true);
     enumAllineator.handleGroup(true);
-
+    log.info("Finished to initialize all epas enums");
   }
 
   /**

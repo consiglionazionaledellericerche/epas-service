@@ -27,12 +27,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 /**
  * Dati per l'inizializzazione di un gruppo di assenza di un dipendente.
  */
+@NoArgsConstructor
 @Getter
 @Setter
 @Audited

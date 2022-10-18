@@ -564,7 +564,7 @@ public class ContractMonthRecapManager {
           absenceDao.absenceInPeriod(cmr.person, begin, end, "91");
 
       for (Absence abs : riposi) {
-        cmr.riposiCompensativiMinuti += wrapperFactory.get().create(abs.personDay)
+        cmr.riposiCompensativiMinuti += wrapperFactory.get().create(abs.getPersonDay())
             .getWorkingTimeTypeDay().get().workingTime;
         cmr.recoveryDayUsed++;
       }

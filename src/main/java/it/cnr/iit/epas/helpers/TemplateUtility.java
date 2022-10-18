@@ -546,7 +546,7 @@ public class TemplateUtility {
     // Per poter nominarlo amministratore tecnico di ogni sede di milano
     // Decidere una soluzione migliore e meno sbrigativa.
 
-    if (Security.getUser().get().username.equals("developer")) {
+    if (Security.getUser().get().getUsername().equals("developer")) {
       offices = Sets.newHashSet(officeDao.allOffices().list());
     }
 
@@ -796,7 +796,7 @@ public class TemplateUtility {
    */
   public boolean isTakableOnly(AbsenceType absenceType, GroupAbsenceType group) {
     if (group.takableAbsenceBehaviour != null
-        && group.takableAbsenceBehaviour.takableCodes.contains(absenceType)
+        && group.takableAbsenceBehaviour.getTakableCodes().contains(absenceType)
         && !isComplationCode(absenceType, group)) {
       return true;
     }

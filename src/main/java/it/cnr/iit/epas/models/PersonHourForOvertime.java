@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
@@ -24,12 +23,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 /**
  * Ore associate ad una persona per straordinario.
  */
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "person_hour_for_overtime")

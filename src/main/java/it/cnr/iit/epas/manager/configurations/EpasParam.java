@@ -1064,7 +1064,7 @@ public enum EpasParam {
       }
 
       if (value instanceof LocalTime) {
-        DateTimeFormatter.ofPattern(LOCALTIME_FORMATTER).format((LocalTime) value);
+        return DateTimeFormatter.ofPattern(LOCALTIME_FORMATTER).format((LocalTime) value);
       }
 
       if (value instanceof LocalDate) {

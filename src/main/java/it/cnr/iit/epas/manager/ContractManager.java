@@ -166,7 +166,7 @@ public class ContractManager {
           + "preesistenti");
       return false;
     }
-    emp.get().merge(contract);
+    emp.get().persist(contract);
     //contract.save();
 
     contract.vacationPeriods.addAll(contractVacationPeriods(contract));
