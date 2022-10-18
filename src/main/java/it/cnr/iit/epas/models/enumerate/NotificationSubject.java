@@ -16,6 +16,8 @@
  */
 package it.cnr.iit.epas.models.enumerate;
 
+import java.util.Map;
+
 //import com.google.common.collect.Maps;
 //import java.util.Map;
 //import models.Person;
@@ -95,13 +97,15 @@ public enum NotificationSubject {
    */
   PERSON_HAS_CHANGED_OFFICE;
 
-//  private String toUrl(String action, Map<String, Object> params) {
+  private String toUrl(String action, Map<String, Object> params) {
+    //FIXME: da sistemare prima del passaggio a spring boot
+    return "/";
 //    if (params == null) {
 //      return Router.reverse(action).url;
 //    } else {
 //      return Router.reverse(action, params).url;
 //    }
-//  }
+  }
 
   /**
    * Url della show dell'oggetto riferito nella notifica.
@@ -109,7 +113,9 @@ public enum NotificationSubject {
    * @param referenceId id dell'oggetto
    * @return url con la show dell'oggetto
    */
-//  public String toUrl(Long referenceId) {
+  public String toUrl(Long referenceId) {
+    //FIXME: da sistemare prima del passaggio a spring boot
+    return "/";
 //    final Map<String, Object> params = Maps.newHashMap();
 //    switch (this) {
 //      case COMMENT:
@@ -177,7 +183,7 @@ public enum NotificationSubject {
 //      default:
 //        throw new IllegalStateException("unknown target: " + this.name());
 //    }
-//  }
+  }
 
   public boolean isRedirect() {
     return this != SYSTEM;

@@ -502,13 +502,13 @@ public class VacationSituation {
         this.year = year;
         this.date = date;
         this.contract = contract;
-        this.contract.merge();
+        //this.contract.merge();
       } else {
         this.type = vacationSummary.type;
         this.year = vacationSummary.year;
         this.date = vacationSummary.date;
         this.contract = vacationSummary.contract;
-        this.contract.merge();
+        //this.contract.merge();
         this.total = vacationSummary.total();
         this.postPartum = vacationSummary.postPartum().size();
         this.accrued = vacationSummary.accrued();

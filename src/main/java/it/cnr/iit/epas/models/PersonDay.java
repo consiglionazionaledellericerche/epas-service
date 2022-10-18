@@ -14,13 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
 import it.cnr.iit.epas.models.enumerate.Troubles;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,10 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.springframework.beans.BeanUtils;
 
 /**
  * Classe che rappresenta un giorno, sia esso lavorativo o festivo di una persona.
@@ -45,6 +47,7 @@ import org.hibernate.envers.NotAudited;
  * @author Cristian Lucchesi
  * @author Dario Tagliaferri
  */
+@Slf4j
 @Entity
 @Audited
 @Table(name = "person_days",
@@ -110,13 +113,13 @@ public class PersonDay extends BaseEntity {
    */
   private Integer decurtedMeal = 0;
 
-  private boolean isTicketAvailable;
+  public boolean isTicketAvailable;
 
-  private boolean isTicketForcedByAdmin;
+  public boolean isTicketForcedByAdmin;
 
-  private boolean isWorkingInAnotherPlace;
+  public boolean isWorkingInAnotherPlace;
 
-  private boolean isHoliday;
+  public boolean isHoliday;
 
   /**
    * Tempo lavorato in un giorno di festa.
@@ -251,25 +254,19 @@ public class PersonDay extends BaseEntity {
   }
 
 
-//  /**
-//   * metodo che resetta un personday azzerando i valori in esso contenuti.
-//   */
-//  @Transient
-//  public void reset() {
-//    long id = this.getId();
-//    try {
-//      //XXX: verificare che sia utuale a quella di apache commons beanutils
-//      BeanUtils.copyProperties(this, new PersonDay(this.person, this.date));
-//      this.setId(id);
-//      //FIXME: save non più utilizzabile qui
-//      //this.save();
-//    } catch (IllegalAccessException iae) {
-//      log.error("Impossibile accedere all'istanza dell'oggetto {}", this.getClass());
-//    } catch (InvocationTargetException ite) {
-//      log.error("Errore sulla chiamata del metodo");
-//    }
-//  }
-  
+  /**
+   * metodo che resetta un personday azzerando i valori in esso contenuti.
+   */
+  @Transient
+  public void reset() {
+    long id = this.getId();
+    //XXX: verificare che sia uguale a quella di apache commons beanutils
+    BeanUtils.copyProperties(this, new PersonDay(this.person, this.date));
+    this.setId(id);
+    //FIXME: save non più utilizzabile qui
+    //this.save();
+  }
+
   @Transient
   public boolean hasError(Troubles trouble) {
     return this.troubles.stream().anyMatch(error -> error.getCause() == trouble);

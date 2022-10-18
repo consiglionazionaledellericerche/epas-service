@@ -16,8 +16,11 @@
  */
 package it.cnr.iit.epas;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.db.h2support.H2Examples;
 import it.cnr.iit.epas.db.h2support.base.H2AbsenceSupport;
@@ -34,8 +37,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class Absences661Test { // extends UnitTest {
   
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
@@ -173,23 +177,23 @@ public class Absences661Test { // extends UnitTest {
    */
   @Test
   public void sixHourRule() {
-    
+
     absenceService.enumInitializator();
-    
+
     //creare la persona con orario normale (7:12)
     Person person = h2Examples.normalEmployee(BEGIN_2016, Optional.empty());
-    
+
     // persisto una assenza di tipo 661G
     h2AbsenceSupport.absence(
         DefaultAbsenceType.A_661G, FERIAL_1_2018, Optional.empty(), 0, person);
-    
+
     // eseguo lo scanner
     absenceService.scanner(person, BEGIN_2018);
-    
+
     //fetch del gruppo
     GroupAbsenceType group661 = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
-    
+
     // calcolo la situazione residuale
     PeriodChain residual = absenceService.residual(person, group661, BEGIN_2018);
 

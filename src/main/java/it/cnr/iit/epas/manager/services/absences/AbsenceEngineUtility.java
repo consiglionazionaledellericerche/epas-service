@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.manager.services.absences;
 
 import com.google.common.collect.Lists;
@@ -47,12 +46,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import javax.inject.Inject;
+import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.MonthDay;
 
 /**
  * Funzioni di utilità per i calcoli sulle assenze.
  */
+@Component
 public class AbsenceEngineUtility {
   
   private final Integer unitReplacingAmount = 1 * 100;

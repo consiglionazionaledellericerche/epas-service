@@ -25,7 +25,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
+@Component
 public class QualificationDao extends DaoBase<Qualification>{
 
   @Inject

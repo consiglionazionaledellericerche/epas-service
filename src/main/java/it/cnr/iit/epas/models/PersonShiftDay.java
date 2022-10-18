@@ -35,12 +35,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
  * Giornata in turno di una persona.
  */
+@Getter
+@Setter
 @Entity
 @Audited
 @Table(name = "person_shift_days")

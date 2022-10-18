@@ -17,7 +17,7 @@
 package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;

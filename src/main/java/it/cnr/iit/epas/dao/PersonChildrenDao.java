@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.dao;
 
-import com.google.inject.Provider;
+import javax.inject.Provider;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonChildren;
@@ -24,12 +24,14 @@ import it.cnr.iit.epas.models.QPersonChildren;
 import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao per i PersonChildren.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class PersonChildrenDao extends DaoBase<PersonChildren> {
 
   @Inject

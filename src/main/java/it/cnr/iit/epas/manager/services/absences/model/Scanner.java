@@ -203,7 +203,7 @@ public class Scanner {
       }
       //eseguire
       for (AbsenceTrouble toDelete : toDeleteTroubles) {
-        if (absenceTroubleDao.isPersisten(toDelete)) { //FIXME Issue #324
+        if (absenceTroubleDao.isPersistent(toDelete)) { //FIXME Issue #324
           absenceTroubleDao.refresh(toDelete);
           log.info("Rimuovo problem {} {}", absence.toString(), toDelete.getTrouble());
           absenceTroubleDao.delete(toDelete);

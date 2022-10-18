@@ -54,7 +54,7 @@ public abstract class DaoBase<T> {
     emp.get().refresh(object);
   }
 
-  public boolean isPersisten(T object) {
+  public boolean isPersistent(T object) {
     return emp.get().contains(object);
   }
 

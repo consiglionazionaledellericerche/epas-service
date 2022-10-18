@@ -18,7 +18,7 @@ package it.cnr.iit.epas.db.h2support.base;
 
 import java.util.Optional;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 import it.cnr.iit.epas.dao.WorkingTimeTypeDao;
 import it.cnr.iit.epas.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDayDefinition;
 import it.cnr.iit.epas.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDefinition;
@@ -26,8 +26,10 @@ import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class H2WorkingTimeTypeSupport {
 
   private final WorkingTimeTypeDao workingTimeTypeDao;

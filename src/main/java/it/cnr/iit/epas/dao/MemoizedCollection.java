@@ -16,24 +16,20 @@
  */
 package it.cnr.iit.epas.dao;
 
-import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.models.absences.QTakableAbsenceBehaviour;
-import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import org.springframework.stereotype.Component;
+import java.util.Collection;
 
-@Component
-public class TakableAbsenceBehaviourDao extends DaoBase<TakableAbsenceBehaviour>{
+/**
+ * Interface to store the results of expensive function calls and return the cached Collection when
+ * the same inputs occur again.
+ *
+ * @author Cristian Lucchesi
+ */
+public interface MemoizedCollection<T> {
 
-  @Inject
-  TakableAbsenceBehaviourDao(Provider<EntityManager> emp) {
-    super(emp);
-  }
+  long getCount();
 
-  public List<TakableAbsenceBehaviour> findAll() {
-    return getQueryFactory().selectFrom(QTakableAbsenceBehaviour.takableAbsenceBehaviour).fetch();
-  }
+  Collection<T> getPartialList();
+
+  Collection<T> getList();
+
 }

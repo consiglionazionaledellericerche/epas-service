@@ -34,12 +34,14 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao per l'accesso alle informazioni degli AbsenceType.
  *
  * @author Dario Tagliaferri
  */
+@Component
 public class AbsenceTypeDao extends DaoBase<AbsenceType> {
 
   @Inject

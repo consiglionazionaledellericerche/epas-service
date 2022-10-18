@@ -18,8 +18,12 @@ package it.cnr.iit.epas.manager.services.absences;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
+import it.cnr.iit.epas.dao.AbsenceTypeJustifiedBehaviourDao;
+import it.cnr.iit.epas.dao.CategoryGroupAbsenceTypeDao;
+import it.cnr.iit.epas.dao.CategoryTabDao;
+import it.cnr.iit.epas.dao.ComplationAbsenceBehaviourDao;
+import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
 import it.cnr.iit.epas.dao.TakableAbsenceBehaviourDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.models.absences.AbsenceType;
@@ -43,26 +47,46 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * Allinea gli Enum presenti nel codice e che rappresentato la configurazione
  * delle assenze con quelli presenti nel db.
  */
+@Slf4j
+@Component
 public class EnumAllineator {
   
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceTypeDao absenceTypeDao;
   private final TakableAbsenceBehaviourDao takableAbsenceBehaviourDao;
+  private final ComplationAbsenceBehaviourDao complationAbsenceBehaviourDao;
+  private final GroupAbsenceTypeDao groupAbsenceTypeDao;
+  private final CategoryGroupAbsenceTypeDao categoryGroupAbsenceTypeDao;
+  private final CategoryTabDao categoryTabDao;
+  private final AbsenceTypeJustifiedBehaviourDao absenceTypeJustifiedBehaviourDao;
 
   /**
    * Constructor for injection.
    */
   @Inject
   public EnumAllineator(AbsenceComponentDao absenceComponentDao, AbsenceTypeDao absenceTypeDao,
-      TakableAbsenceBehaviourDao takableAbsenceBehaviourDao) {
+      TakableAbsenceBehaviourDao takableAbsenceBehaviourDao, 
+      ComplationAbsenceBehaviourDao complationAbsenceBehaviourDao,
+      GroupAbsenceTypeDao groupAbsenceTypeDao,
+      CategoryGroupAbsenceTypeDao categoryGroupAbsenceTypeDao,
+      CategoryTabDao categoryTabDao,
+      AbsenceTypeJustifiedBehaviourDao absenceTypeJustifiedBehaviourDao) {
     this.absenceComponentDao = absenceComponentDao;
     this.absenceTypeDao = absenceTypeDao;
     this.takableAbsenceBehaviourDao = takableAbsenceBehaviourDao;
+    this.complationAbsenceBehaviourDao = complationAbsenceBehaviourDao;
+    this.groupAbsenceTypeDao = groupAbsenceTypeDao;
+    this.categoryGroupAbsenceTypeDao = categoryGroupAbsenceTypeDao;
+    this.categoryTabDao = categoryTabDao;
+    this.absenceTypeJustifiedBehaviourDao = absenceTypeJustifiedBehaviourDao;
   }
  
   /**
@@ -71,6 +95,7 @@ public class EnumAllineator {
   public void handleAbsenceTypes(boolean initialization) {
     //i codici che non esistono li creo
     for (DefaultAbsenceType defaultAbsenceType : DefaultAbsenceType.values()) {
+      log.debug("Analizzo il codice: {}", defaultAbsenceType.getCode());
       if (initialization || !absenceComponentDao
           .absenceTypeByCode(defaultAbsenceType.getCode()).isPresent())  {
         //creazione entity a partire dall'enumerato
@@ -108,11 +133,9 @@ public class EnumAllineator {
           absenceType.setValidFrom(defaultAbsenceType.get().validFrom);
           absenceType.setValidTo(defaultAbsenceType.get().validTo);
           absenceTypeDao.merge(absenceType);
-          //absenceType.save();
           updateBehaviourSet(absenceType, absenceType.getJustifiedBehaviours(), 
               defaultAbsenceType.get().behaviour);
           absenceTypeDao.merge(absenceType);
-          //absenceType.save();
         }
 
       } else {
@@ -127,7 +150,7 @@ public class EnumAllineator {
         }
         for (ComplationAbsenceBehaviour complation : absenceType.getComplationGroup()) {
           complation.getComplationCodes().remove(absenceType);
-          complation.save();
+          complationAbsenceBehaviourDao.merge(complation);
         }
         //e li disabilito
         absenceType.setValidFrom(LocalDate.of(2016, 01, 01));
@@ -154,10 +177,10 @@ public class EnumAllineator {
               absenceComponentDao.absenceTypeByCode(defaultType.getCode()).get());
         }
         for (DefaultAbsenceType defaultType : defaultComplation.replacingCodes) {
-          complation.replacingCodes.add(
+          complation.getReplacingCodes().add(
               absenceComponentDao.absenceTypeByCode(defaultType.getCode()).get());
         }
-        complation.save();
+        complationAbsenceBehaviourDao.persist(complation);
       }
     }
     
@@ -165,22 +188,22 @@ public class EnumAllineator {
       return;
     }
     
-    List<ComplationAbsenceBehaviour> allComplation = ComplationAbsenceBehaviour.findAll();
+    List<ComplationAbsenceBehaviour> allComplation = complationAbsenceBehaviourDao.findAll();
     for (ComplationAbsenceBehaviour complation : allComplation) {
       Optional<DefaultComplation> defaultComplation = DefaultComplation.byName(complation); 
       if (defaultComplation.isPresent()) {
         //i complation che esistono le allineo all'enum
-        complation.amountType = defaultComplation.get().amountType;
-        updateSet(complation.complationCodes, defaultComplation.get().complationCodes);
-        updateSet(complation.replacingCodes, defaultComplation.get().replacingCodes);
-        complation.save();
+        complation.setAmountType(defaultComplation.get().amountType);
+        updateSet(complation.getComplationCodes(), defaultComplation.get().complationCodes);
+        updateSet(complation.getReplacingCodes(), defaultComplation.get().replacingCodes);
+        complationAbsenceBehaviourDao.merge(complation);
       } else {
         //le complation che non sono enumerate le elimino
-        for (GroupAbsenceType group : complation.groupAbsenceTypes) {
-          group.complationAbsenceBehaviour = null;
-          group.save();
+        for (GroupAbsenceType group : complation.getGroupAbsenceTypes()) {
+          group.setComplationAbsenceBehaviour(null);
+          groupAbsenceTypeDao.merge(group);
         }
-        complation.delete();
+        complationAbsenceBehaviourDao.delete(complation);
       }
     }
     
@@ -196,19 +219,19 @@ public class EnumAllineator {
           .takableAbsenceBehaviourByName(defaultTakable.name()).isPresent()) {
         //creazione entity a partire dall'enumerato
         TakableAbsenceBehaviour takable = new TakableAbsenceBehaviour();
-        takable.name = defaultTakable.name();
-        takable.amountType = defaultTakable.amountType;
-        takable.fixedLimit = defaultTakable.fixedLimit;
-        takable.takableAmountAdjustment = defaultTakable.takableAmountAdjustment;
+        takable.setName(defaultTakable.name());
+        takable.setAmountType(defaultTakable.amountType);
+        takable.setFixedLimit(defaultTakable.fixedLimit);
+        takable.setTakableAmountAdjustment(defaultTakable.takableAmountAdjustment);
         for (DefaultAbsenceType defaultType : defaultTakable.takenCodes) {
-          takable.takenCodes.add(
+          takable.getTakenCodes().add(
               absenceComponentDao.absenceTypeByCode(defaultType.getCode()).get());
         }
         for (DefaultAbsenceType defaultType : defaultTakable.takableCodes) {
-          takable.takableCodes.add(
+          takable.getTakableCodes().add(
               absenceComponentDao.absenceTypeByCode(defaultType.getCode()).get());
         }
-        takable.save();
+        takableAbsenceBehaviourDao.persist(takable);
       }
     }
     
@@ -216,24 +239,24 @@ public class EnumAllineator {
       return;
     }
     
-    List<TakableAbsenceBehaviour> allTakable = TakableAbsenceBehaviour.findAll();
+    List<TakableAbsenceBehaviour> allTakable = takableAbsenceBehaviourDao.findAll();
     for (TakableAbsenceBehaviour takable : allTakable) {
       Optional<DefaultTakable> defaultTakable = DefaultTakable.byName(takable); 
       if (defaultTakable.isPresent()) {
         //i takable che esistono le allineo all'enum
-        takable.amountType = defaultTakable.get().amountType;
-        takable.fixedLimit = defaultTakable.get().fixedLimit;
-        takable.takableAmountAdjustment = defaultTakable.get().takableAmountAdjustment;
-        updateSet(takable.takenCodes, defaultTakable.get().takenCodes);
-        updateSet(takable.takableCodes, defaultTakable.get().takableCodes);
-        takable.save();
+        takable.setAmountType(defaultTakable.get().amountType);
+        takable.setFixedLimit(defaultTakable.get().fixedLimit);
+        takable.setTakableAmountAdjustment(defaultTakable.get().takableAmountAdjustment);
+        updateSet(takable.getTakenCodes(), defaultTakable.get().takenCodes);
+        updateSet(takable.getTakableCodes(), defaultTakable.get().takableCodes);
+        takableAbsenceBehaviourDao.merge(takable);        
       } else {
         //i takable che non sono enumerate  le elimino
-        for (GroupAbsenceType group : takable.groupAbsenceTypes) {
-          group.takableAbsenceBehaviour = null;
-          group.save();
+        for (GroupAbsenceType group : takable.getGroupAbsenceTypes()) {
+          group.setTakableAbsenceBehaviour(null);
+          groupAbsenceTypeDao.merge(group);
         }
-        takable.delete();
+        takableAbsenceBehaviourDao.delete(takable);
       }
     }
   }
@@ -249,30 +272,30 @@ public class EnumAllineator {
           || !absenceComponentDao.groupAbsenceTypeByName(defaultGroup.name()).isPresent()) {
         //creazione entity a partire dall'enumerato
         GroupAbsenceType group = new GroupAbsenceType();
-        group.name = defaultGroup.name();
-        group.description = defaultGroup.description;
-        group.chainDescription = defaultGroup.chainDescription;
-        group.pattern = defaultGroup.pattern;
-        group.category = absenceComponentDao.categoryByName(defaultGroup.category.name()).get();
-        group.priority = defaultGroup.priority;
-        group.periodType = defaultGroup.periodType;
-        group.takableAbsenceBehaviour = absenceComponentDao
-            .takableAbsenceBehaviourByName(defaultGroup.takable.name()).get();
+        group.setName(defaultGroup.name());
+        group.setDescription(defaultGroup.description);
+        group.setChainDescription(defaultGroup.chainDescription);
+        group.setPattern(defaultGroup.pattern);
+        group.setCategory(absenceComponentDao.categoryByName(defaultGroup.category.name()).get());
+        group.setPriority(defaultGroup.priority);
+        group.setPeriodType(defaultGroup.periodType);
+        group.setTakableAbsenceBehaviour(absenceComponentDao
+            .takableAbsenceBehaviourByName(defaultGroup.takable.name()).get());
         if (defaultGroup.complation != null) {
-          group.complationAbsenceBehaviour = absenceComponentDao
-              .complationAbsenceBehaviourByName(defaultGroup.complation.name()).get();
+          group.setComplationAbsenceBehaviour(absenceComponentDao
+              .complationAbsenceBehaviourByName(defaultGroup.complation.name()).get());
         } else {
-          group.complationAbsenceBehaviour = null;
+          group.setComplationAbsenceBehaviour(null);
         }
         if (defaultGroup.nextGroupToCheck != null) {
           //N.B. le chain vanno enumerate in ordine inverso! es 24 -> 25 -> 23 in modo da
           // trovare le dipendenze a questo punto già create.
-          group.nextGroupToCheck = absenceComponentDao
-              .groupAbsenceTypeByName(defaultGroup.nextGroupToCheck.name()).get();
+          group.setNextGroupToCheck(absenceComponentDao
+              .groupAbsenceTypeByName(defaultGroup.nextGroupToCheck.name()).get());
         }
-        group.automatic = defaultGroup.automatic;
-        group.initializable = defaultGroup.initializable;
-        group.save();
+        group.setAutomatic(defaultGroup.automatic);
+        group.setInitializable(defaultGroup.initializable);
+        groupAbsenceTypeDao.persist(group);
       }
     }
     
@@ -288,30 +311,30 @@ public class EnumAllineator {
         group.setChainDescription(defaultGroup.get().chainDescription);
         group.setCategory(absenceComponentDao
             .categoryByName(defaultGroup.get().category.name()).get());
-        group.priority = defaultGroup.get().priority;
+        group.setPriority(defaultGroup.get().priority);
         //OSS: capire la politica di aggiornamento... dovrei essere bravo a modificare l'enumerato
         //in modo da evitare effetti collaterali (spostando i codici da takable a taken) e per
         //correggere errori. Questi cambiamenti possono avvenire automaticamente.
-        group.pattern = defaultGroup.get().pattern;
-        group.periodType = defaultGroup.get().periodType;
-        group.automatic = defaultGroup.get().automatic;
-        group.initializable = defaultGroup.get().initializable;
+        group.setPattern(defaultGroup.get().pattern);
+        group.setPeriodType(defaultGroup.get().periodType);
+        group.setAutomatic(defaultGroup.get().automatic);
+        group.setInitializable(defaultGroup.get().initializable);
         if (defaultGroup.get().nextGroupToCheck != null) {
-          group.nextGroupToCheck = absenceComponentDao
-              .groupAbsenceTypeByName(defaultGroup.get().nextGroupToCheck.name()).get();
+          group.setNextGroupToCheck(absenceComponentDao
+              .groupAbsenceTypeByName(defaultGroup.get().nextGroupToCheck.name()).get());
         }
-        group.takableAbsenceBehaviour = absenceComponentDao
-            .takableAbsenceBehaviourByName(defaultGroup.get().takable.name()).get();
+        group.setTakableAbsenceBehaviour(absenceComponentDao
+            .takableAbsenceBehaviourByName(defaultGroup.get().takable.name()).get());
         if (defaultGroup.get().complation != null) {
-          group.complationAbsenceBehaviour = absenceComponentDao
-              .complationAbsenceBehaviourByName(defaultGroup.get().complation.name()).get();
+          group.setComplationAbsenceBehaviour(absenceComponentDao
+              .complationAbsenceBehaviourByName(defaultGroup.get().complation.name()).get());
         } else {
-          group.complationAbsenceBehaviour = null;
+          group.setComplationAbsenceBehaviour(null);
         }
-        group.save();
+        groupAbsenceTypeDao.merge(group);
       } else {
         //i gruppi non enumerati li elimino
-        group.delete();
+        groupAbsenceTypeDao.delete(group);
       }
     }
   }
@@ -327,11 +350,11 @@ public class EnumAllineator {
           || !absenceComponentDao.categoryByName(defaultCategory.name()).isPresent()) {
         //creazione entity a partire dall'enumerato
         CategoryGroupAbsenceType category = new CategoryGroupAbsenceType();
-        category.name = defaultCategory.name();
-        category.description = defaultCategory.description;
-        category.priority = defaultCategory.priority;
-        category.tab = absenceComponentDao.tabByName(defaultCategory.categoryTab.name()).get();
-        category.save();
+        category.setName(defaultCategory.name());
+        category.setDescription(defaultCategory.description);
+        category.setPriority(defaultCategory.priority);
+        category.setTab(absenceComponentDao.tabByName(defaultCategory.categoryTab.name()).get());
+        categoryGroupAbsenceTypeDao.persist(category);
       }
     }
     
@@ -343,15 +366,15 @@ public class EnumAllineator {
       Optional<DefaultCategoryType> defaultCategory = DefaultCategoryType.byName(categoryTab); 
       if (defaultCategory.isPresent()) {
         //le category che esistono le allineo all'enum
-        categoryTab.description = defaultCategory.get().description;
-        categoryTab.priority = defaultCategory.get().priority;
-        categoryTab.tab = absenceComponentDao
-            .tabByName(defaultCategory.get().categoryTab.name()).get();
-        categoryTab.save();
+        categoryTab.setDescription(defaultCategory.get().description);
+        categoryTab.setPriority(defaultCategory.get().priority);
+        categoryTab.setTab(absenceComponentDao
+            .tabByName(defaultCategory.get().categoryTab.name()).get());
+        categoryGroupAbsenceTypeDao.merge(categoryTab);
       } else {
         //le category che non sono enumerate e non sono associate ad alcun gruppo le elimino
-        if (categoryTab.groupAbsenceTypes.isEmpty()) {
-          categoryTab.delete();
+        if (categoryTab.getGroupAbsenceTypes().isEmpty()) {
+          categoryGroupAbsenceTypeDao.delete(categoryTab);
         }
       }
     }
@@ -367,10 +390,10 @@ public class EnumAllineator {
       if (initialization || !absenceComponentDao.tabByName(defaultTab.name()).isPresent()) {
         //creazione entity a partire dall'enumerato
         CategoryTab categoryTab = new CategoryTab();
-        categoryTab.name = defaultTab.name();
-        categoryTab.description = defaultTab.description;
-        categoryTab.priority = defaultTab.priority;
-        categoryTab.save();
+        categoryTab.setName(defaultTab.name());
+        categoryTab.setDescription(defaultTab.description);
+        categoryTab.setPriority(defaultTab.priority);
+        categoryTabDao.persist(categoryTab);
       }
     }
     
@@ -382,13 +405,13 @@ public class EnumAllineator {
       Optional<DefaultTab> defaultTab = DefaultTab.byName(categoryTab); 
       if (defaultTab.isPresent()) {
         //le tab che esistono le allineo all'enumerato
-        categoryTab.description = defaultTab.get().description;
-        categoryTab.priority = defaultTab.get().priority;
-        categoryTab.save();
+        categoryTab.setDescription(defaultTab.get().description);
+        categoryTab.setPriority(defaultTab.get().priority);
+        categoryTabDao.merge(categoryTab);
       } else {
         //le tab che non sono enumerate e non sono associate ad alcuna categoria le elimino
-        if (categoryTab.categoryGroupAbsenceTypes.isEmpty()) {
-          categoryTab.delete();
+        if (categoryTab.getCategoryGroupAbsenceTypes().isEmpty()) {
+          categoryTabDao.delete(categoryTab);
         }
       }
     }
@@ -413,7 +436,7 @@ public class EnumAllineator {
     //Eliminare quelli non più contenuti
     List<AbsenceType> toRemove = Lists.newArrayList();
     for (AbsenceType absenceType : entitySet) {
-      if (!newStringSet.contains(absenceType.code)) {
+      if (!newStringSet.contains(absenceType.getCode())) {
         toRemove.add(absenceType);
       }
     }
@@ -487,8 +510,8 @@ public class EnumAllineator {
     for (AbsenceTypeJustifiedBehaviour behaviour : entitySet) {
       boolean equal = false;
       for (Behaviour defaultBehaviour : newEnumSet) { 
-        if (defaultBehaviour.name.equals(behaviour.justifiedBehaviour.name) 
-            && AbsenceType.safeEqual(defaultBehaviour.data, behaviour.data)) {
+        if (defaultBehaviour.name.equals(behaviour.getJustifiedBehaviour().getName()) 
+            && AbsenceType.safeEqual(defaultBehaviour.data, behaviour.getData())) {
           equal = true;
         }
       }
@@ -498,7 +521,7 @@ public class EnumAllineator {
     }
     for (AbsenceTypeJustifiedBehaviour behaviour : toRemove) {
       entitySet.remove(behaviour);
-      behaviour.delete();
+      absenceTypeJustifiedBehaviourDao.delete(behaviour);
       edited = true;
     }
     
@@ -509,17 +532,17 @@ public class EnumAllineator {
       
       boolean equal = false;
       for (AbsenceTypeJustifiedBehaviour behaviour : entitySet) { 
-        if (enumBehaviour.name.equals(behaviour.justifiedBehaviour.name) 
-            && AbsenceType.safeEqual(enumBehaviour.data, behaviour.data)) {
+        if (enumBehaviour.name.equals(behaviour.getJustifiedBehaviour().getName()) 
+            && AbsenceType.safeEqual(enumBehaviour.data, behaviour.getData())) {
           equal = true;
         }
       }
       if (!equal) {
         AbsenceTypeJustifiedBehaviour b = new AbsenceTypeJustifiedBehaviour();
-        b.absenceType = absenceType;
-        b.justifiedBehaviour = justifiedBehaviour;
-        b.data = enumBehaviour.data;
-        b.save();
+        b.setAbsenceType(absenceType);
+        b.setJustifiedBehaviour(justifiedBehaviour);
+        b.setData(enumBehaviour.data);
+        absenceTypeJustifiedBehaviourDao.persist(b);
         entitySet.add(b);
         edited = true;
       }
@@ -544,21 +567,21 @@ public class EnumAllineator {
       absenceType.getJustifiedTypesPermitted().add(absenceComponentDao
           .getOrBuildJustifiedType(justifiedName));
     }
-    absenceType.justifiedTime = defaultAbsenceType.justifiedTime;
-    absenceType.consideredWeekEnd = defaultAbsenceType.consideredWeekEnd;
-    absenceType.mealTicketBehaviour = defaultAbsenceType.mealTicketBehaviour;
-    absenceType.reperibilityCompatible = defaultAbsenceType.reperibilityCompatible;
-    absenceType.replacingTime = defaultAbsenceType.replacingTime;
+    absenceType.setJustifiedTime(defaultAbsenceType.justifiedTime);
+    absenceType.setConsideredWeekEnd(defaultAbsenceType.consideredWeekEnd);
+    absenceType.setMealTicketBehaviour(defaultAbsenceType.mealTicketBehaviour);
+    absenceType.setReperibilityCompatible(defaultAbsenceType.reperibilityCompatible);
+    absenceType.setReplacingTime(defaultAbsenceType.replacingTime);
     if (defaultAbsenceType.replacingType != null) {
-      absenceType.replacingType = absenceComponentDao
-          .getOrBuildJustifiedType(defaultAbsenceType.replacingType);
+      absenceType.setReplacingType(absenceComponentDao
+          .getOrBuildJustifiedType(defaultAbsenceType.replacingType));
     } else {
-      absenceType.replacingType = null;
+      absenceType.setReplacingType(null);
     }
-    absenceType.validFrom = defaultAbsenceType.validFrom;
-    absenceType.validTo = defaultAbsenceType.validTo;
-    absenceType.save();
-    updateBehaviourSet(absenceType, absenceType.justifiedBehaviours, 
+    absenceType.setValidFrom(defaultAbsenceType.validFrom);
+    absenceType.setValidTo(defaultAbsenceType.validTo);
+    absenceTypeDao.persist(absenceType);
+    updateBehaviourSet(absenceType, absenceType.getJustifiedBehaviours(), 
         defaultAbsenceType.behaviour);
     return absenceType;
   }

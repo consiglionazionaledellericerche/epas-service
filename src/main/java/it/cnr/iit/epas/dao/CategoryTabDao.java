@@ -17,8 +17,8 @@
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.models.absences.QTakableAbsenceBehaviour;
-import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
+import it.cnr.iit.epas.models.absences.CategoryTab;
+import it.cnr.iit.epas.models.absences.QCategoryTab;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -26,14 +26,14 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TakableAbsenceBehaviourDao extends DaoBase<TakableAbsenceBehaviour>{
+public class CategoryTabDao extends DaoBase<CategoryTab>{
 
   @Inject
-  TakableAbsenceBehaviourDao(Provider<EntityManager> emp) {
+  CategoryTabDao(Provider<EntityManager> emp) {
     super(emp);
   }
 
-  public List<TakableAbsenceBehaviour> findAll() {
-    return getQueryFactory().selectFrom(QTakableAbsenceBehaviour.takableAbsenceBehaviour).fetch();
+  public List<CategoryTab> findAll() {
+    return getQueryFactory().selectFrom(QCategoryTab.categoryTab).fetch();
   }
 }

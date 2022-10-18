@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.models.enumerate;
 
-//import models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.AbsenceType;
 
 /**
  * Enumerato per il mapping del tipo assenza.
@@ -48,7 +48,7 @@ public enum AbsenceTypeMapping {
     return code;
   }
 
-//  public boolean is(AbsenceType absenceType) {
-//    return absenceType != null && absenceType.code.equals(code);
-//  }
+  public boolean is(AbsenceType absenceType) {
+    return absenceType != null && absenceType.getCode().equals(code);
+  }
 }

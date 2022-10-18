@@ -20,10 +20,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import javax.inject.Inject;
-import helpers.TemplateUtility;
+import it.cnr.iit.epas.dao.AbsenceTypeDao;
+import it.cnr.iit.epas.dao.CategoryTabDao;
+import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
+import it.cnr.iit.epas.dao.JustifiedTypeDao;
 import it.cnr.iit.epas.dao.PersonChildrenDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
+import it.cnr.iit.epas.helpers.TemplateUtility;
+import it.cnr.iit.epas.manager.AbsenceManager;
+import it.cnr.iit.epas.manager.SecureManager;
 import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.manager.response.AbsenceInsertReport;
@@ -34,6 +40,7 @@ import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
+import it.cnr.iit.epas.manager.services.absences.model.Scanner;
 import it.cnr.iit.epas.manager.services.absences.model.ServiceFactories;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
@@ -54,15 +61,18 @@ import it.cnr.iit.epas.models.absences.InitializationGroup;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.security.Security;
 import it.cnr.iit.epas.utils.DateUtility;
-import java.util.List;
-import java.util.Optional;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import manager.AbsenceManager;
-import manager.SecureManager;
 import java.time.LocalDate;
 import java.time.MonthDay;
+import java.util.List;
+import java.util.Optional;
+import javax.inject.Inject;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Interfaccia epas per il componente assenze. le richieste via form.
@@ -70,7 +80,10 @@ import java.time.MonthDay;
  * @author Alessandro Martelli
  */
 @Slf4j
+@Component
 public class AbsenceService {
+
+  private final static String VACATION_SITUATION_CACHE_KEY = "vacationSituation";
 
   private final AbsenceEngineUtility absenceEngineUtility;
   private final AbsenceComponentDao absenceComponentDao;
@@ -81,6 +94,12 @@ public class AbsenceService {
   private final SecureManager secureManager;
   private final ConfigurationManager configurationManager;
   private final TemplateUtility templateUtility;
+  private final GroupAbsenceTypeDao groupAbsenceTypeDao;
+  private final AbsenceTypeDao absenceTypeDao;
+  private final JustifiedTypeDao justifiedTypeDao;
+  private final CategoryTabDao categoryTabDao;
+  private final ContractDao contractDao;
+  private final CacheManager cacheManager;
 
   /**
    * Costruttore injection.
@@ -95,7 +114,12 @@ public class AbsenceService {
       AbsenceEngineUtility absenceEngineUtility, ServiceFactories serviceFactories,
       AbsenceComponentDao absenceComponentDao, PersonChildrenDao personChildrenDao,
       ConfigurationManager confManager, SecureManager secureManager,
-      EnumAllineator enumAllineator, TemplateUtility templateUtility) {
+      EnumAllineator enumAllineator, TemplateUtility templateUtility,
+      GroupAbsenceTypeDao groupAbsenceTypeDao,
+      AbsenceTypeDao absenceTypeDao, 
+      JustifiedTypeDao justifiedTypeDao, CategoryTabDao categoryTabDao,
+      ContractDao contractDao,
+      CacheManager cacheManager) {
     this.configurationManager = configurationManager;
     this.absenceEngineUtility = absenceEngineUtility;
     this.serviceFactories = serviceFactories;
@@ -105,6 +129,12 @@ public class AbsenceService {
     this.secureManager = secureManager;
     this.enumAllineator = enumAllineator;
     this.templateUtility = templateUtility;
+    this.groupAbsenceTypeDao = groupAbsenceTypeDao;
+    this.absenceTypeDao = absenceTypeDao;
+    this.cacheManager = cacheManager;
+    this.justifiedTypeDao = justifiedTypeDao;
+    this.contractDao = contractDao;
+    this.categoryTabDao = categoryTabDao;
   }
 
   /**
@@ -119,7 +149,7 @@ public class AbsenceService {
   public AbsenceForm buildForCategorySwitch(Person person, LocalDate date,
       GroupAbsenceType groupAbsenceType) {
 
-    if (groupAbsenceType == null || !groupAbsenceType.isPersistent()) {
+    if (groupAbsenceType == null || !groupAbsenceTypeDao.isPersistent(groupAbsenceType)) {
       groupAbsenceType =
           absenceComponentDao.categoriesByPriority().get(0).getGroupAbsenceTypes().iterator().next();
     }
@@ -153,17 +183,17 @@ public class AbsenceService {
       Integer hours, Integer minutes, boolean readOnly, boolean fromWorkFlow) {
 
     // clean entities
-    if (groupAbsenceType == null || !groupAbsenceType.isPersistent()) {
+    if (groupAbsenceType == null || !groupAbsenceTypeDao.isPersistent(groupAbsenceType)) {
       groupAbsenceType = null;
       switchGroup = true;
     }
-    if (justifiedType == null || !justifiedType.isPersistent()) {
+    if (justifiedType == null || !justifiedTypeDao.isPersistent(justifiedType)) {
       justifiedType = null;
     }
-    if (absenceType == null || !absenceType.isPersistent()) {
+    if (absenceType == null || !absenceTypeDao.isPersistent(absenceType)) {
       absenceType = null;
     }
-    if (categoryTab == null || !categoryTab.isPersistent()) {
+    if (categoryTab == null || !categoryTabDao.isPersistent(categoryTab)) {
       categoryTab = null;
     }
 
@@ -728,7 +758,7 @@ public class AbsenceService {
       GroupAbsenceType groupAbsenceType, LocalDate from, LocalDate to, AbsenceType absenceType,
       AbsenceManager absenceManager) {
 
-    if (absenceType == null || !absenceType.isPersistent()) {
+    if (absenceType == null || !absenceTypeDao.isPersistent(absenceType)) {
       absenceType = absenceComponentDao.absenceTypeByCode("91").get();
     }
 
@@ -928,7 +958,7 @@ public class AbsenceService {
    */
   public void enumInitializator() {
 
-    if (AbsenceType.count() > 0) {
+    if (absenceTypeDao.findAll().size() > 0) {
       return;
     }
     enumAllineator.handleTab(true);
@@ -948,11 +978,11 @@ public class AbsenceService {
    * @param year anno situation
    * @param vacationGroup injected
    * @param residualDate data per maturazione giorni
-   * @param cache se prelevare i dati dalla cache
+   * @param useCache se prelevare i dati dalla cache
    * @return situazione
    */
   public VacationSituation buildVacationSituation(Contract contract, int year,
-      GroupAbsenceType vacationGroup, Optional<LocalDate> residualDate, boolean cache) {
+      GroupAbsenceType vacationGroup, Optional<LocalDate> residualDate, boolean useCache) {
 
     VacationSituation situation = new VacationSituation();
     situation.person = contract.person;
@@ -970,11 +1000,13 @@ public class AbsenceService {
     final String currentYearKey = vacationCacheKey(contract, year, TypeSummary.VACATION);
     final String permissionsKey = vacationCacheKey(contract, year, TypeSummary.PERMISSION);
 
+    Cache cache = cacheManager.getCache(VACATION_SITUATION_CACHE_KEY);
+
     // Provo a prelevare la situazione dalla cache
-    if (cache) {
-      situation.lastYearCached = (VacationSummaryCached) Cache.get(lastYearKey);
-      situation.currentYearCached = (VacationSummaryCached) Cache.get(currentYearKey);
-      situation.permissionsCached = (VacationSummaryCached) Cache.get(permissionsKey);
+    if (useCache) {
+      situation.lastYearCached = (VacationSummaryCached) cache.get(lastYearKey);
+      situation.currentYearCached = (VacationSummaryCached) cache.get(currentYearKey);
+      situation.permissionsCached = (VacationSummaryCached) cache.get(permissionsKey);
       if (situation.lastYearCached != null // && situation.lastYearCached.date.isEqual(date)
           && situation.currentYearCached != null // &&
           // situation.currentYearCached.date.isEqual(date)
@@ -1001,17 +1033,19 @@ public class AbsenceService {
           periodChain.vacationSupportList.get(2).get(0), year, date, TypeSummary.PERMISSION);
     }
 
-    if (cache) {
+    if (useCache) {
       situation.lastYearCached = new VacationSummaryCached(situation.lastYear, contract, year - 1,
           date, TypeSummary.VACATION);
       situation.currentYearCached = new VacationSummaryCached(situation.currentYear, contract, year,
           date, TypeSummary.VACATION);
       situation.permissionsCached = new VacationSummaryCached(situation.permissions, contract, year,
           date, TypeSummary.PERMISSION);
+      //XXX: prima del passaggio a spring boot la merge del contract era nel costruttore del VacationSummaryCached
+      contractDao.merge(contract);
 
-      Cache.set(lastYearKey, situation.lastYearCached);
-      Cache.set(currentYearKey, situation.currentYearCached);
-      Cache.set(permissionsKey, situation.permissionsCached);
+      cache.put(lastYearKey, situation.lastYearCached);
+      cache.put(currentYearKey, situation.currentYearCached);
+      cache.put(permissionsKey, situation.permissionsCached);
     }
 
     return situation;
@@ -1043,9 +1077,10 @@ public class AbsenceService {
     if (contract.sourceDateVacation != null) {
       year = contract.sourceDateVacation.getYear() - 1;
     }
+    Cache cache = cacheManager.getCache(VACATION_SITUATION_CACHE_KEY);
     while (true) {
-      Cache.set(vacationCacheKey(contract, year, TypeSummary.VACATION), null);
-      Cache.set(vacationCacheKey(contract, year, TypeSummary.PERMISSION), null);
+      cache.put(vacationCacheKey(contract, year, TypeSummary.VACATION), null);
+      cache.put(vacationCacheKey(contract, year, TypeSummary.PERMISSION), null);
       year++;
       if (year > LocalDate.now().getYear() + 1) {
         return;
@@ -1065,7 +1100,7 @@ public class AbsenceService {
     if (!residualDate.isPresent()) {
       LocalDate date = LocalDate.now();
       if (date.getYear() > year) {
-        date = new LocalDate(year, 12, 31);
+        date = LocalDate.of(year, 12, 31);
       }
       if (contract.calculatedEnd() != null && contract.calculatedEnd().getYear() == year
           && !DateUtility.isDateIntoInterval(date, contract.periodInterval())) {

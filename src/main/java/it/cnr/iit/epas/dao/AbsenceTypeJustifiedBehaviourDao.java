@@ -17,8 +17,8 @@
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.models.absences.QTakableAbsenceBehaviour;
-import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
+import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
+import it.cnr.iit.epas.models.absences.QAbsenceTypeJustifiedBehaviour;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -26,14 +26,14 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TakableAbsenceBehaviourDao extends DaoBase<TakableAbsenceBehaviour>{
+public class AbsenceTypeJustifiedBehaviourDao extends DaoBase<AbsenceTypeJustifiedBehaviour>{
 
   @Inject
-  TakableAbsenceBehaviourDao(Provider<EntityManager> emp) {
+  AbsenceTypeJustifiedBehaviourDao(Provider<EntityManager> emp) {
     super(emp);
   }
 
-  public List<TakableAbsenceBehaviour> findAll() {
-    return getQueryFactory().selectFrom(QTakableAbsenceBehaviour.takableAbsenceBehaviour).fetch();
+  public List<AbsenceTypeJustifiedBehaviour> findAll() {
+    return getQueryFactory().selectFrom(QAbsenceTypeJustifiedBehaviour.absenceTypeJustifiedBehaviour).fetch();
   }
 }
