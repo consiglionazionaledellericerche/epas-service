@@ -348,7 +348,7 @@ public class PersonManager {
               @Override
               public AbsenceToRecoverDto apply(Absence absence) {
                 return new AbsenceToRecoverDto(
-                absence, absence.personDay.getDate(), absence.expireRecoverDate,
+                absence, absence.getPersonDay().getDate(), absence.expireRecoverDate,
                 absence.timeToRecover,
                 absence.timeVariations.stream().mapToInt(i -> i.getTimeVariation()).sum(),
                 Math.round(absence.timeVariations.stream().mapToInt(i -> i.getTimeVariation()).sum() 
@@ -398,7 +398,7 @@ public class PersonManager {
     userManager.createUser(person);
     // Se il campo eppn è vuoto viene calcolato euristicamente...
     if (person.getEmail() != null && person.getEppn() == null) {
-      person.setEppn(eppn(person.getUser().username, person.getEmail()));
+      person.setEppn(eppn(person.getUser().getUsername(), person.getEmail()));
     }
     Role employee = roleDao.getRoleByName(Role.EMPLOYEE);
     officeManager.setUro(person.getUser(), person.getOffice(), employee);

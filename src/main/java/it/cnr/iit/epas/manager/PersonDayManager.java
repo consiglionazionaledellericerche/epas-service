@@ -116,7 +116,7 @@ public class PersonDayManager {
    */
   public Optional<Absence> getPreventMealTicket(PersonDay personDay) {
     for (Absence absence : personDay.getAbsences()) {
-      if (absence.absenceType.mealTicketBehaviour.equals(MealTicketBehaviour.preventMealTicket)) { 
+      if (absence.absenceType.getMealTicketBehaviour().equals(MealTicketBehaviour.preventMealTicket)) { 
         return Optional.of(absence);
       }
     }
@@ -439,7 +439,7 @@ public class PersonDayManager {
     Optional<Absence> assignAllDay = getAssignAllDay(personDay);
     if (assignAllDay.isPresent()) {
       personDay.setTimeAtWork(wttd.workingTime);
-      setTicketStatusIfNotForced(personDay, assignAllDay.get().absenceType.mealTicketBehaviour);
+      setTicketStatusIfNotForced(personDay, assignAllDay.get().absenceType.getMealTicketBehaviour());
       return personDay;
     }
 
@@ -447,7 +447,7 @@ public class PersonDayManager {
     if (getAllDay(personDay).isPresent()) {
       personDay.setTimeAtWork(0);
       setTicketStatusIfNotForced(personDay, getAllDay(personDay).get()
-          .absenceType.mealTicketBehaviour);
+          .absenceType.getMealTicketBehaviour());
       return personDay;
     }
     
@@ -472,7 +472,7 @@ public class PersonDayManager {
       } 
 
       //Assegnamento se contribuisce al buono pasto
-      if (abs.absenceType.mealTicketBehaviour.equals(MealTicketBehaviour.allowMealTicket)) {
+      if (abs.absenceType.getMealTicketBehaviour().equals(MealTicketBehaviour.allowMealTicket)) {
         personDay.setJustifiedTimeMeal(personDay.getJustifiedTimeMeal() + justifiedMinutes);
         continue;
       }
@@ -540,7 +540,7 @@ public class PersonDayManager {
           personDay.setTimeAtWork(personDay.getTimeAtWork() + missingTime);
         }
         if (!personDay.isTicketAvailable() && getCompleteDayAndAddOvertime(personDay)
-            .get().getAbsenceType().mealTicketBehaviour
+            .get().getAbsenceType().getMealTicketBehaviour()
             .equals(MealTicketBehaviour.allowMealTicket)) {
           personDay.setTicketAvailable(MealTicketBehaviour.allowMealTicket);
         } 
@@ -661,13 +661,13 @@ public class PersonDayManager {
     }
 
     if (getAllDay(personDay).isPresent() 
-        && getAllDay(personDay).get().absenceType.mealTicketBehaviour
+        && getAllDay(personDay).get().absenceType.getMealTicketBehaviour()
         .equals(MealTicketBehaviour.notAllowMealTicket)
         || (getAssignAllDay(personDay).isPresent() 
-            && getAssignAllDay(personDay).get().absenceType.mealTicketBehaviour
+            && getAssignAllDay(personDay).get().absenceType.getMealTicketBehaviour()
             .equals(MealTicketBehaviour.notAllowMealTicket))
         || (getCompleteDayAndAddOvertime(personDay).isPresent() 
-            && getCompleteDayAndAddOvertime(personDay).get().absenceType.mealTicketBehaviour
+            && getCompleteDayAndAddOvertime(personDay).get().absenceType.getMealTicketBehaviour()
             .equals(MealTicketBehaviour.notAllowMealTicket))) {
       setTicketStatusIfNotForced(personDay, MealTicketBehaviour.notAllowMealTicket);
     } else {
@@ -1771,7 +1771,7 @@ public class PersonDayManager {
         return Optional.empty();
       } else {
         val shortPermission = new Absence();
-        shortPermission.personDay = personDay;
+        shortPermission.setPersonDay(personDay);
         shortPermission.absenceType = absenceComponentDao.absenceTypeByCode("PB").get();
         shortPermission.justifiedType = absenceComponentDao
             .getOrBuildJustifiedType(JustifiedTypeName.specified_minutes_limit);

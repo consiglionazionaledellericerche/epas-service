@@ -661,7 +661,9 @@ public class ConfigurationManager {
           }
         }
         if (toCreate) {
+          log.trace("Creazione del parametro di default {} per {}", epasParam, owner);
           buildDefault(owner, epasParam);
+          log.trace("Creato parametro {} per {}", epasParam, owner);
         }
       }
       if (owner instanceof Person) {

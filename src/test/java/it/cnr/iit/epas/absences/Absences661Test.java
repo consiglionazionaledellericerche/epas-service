@@ -14,13 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas;
+package it.cnr.iit.epas.absences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.db.h2support.H2Examples;
 import it.cnr.iit.epas.db.h2support.base.H2AbsenceSupport;
@@ -36,46 +35,49 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@Component
-public class Absences661Test { // extends UnitTest {
-  
+@SpringBootTest
+public class Absences661Test {
+
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
   public static final LocalDate MID_2016 = LocalDate.of(2016, 7, 1);
   public static final LocalDate END_2016 = LocalDate.of(2016, 12, 31);
-  
+
   public static final LocalDate FERIAL_1_2016 = LocalDate.of(2016, 11, 7); //lun
   public static final LocalDate FERIAL_2_2016 = LocalDate.of(2016, 11, 8); //mar
   public static final LocalDate FERIAL_3_2016 = LocalDate.of(2016, 11, 9); //mer
-  
+
   public static final LocalDate BEGIN_2018 = LocalDate.of(2018, 1, 1);
   public static final LocalDate FERIAL_1_2018 = LocalDate.of(2018, 8, 6); //lun
-  
+
   @Inject 
-  private static H2Examples h2Examples;
+  private H2Examples h2Examples;
   @Inject 
-  private static H2AbsenceSupport h2AbsenceSupport;
+  private H2AbsenceSupport h2AbsenceSupport;
   @Inject 
-  private static ServiceFactories serviceFactories;
+  private ServiceFactories serviceFactories;
   @Inject
-  private static AbsenceComponentDao absenceComponentDao;
+  private AbsenceComponentDao absenceComponentDao;
   @Inject
-  private static AbsenceService absenceService;
-  
+  private AbsenceService absenceService;
+
   @Test
+  @Transactional
   public void test() {
-    
+
     absenceService.enumInitializator();
-    
+
     //creare il gruppo
     GroupAbsenceType group661 = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
-    
+
     //creare la persona
     Person person = h2Examples.normalEmployee(BEGIN_2016, Optional.empty());
-    
+
     //creare la periodChain
     PeriodChain periodChain = serviceFactories.buildPeriodChainPhase1(person, group661, 
         LocalDate.of(2016, 11, 15), 
@@ -83,12 +85,12 @@ public class Absences661Test { // extends UnitTest {
         person.getContracts(),
         Lists.newArrayList(), 
         Lists.newArrayList());
-    
+
     assertEquals(periodChain.from, BEGIN_2016);
     assertEquals(periodChain.to, END_2016);
     assertTrue(!periodChain.periods.isEmpty());
     assertEquals(periodChain.periods.get(0).getPeriodTakableAmount(), 1080);
-    
+
     //creare le assenze da considerare
     Absence absence1 = h2AbsenceSupport.absenceInstance(DefaultAbsenceType.A_661MO, 
         FERIAL_1_2016, Optional.of(JustifiedTypeName.specified_minutes), 80);
@@ -100,29 +102,30 @@ public class Absences661Test { // extends UnitTest {
     //creare la assenza da inserire
     Absence toInsert = h2AbsenceSupport.absenceInstance(DefaultAbsenceType.A_661MO, 
         FERIAL_3_2016, Optional.of(JustifiedTypeName.specified_minutes), 40);
-    
+
     serviceFactories.buildPeriodChainPhase2(periodChain, toInsert, 
         allPersistedAbsences, groupPersistedAbsences, person.getContracts());
-    
+
     assertNotNull(periodChain.successPeriodInsert);
     assertEquals(periodChain.successPeriodInsert.attemptedInsertAbsence, toInsert);
     assertEquals(periodChain.periods.get(0).getPeriodTakenAmount(), 120);
-    
+
   }
-  
+
   /**
    * Quando un dipendente non lavora per tutto l'anno e/o ha un tempo a lavoro part time, le 18
    * ore annue di 661 si riducono proporzionalmente.
    */
   @Test
+  @Transactional
   public void adjustmentLimit() {
         
     absenceService.enumInitializator();
-    
+
     //creare il gruppo
     GroupAbsenceType group661 = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
-    
+
     // CASO 1 
     //la persona inizia a lavorare a metà anno
     Person person = h2Examples.normalEmployee(MID_2016, Optional.empty());
@@ -138,7 +141,7 @@ public class Absences661Test { // extends UnitTest {
     //dal 2016-7-1 al 2016-12-31 sono 184 giorni su 366. 
     // Col corretto comportamento il codice 661 non si riproporziona
     assertEquals(periodChain.periods.get(0).getPeriodTakableAmount(), 1080);
-    
+
     //CASO 2 
     //la persona ha il part time 50%
     person = h2Examples.partTime50Employee(BEGIN_2016);
@@ -171,11 +174,12 @@ public class Absences661Test { // extends UnitTest {
 
     
   }
-  
+
   /**
    * Quando il mio orario di lavoro è 7:12 la conversione del 661G deve essere 6 ore.
    */
   @Test
+  @Transactional
   public void sixHourRule() {
 
     absenceService.enumInitializator();
@@ -201,5 +205,5 @@ public class Absences661Test { // extends UnitTest {
     assertEquals(residual.periods.iterator().next().getPeriodTakenAmount(), 360);
     
   }
-  
+
 }

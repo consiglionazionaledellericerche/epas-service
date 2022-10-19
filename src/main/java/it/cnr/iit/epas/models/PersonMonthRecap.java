@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
@@ -26,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
@@ -34,6 +34,7 @@ import lombok.Setter;
  *
  * @author Cristian Lucchesi
  */
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "person_month_recap")

@@ -21,6 +21,7 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultTakable;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +32,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -52,20 +54,20 @@ public class TakableAbsenceBehaviour extends BaseEntity {
 
   public static final String NAME_PREFIX = "T_";
 
-  public String name;
+  private String name;
   
   @OneToMany(mappedBy = "takableAbsenceBehaviour", fetch = FetchType.LAZY)
-  public Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
+  private Set<GroupAbsenceType> groupAbsenceTypes = Sets.newHashSet();
   
   @Enumerated(EnumType.STRING)
-  public AmountType amountType;
+  private AmountType amountType;
 
   @ManyToMany
   @JoinTable(name = "taken_codes_group", 
       joinColumns = { @JoinColumn(name = "takable_behaviour_id") }, 
         inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  public Set<AbsenceType> takenCodes = Sets.newHashSet();
+  private Set<AbsenceType> takenCodes = Sets.newHashSet();
   
   //  @Column(name = "takable_count_behaviour")
   //  @Enumerated(EnumType.STRING)
@@ -77,13 +79,14 @@ public class TakableAbsenceBehaviour extends BaseEntity {
       joinColumns = { @JoinColumn(name = "takable_behaviour_id") }, 
       inverseJoinColumns = { @JoinColumn(name = "absence_types_id") })
   @OrderBy("code")
-  public Set<AbsenceType> takableCodes = Sets.newHashSet();
+  private Set<AbsenceType> takableCodes = Sets.newHashSet();
 
-  public Integer fixedLimit;
+  private Integer fixedLimit;
 
+  @Column(name = "takable_amount_adjust")
   @Enumerated(EnumType.STRING)
-  public TakeAmountAdjustment takableAmountAdjustment;
- 
+  private TakeAmountAdjustment takableAmountAdjustment;
+
   /**
    * Tipologia di comportamento per i codici di assenza presi. 
    *
@@ -114,6 +117,7 @@ public class TakableAbsenceBehaviour extends BaseEntity {
    *
    * @return absent se il completamento non è presente in enum
    */
+  @Transient
   public Optional<Boolean> matchEnum() {
     for (DefaultTakable defaultTakable : DefaultTakable.values()) {
       if (defaultTakable.name().equals(this.name)) {

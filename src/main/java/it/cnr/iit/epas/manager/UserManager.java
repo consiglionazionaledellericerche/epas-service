@@ -133,7 +133,7 @@ public class UserManager {
 
     User user = new User();
 
-    user.username = generateUserName(person.getName(), person.getSurname());
+    user.setUsername(generateUserName(person.getName(), person.getSurname()));
 
     SecureRandom random = new SecureRandom();
     user.password = hexMD5(new BigInteger(130, random).toString(32));
@@ -143,7 +143,7 @@ public class UserManager {
 
     person.setUser(user);
 
-    log.info("Creato nuovo user per {}: username = {}", person.fullName(), user.username);
+    log.info("Creato nuovo user per {}: username = {}", person.fullName(), user.getUsername());
 
     return user;
   }

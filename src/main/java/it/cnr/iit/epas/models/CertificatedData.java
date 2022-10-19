@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
@@ -24,8 +23,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
-
 
 /**
  * Contiene le informazioni relative alla richiesta/risposta di elaborazione dati delle
@@ -33,6 +34,9 @@ import org.hibernate.envers.Audited;
  *
  * @author Cristian Lucchesi
  */
+@Getter
+@Setter
+@NoArgsConstructor
 @Audited
 @Entity
 @Table(name = "certificated_data")
@@ -40,37 +44,30 @@ public class CertificatedData extends BaseEntity {
 
   private static final long serialVersionUID = 4909012051833782060L;
 
-  public int year;
-  public int month;
+  private int year;
+  private int month;
 
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "person_id", nullable = false)
-  public Person person;
+  private Person person;
 
-  @Column(name = "cognome_nome")
-  public String cognomeNome;
+  private String cognomeNome;
 
-  @Column(name = "matricola")
-  public String matricola;
+  private String matricola;
 
-  @Column(name = "absences_sent")
-  public String absencesSent = null;
+  private String absencesSent = null;
 
-  @Column(name = "competences_sent")
-  public String competencesSent = null;
+  private String competencesSent = null;
 
-  @Column(name = "meal_ticket_sent")
-  public String mealTicketSent = null;
+  private String mealTicketSent = null;
 
   @Column(name = "traininghours_sent")
-  public String trainingHoursSent = null;
+  private String trainingHoursSent = null;
 
-  @Column(name = "problems")
-  public String problems = null;
+  private String problems = null;
 
-  @Column(name = "is_ok")
-  public boolean isOk = false;
+  private boolean isOk = false;
 
   /**
    * Costruttore.

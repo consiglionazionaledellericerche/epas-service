@@ -182,7 +182,7 @@ public class NotificationManager {
   private void notifyAbsence(Absence absence, GroupAbsenceType groupAbsenceType,
       User currentUser, Crud operation) {
     Verify.verifyNotNull(absence);
-    final Person person = absence.personDay.getPerson();
+    final Person person = absence.getPersonDay().getPerson();
     String template;
     if (Crud.CREATE == operation) {
       template = "%s ha inserito una nuova assenza: %s - %s";
@@ -195,13 +195,13 @@ public class NotificationManager {
     }
     String modifier = "";
     if (currentUser.roles.contains(AccountRole.MISSIONS_MANAGER)) {
-      modifier = currentUser.username;
+      modifier = currentUser.getUsername();
       template = template + String.format(" di %s", person.fullName());
     } else {
       modifier = person.fullName();
     }
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DF);
-    final String message = String.format(template, modifier, dtf.format(absence.personDay.getDate()),
+    final String message = String.format(template, modifier, dtf.format(absence.getPersonDay().getDate()),
         absence.absenceType.code);
     // controllare se dalla configurazione è possibile notificare le assenze da flusso
     val config = configurationManager.configValue(person.getOffice(), EpasParam.SEND_FLOWS_NOTIFICATION,
@@ -223,9 +223,9 @@ public class NotificationManager {
       val sendManagerNotification = configurationManager.configValue(person.getOffice(),
           EpasParam.SEND_MANAGER_NOTIFICATION_FOR_661, LocalDate.now());
       if (sendManagerNotification.equals(Boolean.TRUE)
-          && !groupDao.myGroups(absence.personDay.getPerson()).isEmpty()) {
+          && !groupDao.myGroups(absence.getPersonDay().getPerson()).isEmpty()) {
         log.debug("Invio la notifica anche al responsabile di gruppo...");
-        groupDao.myGroups(absence.personDay.getPerson()).stream().map(p -> p.getManager()).forEach(m -> {
+        groupDao.myGroups(absence.getPersonDay().getPerson()).stream().map(p -> p.getManager()).forEach(m -> {
           //Mandare una mail solo nel caso del codice giornaliero o ad ore e minuti 
           //(non l'assenza oraria)
           if (absence.getJustifiedMinutes() != null) {
@@ -544,7 +544,7 @@ public class NotificationManager {
     absences.forEach(a -> {
       message.append(
           String.format(" %s - %s.", a.absenceType.code, 
-              DateTimeFormatter.ofPattern(DF).format(a.personDay.getDate())));
+              DateTimeFormatter.ofPattern(DF).format(a.getPersonDay().getDate())));
     });
 
     person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.name.equals(role.name))
@@ -1124,7 +1124,7 @@ public class NotificationManager {
    */
   private void notifyCompetence(Competence competence, User currentUser, Crud operation) {
     Verify.verifyNotNull(competence);
-    final Person person = competence.person;
+    final Person person = competence.getPerson();
     String template;
     if (Crud.CREATE == operation) {
       template = "%s ha inserito una nuova competenza: %s - %s";
@@ -1679,7 +1679,7 @@ public class NotificationManager {
     }
     List<User> users = Lists.newArrayList();
     if (roleDestination.equals(roleDao.getRoleByName(Role.GROUP_MANAGER))) {
-      users = person.affiliations.stream().map(gp -> gp.getGroup().getManager().getUser())
+      users = person.getAffiliations().stream().map(gp -> gp.getGroup().getManager().getUser())
           .collect(Collectors.toList());
     } else {
       users =
@@ -1782,7 +1782,7 @@ public class NotificationManager {
       return;
     }
     if (roleDestination.equals(roleDao.getRoleByName(Role.GROUP_MANAGER))) {
-      person.affiliations.stream().map(gp -> gp.getGroup().getManager().getUser()).forEach(user -> {
+      person.getAffiliations().stream().map(gp -> gp.getGroup().getManager().getUser()).forEach(user -> {
         SimpleEmail simpleEmail = new SimpleEmail();
         // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
         try {

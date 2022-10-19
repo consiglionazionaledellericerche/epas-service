@@ -54,6 +54,7 @@ import it.cnr.iit.epas.models.ShiftCategories;
 import it.cnr.iit.epas.models.ShiftTimeTable;
 import it.cnr.iit.epas.models.ShiftType;
 import it.cnr.iit.epas.models.TotalOvertime;
+import it.cnr.iit.epas.models.dto.TimeTableDto;
 import it.cnr.iit.epas.models.enumerate.CalculationType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
@@ -75,7 +76,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import it.cnr.iit.epas.models.dto.TimeTableDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -375,13 +375,13 @@ public class CompetenceManager {
         .getCodeWithGroup(comp.competenceCode.competenceCodeGroup,
             Optional.ofNullable(comp.competenceCode));
         compList = competenceDao
-            .getCompetences(Optional.ofNullable(comp.person), comp.year,
+            .getCompetences(Optional.ofNullable(comp.getPerson()), comp.year,
                 Optional.ofNullable(comp.month), group);
         sum = compList.stream().mapToInt(i -> i.valueApproved).sum();
         //Caso Reperibilità:
         if (StringUtils.containsIgnoreCase(comp.competenceCode.competenceCodeGroup.label,
             "reperibili")) {
-          if (!servicesActivated(comp.person.getOffice())) {
+          if (!servicesActivated(comp.getPerson().getOffice())) {
             result = Messages.get("CompManager.notConfigured");
             return result;
           }
@@ -406,7 +406,7 @@ public class CompetenceManager {
         .getCodeWithGroup(comp.competenceCode.competenceCodeGroup,
             Optional.ofNullable(comp.competenceCode));
         compList = competenceDao
-            .getCompetences(Optional.ofNullable(comp.person), comp.year,
+            .getCompetences(Optional.ofNullable(comp.getPerson()), comp.year,
                 Optional.<Integer>empty(), group);
         sum = compList.stream().mapToInt(i -> i.valueApproved).sum();
         if (sum + value > comp.competenceCode.competenceCodeGroup.limitValue) {
@@ -415,7 +415,7 @@ public class CompetenceManager {
         break;
       case onMonthlyPresence:
         PersonStampingRecap psDto = 
-            stampingsRecapFactory.create(comp.person, comp.year, comp.month, true);
+            stampingsRecapFactory.create(comp.getPerson(), comp.year, comp.month, true);
         if (psDto.basedWorkingDays != value) {
           result = Messages.get("CompManager.diffBasedWorkingDay");
         }
@@ -499,7 +499,7 @@ public class CompetenceManager {
   private boolean handlerReperibility(Competence comp, Integer value, List<CompetenceCode> group) {
 
     int maxDays = countDaysForReperibility(YearMonth.of(comp.year, comp.month),
-        comp.person.getOffice());
+        comp.getPerson().getOffice());
 
     List<String> groupCodes = group.stream().map(objA -> {
       String objB = new String();
@@ -507,7 +507,7 @@ public class CompetenceManager {
       return objB;
     }).collect(Collectors.toList());
     List<Competence> peopleMonthList = competenceDao.getCompetencesInOffice(comp.year,
-        comp.month, groupCodes, comp.person.getOffice(), false);
+        comp.month, groupCodes, comp.getPerson().getOffice(), false);
     int peopleSum = peopleMonthList.stream()
         .filter(competence -> competence.getId() != comp.getId()).mapToInt(i -> i.valueApproved).sum();
     if (peopleSum - comp.valueApproved + value > maxDays) {
@@ -525,7 +525,7 @@ public class CompetenceManager {
   private boolean isCompetenceEnabled(Competence comp) {
     LocalDate date = LocalDate.of(comp.year, comp.month, 1);
     Optional<PersonCompetenceCodes> pcc = competenceCodeDao
-        .getByPersonAndCodeAndDate(comp.person, comp.competenceCode, date);
+        .getByPersonAndCodeAndDate(comp.getPerson(), comp.competenceCode, date);
     if (pcc.isPresent()) {      
       return true;     
     }
@@ -787,7 +787,7 @@ public class CompetenceManager {
         compList.add(comp.get());
       } else {
         Competence competence = new Competence();
-        competence.person = person;
+        competence.setPerson(person);
         competence.competenceCode = code;
         competence.month = date.getMonthValue();
         competence.year = date.getYear();
@@ -1060,7 +1060,7 @@ public class CompetenceManager {
     } else {
       Competence comp = new Competence();
       comp.competenceCode = code;
-      comp.person = person;
+      comp.setPerson(person);
       comp.year = yearMonth.getYear();
       comp.month = yearMonth.getMonthValue();
       comp.valueApproved = value;

@@ -34,13 +34,14 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 /**
  * Costruzione rapida di entity per test standard.
  *
  * @author Alessandro Martelli
- *
+ * @author Cristian Lucchesi
  */
 @Component
 public class H2Examples {
@@ -83,7 +84,8 @@ public class H2Examples {
    * @param endContract terminazione
    * @return persisted entity
    */
-  private Contract buildContract(Person person, LocalDate beginDate, Optional<LocalDate> endDate, 
+  @Transactional
+  public Contract buildContract(Person person, LocalDate beginDate, Optional<LocalDate> endDate, 
       Optional<LocalDate> endContract, WorkingTimeType workingTimeType) {
     Contract contract = new Contract();
     contract.person = person;
@@ -105,15 +107,18 @@ public class H2Examples {
    * @param username username
    * @return persisted entity
    */
-  private Person createPerson(Office office, String username) {
+  @Transactional
+  public Person createPerson(Office office, String username) {
 
     User user = new User();
-    user.username = username;
+    user.setUsername(username);
     user.password = "UnaPasswordQualsiasi";
     userDao.persist(user);
     Person person = new Person();
     person.setName("Name " + username);
     person.setSurname("Surname " + username);
+    person.setEmail(String.format("%s@example.com", UUID.randomUUID()));
+    person.setBeginDate(LocalDate.now());
     person.setUser(user);
     person.setOffice(office);
     person.setQualification(qualificationDao.findById(DEFAULT_PERSON_QUALIFICATION).get());
@@ -131,7 +136,8 @@ public class H2Examples {
    * @param code code
    * @return persisted entity
    */
-  private Office buildOffice(LocalDate beginDate, String name, String codeId, String code) {
+  @Transactional
+  public Office buildOffice(LocalDate beginDate, String name, String codeId, String code) {
 
     Office office = new Office();
     office.setName(name);
@@ -149,6 +155,7 @@ public class H2Examples {
    * @param beginContract inizio contratto
    * @return mocked entity
    */
+  @Transactional
   public Person normalEmployee(LocalDate beginContract, 
       Optional<LocalDate> expireContract) {
 
@@ -170,6 +177,7 @@ public class H2Examples {
    * @param beginContract inizio contratto
    * @return mocked entity
    */
+  @Transactional
   public Person partTime50Employee(LocalDate beginContract) {
 
     final String name = "partTime50UndefinedEmployee" + beginContract + UUID.randomUUID();

@@ -317,7 +317,7 @@ public class Scanner {
           Absence replacingAbsence = new Absence();
           replacingAbsence.absenceType = dayInPeriod.getCorrectReplacing();
           replacingAbsence.date = dayInPeriod.getDate();
-          replacingAbsence.personDay = personDay;
+          replacingAbsence.setPersonDay(personDay);
           //justified type nothin (deve essere permitted per il tipo)
           for (JustifiedType justifiedType : replacingAbsence.absenceType.getJustifiedTypesPermitted()) {
             if (justifiedType.getName() == JustifiedTypeName.nothing) {

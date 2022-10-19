@@ -59,7 +59,7 @@ public class Absence extends BaseEntity {
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)
-  public PersonDay personDay;
+  private PersonDay personDay;
 
   // Nuova Modellazione
 

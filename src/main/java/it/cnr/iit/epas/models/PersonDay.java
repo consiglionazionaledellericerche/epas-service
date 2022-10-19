@@ -20,11 +20,11 @@ import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
 import it.cnr.iit.epas.models.enumerate.Troubles;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,8 +35,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +47,7 @@ import org.springframework.beans.BeanUtils;
  * @author Cristian Lucchesi
  * @author Dario Tagliaferri
  */
-@Slf4j
+@NoArgsConstructor
 @Entity
 @Audited
 @Table(name = "person_days",
@@ -71,6 +71,7 @@ public class PersonDay extends BaseEntity {
   /**
    * Tempo all'interno di timbrature valide.
    */
+  @Column(name = "stamping_time")
   private Integer stampingsTime = 0;
 
   /**

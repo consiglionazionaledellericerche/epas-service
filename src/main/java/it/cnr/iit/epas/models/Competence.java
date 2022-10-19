@@ -22,8 +22,9 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
-
 
 /**
  * Tabella delle competenze relative alla persona in cui sono memorizzate le competenze in
@@ -33,6 +34,8 @@ import org.hibernate.envers.Audited;
  * @author Dario Tagliaferri
  * @author Arianna Del Soldato
  */
+@Getter
+@Setter
 @Entity
 @Table(name = "competences")
 @Audited
@@ -41,7 +44,7 @@ public class Competence extends BaseEntity {
   private static final long serialVersionUID = -36737525666037452L;
 
   @ManyToOne
-  public Person person;
+  private Person person;
 
   @NotNull
   @ManyToOne

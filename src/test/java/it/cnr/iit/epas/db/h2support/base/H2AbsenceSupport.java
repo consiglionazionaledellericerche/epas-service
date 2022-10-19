@@ -14,13 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.db.h2support.base;
 
 import java.util.Optional;
 import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.time.LocalDate;
 
+@Slf4j
 @Component
 public class H2AbsenceSupport {
   
@@ -57,6 +59,7 @@ public class H2AbsenceSupport {
    * @param justifiedMinutes      minuti giustificati
    * @return istanza non persistente
    */
+  @Transactional
   public Absence absenceInstance(DefaultAbsenceType defaultAbsenceType,
       LocalDate date, Optional<JustifiedTypeName> justifiedTypeName,
       Integer justifiedMinutes) {
@@ -78,7 +81,7 @@ public class H2AbsenceSupport {
     
     return absence;
   }
-  
+
   /**
    * Istanza di una assenza. 
    *
@@ -88,17 +91,17 @@ public class H2AbsenceSupport {
    * @param justifiedMinutes      minuti giustificati
    * @return istanza non persistente
    */
+  @Transactional
   public Absence absence(DefaultAbsenceType defaultAbsenceType,
       LocalDate date, Optional<JustifiedTypeName> justifiedTypeName,
       Integer justifiedMinutes, Person person) {
 
     Absence absence = 
         absenceInstance(defaultAbsenceType, date, justifiedTypeName, justifiedMinutes);
-    
-    absence.personDay = getPersonDay(person, date);
-    personDayDao.refresh(absence.personDay);
-    absenceComponentDao.merge(absence);
-    
+
+    absence.setPersonDay(getPersonDay(person, date));
+    absenceComponentDao.persist(absence);
+
     return absence;
   }
 
@@ -109,14 +112,16 @@ public class H2AbsenceSupport {
    * @param date data
    * @return personDay
    */
+  @Transactional
   public PersonDay getPersonDay(Person person, LocalDate date) {
     Optional<PersonDay> personDay = personDayDao.getPersonDay(person, date);
     if (personDay.isPresent()) {
+      log.debug("Prelevato personDay dal db {}", personDay.get());
       return personDay.get();
     }
     
     PersonDay newPersonDay = new PersonDay(person, date);
-    personDayDao.merge(newPersonDay);
+    personDayDao.persist(newPersonDay);
     return newPersonDay;
   }
 
@@ -130,7 +135,7 @@ public class H2AbsenceSupport {
    */
   public List<Absence> multipleAllDayInstances(Person person, DefaultAbsenceType defaultAbsenceType,
       Set<LocalDate> dates) {
-    
+
     List<Absence> absences = Lists.newArrayList();
     for (LocalDate date : dates) {
       absences
