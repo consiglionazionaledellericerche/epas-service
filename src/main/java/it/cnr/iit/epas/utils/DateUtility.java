@@ -524,7 +524,7 @@ public class DateUtility {
     int dateToMinute = 0;
     if (time != null) {
       int hour = time.get(ChronoField.CLOCK_HOUR_OF_DAY);
-      int minute =  time.get(ChronoField.MINUTE_OF_DAY);
+      int minute =  time.get(ChronoField.MINUTE_OF_HOUR);
       dateToMinute = (MINUTE_IN_HOUR * hour) + minute;
     }
     return dateToMinute;
@@ -552,7 +552,4 @@ public class DateUtility {
     return timeToMinute;
   }
 
-  public static void main(String[] args) {
-    System.out.println(daysInInterval(DateInterval.build(LocalDate.now(), LocalDate.now().plusDays(1))));
-  }
 }

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 /**
  * Esportazione delle informazioni relative alla missione.

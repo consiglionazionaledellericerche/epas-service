@@ -432,7 +432,7 @@ public class PersonDayManager {
       stampingTimeInOpening = 0;
       personDay.setOnHoliday(personDay.getStampingsTime());
     } else {
-      personDay.setOutOpening(personDay.getStampingsTime() - stampingTimeInOpening);  
+      personDay.setOutOpening(personDay.getStampingsTime() - stampingTimeInOpening);
     }
 
     //Caso assenza che assegna l'intera giornata ex 103, 103BP, 105BP
@@ -450,8 +450,8 @@ public class PersonDayManager {
           .absenceType.getMealTicketBehaviour());
       return personDay;
     }
-    
-    
+
+
     //Giustificativi a grana minuti nel giorno
     for (Absence abs : personDay.getAbsences()) {
 
@@ -718,7 +718,7 @@ public class PersonDayManager {
                     - DateUtility.toMinute(range.lowerEndpoint()));
           } else {
             timeToJustify = timeToJustify + zoneToZones.get().delay;
-          }             
+          }
         }
       }
       temp = validPair;
@@ -1181,6 +1181,7 @@ public class PersonDayManager {
     for (PairStamping validPair : validPairs) {
       LocalDateTime outTime = validPair.second.getDate();
       LocalDateTime inTime = validPair.first.getDate();
+      log.info("inTime = {}, outTime = {}", inTime, outTime);
       List<Stamping> serviceStampingsInSinglePair = serviceStampingsToCheck.stream()
           .filter(stamping -> stamping.getDate().isAfter(inTime) && stamping.getDate().isBefore(outTime))
           .collect(Collectors.toList());
@@ -1462,7 +1463,7 @@ public class PersonDayManager {
       }
 
       workingMinutes += DateUtility.toMinute(consideredEnd) 
-          - DateUtility.toMinute(consideredStart);      
+          - DateUtility.toMinute(consideredStart);
 
     }
     return workingMinutes;
@@ -1615,7 +1616,7 @@ public class PersonDayManager {
 
         }
         if (stamping.isOut()) {
-          //una uscita prima di una entrata e' come se non esistesse          
+          //una uscita prima di una entrata e' come se non esistesse
           continue;
         }
 
@@ -1636,7 +1637,7 @@ public class PersonDayManager {
           continue;
         }
         //trovo un secondo ingresso, butto via il primo
-        if (stamping.isIn()) {          
+        if (stamping.isIn()) {
           stampEnter = stamping;
         }
       }
