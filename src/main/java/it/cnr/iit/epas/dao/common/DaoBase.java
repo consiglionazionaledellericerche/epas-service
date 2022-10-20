@@ -43,7 +43,11 @@ public abstract class DaoBase<T> {
   }
 
   public T merge(T object) {
-    return emp.get().<T>merge(object);
+    if (isPersistent(object)) {
+      return emp.get().<T>merge(object);
+    }
+    persist(object);
+    return object;
   }
 
   public void delete(T object) {

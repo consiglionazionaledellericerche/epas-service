@@ -53,6 +53,16 @@ public class ShiftType extends BaseEntity {
 
   private static final long serialVersionUID = 3156856871540530483L;
 
+  /**
+   * Tipologie di periodo di turno.
+   */
+  //XXX: enum spostato qui in seguito al passaggio a Spring boot (era in un controller...)
+  public enum ShiftPeriod {
+    daily,
+    nightly,
+    holiday;
+  }
+
   public String type;
 
   public String description;

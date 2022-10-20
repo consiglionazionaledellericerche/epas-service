@@ -873,11 +873,11 @@ public class TemplateUtility {
   public boolean isAvailable(Person person) {
     return person.getPersonCompetenceCodes().stream()
         .anyMatch(comp -> !comp.getBeginDate().isAfter(LocalDate.now()) 
-            && (comp.competenceCode.code.equalsIgnoreCase(WORKDAYS_REP) 
-            || comp.competenceCode.code.equalsIgnoreCase(HOLIDAYS_REP)));
+            && (comp.getCompetenceCode().getCode().equalsIgnoreCase(WORKDAYS_REP) 
+            || comp.getCompetenceCode().getCode().equalsIgnoreCase(HOLIDAYS_REP)));
     
   }
-  
+
   /**
    * Lista di persone appartententi all'ufficio passato (in questo anno).
    *

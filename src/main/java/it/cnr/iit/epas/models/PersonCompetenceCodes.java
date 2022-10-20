@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.PeriodModel;
@@ -24,12 +23,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Relazione tra persona e competenze abilitate.
  *
  * @author Dario Tagliaferri
  */
+@Getter
+@Setter
 @Entity
 @Table(name = "persons_competence_codes")
 public class PersonCompetenceCodes extends PeriodModel {
@@ -39,12 +42,12 @@ public class PersonCompetenceCodes extends PeriodModel {
   @NotNull
   @ManyToOne
   @JoinColumn(name = "person_id")
-  public Person person;
+  private Person person;
   
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "competence_code_id")
-  public CompetenceCode competenceCode;
+  private CompetenceCode competenceCode;
 
   @Override
   public String toString() {

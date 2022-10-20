@@ -572,7 +572,7 @@ public class CompetenceManager {
       } else {
         boolean found = false;
         for (PersonCompetenceCodes pcc : pccList) {
-          if (pcc.competenceCode.code.equals(code.code)) {
+          if (pcc.getCompetenceCode().getCode().equals(code.code)) {
             found = true;
           }
         }
@@ -597,12 +597,12 @@ public class CompetenceManager {
     List<CompetenceCode> codeToRemove = Lists.newArrayList();
     if (codeListIds == null || codeListIds.isEmpty()) {
       pccList.forEach(item -> {
-        codeToRemove.add(item.competenceCode);
+        codeToRemove.add(item.getCompetenceCode());
       });
     } else {
       pccList.forEach(item -> {
-        if (!codeListIds.contains(item.competenceCode.getId())) {
-          codeToRemove.add(item.competenceCode);
+        if (!codeListIds.contains(item.getCompetenceCode().getId())) {
+          codeToRemove.add(item.getCompetenceCode());
         }
       });
     }
@@ -716,7 +716,7 @@ public class CompetenceManager {
 
         if (item.code.equals("T1") || item.code.equals("T2") || item.code.equals("T3")) {
           PersonShift personShift = 
-              personShiftDayDao.getPersonShiftByPerson(pcc.get().person, pcc.get().getBeginDate());
+              personShiftDayDao.getPersonShiftByPerson(pcc.get().getPerson(), pcc.get().getBeginDate());
           if (personShift != null) {
             personShift.setEndDate(endMonth);
             emp.get().merge(personShift);
@@ -1105,8 +1105,8 @@ public class CompetenceManager {
   private void createPersonCompetenceCode(Person person, LocalDate dateBegin, 
       Optional<LocalDate> dateEnd, CompetenceCode code) {
     PersonCompetenceCodes newPcc = new PersonCompetenceCodes();
-    newPcc.competenceCode = code;
-    newPcc.person = person;
+    newPcc.setCompetenceCode(code);
+    newPcc.setPerson(person);
     newPcc.setBeginDate(dateBegin);
     if (dateEnd.isPresent()) {
       newPcc.setEndDate(dateEnd.get());
