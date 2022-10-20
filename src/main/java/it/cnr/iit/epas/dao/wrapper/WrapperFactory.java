@@ -1,5 +1,22 @@
+/*
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as
+ *     published by the Free Software Foundation, either version 3 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package it.cnr.iit.epas.dao.wrapper;
 
+import com.google.common.base.Preconditions;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
@@ -10,11 +27,9 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public class WrapperFactory implements IWrapperFactory {
 
   private final IWrapperPerson wrapperPerson;
@@ -36,12 +51,12 @@ public class WrapperFactory implements IWrapperFactory {
     this.wrapperPerson = wrapperPerson;
     this.wrapperContract = wrapperContract;
     this.wrapperWorkingTimeType = wrapperWorkingTimeType;
-    this.wrapperTimeSlot = null;
-    this.wrapperCompetenceCode = null;
-    this.wrapperOffice = null;
-    this.wrapperPersonDay = null;
-    this.wrapperContractMonthRecap = null;
-    this.wrapperContractWorkingTimeType = null;
+    this.wrapperTimeSlot = wrapperTimeSlot;
+    this.wrapperCompetenceCode = wrapperCompetenceCode;
+    this.wrapperOffice = wrapperOffice;
+    this.wrapperPersonDay = wrapperPersonDay;
+    this.wrapperContractMonthRecap = wrapperContractMonthRecap;
+    this.wrapperContractWorkingTimeType = wrapperContractWorkingTimeType;
   }
   
   public IWrapperPerson create(Person person) {
@@ -75,6 +90,8 @@ public class WrapperFactory implements IWrapperFactory {
 
   @Override
   public IWrapperPersonDay create(PersonDay pd) {
+    Preconditions.checkNotNull(wrapperPersonDay);
+    Preconditions.checkNotNull(pd);
     return wrapperPersonDay.setValue(pd);
   }
 

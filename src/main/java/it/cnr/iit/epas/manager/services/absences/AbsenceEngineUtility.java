@@ -233,7 +233,7 @@ public class AbsenceEngineUtility {
             continue;
           }          
           
-          if (workTimeAdjustment && cwtt.workingTimeType.isEnableAdjustmentForQuantity()) {
+          if (workTimeAdjustment && cwtt.getWorkingTimeType().isEnableAdjustmentForQuantity()) {
             //Adeguamento sull'incidenza del tipo orario
             if (cwtt.getWorkingTimeType().averageMinutesInWeek() >= Max_Minutes_To_Cut_Back) {
               return Max_Minutes_To_Cut_Back;
@@ -261,19 +261,19 @@ public class AbsenceEngineUtility {
     for (Contract contract : person.getContracts()) {
       for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
         if (DateUtility.isDateIntoInterval(date, cwtt.periodInterval())) {
-          if (cwtt.workingTimeType.getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1).holiday) {
+          if (cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1).holiday) {
             if (absence.absenceType.isConsideredWeekEnd()) {
               LocalDate dateToChange = date;
               while (!DateUtility.isGeneralHoliday(Optional.<MonthDay>empty(), dateToChange)) {
                 dateToChange = dateToChange.plusDays(1);
               }
-              return cwtt.workingTimeType.getWorkingTimeTypeDays().get(dateToChange.getDayOfWeek().getValue() - 1)
+              return cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(dateToChange.getDayOfWeek().getValue() - 1)
                   .workingTime;
             } else {
               return 0;
             }
           }
-          return cwtt.workingTimeType.getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1)
+          return cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1)
               .workingTime;
         }
       }
@@ -612,7 +612,7 @@ public class AbsenceEngineUtility {
         //Adeguamento sull'incidenza del periodo
         Double cwttAssigned = (cwttPercent * fixed) / 100;
         
-        if (workTimeAdjustment && cwtt.workingTimeType.isEnableAdjustmentForQuantity()) {
+        if (workTimeAdjustment && cwtt.getWorkingTimeType().isEnableAdjustmentForQuantity()) {
           //Adeguamento sull'incidenza del tipo orario
           cwttAssigned = (cwttAssigned * cwtt.getWorkingTimeType().percentEuristic()) / 100;
         }

@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.persondays;
+package it.cnr.iit.epas.tests.persondays;
 
 import static org.junit.Assert.assertEquals;
 import com.google.common.collect.Lists;
@@ -55,14 +55,6 @@ public class PersonDaysTest {
 
   @Inject  
   PersonDayManager personDayManager;
-
-  @Test
-  public void toMinute() {
-    LocalDateTime aDateTime = LocalDateTime.of(2022,10,19,9,30,00);
-    assertEquals(DateUtility.toMinute(aDateTime), 9*60 + 30);
-    LocalTime aTime = LocalTime.of(9,30,0);
-    assertEquals(DateUtility.toMinute(aTime), 9*60 + 30);
-  }
 
   /**
    * Test su un giorno Normale.

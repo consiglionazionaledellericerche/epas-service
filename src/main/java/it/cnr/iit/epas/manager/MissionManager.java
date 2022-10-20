@@ -307,7 +307,7 @@ public class MissionManager {
     Optional<ContractWorkingTimeType> cwtt = wrappedPerson.getCurrentContractWorkingTimeType();
     WorkingTimeTypeDay dayNumber = null;
     if (cwtt.isPresent()) {
-      WorkingTimeType wtt = cwtt.get().workingTimeType;
+      WorkingTimeType wtt = cwtt.get().getWorkingTimeType();
       int day = actualDate.getDayOfWeek().getValue();
 
       for (WorkingTimeTypeDay wttd : wtt.getWorkingTimeTypeDays()) {
@@ -689,7 +689,6 @@ public class MissionManager {
    */
   private boolean atomicInsert(Situation situation, MissionFromClient body, LocalDateTime actualDate) {
     boolean missionInserted = false;
-
     if (situation.isFirstOrLastDay) {
       if (situation.difference < 0) {
         //sono partito dopo la fine della giornata lavorativa o sono tornato prima dell'inizio 

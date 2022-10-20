@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.absences;
+package it.cnr.iit.epas.tests.absences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,8 +23,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.db.h2support.H2Examples;
-import it.cnr.iit.epas.db.h2support.base.H2AbsenceSupport;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.models.Contract;
@@ -32,6 +30,8 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.tests.db.h2support.H2Examples;
+import it.cnr.iit.epas.tests.db.h2support.base.H2AbsenceSupport;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

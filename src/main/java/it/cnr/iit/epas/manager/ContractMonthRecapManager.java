@@ -547,7 +547,7 @@ public class ContractMonthRecapManager {
             if (DateUtility.isDateIntoInterval(date,
                 wrapperFactory.get().create(cwtt).getDateInverval())) {
 
-              WorkingTimeTypeDay wttd = cwtt.workingTimeType.getWorkingTimeTypeDays()
+              WorkingTimeTypeDay wttd = cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
                   .get(date.getDayOfWeek().getValue() - 1);
 
               Preconditions.checkState(wttd.getDayOfWeek() == date.getDayOfWeek().getValue());

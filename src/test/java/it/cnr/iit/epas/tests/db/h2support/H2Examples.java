@@ -14,27 +14,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.db.h2support;
+package it.cnr.iit.epas.tests.db.h2support;
 
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.ContractWorkingTimeTypeDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dao.UserDao;
-import it.cnr.iit.epas.db.h2support.base.H2WorkingTimeTypeSupport;
-import it.cnr.iit.epas.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDefinition;
 import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.WorkingTimeType;
+import it.cnr.iit.epas.tests.db.h2support.base.H2WorkingTimeTypeSupport;
+import it.cnr.iit.epas.tests.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDefinition;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import lombok.val;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,7 +58,8 @@ public class H2Examples {
   private final OfficeDao officeDao;
   private final QualificationDao qualificationDao;
   private final ContractDao contractDao;
-
+  private final ContractWorkingTimeTypeDao contractWorkingTimeTypeDao;
+  private final H2WorkingTimeTypeSupport workingTimeTypeSupport;
   /**
    * Injection. 
    */
@@ -64,7 +67,9 @@ public class H2Examples {
   public H2Examples(H2WorkingTimeTypeSupport h2WorkingTimeTypeSupport, 
       ConfigurationManager configurationManager, ContractManager contractManager,
       UserDao userDao, PersonDao personDao, OfficeDao officeDao,
-      QualificationDao qualificationDao, ContractDao contractDao) {
+      QualificationDao qualificationDao, ContractDao contractDao,
+      ContractWorkingTimeTypeDao contractWorkingTimeTypeDao,
+      H2WorkingTimeTypeSupport workingTimeTypeSupport) {
     this.h2WorkingTimeTypeSupport = h2WorkingTimeTypeSupport;
     this.configurationManager = configurationManager;
     this.contractManager = contractManager;
@@ -73,6 +78,8 @@ public class H2Examples {
     this.officeDao = officeDao;
     this.qualificationDao = qualificationDao;
     this.contractDao = contractDao;
+    this.workingTimeTypeSupport = workingTimeTypeSupport;
+    this.contractWorkingTimeTypeDao = contractWorkingTimeTypeDao;
   }
 
   /**
@@ -84,7 +91,6 @@ public class H2Examples {
    * @param endContract terminazione
    * @return persisted entity
    */
-  @Transactional
   public Contract buildContract(Person person, LocalDate beginDate, Optional<LocalDate> endDate, 
       Optional<LocalDate> endContract, WorkingTimeType workingTimeType) {
     Contract contract = new Contract();
@@ -107,7 +113,6 @@ public class H2Examples {
    * @param username username
    * @return persisted entity
    */
-  @Transactional
   public Person createPerson(Office office, String username) {
 
     User user = new User();
@@ -136,7 +141,6 @@ public class H2Examples {
    * @param code code
    * @return persisted entity
    */
-  @Transactional
   public Office buildOffice(LocalDate beginDate, String name, String codeId, String code) {
 
     Office office = new Office();
@@ -155,7 +159,6 @@ public class H2Examples {
    * @param beginContract inizio contratto
    * @return mocked entity
    */
-  @Transactional
   public Person normalEmployee(LocalDate beginContract, 
       Optional<LocalDate> expireContract) {
 
@@ -165,19 +168,28 @@ public class H2Examples {
     Person person = createPerson(office, name);
     Contract contract = 
         buildContract(person, beginContract, expireContract, Optional.empty(), normal);
-    contractDao.refresh(contract);
-    personDao.refresh(person);
-    
+    contractDao.persist(contract);
+    personDao.merge(person);
+    val cwtt = buildContractWorkingTimeTypeNormal(contract);
+    contractWorkingTimeTypeDao.persist(cwtt);
+    contractDao.merge(contract);
     return person;
   }
   
+  private ContractWorkingTimeType buildContractWorkingTimeTypeNormal(Contract contract) {
+    ContractWorkingTimeType cwtt = new ContractWorkingTimeType();
+    cwtt.setContract(contract);
+    cwtt.setBeginDate(contract.getBeginDate());
+    cwtt.setEndDate(contract.getEndDate());
+    cwtt.setWorkingTimeType(workingTimeTypeSupport.getWorkingTimeType(WorkingDefinition.Normal));
+    return cwtt;
+  }
   /**
    * Istanza di un dipendente con orario PartTime 50.
    *
    * @param beginContract inizio contratto
    * @return mocked entity
    */
-  @Transactional
   public Person partTime50Employee(LocalDate beginContract) {
 
     final String name = "partTime50UndefinedEmployee" + beginContract + UUID.randomUUID();

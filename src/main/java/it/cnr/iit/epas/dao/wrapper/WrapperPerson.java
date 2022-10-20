@@ -132,11 +132,11 @@ public class WrapperPerson implements IWrapperPerson {
     if (currentContract != null) {
       return currentContract;
     }
-
     if (currentContract == null) {
       currentContract = Optional.ofNullable(
           contractDao.getContract(LocalDate.now(), value));
     }
+
     return currentContract;
   }
 
@@ -326,7 +326,7 @@ public class WrapperPerson implements IWrapperPerson {
     for (ContractWorkingTimeType cwtt : currentContract.get().getContractWorkingTimeType()) {
       if (DateUtility
           .isDateIntoInterval(LocalDate.now(), new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
-        currentWorkingTimeType = Optional.ofNullable(cwtt.workingTimeType);
+        currentWorkingTimeType = Optional.ofNullable(cwtt.getWorkingTimeType());
         return currentWorkingTimeType;
       }
     }

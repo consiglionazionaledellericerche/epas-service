@@ -14,18 +14,22 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas;
+package it.cnr.iit.epas.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dao.UserDao;
-import it.cnr.iit.epas.db.h2support.H2Examples;
+import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.tests.db.h2support.H2Examples;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +58,8 @@ class EntityAndEnunInitializationTests {
   private OfficeDao officeDao;
   @Inject
   private QualificationDao qualificationDao;
+  @Inject
+  private WrapperFactory wrapperFactory;
   @Inject
   private H2Examples examples;
   @Inject
@@ -103,4 +109,11 @@ class EntityAndEnunInitializationTests {
     assertNotNull(person.getId()); 
   }
 
+  @Test
+  @Transactional
+  void currentContract() {
+    val person = examples.normalEmployee(LocalDate.now(), Optional.empty());
+    assertEquals(1, person.getContracts().size());
+    assertTrue(wrapperFactory.create(person).getCurrentContract().isPresent());
+  }
 }

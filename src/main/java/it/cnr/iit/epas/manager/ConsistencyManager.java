@@ -34,6 +34,7 @@ import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.LocalTimeInterval;
 import it.cnr.iit.epas.manager.configurations.EpasParam.RecomputationType;
+import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
 import it.cnr.iit.epas.models.Office;
@@ -88,7 +89,7 @@ public class ConsistencyManager {
   private final StampTypeManager stampTypeManager;
   private final ConfigurationManager configurationManager;
   //private final ShiftManager2 shiftManager2;
-  //private final AbsenceService absenceService;
+  private final AbsenceService absenceService;
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceDao absenceDao;
   private final Provider<EntityManager> emp;
@@ -121,7 +122,7 @@ public class ConsistencyManager {
       ConfigurationManager configurationManager,
       StampTypeManager stampTypeManager,
       //ShiftManager2 shiftManager2,
-      //AbsenceService absenceService,
+      AbsenceService absenceService,
       AbsenceComponentDao absenceComponentDao,
       Provider<IWrapperFactory> wrapperFactory, AbsenceDao absenceDao,
       Provider<EntityManager> emp) {
@@ -133,7 +134,7 @@ public class ConsistencyManager {
     this.contractMonthRecapManager = contractMonthRecapManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
     this.configurationManager = configurationManager;
-    //this.absenceService = absenceService;
+    this.absenceService = absenceService;
     this.absenceComponentDao = absenceComponentDao;
     this.wrapperFactory = wrapperFactory;
     this.personDayDao = personDayDao;
@@ -362,6 +363,7 @@ public class ConsistencyManager {
           personDay = new PersonDay(person, date);
         }
 
+        Preconditions.checkNotNull(personDay);
         IWrapperPersonDay wrPersonDay = wrapperFactory.get().create(personDay);
 
         if (previous != null) {
@@ -383,16 +385,15 @@ public class ConsistencyManager {
     // (3) Ricalcolo dei residui per mese        
     populateContractMonthRecapByPerson(person, YearMonth.from(from));
 
+    // (4) Scan degli errori sulle assenze
+    absenceService.scanner(person, from);
+    
+    // (5) Empty vacation cache and async recomputation
+    
+    absenceService.emptyVacationCache(person, from);
+    final Optional<Contract> contract = wrPerson.getCurrentContract();
+
     //FIXME: da completare prima del passaggio a spring boot
-
-//    // (4) Scan degli errori sulle assenze
-//    absenceService.scanner(person, from);
-//    
-//    // (5) Empty vacation cache and async recomputation
-//    
-//    absenceService.emptyVacationCache(person, from);
-//    final Optional<Contract> contract = wrPerson.getCurrentContract();
-
 //    if (contract.isPresent()) {
 //      new Job<Void>() {
 //        @Override

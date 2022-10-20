@@ -29,6 +29,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -38,6 +39,8 @@ import org.hibernate.envers.NotAudited;
  *
  * @author Alessandro Martelli
  */
+@Getter
+@Setter
 @ToString
 @Audited
 @Entity
@@ -50,18 +53,18 @@ public class ContractWorkingTimeType extends PropertyInPeriod implements IProper
   @NotNull
   @ManyToOne
   @JoinColumn(name = "contract_id")
-  public Contract contract;
+  private Contract contract;
 
   @Getter
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "working_time_type_id")
-  public WorkingTimeType workingTimeType;
+  private WorkingTimeType workingTimeType;
 
   @NotAudited
-  public LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 
-  public String externalId;
+  private String externalId;
 
   @PreUpdate
   @PrePersist

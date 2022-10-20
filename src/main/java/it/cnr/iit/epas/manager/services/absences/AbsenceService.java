@@ -23,11 +23,11 @@ import com.google.common.collect.Sets;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.GeneralSettingDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
 import it.cnr.iit.epas.dao.JustifiedTypeDao;
 import it.cnr.iit.epas.dao.PersonChildrenDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.helpers.TemplateUtility;
 import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.manager.SecureManager;
 import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
@@ -93,12 +93,12 @@ public class AbsenceService {
   private final ConfigurationManager confManager;
   private final SecureManager secureManager;
   private final ConfigurationManager configurationManager;
-  private final TemplateUtility templateUtility;
   private final GroupAbsenceTypeDao groupAbsenceTypeDao;
   private final AbsenceTypeDao absenceTypeDao;
   private final JustifiedTypeDao justifiedTypeDao;
   private final CategoryTabDao categoryTabDao;
   private final ContractDao contractDao;
+  private final GeneralSettingDao generalSettingDao;
   private final CacheManager cacheManager;
 
   /**
@@ -114,11 +114,12 @@ public class AbsenceService {
       AbsenceEngineUtility absenceEngineUtility, ServiceFactories serviceFactories,
       AbsenceComponentDao absenceComponentDao, PersonChildrenDao personChildrenDao,
       ConfigurationManager confManager, SecureManager secureManager,
-      EnumAllineator enumAllineator, TemplateUtility templateUtility,
+      EnumAllineator enumAllineator,
       GroupAbsenceTypeDao groupAbsenceTypeDao,
       AbsenceTypeDao absenceTypeDao, 
       JustifiedTypeDao justifiedTypeDao, CategoryTabDao categoryTabDao,
       ContractDao contractDao,
+      GeneralSettingDao generalSettingDao,
       CacheManager cacheManager) {
     this.configurationManager = configurationManager;
     this.absenceEngineUtility = absenceEngineUtility;
@@ -128,12 +129,12 @@ public class AbsenceService {
     this.confManager = confManager;
     this.secureManager = secureManager;
     this.enumAllineator = enumAllineator;
-    this.templateUtility = templateUtility;
     this.groupAbsenceTypeDao = groupAbsenceTypeDao;
     this.absenceTypeDao = absenceTypeDao;
     this.cacheManager = cacheManager;
     this.justifiedTypeDao = justifiedTypeDao;
     this.contractDao = contractDao;
+    this.generalSettingDao = generalSettingDao;
     this.categoryTabDao = categoryTabDao;
   }
 
@@ -630,7 +631,7 @@ public class AbsenceService {
       //groupsPermitted.remove(lagile);
       //groupsPermitted.remove(cod39LA);
       for (AbsenceType abt : smart.getCategory().getAbsenceTypes()) {
-        if (abt.isExpired() || !templateUtility.enableSmartworking()) {
+        if (abt.isExpired() || !generalSettingDao.enableSmartworking()) {
           groupsPermitted.remove(smart);
         }
       }
