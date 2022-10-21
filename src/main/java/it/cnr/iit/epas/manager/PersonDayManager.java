@@ -26,6 +26,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import it.cnr.iit.epas.dao.PersonDayDao;
+import it.cnr.iit.epas.dao.PersonDayInTroubleDao;
 import it.cnr.iit.epas.dao.PersonShiftDayDao;
 import it.cnr.iit.epas.dao.WorkingTimeTypeDao;
 import it.cnr.iit.epas.dao.ZoneDao;
@@ -77,6 +78,7 @@ public class PersonDayManager {
 
   private final ConfigurationManager configurationManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
+  private final PersonDayInTroubleDao personDayInTroubleDao;
   private final PersonShiftDayDao personShiftDayDao;
   private final PersonDayDao personDayDao;
   private final WorkingTimeTypeDao workingTimeTypeDao;
@@ -93,12 +95,14 @@ public class PersonDayManager {
    */
   @Inject
   public PersonDayManager(ConfigurationManager configurationManager,
-      PersonDayInTroubleManager personDayInTroubleManager, PersonDayDao personDayDao,
+      PersonDayInTroubleManager personDayInTroubleManager, PersonDayInTroubleDao personDayInTroubleDao,
+      PersonDayDao personDayDao,
       PersonShiftDayDao personShiftDayDao, WorkingTimeTypeDao workingTimeTypeDao, ZoneDao zoneDao,
       AbsenceComponentDao absenceComponentDao, Provider<EntityManager> emp) {
 
     this.configurationManager = configurationManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
+    this.personDayInTroubleDao = personDayInTroubleDao;
     this.personShiftDayDao = personShiftDayDao;
     this.personDayDao = personDayDao;
     this.workingTimeTypeDao = workingTimeTypeDao;
@@ -955,8 +959,7 @@ public class PersonDayManager {
     //se prima o uguale a source contract il problema è fixato
     if (sourceDateResidual != null && !personDay.getDate().isAfter(sourceDateResidual)) {
       personDay.getTroubles().forEach( pdt -> {
-        emp.get().remove(pdt);
-        //PersonDayInTrouble::delete
+        personDayInTroubleDao.delete(pdt);
       });
       personDay.getTroubles().clear();
 
@@ -977,6 +980,8 @@ public class PersonDayManager {
     final boolean isEnoughHourlyAbsences = isEnoughHourlyAbsences(pd);
     final boolean isCompleteDayAndAddOvertimeAbsence = 
         isCompleteDayAndAddOvertimeAbsence(personDay);
+
+    log.info("PersonDay = {}. isPersistent=()", personDay, personDayDao.isPersistent(personDay));
 
     // PRESENZA AUTOMATICA
     if (isFixedTimeAtWork && !allValidStampings) {

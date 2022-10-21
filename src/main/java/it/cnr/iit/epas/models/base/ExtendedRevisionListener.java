@@ -31,32 +31,32 @@ import org.springframework.stereotype.Component;
  * @author Marco Andreini
  */
 @Slf4j
-@Component
 public class ExtendedRevisionListener implements RevisionListener {
 
+  //FIXME; da sistemare prima del passaggio a Spring boot
   //private final static String REMOTE_ADDRESS = "request.remoteAddress";
   @Inject
-  static Provider<Optional<User>> user;
+  //static Provider<Optional<User>> user;
   
   //@Inject
   //@Named(REMOTE_ADDRESS)
   //XXX: da riattivare prima del passaggio a Spring boot
-  static Provider<String> ipaddress;
+  //static Provider<String> ipaddress;
 
   @Override
   public void newRevision(Object revisionEntity) {
     try {
       final Revision revision = (Revision) revisionEntity;
-      if (user.get().isPresent()) {
-        revision.setOwner(user.get().orElse(null));
-      } else {
-        log.warn("unkown owner or user on revision {}", revision);
-      }
-      if (ipaddress.get() != null) {
-        revision.setIpaddress(ipaddress.get());
-      } else {
-        log.warn("unkown owner or user on revision {}", revision);
-      }
+//      if (user.get().isPresent()) {
+//        revision.setOwner(user.get().orElse(null));
+//      } else {
+//        log.warn("unkown owner or user on revision {}", revision);
+//      }
+//      if (ipaddress.get() != null) {
+//        revision.setIpaddress(ipaddress.get());
+//      } else {
+//        log.warn("unkown owner or user on revision {}", revision);
+//      }
     } catch (NullPointerException ignored) {
       log.warn("NPE", ignored);
     }

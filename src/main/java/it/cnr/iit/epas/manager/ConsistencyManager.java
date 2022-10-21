@@ -20,10 +20,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.cnr.iit.epas.dao.AbsenceDao;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.PersonShiftDayDao;
+import it.cnr.iit.epas.dao.StampingDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
@@ -40,6 +42,7 @@ import it.cnr.iit.epas.models.ContractMonthRecap;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
+import it.cnr.iit.epas.models.PersonShiftDay;
 import it.cnr.iit.epas.models.PersonalWorkingTime;
 import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
@@ -81,6 +84,8 @@ public class ConsistencyManager {
   private final OfficeDao officeDao;
   private final PersonDao personDao;
   private final PersonDayManager personDayManager;
+  private final StampingDao stampingDao;
+  private final ContractDao contractDao;
   private final ContractMonthRecapManager contractMonthRecapManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
   private final Provider<IWrapperFactory> wrapperFactory;
@@ -88,7 +93,7 @@ public class ConsistencyManager {
   private final PersonShiftDayDao personShiftDayDao;
   private final StampTypeManager stampTypeManager;
   private final ConfigurationManager configurationManager;
-  //private final ShiftManager2 shiftManager2;
+  private final ShiftManager2 shiftManager2;
   private final AbsenceService absenceService;
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceDao absenceDao;
@@ -115,13 +120,14 @@ public class ConsistencyManager {
       PersonDao personDao,
       PersonDayDao personDayDao,
       PersonShiftDayDao personShiftDayDao,
-
+      StampingDao stampingDao,
+      ContractDao contractDao,
       PersonDayManager personDayManager,
       ContractMonthRecapManager contractMonthRecapManager,
       PersonDayInTroubleManager personDayInTroubleManager,
       ConfigurationManager configurationManager,
       StampTypeManager stampTypeManager,
-      //ShiftManager2 shiftManager2,
+      ShiftManager2 shiftManager2,
       AbsenceService absenceService,
       AbsenceComponentDao absenceComponentDao,
       Provider<IWrapperFactory> wrapperFactory, AbsenceDao absenceDao,
@@ -130,6 +136,8 @@ public class ConsistencyManager {
     //this.secureManager = secureManager;
     this.officeDao = officeDao;
     this.personDao = personDao;
+    this.stampingDao = stampingDao;
+    this.contractDao = contractDao;
     this.personDayManager = personDayManager;
     this.contractMonthRecapManager = contractMonthRecapManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
@@ -140,7 +148,7 @@ public class ConsistencyManager {
     this.personDayDao = personDayDao;
     this.stampTypeManager = stampTypeManager;
     this.personShiftDayDao = personShiftDayDao;
-    //this.shiftManager2 = shiftManager2;
+    this.shiftManager2 = shiftManager2;
     this.absenceDao = absenceDao;
     this.emp = emp;
   }
@@ -312,8 +320,10 @@ public class ConsistencyManager {
   }
 
 
-  private void updatePersonSituationEngine(Long personId, LocalDate from, Optional<LocalDate> to,
+  private Optional<Contract> updatePersonSituationEngine(Long personId, LocalDate from, Optional<LocalDate> to,
       boolean updateOnlyRecaps) {
+    log.debug("updatePersonSituationEngine started. personId={}, from={}, to={}.",
+        personId, from, to.orElse(null));
 
     final Person person = personDao.fetchPersonForComputation(personId, Optional.ofNullable(from),
         Optional.<LocalDate>empty());
@@ -322,7 +332,7 @@ public class ConsistencyManager {
 
     if (person.getQualification() == null) {
       log.warn("... annullato ricalcolo per {} in quanto priva di qualifica", person.getFullname());
-      return;
+      return Optional.empty();
     }
 
     IWrapperPerson wrPerson = wrapperFactory.get().create(person);
@@ -361,6 +371,7 @@ public class ConsistencyManager {
         PersonDay personDay = personDaysMap.get(date);
         if (personDay == null) {
           personDay = new PersonDay(person, date);
+          personDayDao.persist(personDay);
         }
 
         Preconditions.checkNotNull(personDay);
@@ -393,12 +404,12 @@ public class ConsistencyManager {
     absenceService.emptyVacationCache(person, from);
     final Optional<Contract> contract = wrPerson.getCurrentContract();
 
-    //FIXME: da completare prima del passaggio a spring boot
+    //FIXME: questa parte è stata sposta nel ConsistencyManagerListener::updatePersonSituationEngine
 //    if (contract.isPresent()) {
 //      new Job<Void>() {
 //        @Override
 //        public void doJob() {
-//          Verify.verifyNotNull(contract.get().id);          
+//          Verify.verifyNotNull(contract.get().id);
 //          Contract currentContract = Contract.findById(contract.get().id);
 //          Verify.verifyNotNull(currentContract, 
 //              String.format("currentcontract is null, contract.id = %s", contract.get().id));
@@ -411,13 +422,16 @@ public class ConsistencyManager {
 //    }
     // (6) Controllo se per quel giorno person ha anche un turno associato ed effettuo, i ricalcoli
 
-    //FIXME: da completare prima del passaggio a spring boot
-//    Optional<PersonShiftDay> psd = personShiftDayDao.byPersonAndDate(person, from);
-//    if (psd.isPresent()) {
-//      shiftManager2.checkShiftValid(psd.get());
-//    }
+    
+    Optional<PersonShiftDay> psd = personShiftDayDao.byPersonAndDate(person, from);
+    if (psd.isPresent()) {
+      shiftManager2.checkShiftValid(psd.get());
+    }
 
     log.trace("... ricalcolo dei riepiloghi conclusa.");
+    log.debug("updatePersonSituationEngine ended. personId={}, from={}, to={}.",
+        personId, from, to.orElse(null));
+    return contract;
   }
 
   /**
@@ -460,8 +474,7 @@ public class ConsistencyManager {
       personDayManager.setTicketStatusIfNotForced(pd.getValue(), 
           MealTicketBehaviour.notAllowMealTicket);
       pd.getValue().setStampModificationType(null);
-      emp.get().merge(pd.getValue());
-      //pd.getValue().save();
+      personDayDao.save(pd.getValue());
       return;
     }
 
@@ -477,16 +490,14 @@ public class ConsistencyManager {
       personDayManager.setTicketStatusIfNotForced(pd.getValue(), 
           MealTicketBehaviour.notAllowMealTicket);
       pd.getValue().setStampModificationType(null);
-      emp.get().merge(pd.getValue());
-      //pd.getValue().save();
+      personDayDao.save(pd.getValue());
       return;
     }
 
     // decido festivo / lavorativo
     pd.getValue().setHoliday(personDayManager
         .isHoliday(pd.getValue().getPerson(), pd.getValue().getDate()));
-    emp.get().merge(pd.getValue());
-    //pd.getValue().save();
+    personDayDao.save(pd.getValue());
 
     // controllo uscita notturna
     handlerNightStamp(pd);
@@ -522,16 +533,17 @@ public class ConsistencyManager {
     
     personDayManager.checkAndManageMandatoryTimeSlot(pd.getValue());
 
+    //FIXME: nella versione play1 questo ricaricamento dal db non serviva, perchè?
+    pd.setValue(personDayDao.getPersonDayById(pd.getValue().getId()));
+
     // controllo problemi strutturali del person day
     if (pd.getValue().getDate().isBefore(LocalDate.now())) {
       personDayManager.checkForPersonDayInTrouble(pd);
     }
 
-    emp.get().merge(pd.getValue());
-    //pd.getValue().save();
+    personDayDao.save(pd.getValue());
+    log.debug("populatePersonDay -> person day saved {}", pd.getValue());
   }
-  
- 
 
   /**
    * Se al giorno precedente l'ultima timbratura è una entrata disaccoppiata e nel giorno attuale vi
@@ -577,11 +589,9 @@ public class ConsistencyManager {
             "Ora inserita automaticamente per considerare il tempo di lavoro a cavallo della "
                 + "mezzanotte");
         exitStamp.setPersonDay(previous);
-        emp.get().persist(exitStamp);
-        //exitStamp.save();
+        stampingDao.save(exitStamp);
         previous.getStampings().add(exitStamp);
-        emp.get().merge(previous);
-        //previous.save();
+        personDayDao.save(previous);
 
         populatePersonDay(wrapperFactory.get().create(previous));
 
@@ -599,9 +609,7 @@ public class ConsistencyManager {
         enterStamp.setNote(
             "Ora inserita automaticamente per considerare il tempo di lavoro a cavallo "
                 + "della mezzanotte");
-
-        emp.get().persist(enterStamp);
-        //enterStamp.save();
+        stampingDao.save(enterStamp);
       }
     }
   }
@@ -733,8 +741,7 @@ public class ConsistencyManager {
       emp.get().merge(recap.get());
       //cap.get().save();
       contract.getValue().contractMonthRecaps.add(recap.get());
-      emp.get().merge(contract.getValue());
-      //contract.getValue().save();
+      contractDao.save(contract.getValue());
 
       previousMonthRecap = Optional.ofNullable(currentMonthRecap);
       yearMonthToCompute = yearMonthToCompute.plusMonths(1);
