@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,6 +46,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  * @author Cristian Lucchesi
  */
+@Slf4j
 @Component
 public class ContractDao extends DaoBase<Contract> {
 
@@ -301,16 +303,35 @@ public class ContractDao extends DaoBase<Contract> {
   public Optional<Contract> getPreviousContract(Contract actualContract) {
     Verify.verifyNotNull(actualContract);
     Contract previousContract = null;
-    List<Contract> contractList = getPersonContractList(actualContract.person);
+    List<Contract> contractList = getPersonContractList(actualContract.getPerson());
+
     for (Contract contract : contractList) {
-      if (previousContract == null
-          || (contract.calculatedEnd() != null && contract.calculatedEnd()
-          .isBefore(actualContract.getBeginDate())
-          && contract.getBeginDate().isAfter(previousContract.getEndDate()))) {
+      if (contract.getId().equals(actualContract.getId())) {
+        log.trace("scarto il contratto id = {}, perché uguale al contratto corrente id = {}",
+            contract.getId(), actualContract.getId());
+        continue;
+      }
+
+      if (contract.calculatedEnd() != null
+          && contract.calculatedEnd().isBefore(actualContract.getBeginDate()) 
+          && (previousContract == null || contract.getBeginDate().isAfter(previousContract.getEndDate()))) {
         previousContract = contract;
       }
     }
     return Optional.ofNullable(previousContract);
   }
 
+  /**
+   * @return la lista dei contratti che hanno impostato come previousContract 
+   *  se stesso (erroneamente).
+   */
+  public List<Contract> getContractsWithWrongPreviousContract() {
+    QContract contract = QContract.contract;
+    BooleanBuilder contractEqPreviousCondition = 
+        new BooleanBuilder(contract.previousContract.isNotNull().and(contract.previousContract.id.eq(contract.id)));
+    BooleanBuilder previousConditionAfterCurrentContract = 
+        new BooleanBuilder(contract.previousContract.isNotNull().and(contract.beginDate.before(contract.previousContract.beginDate)));
+    return getQueryFactory().selectFrom(contract)
+        .where(contractEqPreviousCondition.or(previousConditionAfterCurrentContract)).fetch();
+  }
 }
