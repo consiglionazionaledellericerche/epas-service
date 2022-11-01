@@ -50,6 +50,7 @@ import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.enumerate.AbsenceTypeMapping;
+import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
 import it.cnr.iit.epas.security.Security;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.sql.Blob;
@@ -630,25 +631,25 @@ public class AbsenceManager {
     }
 
     if (abt == null || !abt.code.equals("92")) {
-      pd.isTicketForcedByAdmin = false;    //una assenza diversa da 92 ha per forza campo calcolato
+      pd.setTicketForcedByAdmin(false);    //una assenza diversa da 92 ha per forza campo calcolato
       personDayDao.persist(pd);
       return;
     }
     if (mealTicket != null && mealTicket.equals("si")) {
-      pd.isTicketForcedByAdmin = true;
-      pd.isTicketAvailable = true;
+      pd.setTicketForcedByAdmin(true);
+      pd.setTicketAvailable(MealTicketBehaviour.allowMealTicket);
       personDayDao.persist(pd);
       return;
     }
     if (mealTicket != null && mealTicket.equals("no")) {
-      pd.isTicketForcedByAdmin = true;
-      pd.isTicketAvailable = false;
+      pd.setTicketForcedByAdmin(true);
+      pd.setTicketAvailable(MealTicketBehaviour.notAllowMealTicket);
       personDayDao.persist(pd);
       return;
     }
 
     if (mealTicket != null && mealTicket.equals("calcolato")) {
-      pd.isTicketForcedByAdmin = false;
+      pd.setTicketForcedByAdmin(false);
       personDayDao.persist(pd);
       return;
     }
@@ -694,7 +695,7 @@ public class AbsenceManager {
     absenceDao.delete(absence);
     pd.getAbsences().remove(absence);
     pd.setWorkingTimeInMission(0);
-    pd.isTicketForcedByAdmin = false;
+    pd.setTicketForcedByAdmin(false);
     personDayDao.merge(pd);
     val person = pd.getPerson();
     consistencyManager.updatePersonSituation(person.getId(), pd.getDate());
@@ -744,7 +745,7 @@ public class AbsenceManager {
           absenceDao.delete(absence);
           pd.getAbsences().remove(absence);
           pd.setWorkingTimeInMission(0);
-          pd.isTicketForcedByAdmin = false;
+          pd.setTicketForcedByAdmin(false);
           deleted++;
           personDayDao.merge(pd);
           log.info("Rimossa assenza del {} per {}", actualDate, person.getFullname());

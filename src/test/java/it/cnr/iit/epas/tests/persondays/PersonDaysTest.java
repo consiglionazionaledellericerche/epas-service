@@ -16,7 +16,6 @@
  */
 package it.cnr.iit.epas.tests.persondays;
 
-import static org.junit.Assert.assertEquals;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.manager.PersonDayManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.LocalTimeInterval;
@@ -27,7 +26,6 @@ import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.Stamping.WayType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
-import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -87,7 +85,7 @@ public class PersonDaysTest {
         personDay.getDecurtedMeal()).isEqualTo(30);      //30 minuti
     org.assertj.core.api.Assertions.assertThat(personDay.getDifference()).isEqualTo(-42);
     org.assertj.core.api.Assertions.assertThat(personDay.getProgressive()).isEqualTo(18);
-    org.assertj.core.api.Assertions.assertThat(personDay.isTicketAvailable).isEqualTo(true);
+    org.assertj.core.api.Assertions.assertThat(personDay.isTicketAvailable()).isEqualTo(true);
     
   }
 
@@ -117,7 +115,7 @@ public class PersonDaysTest {
     org.assertj.core.api.Assertions.assertThat(
         personDay.getDecurtedMeal()).isEqualTo(0);      //00 minuti
     org.assertj.core.api.Assertions.assertThat(
-        personDay.isTicketAvailable).isEqualTo(true);
+        personDay.isTicketAvailable()).isEqualTo(true);
     
   }
 
@@ -195,7 +193,7 @@ public class PersonDaysTest {
     org.assertj.core.api.Assertions.assertThat(
         personDay.getDecurtedMeal()).isEqualTo(0);      //00 minuti
     org.assertj.core.api.Assertions.assertThat(
-        personDay.isTicketAvailable).isEqualTo(true);
+        personDay.isTicketAvailable()).isEqualTo(true);
 
     // # anche le coppie che hanno due causali diverse ma che hanno il parametro gapLunchPairs true
 
@@ -219,7 +217,7 @@ public class PersonDaysTest {
     org.assertj.core.api.Assertions.assertThat(
         personDay.getDecurtedMeal()).isEqualTo(0);      //00 minuti
     org.assertj.core.api.Assertions.assertThat(
-        personDay.isTicketAvailable).isEqualTo(true);
+        personDay.isTicketAvailable()).isEqualTo(true);
 
   }
 
@@ -397,7 +395,7 @@ public class PersonDaysTest {
     org.assertj.core.api.Assertions.assertThat(
         personDay.getProgressive()).isEqualTo(18);
     org.assertj.core.api.Assertions.assertThat(
-        personDay.isTicketAvailable).isEqualTo(true);
+        personDay.isTicketAvailable()).isEqualTo(true);
 
     //Caso con uscita per pranzo
     personDay = new PersonDay(person, second);
@@ -416,8 +414,8 @@ public class PersonDaysTest {
         new LocalTimeInterval(startLunch12, endLunch15), new LocalTimeInterval(startWork, endWork));
 
     org.assertj.core.api.Assertions.assertThat(personDay.getTimeAtWork()).isEqualTo(480);   //8 ore
-    org.assertj.core.api.Assertions.assertThat(personDay.isTicketAvailable).isEqualTo(true);
-    
+    org.assertj.core.api.Assertions.assertThat(personDay.isTicketAvailable()).isEqualTo(true);
+
   }
 
   /**
