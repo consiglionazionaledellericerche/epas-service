@@ -63,6 +63,7 @@ import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -71,6 +72,7 @@ import org.apache.commons.mail.MultiPartEmail;
  * @author Alessandro Martelli
  */
 @Slf4j
+@Component
 public class AbsenceManager {
 
   private static final String DATE_NON_VALIDE = "L'intervallo di date specificato non è corretto";

@@ -14,7 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.db.h2support.base;
+package it.cnr.iit.epas.tests.db.h2support.base;
 
 import java.util.Optional;
 import com.google.common.base.Verify;

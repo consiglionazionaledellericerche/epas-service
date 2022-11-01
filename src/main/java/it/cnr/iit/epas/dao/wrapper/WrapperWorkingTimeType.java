@@ -17,11 +17,12 @@
 package it.cnr.iit.epas.dao.wrapper;
 
 import it.cnr.iit.epas.dao.ContractDao;
-import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.WorkingTimeType;
+import it.cnr.iit.epas.utils.DateInterval;
+import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +41,10 @@ import org.springframework.stereotype.Component;
 public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
 
   private WorkingTimeType value;
-  private final ContractManager contractManager;
   private final ContractDao contractDao;
 
   @Inject
-  WrapperWorkingTimeType(ContractManager contractManager, ContractDao contractDao) {
-    this.contractManager = contractManager;
+  WrapperWorkingTimeType(ContractDao contractDao) {
     this.contractDao = contractDao;
   }
 
@@ -79,14 +78,34 @@ public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
 
     List<Contract> list = new ArrayList<Contract>();
     for (Contract contract : activeContract) {
-      ContractWorkingTimeType current = contractManager
-              .getContractWorkingTimeTypeFromDate(contract, today);
-      if (current.workingTimeType.equals(this.value)) {
+      ContractWorkingTimeType current = 
+          getContractWorkingTimeTypeFromDate(contract, today);
+      if (current.getWorkingTimeType().equals(this.value)) {
         list.add(contract);
       }
     }
 
     return list;
+  }
+
+  /**
+   * Il ContractWorkingTimeType associato ad un contratto in una specifica data.
+   *
+   * @param contract il contratto di cui prelevare il ContractWorkingTimeType
+   * @param date     la data in cui controllare il ContractWorkingTimeType
+   * @return il ContractWorkingTimeType di un contratto ad una data specifica
+   */
+  public final ContractWorkingTimeType getContractWorkingTimeTypeFromDate(final Contract contract,
+      final LocalDate date) {
+    //XXX: metodo spostato qui dal ContractManager in seguito al passaggio a Spring boot
+    for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
+
+      if (DateUtility.isDateIntoInterval(date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
+        return cwtt;
+      }
+    }
+    // FIXME: invece del null utilizzare un Optional!
+    return null;
   }
 
   /**
@@ -102,7 +121,7 @@ public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
     List<ContractWorkingTimeType> list = new ArrayList<ContractWorkingTimeType>();
     for (Contract contract : activeContract) {
       for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
-        if (cwtt.workingTimeType.equals(this.value)) {
+        if (cwtt.getWorkingTimeType().equals(this.value)) {
           list.add(cwtt);
         }
       }
@@ -113,7 +132,7 @@ public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
 
   @Override
   public List<Contract> getAssociatedContract() {
-    return value.getContractWorkingTimeType().stream().map(cwtt -> cwtt.contract)
+    return value.getContractWorkingTimeType().stream().map(cwtt -> cwtt.getContract())
         .collect(Collectors.toList());
   }
 }

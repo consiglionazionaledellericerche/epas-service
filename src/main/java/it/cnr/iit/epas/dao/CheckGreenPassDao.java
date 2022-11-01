@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class CheckGreenPassDao extends DaoBase<CertificationDao> {
+public class CheckGreenPassDao extends DaoBase<CheckGreenPass> {
 
   @Inject
   CheckGreenPassDao(Provider<EntityManager> emp) {

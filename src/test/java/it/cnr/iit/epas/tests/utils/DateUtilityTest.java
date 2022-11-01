@@ -14,13 +14,16 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.utils;
+package it.cnr.iit.epas.tests.utils;
 
 import static org.junit.Assert.assertEquals;
+
 import com.google.common.base.Preconditions;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.joda.time.Days;
 import org.junit.jupiter.api.Test;
 
@@ -56,5 +59,13 @@ public class DateUtilityTest {
     
     DateInterval dateInterval2 = new DateInterval(LocalDate.now(), LocalDate.now().plusDays(1));
     assertEquals(DateUtility.daysInInterval(dateInterval2), daysInInterval(org.joda.time.LocalDate.now(), org.joda.time.LocalDate.now().plusDays(1)));
+  }
+
+  @Test
+  public void toMinute() {
+    LocalDateTime aDateTime = LocalDateTime.of(2022,10,19,9,30,00);
+    assertEquals(DateUtility.toMinute(aDateTime), 9*60 + 30);
+    LocalTime aTime = LocalTime.of(9,30,0);
+    assertEquals(DateUtility.toMinute(aTime), 9*60 + 30);
   }
 }

@@ -14,36 +14,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.models.exports;
+package it.cnr.iit.epas.dao;
 
-import it.cnr.iit.epas.models.Person;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import java.time.LocalDateTime;
+import it.cnr.iit.epas.dao.common.DaoBase;
+import it.cnr.iit.epas.models.PersonShiftDayInTrouble;
+import it.cnr.iit.epas.models.QPersonShiftDayInTrouble;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
- * Esportazione delle informazioni relative alla missione.
- *
- * @author Dario Tagliaferri
+ * DAO per i PersonShiftDayInTrouble.
  */
-@Builder
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class MissionFromClient {
+@Component
+public class PersonShiftDayInTroubleDao extends DaoBase<PersonShiftDayInTrouble> {
 
-  public String tipoMissione;
-  public String destinazioneMissione;
-  public String codiceSede;
-  public Long id;
-  public Person person;
-  public String matricola;
-  public LocalDateTime dataInizio;
-  public LocalDateTime dataFine;
-  public Long idOrdine;
-  public int anno;
-  public Long numero;
+  @Inject
+  PersonShiftDayInTroubleDao(Provider<EntityManager> emp) {
+    super(emp);
+  }
 
+  public List<PersonShiftDayInTrouble> findAll() {
+    return getQueryFactory().selectFrom(QPersonShiftDayInTrouble.personShiftDayInTrouble).fetch();
+  }
 }

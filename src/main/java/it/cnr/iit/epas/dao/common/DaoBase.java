@@ -18,6 +18,7 @@ package it.cnr.iit.epas.dao.common;
 
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import it.cnr.iit.epas.models.base.BaseEntity;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
@@ -27,7 +28,7 @@ import javax.persistence.EntityManager;
  *
  * @author Marco Andreini
  */
-public abstract class DaoBase<T> {
+public abstract class DaoBase<T extends BaseEntity> {
 
   protected final JPQLQueryFactory queryFactory;
   protected final Provider<EntityManager> emp;
@@ -44,6 +45,14 @@ public abstract class DaoBase<T> {
 
   public T merge(T object) {
     return emp.get().<T>merge(object);
+  }
+
+  public T save(T object) {
+    if (isPersistent(object)) {
+      return emp.get().<T>merge(object);
+    }
+    persist(object);
+    return object;
   }
 
   public void delete(T object) {

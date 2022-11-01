@@ -71,4 +71,14 @@ public class GeneralSettingDao extends DaoBase<GeneralSetting> {
     log.info("Cache invalidata");
     generalSettingCache.invalidate(cacheKey);
   }
+  
+  /**
+   * Verifica se nella configurazione posso abilitare l'auto inserimento smartworking.
+   *
+   * @return se nella configurazione generale ho abilitato lo smartworking come parametro per 
+   *        auto inserimento.
+   */
+  public boolean enableSmartworking() {
+    return generalSetting().isEnableAutoconfigSmartworking();
+  }
 }

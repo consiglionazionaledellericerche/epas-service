@@ -74,6 +74,7 @@ import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+import org.springframework.stereotype.Component;
 
 /**
  * Genera le notifiche da inviare agl utenti.
@@ -82,6 +83,7 @@ import org.apache.commons.mail.SimpleEmail;
  * @since 23/06/16
  */
 @Slf4j
+@Component
 public class NotificationManager {
 
   private SecureManager secureManager;

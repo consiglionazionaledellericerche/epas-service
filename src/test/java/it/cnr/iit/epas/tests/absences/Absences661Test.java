@@ -14,15 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.absences;
+package it.cnr.iit.epas.tests.absences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.db.h2support.H2Examples;
-import it.cnr.iit.epas.db.h2support.base.H2AbsenceSupport;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.ServiceFactories;
@@ -32,6 +30,8 @@ import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.tests.db.h2support.H2Examples;
+import it.cnr.iit.epas.tests.db.h2support.base.H2AbsenceSupport;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

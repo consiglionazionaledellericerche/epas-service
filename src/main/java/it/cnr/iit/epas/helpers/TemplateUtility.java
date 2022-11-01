@@ -81,17 +81,17 @@ import it.cnr.iit.epas.models.flows.enumerate.AbsenceRequestType;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
 import it.cnr.iit.epas.security.Security;
 import it.cnr.iit.epas.utils.DateUtility;
+//import manager.attestati.service.AttestatiApis;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+//import play.Play;
+//import synch.diagnostic.SynchDiagnostic;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
-//import manager.attestati.service.AttestatiApis;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-//import play.Play;
-//import synch.diagnostic.SynchDiagnostic;
 
 /**
  * Metodi usabili nel template.
@@ -103,7 +103,7 @@ public class TemplateUtility {
   
   private static final String WORKDAYS_REP = "207";
   private static final String HOLIDAYS_REP = "208";
-  private static final String FLOWS_ACTIVE = "flows.active";
+  //private static final String FLOWS_ACTIVE = "flows.active";
 
   private final SecureManager secureManager;
   private final OfficeDao officeDao;
@@ -873,11 +873,11 @@ public class TemplateUtility {
   public boolean isAvailable(Person person) {
     return person.getPersonCompetenceCodes().stream()
         .anyMatch(comp -> !comp.getBeginDate().isAfter(LocalDate.now()) 
-            && (comp.competenceCode.code.equalsIgnoreCase(WORKDAYS_REP) 
-            || comp.competenceCode.code.equalsIgnoreCase(HOLIDAYS_REP)));
+            && (comp.getCompetenceCode().getCode().equalsIgnoreCase(WORKDAYS_REP) 
+            || comp.getCompetenceCode().getCode().equalsIgnoreCase(HOLIDAYS_REP)));
     
   }
-  
+
   /**
    * Lista di persone appartententi all'ufficio passato (in questo anno).
    *

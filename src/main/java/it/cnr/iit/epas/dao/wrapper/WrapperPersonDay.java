@@ -273,7 +273,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
         if (DateUtility.isDateIntoInterval(this.value.getDate(),
                 factory.get().create(cwtt).getDateInverval())) {
 
-          WorkingTimeTypeDay wttd = cwtt.workingTimeType.getWorkingTimeTypeDays()
+          WorkingTimeTypeDay wttd = cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
                   .get(this.value.getDate().getDayOfWeek().getValue() - 1);
 
           Preconditions.checkState(wttd.dayOfWeek == value.getDate().getDayOfWeek().getValue());

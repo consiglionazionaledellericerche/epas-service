@@ -20,12 +20,14 @@ import com.google.common.base.Preconditions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import it.cnr.iit.epas.dao.CompetenceCodeDao;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.QCompetenceCode;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
@@ -35,43 +37,40 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompetenceCodeManager {
 
-  protected final JPQLQueryFactory queryFactory;
+  private final JPQLQueryFactory queryFactory;
   private static final String COMPETENCE_PREFIX = "comp";
   private final CacheManager cacheManager;
-  private final Provider<EntityManager> emp;
+  private final CompetenceCodeDao competenceCodeDao;
   
   @Inject
-  CompetenceCodeManager(Provider<EntityManager> emp, CacheManager cacheManager) {
-    this.emp = emp;
+  CompetenceCodeManager(Provider<EntityManager> emp, CacheManager cacheManager,
+      CompetenceCodeDao competenceCodeDao) {
     this.queryFactory = new JPAQueryFactory(emp.get());
     this.cacheManager = cacheManager;
+    this.competenceCodeDao = competenceCodeDao;
   }
 
   /**
    * Preleva dalla cache il competence code.
    */
-  public CompetenceCode getCompetenceCode(
-      String code) {
+  public CompetenceCode getCompetenceCode(String code) {
 
     Preconditions.checkNotNull(code);
 
    // String key = COMPETENCE_PREFIX + code;
     //FIXME: da verificare se e come funziona con spring boot
     Cache cache = cacheManager.getCache(COMPETENCE_PREFIX);
-    CompetenceCode value = (CompetenceCode) cache.get(code);
-
+    ValueWrapper value = cache.get(code);
+    CompetenceCode cc = null;
     if (value == null) {
-
-      value = getCompetenceCodeByCode(code);
-
-      Preconditions.checkNotNull(value);
-
-      cache.put(code, value);
+      cc = getCompetenceCodeByCode(code);
+      Preconditions.checkNotNull(cc);
+      cache.put(code, cc);
+    } else {
+      cc = (CompetenceCode)value.get();
     }
-    emp.get().merge(value);
-    //value.merge();
-    return value;
-
+    competenceCodeDao.merge(cc);
+    return cc;
   }
 
   /**

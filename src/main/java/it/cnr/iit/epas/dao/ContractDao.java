@@ -213,6 +213,21 @@ public class ContractDao extends DaoBase<Contract> {
    * @return il contratto attivo per quella persona alla data date.
    */
   public Contract getContract(LocalDate date, Person person) {
+    val contract = QContract.contract;
+    BooleanBuilder contractWithoutEndCondition = 
+        new BooleanBuilder(contract.endDate.isNull().and(contract.endContract.isNull()));
+    BooleanBuilder contractWithValidEndDate 
+      = new BooleanBuilder(contract.endDate.isNotNull().and(contract.endDate.goe(date)));
+    BooleanBuilder contractWithValidEndContract 
+      = new BooleanBuilder(contract.endContract.isNotNull().and(contract.endContract.goe(date)));
+    val currentContract = getQueryFactory().selectFrom(contract)
+      .where(
+          contract.person.eq(person)
+            .and(contract.beginDate.loe(date))
+            .and(contractWithoutEndCondition
+                .or(contractWithValidEndDate)
+                .or(contractWithValidEndContract))).fetchOne();
+    return currentContract;
     // FIXME ci sono alcuni casi nei quali i valori in person.contracts (in questo metodo) non sono
     // allineati con tutti i record presenti sul db e capita che viene restituito un valore nullo
     // incongruente con i dati presenti
@@ -223,7 +238,6 @@ public class ContractDao extends DaoBase<Contract> {
 //        return c;
 //      }
 //    }
-    return null;
   }
 
   /**

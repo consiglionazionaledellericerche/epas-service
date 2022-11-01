@@ -31,6 +31,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -41,6 +43,8 @@ import org.hibernate.envers.NotAudited;
  *
  * @author Dario Tagliaferri
  */
+@Getter
+@Setter
 @Audited
 @Entity
 @Table(name = "competence_codes")

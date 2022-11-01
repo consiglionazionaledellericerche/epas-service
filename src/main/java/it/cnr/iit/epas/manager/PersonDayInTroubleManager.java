@@ -18,6 +18,7 @@ package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.PersonDayInTroubleDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import  it.cnr.iit.epas.dao.wrapper.function.WrapperModelFunctionFactory;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Component;
 public class PersonDayInTroubleManager {
 
   private final Provider<IWrapperFactory> factory;
+  private final PersonDayDao personDayDao;
   private final PersonDayInTroubleDao personDayInTroubleDao;
   private final ConfigurationManager configurationManager;
   private final Provider<EntityManager> emp;
@@ -65,12 +67,13 @@ public class PersonDayInTroubleManager {
    */
   @Inject
   public PersonDayInTroubleManager(
+      PersonDayDao personDayDao,
       PersonDayInTroubleDao personDayInTroubleDao,
       ConfigurationManager configurationManager,
       Provider<IWrapperFactory> factory,
       WrapperModelFunctionFactory wrapperModelFunctionFactory,
       Provider<EntityManager> emp) {
-
+    this.personDayDao = personDayDao;
     this.personDayInTroubleDao = personDayInTroubleDao;
     this.configurationManager = configurationManager;
     this.factory = factory;
@@ -94,7 +97,8 @@ public class PersonDayInTroubleManager {
 
     // Se non esiste lo creo
     PersonDayInTrouble trouble = new PersonDayInTrouble(pd, cause);
-    emp.get().persist(trouble);
+
+    personDayInTroubleDao.persist(trouble);
     //trouble.save();
     pd.getTroubles().add(trouble);
 

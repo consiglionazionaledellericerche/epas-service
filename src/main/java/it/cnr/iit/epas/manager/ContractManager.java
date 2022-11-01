@@ -188,8 +188,8 @@ public class ContractManager {
     ContractWorkingTimeType cwtt = new ContractWorkingTimeType();
     cwtt.setBeginDate(contract.getBeginDate());
     cwtt.setEndDate(contract.calculatedEnd());
-    cwtt.workingTimeType = wtt.get();
-    cwtt.contract = contract;
+    cwtt.setWorkingTimeType(wtt.get());
+    cwtt.setContract(contract);
     emp.get().persist(cwtt);
     //cwtt.save();
     contract.getContractWorkingTimeType().add(cwtt);
@@ -347,27 +347,6 @@ public class ContractManager {
     }
     return vacationPeriods;
   }
-
-  /**
-   * Il ContractWorkingTimeType associato ad un contratto in una specifica data.
-   *
-   * @param contract il contratto di cui prelevare il ContractWorkingTimeType
-   * @param date     la data in cui controllare il ContractWorkingTimeType
-   * @return il ContractWorkingTimeType di un contratto ad una data specifica
-   */
-  public final ContractWorkingTimeType getContractWorkingTimeTypeFromDate(final Contract contract,
-      final LocalDate date) {
-
-    for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
-
-      if (DateUtility.isDateIntoInterval(date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
-        return cwtt;
-      }
-    }
-    // FIXME: invece del null utilizzare un Optional!
-    return null;
-  }
-
 
   /**
    * Sistema l'inizializzazione impostando i valori corretti se mancanti.

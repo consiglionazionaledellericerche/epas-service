@@ -26,6 +26,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import it.cnr.iit.epas.dao.PersonDayDao;
+import it.cnr.iit.epas.dao.PersonDayInTroubleDao;
 import it.cnr.iit.epas.dao.PersonShiftDayDao;
 import it.cnr.iit.epas.dao.WorkingTimeTypeDao;
 import it.cnr.iit.epas.dao.ZoneDao;
@@ -77,6 +78,7 @@ public class PersonDayManager {
 
   private final ConfigurationManager configurationManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
+  private final PersonDayInTroubleDao personDayInTroubleDao;
   private final PersonShiftDayDao personShiftDayDao;
   private final PersonDayDao personDayDao;
   private final WorkingTimeTypeDao workingTimeTypeDao;
@@ -93,12 +95,14 @@ public class PersonDayManager {
    */
   @Inject
   public PersonDayManager(ConfigurationManager configurationManager,
-      PersonDayInTroubleManager personDayInTroubleManager, PersonDayDao personDayDao,
+      PersonDayInTroubleManager personDayInTroubleManager, PersonDayInTroubleDao personDayInTroubleDao,
+      PersonDayDao personDayDao,
       PersonShiftDayDao personShiftDayDao, WorkingTimeTypeDao workingTimeTypeDao, ZoneDao zoneDao,
       AbsenceComponentDao absenceComponentDao, Provider<EntityManager> emp) {
 
     this.configurationManager = configurationManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
+    this.personDayInTroubleDao = personDayInTroubleDao;
     this.personShiftDayDao = personShiftDayDao;
     this.personDayDao = personDayDao;
     this.workingTimeTypeDao = workingTimeTypeDao;
@@ -432,7 +436,7 @@ public class PersonDayManager {
       stampingTimeInOpening = 0;
       personDay.setOnHoliday(personDay.getStampingsTime());
     } else {
-      personDay.setOutOpening(personDay.getStampingsTime() - stampingTimeInOpening);  
+      personDay.setOutOpening(personDay.getStampingsTime() - stampingTimeInOpening);
     }
 
     //Caso assenza che assegna l'intera giornata ex 103, 103BP, 105BP
@@ -450,8 +454,8 @@ public class PersonDayManager {
           .absenceType.getMealTicketBehaviour());
       return personDay;
     }
-    
-    
+
+
     //Giustificativi a grana minuti nel giorno
     for (Absence abs : personDay.getAbsences()) {
 
@@ -718,7 +722,7 @@ public class PersonDayManager {
                     - DateUtility.toMinute(range.lowerEndpoint()));
           } else {
             timeToJustify = timeToJustify + zoneToZones.get().delay;
-          }             
+          }
         }
       }
       temp = validPair;
@@ -955,8 +959,7 @@ public class PersonDayManager {
     //se prima o uguale a source contract il problema è fixato
     if (sourceDateResidual != null && !personDay.getDate().isAfter(sourceDateResidual)) {
       personDay.getTroubles().forEach( pdt -> {
-        emp.get().remove(pdt);
-        //PersonDayInTrouble::delete
+        personDayInTroubleDao.delete(pdt);
       });
       personDay.getTroubles().clear();
 
@@ -977,6 +980,8 @@ public class PersonDayManager {
     final boolean isEnoughHourlyAbsences = isEnoughHourlyAbsences(pd);
     final boolean isCompleteDayAndAddOvertimeAbsence = 
         isCompleteDayAndAddOvertimeAbsence(personDay);
+
+    log.info("PersonDay = {}. isPersistent=()", personDay, personDayDao.isPersistent(personDay));
 
     // PRESENZA AUTOMATICA
     if (isFixedTimeAtWork && !allValidStampings) {
@@ -1181,6 +1186,7 @@ public class PersonDayManager {
     for (PairStamping validPair : validPairs) {
       LocalDateTime outTime = validPair.second.getDate();
       LocalDateTime inTime = validPair.first.getDate();
+      log.info("inTime = {}, outTime = {}", inTime, outTime);
       List<Stamping> serviceStampingsInSinglePair = serviceStampingsToCheck.stream()
           .filter(stamping -> stamping.getDate().isAfter(inTime) && stamping.getDate().isBefore(outTime))
           .collect(Collectors.toList());
@@ -1462,7 +1468,7 @@ public class PersonDayManager {
       }
 
       workingMinutes += DateUtility.toMinute(consideredEnd) 
-          - DateUtility.toMinute(consideredStart);      
+          - DateUtility.toMinute(consideredStart);
 
     }
     return workingMinutes;
@@ -1615,7 +1621,7 @@ public class PersonDayManager {
 
         }
         if (stamping.isOut()) {
-          //una uscita prima di una entrata e' come se non esistesse          
+          //una uscita prima di una entrata e' come se non esistesse
           continue;
         }
 
@@ -1636,7 +1642,7 @@ public class PersonDayManager {
           continue;
         }
         //trovo un secondo ingresso, butto via il primo
-        if (stamping.isIn()) {          
+        if (stamping.isIn()) {
           stampEnter = stamping;
         }
       }
