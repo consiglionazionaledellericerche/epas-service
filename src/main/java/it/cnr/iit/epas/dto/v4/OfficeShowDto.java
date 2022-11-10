@@ -14,35 +14,29 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.sync.dto.v3;
 
-import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
-import it.cnr.iit.epas.models.Stamping.WayType;
+package it.cnr.iit.epas.dto.v4;
+
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
 /**
- * DTO per l'esportazione via REST delle informazioni di una timbratura.
+ * Informazioni esportate in Json per l'ufficio.
  *
  * @author Cristian Lucchesi
- * @version 3
+ *
  */
 @ToString
+@Builder
 @Data
-public class StampingShowDto {
+public class OfficeShowDto {
 
   private Long id;
-  private LocalDateTime date;
-  private WayType way;
-  private String stampType;
-  private String place;
-  private String reason;
-  private boolean markedByAdmin;
-  private boolean markedByEmployee;
-  private boolean markedByTelework;
-  private String note;
-  private String stampingZone;
-  private PersonShowTerseDto person;
+  private String name;
+  private String code;
+  private String codeId;
+  private LocalDateTime updatedAt;
 
 }

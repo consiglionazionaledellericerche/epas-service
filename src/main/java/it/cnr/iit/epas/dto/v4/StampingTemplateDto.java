@@ -14,29 +14,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package it.cnr.iit.epas.dto.v4;
 
-package it.cnr.iit.epas.dto;
-
+import com.google.common.collect.Lists;
 import java.time.LocalDateTime;
-import lombok.Builder;
+import java.util.List;
 import lombok.Data;
-import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
- * Informazioni esportate in Json per l'ufficio.
+ * Oggetto che modella la singola timbratura nelle viste personStamping e stampings.
  *
- * @author Cristian Lucchesi
- *
+ * @author Alessandro Martelli
  */
-@ToString
-@Builder
 @Data
-public class OfficeShowDto {
+@EqualsAndHashCode(callSuper = true)
+public class StampingTemplateDto extends BaseModelDto {
 
-  private Long id;
-  private String name;
-  private String code;
-  private String codeId;
-  private LocalDateTime updatedAt;
+  private String colour;
+  private int pairId;
+  private String pairPosition;            //left center right none
+  private LocalDateTime date;
+
+  private String way;
+  private String hour = "";
+
+  List<StampModificationTypeDto> stampModificationTypes = Lists.newArrayList();
+
+  public boolean valid;
+  private boolean showPopover;
 
 }

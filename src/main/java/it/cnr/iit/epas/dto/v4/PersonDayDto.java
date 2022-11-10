@@ -1,8 +1,6 @@
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

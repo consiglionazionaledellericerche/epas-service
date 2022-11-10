@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
@@ -38,30 +37,29 @@ import lombok.ToString;
 @Entity
 @Table(name = "personal_working_times")
 public class PersonalWorkingTime extends PropertyInPeriod implements IPropertyInPeriod {
-  
+
   private static final long serialVersionUID = 98286754527639967L;
-  
+
   @Getter
   @NotNull
   @ManyToOne
   @JoinColumn(name = "time_slot_id")
   public TimeSlot timeSlot;
-  
+
   @Getter
   @NotNull
   @ManyToOne
   @JoinColumn(name = "contract_id")
   public Contract contract;
-  
-    
+
   @Override
-  public IPropertiesInPeriodOwner getOwner() {    
+  public IPropertiesInPeriodOwner getOwner() {
     return this.contract;
   }
 
   @Override
   public void setOwner(IPropertiesInPeriodOwner target) {
-    this.contract = (Contract) target;    
+    this.contract = (Contract) target;
   }
 
   @Override
@@ -94,11 +92,10 @@ public class PersonalWorkingTime extends PropertyInPeriod implements IPropertyIn
     }
     return false;
   }
-  
+
   @Override
   public String getLabel() {
     return this.timeSlot.getLabel();
   }
-  
-  
+
 }

@@ -18,12 +18,12 @@ package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
-import it.cnr.iit.epas.dao.PersonDayDao;
-import it.cnr.iit.epas.dto.v4.PersonDayDto;
-import it.cnr.iit.epas.dto.v4.mapper.PersonDayMapper;
+import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
+import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
+import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
+import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
+import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
 import java.time.YearMonth;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
@@ -35,36 +35,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/persondays")
-public class PersonDaysController {
+@RequestMapping("/rest/v4/monthrecaps")
+public class MonthRecapController {
 
-  private final PersonDayDao personDayDao;
   private final PersonDao personDao;
-  private final PersonDayMapper personDayMapper;
+  private final IWrapperFactory wrapperFactory;
+  private final PersonStampingRecapFactory stampingRecapFactory;
+  private final PersonStampingRecapMapper personStampingRecapMapper;
 
   @Inject
-  public PersonDaysController(PersonDayDao personDayDao,
-      PersonDao personDao, PersonDayMapper personDayMapper) {
-    this.personDayDao = personDayDao;
+  public MonthRecapController(
+      PersonDao personDao, IWrapperFactory wrapperFactory,
+      PersonStampingRecapFactory stampingRecapFactory,
+      PersonStampingRecapMapper personStampingRecapFactory) {
     this.personDao = personDao;
-    this.personDayMapper = personDayMapper;
+    this.wrapperFactory = wrapperFactory;
+    this.stampingRecapFactory = stampingRecapFactory;
+    this.personStampingRecapMapper = personStampingRecapFactory;
   }
 
   @GetMapping(ApiRoutes.LIST)
-  public ResponseEntity<List<PersonDayDto>> list(
+  public ResponseEntity<PersonStampingRecapDto> show(
       @RequestParam("personId") Long personId, 
       @RequestParam("year") Integer year, 
       @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
-        ApiRoutes.LIST, personId, year, month);
+        "/rest/v4/monthrecaps" + ApiRoutes.LIST, personId, year, month);
     val person = personDao.byId(personId);
     if (person.isEmpty()) {
+      ResponseEntity.notFound();
+    }
+    val wrPerson = wrapperFactory.create(person.get());
+    if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
       return ResponseEntity.notFound().build();
     }
-    val personDays = 
-        personDayDao.getPersonDayInMonth(person.get(), YearMonth.of(year, month));
-    val personDaysDto = 
-        personDays.stream().map(personDayMapper::convert).collect(Collectors.toList());
-    return ResponseEntity.ok().body(personDaysDto);
+    PersonStampingRecap psrDto = stampingRecapFactory.create(person.get(), year, month, true);
+    return ResponseEntity.ok().body(personStampingRecapMapper.convert(psrDto));
   }
 }

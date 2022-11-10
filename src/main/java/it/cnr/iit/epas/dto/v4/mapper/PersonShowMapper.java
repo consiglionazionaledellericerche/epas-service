@@ -14,15 +14,18 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto.mapper;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.OfficeShowDto;
-import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.models.Person;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface OfficeShowMapper {
+public interface PersonShowMapper {
 
-  OfficeShowDto convert(Office office);
+  @Mapping(target = "userId", source = "user.id")
+  @Mapping(target = "officeId", source = "office.id")
+  PersonShowDto convert(Person person);
 
 }

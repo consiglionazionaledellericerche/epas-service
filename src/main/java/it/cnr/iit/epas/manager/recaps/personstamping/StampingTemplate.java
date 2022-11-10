@@ -22,6 +22,7 @@ import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
 import it.cnr.iit.epas.models.Stamping;
 import java.util.List;
+import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,21 +32,22 @@ import java.time.format.DateTimeFormatter;
  *
  * @author Alessandro Martelli
  */
+@Data
 public class StampingTemplate {
 
-  public Stamping stamping;
-  public Long stampingId;
-  public String colour;
-  public int pairId;
-  public String pairPosition;            //left center right none
-  public LocalDateTime date;
+  private Stamping stamping;
+  private Long stampingId;
+  private String colour;
+  private int pairId;
+  private String pairPosition;            //left center right none
+  private LocalDateTime date;
 
-  public String way;
-  public String hour = "";
+  private String way;
+  private String hour = "";
 
-  List<StampModificationType> stampModificationTypes = Lists.newArrayList();
+  private List<StampModificationType> stampModificationTypes = Lists.newArrayList();
 
-  public boolean valid;
+  private boolean valid;
 
   private static final String STAMPING_FORMAT = "HH:mm";
 

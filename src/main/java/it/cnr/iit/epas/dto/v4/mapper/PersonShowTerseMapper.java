@@ -14,36 +14,15 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
+import it.cnr.iit.epas.models.Person;
+import org.mapstruct.Mapper;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class PersonShowDto extends PeriodModelDto {
+@Mapper(componentModel = "spring")
+public interface PersonShowTerseMapper {
 
-  private Long perseoId;
-  private String name;
-  private String surname;
-  private String othersSurnames;
-  private String fiscalCode;
-  private LocalDate birthday;
-  private String email;
-  private Long userId;
-  private String number;
-  private Long oldId;
-  private String eppn;
-  private String telephone;
-  private String fax;
-
-  private String mobile;
-
-  private boolean wantEmail;
-  private LocalDateTime updatedAt;
-
-  private Long officeId;
+  PersonShowTerseDto convert(Person person);
 
 }

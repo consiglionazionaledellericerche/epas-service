@@ -18,8 +18,8 @@ package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.OfficeDao;
-import it.cnr.iit.epas.dto.OfficeShowDto;
-import it.cnr.iit.epas.dto.mapper.OfficeShowMapper;
+import it.cnr.iit.epas.dto.v4.OfficeShowDto;
+import it.cnr.iit.epas.dto.v4.mapper.OfficeShowMapper;
 import it.cnr.iit.epas.models.Office;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -42,7 +42,7 @@ public class OfficeController {
   public ResponseEntity<OfficeShowDto> show(@PathVariable("id") Long id) {
     Optional<Office> entity = Optional.ofNullable(officeDao.getOfficeById(id));
     if (entity.isEmpty()) {
-      ResponseEntity.notFound();
+      return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok().body(officeMapper.convert(entity.get()));
   }
