@@ -19,6 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceToRecoverDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeShowTerseDto;
+import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingDayRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
 import it.cnr.iit.epas.dto.v4.StampingTemplateDto;
@@ -26,6 +27,7 @@ import it.cnr.iit.epas.dto.v4.WorkingTimeTypeDayDto;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingDayRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.StampingTemplate;
+import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
@@ -46,7 +48,8 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "personId", source = "person.id")
   PersonStampingRecapDto convert(PersonStampingRecap personDay);
 
-  @Mapping(target = "personDayId", source = "personDay.id")
+  @Mapping(target = "id", source = "personDay.id")
+  @Mapping(target = "stampingTemplates", source = "stampingsTemplate")
   PersonStampingDayRecapDto convert(PersonStampingDayRecap personStampingDayRecap);
 
   @Mapping(target = "absenceId", source = "absence.id")
@@ -68,4 +71,7 @@ public interface PersonStampingRecapMapper {
   default Optional<WorkingTimeTypeDayDto> convertOptional(Optional<WorkingTimeTypeDay> workingTimeTypeDay) {
     return Optional.of(convert(workingTimeTypeDay.get()));
   }
+
+  @Mapping(target = "personId", source = "person.id")
+  PersonDayDto convert(PersonDay personDay);
 }

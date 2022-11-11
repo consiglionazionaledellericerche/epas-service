@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class PersonDayDto extends BaseModelDto {
 
+  private Long personId;
   private LocalDate date;
   private Integer timeAtWork = 0;
 

@@ -21,11 +21,13 @@ import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.Local
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class PersonStampingDayRecapDto {
+@EqualsAndHashCode(callSuper = true)
+public class PersonStampingDayRecapDto extends BaseModelDto {
 
-  private Long personDayId;
+  private PersonDayDto personDay;
   private Optional<WorkingTimeTypeDayDto> wttd;
   //public Optional<PersonalWorkingTime> pwttd;
   private LocalTimeInterval lunchInterval;
@@ -33,7 +35,7 @@ public class PersonStampingDayRecapDto {
   private Optional<LocalTimeInterval> personalWorkInterval;
   private boolean ignoreDay = false;
   private boolean firstDay = false;
-  private List<StampingTemplateDto> stampingsTemplate = Lists.newArrayList();
+  private List<StampingTemplateDto> stampingTemplates = Lists.newArrayList();
 
   // visualizzazioni particolari da spostare
   private String mealTicket;
