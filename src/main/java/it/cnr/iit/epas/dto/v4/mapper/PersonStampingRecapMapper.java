@@ -24,10 +24,12 @@ import it.cnr.iit.epas.dto.v4.PersonStampingDayRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
 import it.cnr.iit.epas.dto.v4.StampingTemplateDto;
 import it.cnr.iit.epas.dto.v4.WorkingTimeTypeDayDto;
+import it.cnr.iit.epas.dto.v4.WorkingTimeTypeDto;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingDayRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.StampingTemplate;
 import it.cnr.iit.epas.models.PersonDay;
+import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
@@ -60,13 +62,15 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceShowTerseDto convert(Absence absence);
 
-  @Mapping(target = "id", source = "stampingId")
+  @Mapping(target = "id", source = "stamping.id")
   @Mapping(target = "showPopover", expression = "java(stamping.showPopover())")
   StampingTemplateDto convert(StampingTemplate stamping);
 
   AbsenceTypeShowTerseDto convert(AbsenceType absenceType);
 
   WorkingTimeTypeDayDto convert(WorkingTimeTypeDay workingTimeTypeDay);
+
+  WorkingTimeTypeDto convert(WorkingTimeType workingTimeType);
 
   default Optional<WorkingTimeTypeDayDto> convertOptional(Optional<WorkingTimeTypeDay> workingTimeTypeDay) {
     return Optional.of(convert(workingTimeTypeDay.get()));

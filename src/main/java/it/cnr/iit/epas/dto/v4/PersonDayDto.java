@@ -1,6 +1,8 @@
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -55,7 +57,7 @@ public class PersonDayDto extends BaseModelDto {
 
   //private List<StampingDto> stampings = new ArrayList<StampingDto>();
 
-  //private List<Absence> absences = new ArrayList<Absence>();
+  private List<AbsenceShowTerseDto> absences = Lists.newArrayList();
 
   
   //private StampModificationType stampModificationType;
