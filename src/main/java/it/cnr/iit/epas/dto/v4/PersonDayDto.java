@@ -61,5 +61,9 @@ public class PersonDayDto extends BaseModelDto {
 
   
   //private StampModificationType stampModificationType;
+  
+  private boolean future;
+  private boolean consideredExitingNow;
+
 
 }
