@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -147,14 +148,17 @@ public class PersonStampingRecap {
     // ******************************************************************************************
     List<Contract> monthContracts =
         wrapperFactory.create(person).orderedMonthContracts(year, month);
-
+    log.debug("Trovati {} contratti per {}", monthContracts.size(), person.getFullname());
     for (Contract contract : monthContracts) {
       Optional<ContractMonthRecap> cmr =
           wrapperFactory.create(contract).getContractMonthRecap(YearMonth.of(year, month));
 
       if (cmr.isPresent()) {
 
-        this.contractMonths.add(wrapperFactory.create(cmr.get()));
+        val wrapperContract = wrapperFactory.create(cmr.get());
+        this.contractMonths.add(wrapperContract);
+        log.debug("adding contractMonthRecap {} to monthRecaps", cmr.get());
+        log.debug("wrapperContract = {}", wrapperContract);
       }
     }
 

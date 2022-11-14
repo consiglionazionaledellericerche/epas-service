@@ -16,9 +16,11 @@
  */
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceToRecoverDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeShowTerseDto;
+import it.cnr.iit.epas.dto.v4.ContractMonthRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingDayRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
@@ -48,6 +50,7 @@ import org.mapstruct.Mapping;
 public interface PersonStampingRecapMapper {
 
   @Mapping(target = "personId", source = "person.id")
+  @Mapping(target = "topQualification", source = "person.topQualification")
   PersonStampingRecapDto convert(PersonStampingRecap personDay);
 
   @Mapping(target = "id", source = "personDay.id")
@@ -78,4 +81,9 @@ public interface PersonStampingRecapMapper {
 
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
+  
+  @Mapping(target = ".", source = "value" )
+  @Mapping(target = "expireInMonth", expression = "java(contractMonthRecap.getValue().expireInMonth())")
+  ContractMonthRecapDto convert(IWrapperContractMonthRecap contractMonthRecap);
+
 }

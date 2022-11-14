@@ -50,10 +50,10 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
     return value;
   }
 
-//  @Override
-//  public IWrapperContract getContract() {
-//    return wrapperFactory.create(value.getContract());
-//  }
+  @Override
+  public IWrapperContract getContract() {
+    return wrapperFactoryProvider.get().create(value.getContract());
+  }
 
 
   /**

@@ -29,6 +29,7 @@ import lombok.Data;
 public class PersonStampingRecapDto {
 
   private Long personId;
+  private boolean topQualification;
   private int year;
   private int month;
 
@@ -49,11 +50,11 @@ public class PersonStampingRecapDto {
   // I riepiloghi codici sul mese
   private Set<StampModificationTypeDto> stampModificationTypeSet = Sets.newHashSet();
   private Set<StampTypes> stampTypeSet = Sets.newHashSet();
-  public Map<AbsenceTypeShowTerseDto, Integer> absenceCodeMap = new HashMap<AbsenceTypeShowTerseDto, Integer>();
+  private Map<AbsenceTypeShowTerseDto, Integer> absenceCodeMap = new HashMap<AbsenceTypeShowTerseDto, Integer>();
   private List<AbsenceShowTerseDto> absenceList = Lists.newArrayList();
 
   // I riepiloghi mensili (uno per ogni contratto attivo nel mese)
-//  public List<IWrapperContractMonthRecap> contractMonths = Lists.newArrayList();
+  private List<ContractMonthRecapDto> contractMonths = Lists.newArrayList();
 
   // Le informazioni su eventuali assenze a recupero (es.: 91CE)
   private boolean absenceToRecoverYet = false;
