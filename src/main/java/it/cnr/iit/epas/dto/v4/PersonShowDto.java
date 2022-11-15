@@ -14,34 +14,36 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dao.wrapper;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.ContractMonthRecap;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Contratto con alcune funzionalità aggiuntive.
- *
- * @author Alessandro Martelli
- */
-public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthRecap> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class PersonShowDto extends PeriodModelDto {
 
-  public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr);
+  private Long perseoId;
+  private String name;
+  private String surname;
+  private String othersSurnames;
+  private String fiscalCode;
+  private LocalDate birthday;
+  private String email;
+  private Long userId;
+  private String number;
+  private Long oldId;
+  private String eppn;
+  private String telephone;
+  private String fax;
 
-  public IWrapperContract getContract();
+  private String mobile;
 
-  public Optional<ContractMonthRecap> getPreviousRecap();
+  private boolean wantEmail;
+  private LocalDateTime updatedAt;
 
-  public Optional<ContractMonthRecap> getPreviousRecapInYear();
-
-  /**
-   * Se visualizzare il prospetto sul monte ore anno precedente.
-   */
-  public boolean hasResidualLastYear();
-
-  /**
-   * Il valore iniziale del monte ore anno precedente.
-   */
-  public int getResidualLastYearInit();
+  private Long officeId;
 
 }

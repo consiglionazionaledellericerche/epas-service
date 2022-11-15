@@ -14,34 +14,35 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dao.wrapper;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.ContractMonthRecap;
-import java.util.Optional;
+import it.cnr.iit.epas.models.Stamping.WayType;
+import it.cnr.iit.epas.models.enumerate.StampTypes;
+import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Contratto con alcune funzionalità aggiuntive.
- *
- * @author Alessandro Martelli
- */
-public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthRecap> {
+@Data
+@EqualsAndHashCode
+public class StampingDto {
 
-  public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr);
+  private Integer personDayId;
 
-  public IWrapperContract getContract();
+  private StampTypes stampType;
 
-  public Optional<ContractMonthRecap> getPreviousRecap();
+  private StampModificationTypeDto stampModificationType;
 
-  public Optional<ContractMonthRecap> getPreviousRecapInYear();
+  private LocalDateTime date;
 
-  /**
-   * Se visualizzare il prospetto sul monte ore anno precedente.
-   */
-  public boolean hasResidualLastYear();
+  private WayType way;
 
-  /**
-   * Il valore iniziale del monte ore anno precedente.
-   */
-  public int getResidualLastYearInit();
+  private String note;
 
+  private String place;
+  private String reason;
+
+  private boolean markedByAdmin;
+  private boolean markedByEmployee;
+  private boolean markedByTelework;
+  private String stampingZone;
 }

@@ -14,16 +14,22 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-public class PeriodModelDto extends BaseModelDto {
+/**
+ * DTO per le assenza da recuperare (ex. 91CE).
+ */
+@Data
+public class AbsenceToRecoverDto {
 
-  private LocalDate beginDate;
-  private LocalDate endDate;
+  private Long absenceId;
+  private LocalDate absenceDate;
+  private LocalDate recoverDate;
+  private int quantityRecovered;
+  private int quantityToRecover;
+  private float percentage;
+
 }

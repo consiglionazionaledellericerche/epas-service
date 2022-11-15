@@ -14,15 +14,37 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto.mapper;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.dto.PersonShowTerseDto;
-import it.cnr.iit.epas.models.Person;
-import org.mapstruct.Mapper;
+import java.time.LocalDate;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Mapper(componentModel = "spring")
-public interface PersonShowTerseMapper {
+/**
+ * DTO per l'esportazione via REST delle informazioni 
+ * principali di una tipologia di codici di assenza.
+ *
+ * @author Cristian Lucchesi
+ * @version 3
+ *
+ */
+@ToString
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AbsenceTypeShowTerseDto extends BaseModelDto {
 
-  PersonShowTerseDto convert(Person person);
+  private String code;
+
+  private String certificateCode;
+  private String description;
+
+  private LocalDate validFrom;
+  private LocalDate validTo;
+
+  private boolean internalUse; 
+  private boolean consideredWeekEnd;
+  private Integer justifiedTime;
+  
 
 }

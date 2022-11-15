@@ -17,9 +17,9 @@
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
-import it.cnr.iit.epas.dto.PersonShowDto;
-import it.cnr.iit.epas.dto.PersonShowTerseDto;
-import it.cnr.iit.epas.dto.mapper.PersonShowMapper;
+import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
+import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.manager.ConsistencyManager;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.repo.PersonRepository;
@@ -61,7 +61,7 @@ public class PersonController {
   public ResponseEntity<PersonShowDto> show(@PathVariable("id") Long id) {
     Optional<Person> entity = repo.findById(id);
     if (entity.isEmpty()) {
-      ResponseEntity.notFound();
+      return ResponseEntity.notFound().build();
     }
 
     return ResponseEntity.ok().body(personMapper.convert(entity.get()));
@@ -72,7 +72,7 @@ public class PersonController {
   public ResponseEntity<PersonShowDto> update(@PathVariable("id") Long id) {
     Optional<Person> entity = repo.findById(id);
     if (entity.isEmpty()) {
-      ResponseEntity.notFound();
+      return ResponseEntity.notFound().build();
     }
     consistencyManager.updatePersonSituation(id, LocalDate.now().minusDays(10));
     return ResponseEntity.ok().body(personMapper.convert(entity.get()));

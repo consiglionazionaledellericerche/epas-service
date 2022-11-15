@@ -14,14 +14,32 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto;
+package it.cnr.iit.epas.dto.v4;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Getter
-@Setter
-public class BaseModelDto {
+/**
+ * DTO per l'esportazione via REST delle informazioni 
+ * principali di un'assenza.
+ *
+ * @since versione 4 dell'API REST
+ * @author Cristian Lucchesi
+ *
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AbsenceShowTerseDto extends BaseModelDto {
 
   private Long id;
+  private LocalDate date;
+  private String code;
+  private Integer justifiedTime;
+  private String justifiedType;
+  private String note;
+  private String externalId;
+  private LocalDateTime updatedAt;
+  
 }

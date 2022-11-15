@@ -114,13 +114,13 @@ public class PersonDay extends BaseEntity {
    */
   private Integer decurtedMeal = 0;
 
-  public boolean isTicketAvailable;
+  private boolean isTicketAvailable;
 
-  public boolean isTicketForcedByAdmin;
+  private boolean isTicketForcedByAdmin;
 
-  public boolean isWorkingInAnotherPlace;
+  private boolean isWorkingInAnotherPlace;
 
-  public boolean isHoliday;
+  private boolean isHoliday;
 
   /**
    * Tempo lavorato in un giorno di festa.

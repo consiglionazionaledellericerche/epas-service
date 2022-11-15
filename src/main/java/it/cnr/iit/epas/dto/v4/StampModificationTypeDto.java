@@ -14,34 +14,20 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dao.wrapper;
 
-import it.cnr.iit.epas.models.ContractMonthRecap;
-import java.util.Optional;
+package it.cnr.iit.epas.dto.v4;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * Contratto con alcune funzionalità aggiuntive.
- *
- * @author Alessandro Martelli
+ * Tipo di modifica alla timbratura.
  */
-public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthRecap> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class StampModificationTypeDto extends BaseModelDto {
 
-  public IWrapperContractMonthRecap setValue(ContractMonthRecap cmr);
-
-  public IWrapperContract getContract();
-
-  public Optional<ContractMonthRecap> getPreviousRecap();
-
-  public Optional<ContractMonthRecap> getPreviousRecapInYear();
-
-  /**
-   * Se visualizzare il prospetto sul monte ore anno precedente.
-   */
-  public boolean hasResidualLastYear();
-
-  /**
-   * Il valore iniziale del monte ore anno precedente.
-   */
-  public int getResidualLastYearInit();
+  private String code;
+  private String description;
 
 }

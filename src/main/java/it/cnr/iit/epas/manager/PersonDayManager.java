@@ -1186,7 +1186,6 @@ public class PersonDayManager {
     for (PairStamping validPair : validPairs) {
       LocalDateTime outTime = validPair.second.getDate();
       LocalDateTime inTime = validPair.first.getDate();
-      log.info("inTime = {}, outTime = {}", inTime, outTime);
       List<Stamping> serviceStampingsInSinglePair = serviceStampingsToCheck.stream()
           .filter(stamping -> stamping.getDate().isAfter(inTime) && stamping.getDate().isBefore(outTime))
           .collect(Collectors.toList());
@@ -1749,7 +1748,7 @@ public class PersonDayManager {
    *     è coperta come orario. 
    */
   private Optional<Absence> buildShortPermissionAbsence(PersonDay personDay, 
-      TimeSlot mandatoryTimeSlot) {   
+      TimeSlot mandatoryTimeSlot) {
     val mandatoryTimeSlotRange = Range.closed(mandatoryTimeSlot.beginSlot, 
         mandatoryTimeSlot.endSlot);
 

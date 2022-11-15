@@ -30,6 +30,7 @@ import it.cnr.iit.epas.models.Certification;
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.ContractMonthRecap;
 import it.cnr.iit.epas.models.ContractStampProfile;
 import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.models.Person;
@@ -556,5 +557,27 @@ public class WrapperPerson implements IWrapperPerson {
       previousContract = contractDao.getPreviousContract(getCurrentContract().get());
     }
     return previousContract;
+  }
+
+  public int getNumberOfMealTicketsPreviousMonth(YearMonth yearMonth) {
+ // ******************************************************************************************
+    // DATI MENSILI
+    // ******************************************************************************************
+    // I riepiloghi mensili (uno per ogni contratto attivo nel mese)
+    List<IWrapperContractMonthRecap> contractMonths = Lists.newArrayList();
+    
+    List<Contract> monthContracts = wrapperFactory.get().create(value)
+        .orderedMonthContracts(yearMonth.getYear(), yearMonth.getMonthValue());
+
+    for (Contract contract : monthContracts) {
+      Optional<ContractMonthRecap> cmr =
+          wrapperFactory.get().create(contract).getContractMonthRecap(yearMonth);
+      if (cmr.isPresent()) {
+        contractMonths.add(wrapperFactory.get().create(cmr.get()));
+      }      
+    }
+
+    return contractMonths.stream().mapToInt(
+        cm -> cm.getValue().buoniPastoDalMesePrecedente).reduce(0, Integer::sum);
   }
 }

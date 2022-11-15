@@ -36,6 +36,7 @@ import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 
@@ -46,6 +47,7 @@ import java.time.LocalDateTime;
  * @author Alessandro Martelli
  */
 @Slf4j
+@Data
 public class PersonStampingDayRecap {
 
   private static final String MEALTICKET_NOT_YET = "NOT_YET";
@@ -55,7 +57,7 @@ public class PersonStampingDayRecap {
 
   private static StampModificationType fixedStampModificationType = null;
 
-  public PersonDay personDay;
+  private PersonDay personDay;
   public IWrapperPersonDay wrPersonDay;
   public Optional<WorkingTimeTypeDay> wttd;
   public Optional<PersonalWorkingTime> pwttd;
@@ -368,8 +370,8 @@ public class PersonStampingDayRecap {
   private List<String> getStampingsNote(List<StampingTemplate> stampingsTemplate) {
     List<String> note = Lists.newArrayList();
     for (StampingTemplate stampingTemplate : stampingsTemplate) {
-      if (stampingTemplate.stamping.getNote() != null && !stampingTemplate.stamping.getNote().equals("")) {
-        note.add(stampingTemplate.hour + ": " + stampingTemplate.stamping.getNote());
+      if (stampingTemplate.getStamping().getNote() != null && !stampingTemplate.getStamping().getNote().equals("")) {
+        note.add(stampingTemplate.getHour() + ": " + stampingTemplate.getStamping().getNote());
       }
     }
     return note;

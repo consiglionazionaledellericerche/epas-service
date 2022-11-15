@@ -16,7 +16,7 @@
  */
 package it.cnr.iit.epas.sync.dto.v3;
 
-import it.cnr.iit.epas.dto.PersonShowTerseDto;
+import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.models.Stamping.WayType;
 import java.time.LocalDateTime;
 import lombok.Data;
