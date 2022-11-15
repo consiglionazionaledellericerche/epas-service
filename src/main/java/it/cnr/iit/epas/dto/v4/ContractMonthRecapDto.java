@@ -111,10 +111,14 @@ public class ContractMonthRecapDto extends BaseModelDto {
   private int straordinarioMinuti;
 
   private int positiveResidualInMonth;
-  
+
   /**
    * Verifica se è l'ultimo mese prima della scadenza del contratto.
    */
   private boolean expireInMonth;
+
+  private int residualLastYearInit;
+  
+  private boolean hasResidualLastYear;
 
 }

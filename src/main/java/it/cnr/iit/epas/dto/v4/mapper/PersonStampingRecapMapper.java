@@ -84,6 +84,8 @@ public interface PersonStampingRecapMapper {
   
   @Mapping(target = ".", source = "value" )
   @Mapping(target = "expireInMonth", expression = "java(contractMonthRecap.getValue().expireInMonth())")
+  @Mapping(target = "residualLastYearInit", expression = "java(contractMonthRecap.getResidualLastYearInit())")
+  @Mapping(target = "hasResidualLastYear", expression = "java(contractMonthRecap.hasResidualLastYear())")
   ContractMonthRecapDto convert(IWrapperContractMonthRecap contractMonthRecap);
 
 }
