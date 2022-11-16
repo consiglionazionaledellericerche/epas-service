@@ -55,11 +55,12 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
     return wrapperFactoryProvider.get().create(value.getContract());
   }
 
-  public boolean residualInitInYearMonth(YearMonth yearMonth) {
+  @Override
+  public boolean residualInitInYearMonth(int year, int month) {
     if (getContract().getValue().sourceDateResidual == null) {
       return false;
     }
-    return YearMonth.from(getContract().getValue().sourceDateResidual).equals(yearMonth);
+    return YearMonth.from(getContract().getValue().sourceDateResidual).equals(YearMonth.of(year, month));
   }
 
   /**

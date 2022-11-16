@@ -26,7 +26,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ContractMonthRecapDto extends BaseModelDto {
 
-  //private ContractDto contract;
+  private ContractDto contract;
 
   private int year;
 
@@ -120,5 +120,12 @@ public class ContractMonthRecapDto extends BaseModelDto {
   private int residualLastYearInit;
   
   private boolean hasResidualLastYear;
+  
+  private boolean hasResidualInitInYearMonth;
+  
+  private boolean previousRecapInYearPresent;
+
+  private int previousRecapInYearRemainingMinutesCurrentYear;
+  
 
 }
