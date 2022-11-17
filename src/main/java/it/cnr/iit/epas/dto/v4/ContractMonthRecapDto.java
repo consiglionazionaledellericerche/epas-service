@@ -16,6 +16,7 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -118,14 +119,26 @@ public class ContractMonthRecapDto extends BaseModelDto {
   private boolean expireInMonth;
 
   private int residualLastYearInit;
-  
+
   private boolean hasResidualLastYear;
-  
+
   private boolean hasResidualInitInYearMonth;
-  
+
   private boolean previousRecapInYearPresent;
 
   private int previousRecapInYearRemainingMinutesCurrentYear;
-  
+
+  //Dal contratto
+  private String contractDescription;
+
+  private LocalDate sourceDateResidual = null;
+
+  private LocalDate sourceDateVacation = null;
+
+  private LocalDate sourceDateMealTicket = null;
+
+  private LocalDate sourceDateRecoveryDay = null;
+
+  public boolean sourceByAdmin = true;
 
 }

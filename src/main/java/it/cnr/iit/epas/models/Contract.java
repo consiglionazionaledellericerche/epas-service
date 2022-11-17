@@ -46,6 +46,8 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -54,8 +56,8 @@ import org.hibernate.envers.NotAudited;
 /**
  * Contratto di un dipendente.
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "contracts")
 @Audited
@@ -79,29 +81,22 @@ public class Contract extends PeriodModel implements IPropertiesInPeriodOwner {
    * anche la sourceDateMealTicket
    */
   //@CheckWith(ContractBeforeSourceResidualAndOverlapingCheck.class)
-  @Getter
-  public LocalDate sourceDateResidual = null;
-  
-  @Getter
-  public LocalDate sourceDateVacation = null;
+  private LocalDate sourceDateResidual = null;
 
-  @Getter
-  public LocalDate sourceDateMealTicket = null;
-  
-  @Getter
-  public LocalDate sourceDateRecoveryDay = null;
+  private LocalDate sourceDateVacation = null;
+
+  private LocalDate sourceDateMealTicket = null;
+
+  private LocalDate sourceDateRecoveryDay = null;
 
   public boolean sourceByAdmin = true;
 
-  @Getter
   @Max(32)
   public Integer sourceVacationLastYearUsed = null;
 
-  @Getter
   @Max(32)
   public Integer sourceVacationCurrentYearUsed = null;
 
-  @Getter
   @Max(4)
   public Integer sourcePermissionUsed = null;
 

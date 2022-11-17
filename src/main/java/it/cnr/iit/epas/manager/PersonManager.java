@@ -225,14 +225,14 @@ public class PersonManager {
         .getActiveContractsInPeriod(person, begin, Optional.of(end));
 
     Contract newerContract = contractsInPeriod.stream().filter(contract ->
-        contract.sourceDateResidual != null).max(Comparator
+        contract.getSourceDateResidual() != null).max(Comparator
         .comparing(Contract::getSourceDateResidual)).orElse(null);
 
-    if (newerContract != null && newerContract.sourceDateRecoveryDay != null
-        && !newerContract.sourceDateRecoveryDay.isBefore(begin)
-        && !newerContract.sourceDateRecoveryDay.isAfter(end)) {
+    if (newerContract != null && newerContract.getSourceDateRecoveryDay() != null
+        && !newerContract.getSourceDateRecoveryDay().isBefore(begin)
+        && !newerContract.getSourceDateRecoveryDay().isAfter(end)) {
       return newerContract.sourceRecoveryDayUsed + absenceDao
-          .absenceInPeriod(person, newerContract.sourceDateRecoveryDay.plusDays(1), end, "91")
+          .absenceInPeriod(person, newerContract.getSourceDateRecoveryDay().plusDays(1), end, "91")
       .size();
     }
 

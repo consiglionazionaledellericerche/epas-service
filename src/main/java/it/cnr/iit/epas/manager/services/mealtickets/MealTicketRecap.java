@@ -81,12 +81,12 @@ public class MealTicketRecap {
    */
   public List<BlockMealTicket> getBlockPreviousInitialization() {
 
-    if (this.contract.sourceDateMealTicket == null) {
+    if (this.contract.getSourceDateMealTicket() == null) {
       return Lists.newArrayList();
     }
 
     DateInterval interval = new DateInterval(this.contract.getBeginDate(),
-        this.contract.sourceDateMealTicket);
+        this.contract.getSourceDateMealTicket());
 
     return MealTicketStaticUtility.getBlockMealTicketFromOrderedList(
         this.getMealTicketsReceivedExpireOrderedAsc(),

@@ -128,8 +128,8 @@ public class WrapperContract implements IWrapperContract {
     // allora automaticamente deve essere definito sourceContract.
 
     DateInterval contractInterval = getContractDateInterval();
-    if (value.sourceDateResidual != null) {
-      return new DateInterval(value.sourceDateResidual,
+    if (value.getSourceDateResidual() != null) {
+      return new DateInterval(value.getSourceDateResidual(),
           contractInterval.getEnd());
     }
 
@@ -146,8 +146,8 @@ public class WrapperContract implements IWrapperContract {
   public DateInterval getContractDatabaseIntervalForMealTicket() {
 
     DateInterval contractDatebaseInterval = getContractDatabaseInterval();
-    if (value.sourceDateMealTicket != null) {
-      return new DateInterval(value.sourceDateMealTicket,
+    if (value.getSourceDateMealTicket() != null) {
+      return new DateInterval(value.getSourceDateMealTicket(),
           contractDatebaseInterval.getEnd());
     }
 
@@ -166,7 +166,7 @@ public class WrapperContract implements IWrapperContract {
     if (initializationMissing()) {
       return Optional.<YearMonth>empty();
     }
-    if (value.sourceDateResidual != null) {
+    if (value.getSourceDateResidual() != null) {
       return Optional.ofNullable((YearMonth.from(value.getSourceDateResidual())));
     }
     return Optional.ofNullable(YearMonth.from(value.getBeginDate()));
@@ -197,10 +197,10 @@ public class WrapperContract implements IWrapperContract {
    */
   @Override
   public boolean residualInitInYearMonth(YearMonth yearMonth) {
-    if (value.sourceDateResidual == null) {
+    if (value.getSourceDateResidual() == null) {
       return false;
     }
-    return YearMonth.from(value.sourceDateResidual).equals(yearMonth);
+    return YearMonth.from(value.getSourceDateResidual()).equals(yearMonth);
   }
 
   /**
@@ -229,8 +229,8 @@ public class WrapperContract implements IWrapperContract {
    */
   @Override
   public boolean mealTicketInitBeforeGeneralInit() {
-    if (value.sourceDateResidual != null && value.sourceDateMealTicket != null
-        && value.sourceDateResidual.isAfter(value.sourceDateMealTicket)) {
+    if (value.getSourceDateResidual() != null && value.getSourceDateMealTicket() != null
+        && value.getSourceDateResidual().isAfter(value.getSourceDateMealTicket())) {
       return true;
     } else {
       return false;
@@ -248,7 +248,7 @@ public class WrapperContract implements IWrapperContract {
 
     LocalDate dateForInit = dateForInitialization();
 
-    if (value.sourceDateResidual != null) {
+    if (value.getSourceDateResidual() != null) {
       return false;
     }
 
@@ -324,8 +324,8 @@ public class WrapperContract implements IWrapperContract {
       return null;
     }
     
-    if (value.sourceDateResidual != null) {
-      return value.sourceDateResidual;
+    if (value.getSourceDateResidual() != null) {
+      return value.getSourceDateResidual();
     }
     
     return value.getBeginDate().minusDays(1);
@@ -367,8 +367,8 @@ public class WrapperContract implements IWrapperContract {
     }
 
     // se source date cade nell'anno non ho bisogno del recap.
-    if (value.sourceDateResidual != null
-        && value.sourceDateResidual.getYear() == yearToRecap) {
+    if (value.getSourceDateResidual() != null
+        && value.getSourceDateResidual().getYear() == yearToRecap) {
       return true;
     }
 

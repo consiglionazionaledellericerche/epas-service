@@ -255,7 +255,7 @@ public class VacationSituationTest {
     //un tempo determinato
     Person person = h2Examples.normalEmployee(LocalDate.of(2001, 1, 16), Optional.empty());
     Contract contract = person.getContracts().get(0);
-    contract.sourceDateVacation = LocalDate.of(2016, 10, 31);
+    contract.setSourceDateVacation(LocalDate.of(2016, 10, 31));
     contract.sourceVacationLastYearUsed = 28;
     contract.sourceVacationCurrentYearUsed = 5;
     contract.sourcePermissionUsed = 4;

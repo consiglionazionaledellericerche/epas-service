@@ -119,9 +119,9 @@ public class ContractMonthRecapManager {
         initMonteOreAnnoPassato = recapPreviousMonth.get().remainingMinutesLastYear;
       }
     }
-    if (contract.sourceDateResidual != null
-        && contract.sourceDateResidual.getYear() == yearMonth.getYear()
-        && contract.sourceDateResidual.getMonthValue() == yearMonth.getMonthValue()) {
+    if (contract.getSourceDateResidual() != null
+        && contract.getSourceDateResidual().getYear() == yearMonth.getYear()
+        && contract.getSourceDateResidual().getMonthValue() == yearMonth.getMonthValue()) {
       //Se è il primo riepilogo dovuto ad inzializzazione utilizzo i dati
       //in source
       initMonteOreAnnoPassato = contract.sourceRemainingMinutesLastYear;
@@ -139,20 +139,20 @@ public class ContractMonthRecapManager {
     }
     //Se è il primo riepilogo dovuto ad inzializzazione utilizzo i dati
     //in source
-    if (contract.sourceDateMealTicket != null
-        && contract.sourceDateMealTicket.getYear() == yearMonth.getYear()
-        && contract.sourceDateMealTicket.getMonthValue() == yearMonth.getMonthValue()) {
+    if (contract.getSourceDateMealTicket() != null
+        && contract.getSourceDateMealTicket().getYear() == yearMonth.getYear()
+        && contract.getSourceDateMealTicket().getMonthValue() == yearMonth.getMonthValue()) {
       cmr.buoniPastoDaInizializzazione = contract.sourceRemainingMealTicket;
       cmr.buoniPastoDalMesePrecedente = 0;
     }
     //Ma c'è il particolarissimo caso in cui il contratto inizia il primo del mese,
     // non ho definito inizializzazione generale, e voglio impostare il residuo iniziale 
     // (all'ultimo giorno del mese precedente)
-    if (contract.sourceDateResidual == null 
-        && contract.sourceDateMealTicket != null 
+    if (contract.getSourceDateResidual() == null 
+        && contract.getSourceDateMealTicket() != null 
         && YearMonth.from(contract.getBeginDate()).compareTo(yearMonth) == 0
         && contract.getBeginDate().getDayOfMonth() == 1 
-        && contract.sourceDateMealTicket.isEqual(contract.getBeginDate().minusDays(1))) {
+        && contract.getSourceDateMealTicket().isEqual(contract.getBeginDate().minusDays(1))) {
       
       cmr.buoniPastoDaInizializzazione = 0;
       cmr.buoniPastoDalMesePrecedente = contract.sourceRemainingMealTicket;
@@ -168,9 +168,9 @@ public class ContractMonthRecapManager {
     cmr.initMonteOreAnnoPassato = initMonteOreAnnoPassato;
 
     //Per stampare a video il residuo da inizializzazione se riferito al mese
-    if (contract.sourceDateResidual != null
-        && contract.sourceDateResidual.getMonthValue() == cmr.month
-        && contract.sourceDateResidual.getYear() == cmr.year) {
+    if (contract.getSourceDateResidual() != null
+        && contract.getSourceDateResidual().getMonthValue() == cmr.month
+        && contract.getSourceDateResidual().getYear() == cmr.year) {
       cmr.initResiduoAnnoCorrenteNelMese = contract.sourceRemainingMinutesCurrentYear;
     }
 

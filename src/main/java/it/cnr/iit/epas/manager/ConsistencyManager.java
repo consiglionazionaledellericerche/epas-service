@@ -480,8 +480,8 @@ public class ConsistencyManager {
 
     // Nel caso in cui il personDay non sia successivo a sourceContract imposto i valori a 0
     if (pd.getPersonDayContract().isPresent()
-        && pd.getPersonDayContract().get().sourceDateResidual != null
-        && pd.getValue().getDate().isBefore(pd.getPersonDayContract().get().sourceDateResidual)) {
+        && pd.getPersonDayContract().get().getSourceDateResidual() != null
+        && pd.getValue().getDate().isBefore(pd.getPersonDayContract().get().getSourceDateResidual())) {
 
       pd.getValue().setHoliday(false);
       pd.getValue().setTimeAtWork(0);
@@ -706,7 +706,7 @@ public class ConsistencyManager {
         // per costruirlo. Soluzione: costruisco tutti i riepiloghi del contratto.
         populateContractMonthRecap(contract, Optional.<YearMonth>empty(), timeVariationList);
       }
-    } else if (contract.getValue().sourceDateResidual != null
+    } else if (contract.getValue().getSourceDateResidual() != null
         && yearMonthToCompute.compareTo(YearMonth.from(contract.getValue().getSourceDateResidual())) == 0) {
 
       // Il calcolo del riepilogo del mese che ricade nel sourceDateResidual
@@ -760,17 +760,17 @@ public class ConsistencyManager {
 
     // Caso semplice ultimo giorno del mese
     LocalDate lastDayInSourceMonth =
-        DateUtility.endOfMonth(contract.getValue().sourceDateResidual);
+        DateUtility.endOfMonth(contract.getValue().getSourceDateResidual());
 
-    if (lastDayInSourceMonth.isEqual(contract.getValue().sourceDateResidual)) {
+    if (lastDayInSourceMonth.isEqual(contract.getValue().getSourceDateResidual())) {
       ContractMonthRecap cmr = buildContractMonthRecap(contract, yearMonthToCompute);
 
       cmr.remainingMinutesCurrentYear = contract.getValue().sourceRemainingMinutesCurrentYear;
       cmr.remainingMinutesLastYear = contract.getValue().sourceRemainingMinutesLastYear;
       cmr.recoveryDayUsed = contract.getValue().sourceRecoveryDayUsed;
 
-      if (contract.getValue().sourceDateMealTicket != null && contract.getValue().sourceDateResidual
-          .isEqual(contract.getValue().sourceDateMealTicket)) {
+      if (contract.getValue().getSourceDateMealTicket() != null && contract.getValue().getSourceDateResidual()
+          .isEqual(contract.getValue().getSourceDateMealTicket())) {
         cmr.buoniPastoDaInizializzazione = contract.getValue().sourceRemainingMealTicket;
         cmr.remainingMealTickets = contract.getValue().sourceRemainingMealTicket;
       } else {

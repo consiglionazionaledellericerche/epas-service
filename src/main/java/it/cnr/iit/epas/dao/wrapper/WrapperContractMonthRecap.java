@@ -57,10 +57,10 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
   @Override
   public boolean residualInitInYearMonth(int year, int month) {
-    if (getContract().getValue().sourceDateResidual == null) {
+    if (getContract().getValue().getSourceDateResidual() == null) {
       return false;
     }
-    return YearMonth.from(getContract().getValue().sourceDateResidual).equals(YearMonth.of(year, month));
+    return YearMonth.from(getContract().getValue().getSourceDateResidual()).equals(YearMonth.of(year, month));
   }
 
   /**
