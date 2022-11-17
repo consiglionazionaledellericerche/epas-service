@@ -61,7 +61,7 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "hasResidualLastYear", expression = "java(contractMonthRecap.hasResidualLastYear())")
   @Mapping(target = "previousRecapInYearPresent", expression = "java(contractMonthRecap.getPreviousRecapInYear().isPresent())")
   @Mapping(target = "previousRecapInYearRemainingMinutesCurrentYear", 
-    expression = "java(contractMonthRecap.getPreviousRecapInYear().isPresent() ? contractMonthRecap.getPreviousRecapInYear().get().getRemainingMinutesLastYear() : 0)")
+    expression = "java(contractMonthRecap.getPreviousRecapInYear().isPresent() ? contractMonthRecap.getPreviousRecapInYear().get().getRemainingMinutesCurrentYear() : 0)")
   ContractMonthRecapDto convert(IWrapperContractMonthRecap contractMonthRecap);
 
   @Mapping(target = "id", source = "personDay.id")
