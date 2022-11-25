@@ -57,11 +57,8 @@ public class AbsenceDao extends DaoBase<Absence> {
   //private final IWrapperFactory factory;
 
   @Inject
-  AbsenceDao(Provider<EntityManager> emp
-      //, IWrapperFactory factory
-      ) {
+  AbsenceDao(Provider<EntityManager> emp) {
     super(emp);
-    //this.factory = factory;
   }
 
   /**
