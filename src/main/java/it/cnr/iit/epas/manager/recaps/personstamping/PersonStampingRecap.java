@@ -148,7 +148,7 @@ public class PersonStampingRecap {
     // ******************************************************************************************
     List<Contract> monthContracts =
         wrapperFactory.create(person).orderedMonthContracts(year, month);
-    log.debug("Trovati {} contratti per {}", monthContracts.size(), person.getFullname());
+
     for (Contract contract : monthContracts) {
       Optional<ContractMonthRecap> cmr =
           wrapperFactory.create(contract).getContractMonthRecap(YearMonth.of(year, month));
@@ -157,8 +157,6 @@ public class PersonStampingRecap {
 
         val wrapperContract = wrapperFactory.create(cmr.get());
         this.contractMonths.add(wrapperContract);
-        log.debug("adding contractMonthRecap {} to monthRecaps", cmr.get());
-        log.debug("wrapperContract = {}", wrapperContract);
       }
     }
 

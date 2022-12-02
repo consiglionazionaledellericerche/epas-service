@@ -955,7 +955,7 @@ public class PersonDayManager {
 
     final PersonDay personDay = pd.getValue();
 
-    final LocalDate sourceDateResidual = pd.getPersonDayContract().get().sourceDateResidual;
+    final LocalDate sourceDateResidual = pd.getPersonDayContract().get().getSourceDateResidual();
     //se prima o uguale a source contract il problema è fixato
     if (sourceDateResidual != null && !personDay.getDate().isAfter(sourceDateResidual)) {
       personDay.getTroubles().forEach( pdt -> {
@@ -966,7 +966,7 @@ public class PersonDayManager {
       log.info("Eliminati tutti i PersonDaysinTrouble relativi al giorno {} della persona {}"
           + " perchè precedente a sourceContract({})",
           personDay.getDate(), personDay.getPerson().fullName(),
-          pd.getPersonDayContract().get().sourceDateResidual);
+          pd.getPersonDayContract().get().getSourceDateResidual());
       return;
     }
 

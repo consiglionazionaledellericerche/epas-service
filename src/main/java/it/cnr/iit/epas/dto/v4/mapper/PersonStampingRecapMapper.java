@@ -53,6 +53,17 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonStampingRecapDto convert(PersonStampingRecap personDay);
 
+  @Mapping(target = ".", source = "value" )
+  @Mapping(target = "expireInMonth", expression = "java(contractMonthRecap.getValue().expireInMonth())")
+  @Mapping(target = "residualLastYearInit", expression = "java(contractMonthRecap.getResidualLastYearInit())")
+  @Mapping(target = "hasResidualInitInYearMonth",
+          expression = "java(contractMonthRecap.residualInitInYearMonth(contractMonthRecap.getValue().getYear(), contractMonthRecap.getValue().getMonth()))")
+  @Mapping(target = "hasResidualLastYear", expression = "java(contractMonthRecap.hasResidualLastYear())")
+  @Mapping(target = "previousRecapInYearPresent", expression = "java(contractMonthRecap.getPreviousRecapInYear().isPresent())")
+  @Mapping(target = "previousRecapInYearRemainingMinutesCurrentYear", 
+    expression = "java(contractMonthRecap.getPreviousRecapInYear().isPresent() ? contractMonthRecap.getPreviousRecapInYear().get().getRemainingMinutesCurrentYear() : 0)")
+  ContractMonthRecapDto convert(IWrapperContractMonthRecap contractMonthRecap);
+
   @Mapping(target = "id", source = "personDay.id")
   @Mapping(target = "stampingTemplates", source = "stampingsTemplate")
   PersonStampingDayRecapDto convert(PersonStampingDayRecap personStampingDayRecap);
@@ -81,9 +92,6 @@ public interface PersonStampingRecapMapper {
 
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
-  
-  @Mapping(target = ".", source = "value" )
-  @Mapping(target = "expireInMonth", expression = "java(contractMonthRecap.getValue().expireInMonth())")
-  ContractMonthRecapDto convert(IWrapperContractMonthRecap contractMonthRecap);
+
 
 }

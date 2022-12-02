@@ -98,14 +98,14 @@ public class VacationFactory {
     int initializationLastYear = 0;
     int initializationCurrentYear = 0;
     int initializationPermission = 0;
-    if (contract.sourceDateVacation != null) {
-      if (contract.sourceDateVacation.getYear() == year) {
+    if (contract.getSourceDateVacation() != null) {
+      if (contract.getSourceDateVacation().getYear() == year) {
         initializationLastYear = contract.sourceVacationLastYearUsed;
         initializationCurrentYear = contract.sourceVacationCurrentYearUsed;
         initializationPermission = contract.sourcePermissionUsed;
-      } else if (contract.sourceDateVacation.getYear() == year - 1) {
+      } else if (contract.getSourceDateVacation().getYear() == year - 1) {
         initializationLastYear = contract.sourceVacationCurrentYearUsed; 
-      } else if (contract.sourceDateVacation.getYear() == year + 1) {
+      } else if (contract.getSourceDateVacation().getYear() == year + 1) {
         initializationCurrentYear = contract.sourceVacationLastYearUsed;
       }
     }
@@ -240,7 +240,7 @@ public class VacationFactory {
     }
     
     //Collapse initialization days
-    handleInitialization(periods, initializationDays, contract.sourceDateVacation, group);
+    handleInitialization(periods, initializationDays, contract.getSourceDateVacation(), group);
     
     return periods.stream().distinct().collect(Collectors.toList());
   }
@@ -281,7 +281,7 @@ public class VacationFactory {
     periods = handleAccruedFirstYear(person, group, contract, periods);
     
     //Collapse initialization days
-    handleInitialization(periods, initializationDays, contract.sourceDateVacation, group);
+    handleInitialization(periods, initializationDays, contract.getSourceDateVacation(), group);
     
     return periods;
   }

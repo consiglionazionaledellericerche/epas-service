@@ -203,7 +203,7 @@ public class ContractManager {
     //csp.save();
     contract.getContractStampProfile().add(csp);
 
-    contract.sourceDateResidual = null;
+    contract.setSourceDateResidual(null);
     emp.get().merge(contract);
     //contract.save();
 
@@ -407,7 +407,7 @@ public class ContractManager {
    * @param contract contract
    */
   public final void cleanMealTicketInitialization(final Contract contract) {
-    contract.sourceDateMealTicket = contract.sourceDateResidual;
+    contract.setSourceDateMealTicket(contract.getSourceDateResidual());
   }
 
   /**
@@ -477,7 +477,7 @@ public class ContractManager {
       RecomputeRecap recomputeRecap =
           periodManager.buildRecap(wrappedContract.getContractDateInterval().getBegin(),
               Optional.ofNullable(wrappedContract.getContractDateInterval().getEnd()),
-              periodRecaps, Optional.ofNullable(contract.sourceDateResidual));
+              periodRecaps, Optional.ofNullable(contract.getSourceDateResidual()));
 
       recomputeRecap.initMissing = wrappedContract.initializationMissing();
       periodManager.updatePeriods(vp, true);

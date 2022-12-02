@@ -55,6 +55,13 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
     return wrapperFactoryProvider.get().create(value.getContract());
   }
 
+  @Override
+  public boolean residualInitInYearMonth(int year, int month) {
+    if (getContract().getValue().getSourceDateResidual() == null) {
+      return false;
+    }
+    return YearMonth.from(getContract().getValue().getSourceDateResidual()).equals(YearMonth.of(year, month));
+  }
 
   /**
    * Il recap precedente se presente. Istanzia una variabile lazy.

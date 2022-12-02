@@ -30,6 +30,8 @@ public interface IWrapperContractMonthRecap extends IWrapperModel<ContractMonthR
 
   public IWrapperContract getContract();
 
+  public boolean residualInitInYearMonth(int year, int month);
+
   public Optional<ContractMonthRecap> getPreviousRecap();
 
   public Optional<ContractMonthRecap> getPreviousRecapInYear();
