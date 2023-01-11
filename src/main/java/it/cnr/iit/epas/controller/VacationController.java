@@ -20,13 +20,21 @@ import it.cnr.iit.epas.controller.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
+import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
+import it.cnr.iit.epas.manager.services.absences.model.VacationFactory;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import javax.inject.Inject;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,32 +43,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/monthrecaps")
-public class MonthRecapController {
+@RequestMapping("/rest/v4/vacations")
+public class VacationController {
 
   private final PersonDao personDao;
   private final IWrapperFactory wrapperFactory;
-  private final PersonStampingRecapFactory stampingRecapFactory;
-  private final PersonStampingRecapMapper personStampingRecapMapper;
+  private final PersonVacationRecapFactory personvacationFactory;
+  private final PersonVacationMapper personVacationMapper;
 
   @Inject
-  public MonthRecapController(
+  public VacationController(
       PersonDao personDao, IWrapperFactory wrapperFactory,
-      PersonStampingRecapFactory stampingRecapFactory,
-      PersonStampingRecapMapper personStampingRecapFactory) {
+      PersonVacationRecapFactory personvacationFactory,
+      PersonVacationMapper personVacationMapper) {
     this.personDao = personDao;
     this.wrapperFactory = wrapperFactory;
-    this.stampingRecapFactory = stampingRecapFactory;
-    this.personStampingRecapMapper = personStampingRecapFactory;
+    this.personvacationFactory = personvacationFactory;
+    this.personVacationMapper = personVacationMapper;
   }
 
   @GetMapping(ApiRoutes.LIST)
-  public ResponseEntity<PersonStampingRecapDto> show(
+  public ResponseEntity<PersonVacationDto> show(
       @RequestParam("personId") Long personId, 
-      @RequestParam("year") Integer year, 
+      @RequestParam("year") Integer year,
       @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
-        "/rest/v4/monthrecaps" + ApiRoutes.LIST, personId, year, month);
+        "/rest/v4/vacations" + ApiRoutes.LIST, personId, year, month);
     val person = personDao.byId(personId);
 
     log.debug("Person {}", person.isEmpty());
@@ -71,7 +79,8 @@ public class MonthRecapController {
     if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
       return ResponseEntity.notFound().build();
     }
-    PersonStampingRecap psrDto = stampingRecapFactory.create(person.get(), year, month, true);
-    return ResponseEntity.ok().body(personStampingRecapMapper.convert(psrDto));
+
+    PersonVacationRecap psrDto = personvacationFactory.create(person.get(), year);
+    return ResponseEntity.ok().body(personVacationMapper.convert(psrDto));
   }
 }
