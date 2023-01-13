@@ -140,17 +140,17 @@ public class UsersRolesOfficesDao extends DaoBase<UsersRolesOffices> {
     Map<Long, Set<String>> urosMap = Maps.newHashMap();
 
     for (UsersRolesOffices uroItem : uroList) {
-      if (uroItem.user.person == null || uroItem.user.person.getPerseoId() == null) {
+      if (uroItem.user.getPerson() == null || uroItem.user.getPerson().getPerseoId() == null) {
         continue;
       }
-      if (office.isPresent() && !office.get().equals(uroItem.user.person.getOffice())) {
+      if (office.isPresent() && !office.get().equals(uroItem.user.getPerson().getOffice())) {
         continue;
       }
-      Set<String> personUros = urosMap.get(uroItem.user.person.getPerseoId());
+      Set<String> personUros = urosMap.get(uroItem.user.getPerson().getPerseoId());
       if (personUros == null) {
         personUros = Sets.newHashSet();
         personUros.add(formatUro(uroItem));
-        urosMap.put(uroItem.user.person.getPerseoId(), personUros);
+        urosMap.put(uroItem.user.getPerson().getPerseoId(), personUros);
       } else {
         personUros.add(formatUro(uroItem));
       }

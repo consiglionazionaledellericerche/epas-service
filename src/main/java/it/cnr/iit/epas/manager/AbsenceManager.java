@@ -51,7 +51,7 @@ import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.enumerate.AbsenceTypeMapping;
 import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.sql.Blob;
 import java.time.LocalDate;
@@ -93,6 +93,7 @@ public class AbsenceManager {
   private final AbsenceComponentDao absenceComponentDao;
   private final NotificationManager notificationManager;
   private final SecurityRules rules;
+  private final SecureUtils secureUtils;
 
   /**
    * Costruttore.
@@ -126,7 +127,8 @@ public class AbsenceManager {
       PersonDayManager personDayManager,
       IWrapperFactory wrapperFactory,
       NotificationManager notificationManager,
-      SecurityRules rules) {
+      SecurityRules rules,
+      SecureUtils secureUtils) {
     this.personDao = personDao;
     this.absenceComponentDao = absenceComponentDao;
     this.contractMonthRecapManager = contractMonthRecapManager;
@@ -143,6 +145,7 @@ public class AbsenceManager {
     this.personDayManager = personDayManager;
     this.notificationManager = notificationManager;
     this.rules = rules;
+    this.secureUtils = secureUtils;
   }
 
   /**
@@ -175,7 +178,7 @@ public class AbsenceManager {
         newAbsences.add(absence);
         personDayDao.merge(personDay);
 
-        notificationManager.notificationAbsencePolicy(Security.getUser().get(),
+        notificationManager.notificationAbsencePolicy(secureUtils.getCurrentUser().get(),
             absence, groupAbsenceType, true, false, false);
 
       }

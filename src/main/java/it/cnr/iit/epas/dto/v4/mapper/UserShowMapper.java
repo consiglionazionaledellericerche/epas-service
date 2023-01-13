@@ -14,13 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.repo;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.models.Person;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
+import it.cnr.iit.epas.dto.v4.UserShowDto;
+import it.cnr.iit.epas.models.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Repository
-public interface PersonRepository extends PagingAndSortingRepository<Person, Long>{
-  //Empty
+@Mapper(componentModel = "spring")
+public interface UserShowMapper {
+
+  @Mapping(target = "personId", source = "person.id")
+  @Mapping(target = "ownerId", source = "owner.id")
+  UserShowDto convert(User user);
 }

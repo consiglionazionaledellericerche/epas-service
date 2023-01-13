@@ -32,8 +32,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 public class EpasApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EpasApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(EpasApplication.class, args);
+  }
 
 }

@@ -14,13 +14,23 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.repo;
+package it.cnr.iit.epas.security;
 
-import it.cnr.iit.epas.models.Person;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Repository
-public interface PersonRepository extends PagingAndSortingRepository<Person, Long>{
-  //Empty
+/**
+ * NoCheck.
+ * Questa annotation viene utilizzata per inibire
+ * l'attivazione delle drools all'ingresso dei controller.
+ *
+ * @author Daniele Murgia
+ */
+
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NoCheck {
+
 }

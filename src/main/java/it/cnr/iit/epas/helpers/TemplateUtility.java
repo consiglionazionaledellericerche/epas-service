@@ -79,7 +79,7 @@ import it.cnr.iit.epas.models.flows.CompetenceRequest;
 import it.cnr.iit.epas.models.flows.Group;
 import it.cnr.iit.epas.models.flows.enumerate.AbsenceRequestType;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.utils.DateUtility;
 //import manager.attestati.service.AttestatiApis;
 import java.time.LocalDate;
@@ -130,6 +130,7 @@ public class TemplateUtility {
   private final CompetenceRequestDao competenceRequestDao;
   private final InformationRequestDao informationRequestDao;
   private final GeneralSettingDao generalSettingDao;
+  private final SecureUtils secureUtils;
   
   /**
    * Costruttotore di default per l'injection dei vari componenti.
@@ -149,7 +150,7 @@ public class TemplateUtility {
       ContractualReferenceDao contractualReferenceDao, AbsenceRequestDao absenceRequestDao,
       UsersRolesOfficesDao uroDao, GroupDao groupDao, TimeSlotDao timeSlotDao,
       CompetenceRequestDao competenceRequestDao, InformationRequestDao informationRequestDao,
-      GeneralSettingDao generalSettingDao) {
+      GeneralSettingDao generalSettingDao, SecureUtils secureUtils) {
 
     this.secureManager = secureManager;
     this.officeDao = officeDao;
@@ -174,13 +175,14 @@ public class TemplateUtility {
     this.competenceRequestDao = competenceRequestDao;
     this.informationRequestDao = informationRequestDao;
     this.generalSettingDao = generalSettingDao;
+    this.secureUtils = secureUtils;
 
     //FIXME da correggere prima del pasasggio a spring boot
     notifications = MemoizedResults
         .memoize(new Supplier<ModelQuery.SimpleResults<Notification>>() {
           @Override
           public ModelQuery.SimpleResults<Notification> get() {
-            return notificationDao.listFor(Security.getUser().get(), Optional.empty(),
+            return notificationDao.listFor(secureUtils.getCurrentUser().get(), Optional.empty(),
                 Optional.of(NotificationFilter.TO_READ), Optional.empty());
           }
         });
@@ -189,7 +191,7 @@ public class TemplateUtility {
         .memoize(new Supplier<ModelQuery.SimpleResults<Notification>>() {
           @Override
           public ModelQuery.SimpleResults<Notification> get() {
-            return notificationDao.listFor(Security.getUser().get(), Optional.empty(), 
+            return notificationDao.listFor(secureUtils.getCurrentUser().get(), Optional.empty(), 
                 Optional.of(NotificationFilter.ARCHIVED), Optional.empty());
           }
         });
@@ -237,16 +239,16 @@ public class TemplateUtility {
    * @return la quantità di riposi compensativi da approvare.
    */
   public final int compensatoryRestRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<Group> groups = 
-        groupDao.groupsByOffice(user.person.getOffice(), Optional.empty(), Optional.of(false));
+        groupDao.groupsByOffice(user.getPerson().getOffice(), Optional.empty(), Optional.of(false));
     Set<AbsenceRequest> results = absenceRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            AbsenceRequestType.COMPENSATORY_REST, groups, user.person);
+            AbsenceRequestType.COMPENSATORY_REST, groups, user.getPerson());
     return results.size();
   }
   
@@ -257,16 +259,16 @@ public class TemplateUtility {
    * @return la quantità di richieste ferie da approvare.
    */
   public final int vacationRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<Group> groups = 
-        groupDao.groupsByOffice(user.person.getOffice(), Optional.empty(), Optional.of(false));
+        groupDao.groupsByOffice(user.getPerson().getOffice(), Optional.empty(), Optional.of(false));
     Set<AbsenceRequest> results = absenceRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            AbsenceRequestType.VACATION_REQUEST, groups, user.person);
+            AbsenceRequestType.VACATION_REQUEST, groups, user.getPerson());
 
     return results.size();
   }
@@ -278,16 +280,16 @@ public class TemplateUtility {
    * @return la quantità di richieste di permesso personale da approvare.
    */
   public final int personalPermissionRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<Group> groups = 
-        groupDao.groupsByOffice(user.person.getOffice(), Optional.empty(), Optional.of(false));
+        groupDao.groupsByOffice(user.getPerson().getOffice(), Optional.empty(), Optional.of(false));
     Set<AbsenceRequest> results = absenceRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            AbsenceRequestType.PERSONAL_PERMISSION, groups, user.person);
+            AbsenceRequestType.PERSONAL_PERMISSION, groups, user.getPerson());
 
     return results.size();
   }
@@ -299,16 +301,16 @@ public class TemplateUtility {
    * @return la quantità di richieste ferie anno passato post deadline da approvare.
    */
   public final int vacationPastYearAfterDeadlineRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<Group> groups = 
-        groupDao.groupsByOffice(user.person.getOffice(), Optional.empty(), Optional.of(false));
+        groupDao.groupsByOffice(user.getPerson().getOffice(), Optional.empty(), Optional.of(false));
     Set<AbsenceRequest> results = absenceRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST, groups, user.person);
+            AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST, groups, user.getPerson());
 
     return results.size();
   }
@@ -320,7 +322,7 @@ public class TemplateUtility {
    * @return la quantità di richieste di cambio di reperibilità attive.
    */
   public final int changeReperibilityRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
@@ -330,7 +332,7 @@ public class TemplateUtility {
         .toApproveResults(roleList, 
             LocalDateTime.now().minusMonths(1), 
             Optional.empty(), CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST, 
-            user.person);
+            user.getPerson());
     return results.size();
   }
   
@@ -340,14 +342,14 @@ public class TemplateUtility {
    * @return la quantità di richieste di telelavoro pendenti.
    */
   public final int teleworkRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<InformationRequest> results = informationRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            InformationType.TELEWORK_INFORMATION, user.person);
+            InformationType.TELEWORK_INFORMATION, user.getPerson());
 
     return results.size();
   }
@@ -358,14 +360,14 @@ public class TemplateUtility {
    * @return la quantità di richieste di uscite di servizio pendenti.
    */
   public final int serviceRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<InformationRequest> results = informationRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            InformationType.SERVICE_INFORMATION, user.person);
+            InformationType.SERVICE_INFORMATION, user.getPerson());
 
     return results.size();
   }
@@ -376,14 +378,14 @@ public class TemplateUtility {
    * @return la quantità di richieste di informazione di malattia pendenti.
    */
   public final int illnessRequests() {
-    User user = Security.getUser().get();
+    User user = secureUtils.getCurrentUser().get();
     if (user.isSystemUser()) {
       return 0;
     }
     List<UsersRolesOffices> roleList = uroDao.getUsersRolesOfficesByUser(user);
     List<InformationRequest> results = informationRequestDao
         .toApproveResults(roleList, Optional.empty(), Optional.empty(), 
-            InformationType.ILLNESS_INFORMATION, user.person);
+            InformationType.ILLNESS_INFORMATION, user.getPerson());
 
     return results.size();
   }
@@ -468,7 +470,7 @@ public class TemplateUtility {
   // Liste di utilità per i template
 
   public List<Office> officesAllowed() {
-    return secureManager.officesWriteAllowed(Security.getUser().get())
+    return secureManager.officesWriteAllowed(secureUtils.getCurrentUser().get())
         .stream().sorted((o, o1) -> o.getName().compareTo(o1.getName())).collect(Collectors.toList());
   }
 
@@ -546,7 +548,7 @@ public class TemplateUtility {
     // Per poter nominarlo amministratore tecnico di ogni sede di milano
     // Decidere una soluzione migliore e meno sbrigativa.
 
-    if (Security.getUser().get().getUsername().equals("developer")) {
+    if (secureUtils.getCurrentUser().get().getUsername().equals("developer")) {
       offices = Sets.newHashSet(officeDao.allOffices().list());
     }
 
@@ -568,7 +570,7 @@ public class TemplateUtility {
    */
   public List<PersonDao.PersonLite> assignablePeople() {
     return personDao.peopleInOffices(secureManager
-        .officesTechnicalAdminAllowed(Security.getUser().get()));
+        .officesTechnicalAdminAllowed(secureUtils.getCurrentUser().get()));
   }
 
   /**
@@ -583,7 +585,7 @@ public class TemplateUtility {
 
     // TODO: i ruoli impostabili sull'office dipendono da chi esegue la richiesta...
     // e vanno spostati nel secureManager.
-    Optional<User> user = Security.getUser();
+    Optional<User> user = secureUtils.getCurrentUser();
     if (user.isPresent()) {
       roles.add(roleDao.getRoleByName(Role.SEAT_SUPERVISOR));
       roles.add(roleDao.getRoleByName(Role.TECHNICAL_ADMIN));
@@ -603,7 +605,7 @@ public class TemplateUtility {
    */
   public List<Role> allSystemRoles() {
     List<Role> roles = Lists.newArrayList();
-    Optional<User> user = Security.getUser();
+    Optional<User> user = secureUtils.getCurrentUser();
     if (user.isPresent()) {
       roles.add(roleDao.getRoleByName(Role.REPERIBILITY_MANAGER));
       roles.add(roleDao.getRoleByName(Role.SHIFT_MANAGER));
@@ -620,9 +622,9 @@ public class TemplateUtility {
    */
   public List<Role> allPhysicalRoles() {
     List<Role> roles = Lists.newArrayList();
-    Optional<User> user = Security.getUser();
+    Optional<User> user = secureUtils.getCurrentUser();
     if (user.isPresent()) {
-      roles = rolesAssignable(user.get().person.getOffice());
+      roles = rolesAssignable(user.get().getPerson().getOffice());
       roles.add(roleDao.getRoleByName(Role.EMPLOYEE));
       return roles;
     }
@@ -644,7 +646,7 @@ public class TemplateUtility {
    * @return tutti gli uffici sul quale l'utente corrente ha il ruolo di TECHNICAL_ADMIN.
    */
   public List<Office> getTechnicalAdminOffices() {
-    return secureManager.officesTechnicalAdminAllowed(Security.getUser().get())
+    return secureManager.officesTechnicalAdminAllowed(secureUtils.getCurrentUser().get())
         .stream().sorted((o, o1) -> o.getName().compareTo(o1.getName()))
         .collect(Collectors.toList());
   }
@@ -657,7 +659,7 @@ public class TemplateUtility {
 
     List<Office> offices = Lists.newArrayList();
 
-    Optional<User> user = Security.getUser();
+    Optional<User> user = secureUtils.getCurrentUser();
 
     // se admin tutti, altrimenti gli office di cui si ha technicalAdmin
     // TODO: spostare nel sucureManager
@@ -669,7 +671,7 @@ public class TemplateUtility {
       return officeDao.getAllOffices();
     }
 
-    for (UsersRolesOffices uro : user.get().usersRolesOffices) {
+    for (UsersRolesOffices uro : user.get().getUsersRolesOffices()) {
       if (uro.role.name.equals(Role.TECHNICAL_ADMIN)) {
         offices.add(uro.office);
       }
@@ -687,7 +689,7 @@ public class TemplateUtility {
     List<User> badgeReaders = badgeReaderDao.usersBadgeReader();
     for (User user : badgeReaders) {
       boolean insert = true;
-      for (UsersRolesOffices uro : user.usersRolesOffices) {
+      for (UsersRolesOffices uro : user.getUsersRolesOffices()) {
         if (uro.office.getId().equals(office.getId())) {
           insert = false;
           break;
@@ -728,15 +730,15 @@ public class TemplateUtility {
 
   
   public boolean hasAdminRole() {
-    return userDao.hasAdminRoles(Security.getUser().get());
+    return userDao.hasAdminRoles(secureUtils.getCurrentUser().get());
   }
 
   public List<StampTypes> getStampTypes() {
-    return UserDao.getAllowedStampTypes(Security.getUser().get());
+    return UserDao.getAllowedStampTypes(secureUtils.getCurrentUser().get());
   }
   
   public List<TeleworkStampTypes> getTeleworkStampTypes() {
-    return UserDao.getAllowedTeleworkStampTypes(Security.getUser().get());
+    return UserDao.getAllowedTeleworkStampTypes(secureUtils.getCurrentUser().get());
   }
 
   /**

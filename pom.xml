@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.cnr.iit</groupId>
-	<artifactId>epas</artifactId>
+	<artifactId>epas-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>epas-service</name>
 	<description>Personnel Attendance System</description>
@@ -17,6 +17,7 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
 		<guava.version>31.1-jre</guava.version>
+		<drools.version>7.73.0.Final</drools.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,6 +41,18 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -87,7 +100,7 @@
 		</dependency>
 		<!-- Fine QueryDsl -->
 		<dependency>
-    		<groupId>com.google.inject.extensions</groupId>
+			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-assistedinject</artifactId>
 			<version>5.1.0</version>
 		</dependency>
@@ -110,6 +123,16 @@
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-compiler</artifactId>
+			<version>${drools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-mvel</artifactId>
+			<version>${drools.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -119,7 +142,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -166,7 +188,7 @@
 							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>
 					</execution>
-    			</executions>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
