@@ -1,0 +1,29 @@
+import it.cnr.iit.epas.security.PermissionCheck
+import it.cnr.iit.epas.models.enumerate.AccountRole
+
+global it.cnr.iit.epas.models.User currentUser;
+global java.util.Set userRoles;
+global java.util.List userRolesOffices;
+
+/*******************************************************************************
+ * Azioni ruolo DEVELOPER e ADMIN
+ ******************************************************************************/
+rule SystemUsers
+salience 1
+activation-group 'admin'
+when
+  AccountRole(this in (AccountRole.DEVELOPER,AccountRole.ADMIN)) from userRoles
+  $c: PermissionCheck(toCheck())
+then
+  $c.grant();
+end
+
+rule AnyUser
+when
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/userinfo") ||
+    permission.startsWith("/rest/v4/personinfo"),
+    toCheck())
+then
+ $c.grant();
+end

@@ -58,11 +58,11 @@ public class SecureManager {
     Preconditions.checkState(userDao.isPersistent(user));
 
     // Utente con ruoli di sistema
-    if (!user.roles.isEmpty()) {
+    if (!user.getRoles().isEmpty()) {
       return Sets.newHashSet(officeDao.allOffices().list());
     }
 
-    return user.usersRolesOffices.stream().filter(uro -> rolesNames.contains(uro.role.name))
+    return user.getUsersRolesOffices().stream().filter(uro -> rolesNames.contains(uro.role.name))
         .map(uro -> uro.office).distinct().collect(Collectors.toSet());
   }
 

@@ -205,13 +205,13 @@ public class WrapperOffice implements IWrapperOffice {
     }
     return true;
   }
-  
+
   private List<UsersRolesOffices> filterUros(Role role) {
     List<UsersRolesOffices> uroList = Lists.newArrayList();
     for (UsersRolesOffices uro : this.value.getUsersRolesOffices()) {
 
       if (uro.office.getId().equals(this.value.getId()) && uro.role.getId().equals(role.getId())
-          && uro.user.person != null) {
+          && uro.user.getPerson() != null) {
         uroList.add(uro);
       }
     }

@@ -61,7 +61,7 @@ import it.cnr.iit.epas.models.absences.InitializationGroup;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.MonthDay;
@@ -100,6 +100,7 @@ public class AbsenceService {
   private final ContractDao contractDao;
   private final GeneralSettingDao generalSettingDao;
   private final CacheManager cacheManager;
+  private final SecureUtils secureUtils;
 
   /**
    * Costruttore injection.
@@ -120,7 +121,7 @@ public class AbsenceService {
       JustifiedTypeDao justifiedTypeDao, CategoryTabDao categoryTabDao,
       ContractDao contractDao,
       GeneralSettingDao generalSettingDao,
-      CacheManager cacheManager) {
+      CacheManager cacheManager, SecureUtils secureUtils) {
     this.configurationManager = configurationManager;
     this.absenceEngineUtility = absenceEngineUtility;
     this.serviceFactories = serviceFactories;
@@ -136,6 +137,7 @@ public class AbsenceService {
     this.contractDao = contractDao;
     this.generalSettingDao = generalSettingDao;
     this.categoryTabDao = categoryTabDao;
+    this.secureUtils = secureUtils;
   }
 
   /**
@@ -597,7 +599,7 @@ public class AbsenceService {
     final GroupAbsenceType smart = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_SMART.name()).get();
 
-    final User currentUser = Security.getUser().get();
+    final User currentUser = secureUtils.getCurrentUser().get();
 
     final boolean officeWriteAdmin =
         secureManager.officesWriteAllowed(currentUser).contains(person.getOffice());
@@ -639,7 +641,7 @@ public class AbsenceService {
     }
 
     // Persona stessa non autoamministrata
-    if (currentUser.person.equals(person) && !officeWriteAdmin) {
+    if (currentUser.getPerson().equals(person) && !officeWriteAdmin) {
 
       log.debug("configurazione gruppi per persona, officeWriteAdmin = {}", officeWriteAdmin);
       // vedere le configurazioni

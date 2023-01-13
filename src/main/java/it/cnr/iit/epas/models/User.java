@@ -41,7 +41,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Getter;
@@ -67,35 +66,35 @@ public class User extends BaseEntity {
   private String username;
 
   @Size(min=5)
-  public String password;
+  private String password;
 
   //@NotAudited
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-  public Person person;
+  private Person person;
 
   @NotAudited
   @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  public List<BadgeReader> badgeReaders = Lists.newArrayList();
+  private List<BadgeReader> badgeReaders = Lists.newArrayList();
 
   @ElementCollection
   @Enumerated(EnumType.STRING)
-  public Set<AccountRole> roles = Sets.newHashSet();
+  private Set<AccountRole> roles = Sets.newHashSet();
 
   
   @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE})
-  public List<UsersRolesOffices> usersRolesOffices = new ArrayList<UsersRolesOffices>();
+  private List<UsersRolesOffices> usersRolesOffices = new ArrayList<UsersRolesOffices>();
 
   @Column(name = "expire_recovery_token")
-  public LocalDate expireRecoveryToken;
+  private LocalDate expireRecoveryToken;
 
   @Column(name = "recovery_token")
-  public String recoveryToken;
+  private String recoveryToken;
 
   @Column(name = "disabled")
-  public boolean disabled;
+  private boolean disabled;
 
   @Column(name = "expire_date")
-  public LocalDate expireDate;
+  private LocalDate expireDate;
 
   @Nullable
   @ManyToOne

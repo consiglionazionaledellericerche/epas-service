@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Strings;
@@ -59,7 +58,7 @@ import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
 import it.cnr.iit.epas.models.informationrequests.IllnessRequest;
 import it.cnr.iit.epas.models.informationrequests.ServiceRequest;
 import it.cnr.iit.epas.models.informationrequests.TeleworkRequest;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.utils.DateUtility;
 import it.cnr.iit.epas.utils.Mail;
 import java.time.LocalDate;
@@ -93,6 +92,7 @@ public class NotificationManager {
   private GroupDao groupDao;
   private ConfigurationManager configurationManager;
   private InformationRequestDao requestDao;
+  private SecureUtils secureUtils;
 
   final String dateFormatter = "dd/MM/YYYY";
 
@@ -102,7 +102,7 @@ public class NotificationManager {
   @Inject
   public NotificationManager(SecureManager secureManager, RoleDao roleDao, AbsenceDao absenceDao,
       AbsenceComponentDao componentDao, GroupDao groupDao,
-      ConfigurationManager configurationManager, InformationRequestDao requestDao) {
+      ConfigurationManager configurationManager, InformationRequestDao requestDao, SecureUtils secureUtils) {
     this.secureManager = secureManager;
     this.roleDao = roleDao;
     this.absenceDao = absenceDao;
@@ -110,6 +110,7 @@ public class NotificationManager {
     this.groupDao = groupDao;
     this.configurationManager = configurationManager;
     this.requestDao = requestDao;
+    this.secureUtils = secureUtils;
   }
 
   private static final String WORKDAY_REPERIBILITY = "207";
@@ -196,7 +197,7 @@ public class NotificationManager {
       template = null;
     }
     String modifier = "";
-    if (currentUser.roles.contains(AccountRole.MISSIONS_MANAGER)) {
+    if (currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
       modifier = currentUser.getUsername();
       template = template + String.format(" di %s", person.fullName());
     } else {
@@ -313,7 +314,7 @@ public class NotificationManager {
       log.debug("Gruppi da controllare {}", groups);
       for (User user : users) {
         for (Group group : groups) {
-          if (group.getManager().equals(user.person) && group.getPeople().contains(person)) {
+          if (group.getManager().equals(user.getPerson()) && group.getPeople().contains(person)) {
             Notification.builder().destination(user).message(message)
             .subject(NotificationSubject.ABSENCE_REQUEST, absenceRequest.getId()).create();
           }
@@ -398,24 +399,24 @@ public class NotificationManager {
       boolean update, boolean delete) {
 
     // Se l'user che ha fatto l'inserimento è utente di sistema esco
-    if (currentUser.isSystemUser() || currentUser.person == null) {
+    if (currentUser.isSystemUser() || currentUser.getPerson() == null) {
       return;
     }
 
     // Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
-    if (secureManager.officesWriteAllowed(currentUser).contains(currentUser.person.getOffice())) {
+    if (secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
     // Se l'user che ha fatto l'inserimento è tecnologo e può autocertificare le timbrature esco
-    if (currentUser.person.getOffice().checkConf(EpasParam.TR_AUTOCERTIFICATION, "true")
-        && currentUser.person.getQualification().getQualification() <= 3) {
+    if (currentUser.getPerson().getOffice().checkConf(EpasParam.TR_AUTOCERTIFICATION, "true")
+        && currentUser.getPerson().getQualification().getQualification() <= 3) {
       return;
     }
 
     // negli altri casi notifica agli amministratori del personale ed al responsabile sede
     // controllo se il parametro di abilitazione alle notifiche è true
-    val config = configurationManager.configValue(currentUser.person.getOffice(),
+    val config = configurationManager.configValue(currentUser.getPerson().getOffice(),
         EpasParam.SEND_ADMIN_NOTIFICATION, LocalDate.now());
     if (config.equals(Boolean.FALSE)) {
       return;
@@ -446,13 +447,13 @@ public class NotificationManager {
       GroupAbsenceType groupAbsenceType, boolean insert, boolean update, boolean delete) {
 
     // Se l'user che ha fatto l'inserimento è utente di sistema esco
-    if (currentUser.isSystemUser() && !currentUser.roles.contains(AccountRole.MISSIONS_MANAGER)) {
+    if (currentUser.isSystemUser() && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
       return;
     }
 
     // Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
-    if (currentUser.person != null
-        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.person.getOffice())) {
+    if (currentUser.getPerson() != null
+        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
@@ -592,7 +593,7 @@ public class NotificationManager {
     }
 
     try {
-      simpleEmail.addTo(userDestination.person.getEmail());
+      simpleEmail.addTo(userDestination.getPerson().getEmail());
     } catch (EmailException e) {
       e.printStackTrace();
     }
@@ -606,7 +607,7 @@ public class NotificationManager {
     Mail.send(simpleEmail);
     log.info("Inviata email per rimozione utenti dal gruppo {} perchè contratto scaduto:"
         + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-        groupName, userDestination.person.getEmail(), simpleEmail.getSubject(), mailBody);
+        groupName, userDestination.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
   }
 
   /**
@@ -643,7 +644,7 @@ public class NotificationManager {
     }
 
     try {
-      simpleEmail.addTo(userDestination.person.getEmail());
+      simpleEmail.addTo(userDestination.getPerson().getEmail());
     } catch (EmailException e) {
       e.printStackTrace();
     }
@@ -657,7 +658,7 @@ public class NotificationManager {
     Mail.send(simpleEmail);
     log.info("Inviata email per rimozione utenti dal turno {} perchè contratto scaduto:"
         + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-        shiftType, userDestination.person.getEmail(), simpleEmail.getSubject(), mailBody);
+        shiftType, userDestination.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
   }
 
   /**
@@ -695,7 +696,7 @@ public class NotificationManager {
     }
 
     try {
-      simpleEmail.addTo(userDestination.person.getEmail());
+      simpleEmail.addTo(userDestination.getPerson().getEmail());
     } catch (EmailException e) {
       e.printStackTrace();
     }
@@ -709,7 +710,7 @@ public class NotificationManager {
     Mail.send(simpleEmail);
     log.info("Inviata email per rimozione utenti dalla reperibilità {} perchè contratto scaduto:"
         + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-        description, userDestination.person.getEmail(), simpleEmail.getSubject(), mailBody);
+        description, userDestination.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
   }
 
   /**
@@ -769,18 +770,18 @@ public class NotificationManager {
           SimpleEmail simpleEmail = new SimpleEmail();
           // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
           if (roleDestination.name.equals(Role.GROUP_MANAGER)) {
-            Optional<Group> group = groupDao.checkManagerPerson(user.person, person);
+            Optional<Group> group = groupDao.checkManagerPerson(user.getPerson(), person);
             if (!group.isPresent()) {
               return;
             }
             if (!group.get().isSendFlowsEmail()) {
               log.info("Non verrà inviata la mail al responsabile del gruppo {} "
-                  + "poichè l'invio è stato disattivato.", user.person.fullName());
+                  + "poichè l'invio è stato disattivato.", user.getPerson().fullName());
               return;
             }
           }
           try {
-            simpleEmail.addTo(user.person.getEmail());
+            simpleEmail.addTo(user.getPerson().getEmail());
           } catch (EmailException e) {
             e.printStackTrace();
           }
@@ -795,7 +796,7 @@ public class NotificationManager {
           log.info(
               "Inviata email per richiesta di flusso richiesta: {}. "
                   + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                  absenceRequest, user.person.getEmail(), simpleEmail.getSubject(), mailBody);
+                  absenceRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
         });
   }
 
@@ -819,7 +820,7 @@ public class NotificationManager {
         && !absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().person)
+          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
     //Email al responsabile di sede per i livelli I-III che SONO
@@ -830,7 +831,7 @@ public class NotificationManager {
         && absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().person)
+          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
     //Email al responsabile di gruppo per i livelli I-III del suo gruppo (se sono attive
@@ -857,7 +858,7 @@ public class NotificationManager {
           log.info(
               "Inviata email per richiesta di flusso richiesta: {}. "
                   + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                  absenceRequest, r.getUser().person.getEmail(), simpleEmail.getSubject(), mailBody);
+                  absenceRequest, r.getUser().getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
         } catch (EmailException e) {
           log.error("Impossibile inviare l'email a {} che è destinatario del email "
               + "per la comunicazione dell'assenza di {}", 
@@ -902,8 +903,9 @@ public class NotificationManager {
       final StringBuilder message =
           new StringBuilder().append(String.format("Gentile %s,\r\n", person.fullName()));
       String approver = " ";
-      if (Security.getUser().isPresent() && Security.getUser().get().person != null) {
-        approver = " da " + Security.getUser().get().person.getFullname();
+      val currentUser = secureUtils.getCurrentUser();
+      if (currentUser.isPresent() && currentUser.get().getPerson() != null) {
+        approver = " da " + currentUser.get().getPerson().getFullname();
       }
       if (approval) {
         message.append(String.format("\r\nè stata APPROVATA%s la sua richiesta di %s",
@@ -940,7 +942,7 @@ public class NotificationManager {
     String requestType = getRequestTypeLabel(absenceRequest);
 
     final StringBuilder message =
-        new StringBuilder().append(String.format("Gentile %s,\r\n", user.person.fullName()));
+        new StringBuilder().append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
     message.append(String.format("\r\nLe è stata notificata la richiesta di : %s",
         absenceRequest.getPerson().fullName()));
     message.append(String.format("\r\n per una assenza di tipo: %s", requestType));
@@ -1026,7 +1028,7 @@ public class NotificationManager {
     String requestType = getRequestTypeLabelTopLevel(absenceRequest);
 
     final StringBuilder message =
-        new StringBuilder().append(String.format("Gentile %s,\r\n", user.person.fullName()));
+        new StringBuilder().append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
     message.append(String.format("\r\nti è stata notificata da %s ",
         absenceRequest.getPerson().fullName()));
     message.append(String.format("una assenza di tipo \"%s\" ", requestType));
@@ -1202,8 +1204,9 @@ public class NotificationManager {
     final StringBuilder message = new StringBuilder()
         .append(String.format("Gentile %s,\r\n", person.fullName()));
     String approver = " ";
-    if (Security.getUser().isPresent() && Security.getUser().get().person != null) {
-      approver = " da " + Security.getUser().get().person.getFullname();
+    val currentUser = secureUtils.getCurrentUser();
+    if (currentUser.isPresent() && currentUser.get().getPerson() != null) {
+      approver = " da " + currentUser.get().getPerson().getFullname();
     }
     if (approval) {
       message.append(String.format("\r\nè stata APPROVATA%s la sua richiesta di : %s",
@@ -1289,7 +1292,7 @@ public class NotificationManager {
     }
 
     try {
-      simpleEmail.addTo(userDestination.person.getEmail());
+      simpleEmail.addTo(userDestination.getPerson().getEmail());
     } catch (EmailException e) {
       e.printStackTrace();
     }
@@ -1303,7 +1306,7 @@ public class NotificationManager {
     Mail.send(simpleEmail);
     log.info("Inviata email per richiesta di flusso richiesta: {}. "
         + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-        competenceRequest, userDestination.person.getEmail(), simpleEmail.getSubject(), mailBody);
+        competenceRequest, userDestination.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
 
   }
 
@@ -1314,7 +1317,7 @@ public class NotificationManager {
       requestType = Messages.get("CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST");
     }
     final StringBuilder message = new StringBuilder()
-        .append(String.format("Gentile %s,\r\n", user.person.fullName()));
+        .append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
     message.append(String.format("\r\nLe è stata notificata la richiesta di %s",
         competenceRequest.getPerson().fullName()));
     message.append(String.format(" di tipo %s\r\n", requestType));
@@ -1440,13 +1443,13 @@ public class NotificationManager {
       boolean insert, boolean update, boolean delete) {
 
     //Se l'user che ha fatto l'inserimento è utente di sistema esco
-    if (currentUser.isSystemUser() && !currentUser.roles.contains(AccountRole.MISSIONS_MANAGER)) {
+    if (currentUser.isSystemUser() && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
       return;
     }
 
     //Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
-    if (currentUser.person != null
-        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.person.getOffice())) {
+    if (currentUser.getPerson() != null
+        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
@@ -1788,7 +1791,7 @@ public class NotificationManager {
         SimpleEmail simpleEmail = new SimpleEmail();
         // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
         try {
-          simpleEmail.addTo(user.person.getEmail());
+          simpleEmail.addTo(user.getPerson().getEmail());
         } catch (EmailException e) {
           e.printStackTrace();
         }
@@ -1803,7 +1806,7 @@ public class NotificationManager {
         log.info(
             "Inviata email per richiesta di flusso richiesta: {}. "
                 + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                informationRequest, user.person.getEmail(), simpleEmail.getSubject(), mailBody);
+                informationRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
       });
     } else {
       person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.equals(roleDestination))
@@ -1811,7 +1814,7 @@ public class NotificationManager {
             SimpleEmail simpleEmail = new SimpleEmail();
             // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
             try {
-              simpleEmail.addTo(user.person.getEmail());
+              simpleEmail.addTo(user.getPerson().getEmail());
             } catch (EmailException e) {
               e.printStackTrace();
             }
@@ -1825,7 +1828,7 @@ public class NotificationManager {
             Mail.send(simpleEmail);
             log.info("Inviata email per richiesta di flusso richiesta: {}. "
                   + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                  informationRequest, user.person.getEmail(), simpleEmail.getSubject(), mailBody);
+                  informationRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
           });
     }
 
@@ -1849,7 +1852,7 @@ public class NotificationManager {
       requestType = Messages.get("InformationType.ILLNESS_INFORMATION");
     }
     final StringBuilder message =
-        new StringBuilder().append(String.format("Gentile %s,\r\n", user.person.fullName()));
+        new StringBuilder().append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
     message.append(String.format("\r\nLe è stata notificata la richiesta di %s",
         informationRequest.getPerson().fullName()));
     message.append(String.format("\r\nper una assenza di tipo: %s", requestType));
@@ -1919,8 +1922,9 @@ public class NotificationManager {
     final StringBuilder message = new StringBuilder()
         .append(String.format("Gentile %s,\r\n", person.fullName()));
     String approver = " ";
-    if (Security.getUser().isPresent() && Security.getUser().get().person != null) {
-      approver = " da " + Security.getUser().get().person.getFullname();
+    val currentUser = secureUtils.getCurrentUser();
+    if (currentUser.isPresent() && currentUser.get().getPerson() != null) {
+      approver = " da " + currentUser.get().getPerson().getFullname();
     }
     if (approval) {
       message.append(String.format("\r\nè stata APPROVATA%s la sua richiesta di %s",
@@ -1988,7 +1992,7 @@ public class NotificationManager {
           .filter(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))
           .map(uro -> uro.getUser()).forEach(u -> {
             try {
-              simpleEmail.addCc(u.person.getEmail());
+              simpleEmail.addCc(u.getPerson().getEmail());
             } catch (EmailException e) {
               log.error("Impossibile impostare cc nell'email per missione "
                   + "con problemi. {}", mission, e);

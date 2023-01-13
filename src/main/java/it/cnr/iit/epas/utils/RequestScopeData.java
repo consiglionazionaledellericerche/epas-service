@@ -14,13 +14,28 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.repo;
+package it.cnr.iit.epas.utils;
 
-import it.cnr.iit.epas.models.Person;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
+import java.util.HashMap;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
-@Repository
-public interface PersonRepository extends PagingAndSortingRepository<Person, Long>{
-  //Empty
+/**
+ * RequestScopeData.
+ *
+ * @author Daniele Murgia
+ */
+@Getter
+@Component
+@RequestScope
+public class RequestScopeData {
+
+  // Quando nella richiesta http viene inserito questo custom header, il server si limiterà
+  // a eseguire i controlli sui permessi, restituendo true o false al chiamante.
+  public static final String REQUEST_PATH = "request_path";
+  public static final String REQUEST_METHOD = "request_method";
+
+  private final HashMap<String, Object> data = new HashMap<>();
+
 }

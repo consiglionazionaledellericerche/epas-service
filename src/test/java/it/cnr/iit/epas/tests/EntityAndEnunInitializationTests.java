@@ -86,7 +86,7 @@ class EntityAndEnunInitializationTests {
     String username = UUID.randomUUID().toString();
     User user = new User();
     user.setUsername(username);
-    user.password = "UnaPasswordQualsiasi";
+    user.setPassword("UnaPasswordQualsiasi");
     userDao.persist(user);
     Person person = new Person();
     person.setName("Name " + username);

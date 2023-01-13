@@ -55,7 +55,7 @@ import it.cnr.iit.epas.models.enumerate.CalculationType;
 import it.cnr.iit.epas.models.enumerate.PaymentType;
 import it.cnr.iit.epas.models.enumerate.ShiftSlot;
 import it.cnr.iit.epas.models.enumerate.ShiftTroubles;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.utils.DateUtility;
 import it.cnr.iit.epas.utils.TimeInterval;
 import java.time.LocalDate;
@@ -103,6 +103,7 @@ public class ShiftManager2 {
   private final CompetenceDao competenceDao;
   private final ShiftTypeMonthDao shiftTypeMonthDao;
   private final GeneralSettingDao generalSettingDao;
+  private final SecureUtils secureUtils;
 
 
   /**
@@ -126,7 +127,7 @@ public class ShiftManager2 {
       ShiftDao shiftDao, ShiftTypeDao shiftTypeDao,
       CompetenceCodeDao competenceCodeDao, CompetenceDao competenceDao,
       PersonMonthRecapDao personMonthRecapDao, ShiftTypeMonthDao shiftTypeMonthDao,
-      GeneralSettingDao generalSettingDao) {
+      GeneralSettingDao generalSettingDao, SecureUtils secureUtils) {
 
     this.personDayManager = personDayManager;
     this.personShiftDao = personShiftDao;
@@ -139,6 +140,7 @@ public class ShiftManager2 {
     this.competenceDao = competenceDao;
     this.shiftTypeMonthDao = shiftTypeMonthDao;
     this.generalSettingDao = generalSettingDao;
+    this.secureUtils = secureUtils;
   }
 
   /**
@@ -148,7 +150,7 @@ public class ShiftManager2 {
    */
   public List<ShiftType> getUserActivities() {
     List<ShiftType> activities = Lists.newArrayList();
-    User currentUser = Security.getUser().get();
+    User currentUser = secureUtils.getCurrentUser().get();
     Person person = currentUser.getPerson();
     if (person != null) {
       if (!person.getShiftCategories().isEmpty()) {

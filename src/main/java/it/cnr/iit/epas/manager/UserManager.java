@@ -76,8 +76,8 @@ public class UserManager {
     //generate random token
     SecureRandom random = new SecureRandom();
 
-    person.getUser().recoveryToken = new BigInteger(130, random).toString(32);
-    person.getUser().expireRecoveryToken = LocalDate.now();
+    person.getUser().setRecoveryToken(new BigInteger(130, random).toString(32));
+    person.getUser().setExpireRecoveryToken(LocalDate.now());
     emp.get().persist(person.getUser());
     //person.getUser().save();
   }
@@ -136,7 +136,7 @@ public class UserManager {
     user.setUsername(generateUserName(person.getName(), person.getSurname()));
 
     SecureRandom random = new SecureRandom();
-    user.password = hexMD5(new BigInteger(130, random).toString(32));
+    user.setPassword(hexMD5(new BigInteger(130, random).toString(32)));
 
     emp.get().persist(user);
     //user.save();
@@ -157,10 +157,10 @@ public class UserManager {
    * @param enable  se deve essere disabilitato
    */
   public void saveUser(User user, Set<Office> offices, Set<Role> roles, boolean enable) {
-    user.password = hexMD5(user.password);
+    user.setPassword(hexMD5(user.getPassword()));
     if (enable) {
-      user.disabled = false;
-      user.expireDate = null;
+      user.setDisabled(false);
+      user.setExpireDate(null);
     }
     emp.get().merge(user);
     //user.save();

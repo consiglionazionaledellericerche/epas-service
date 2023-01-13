@@ -16,10 +16,8 @@
  */
 package it.cnr.iit.epas.manager;
 
-import java.util.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.PersonDao;
@@ -46,14 +44,16 @@ import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.models.exports.MissionFromClient;
-import it.cnr.iit.epas.security.Security;
+import it.cnr.iit.epas.security.SecureUtils;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTimeConstants;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
@@ -78,6 +78,7 @@ public class MissionManager {
   private final AbsenceComponentDao absComponentDao;
   private final CacheManager cacheManager;
   private final PersonDayDao personDayDao;
+  private final SecureUtils secureUtils;
 
   public static final String LOG_PREFIX = "Integrazione Missioni. ";
   
@@ -92,7 +93,7 @@ public class MissionManager {
       ConfigurationManager configurationManager, 
       IWrapperFactory wrapperFactory, AbsenceComponentDao absComponentDao,
       CacheManager cacheManager,
-      PersonDayDao personDayDao) {
+      PersonDayDao personDayDao, SecureUtils secureUtils) {
     this.personDao = personDao;
     this.absenceService = absenceService;
     this.absenceManager = absenceManager;
@@ -106,6 +107,7 @@ public class MissionManager {
     this.absComponentDao = absComponentDao;
     this.cacheManager = cacheManager;
     this.personDayDao = personDayDao;
+    this.secureUtils = secureUtils;
   }
 
   
@@ -118,7 +120,7 @@ public class MissionManager {
    */
   public Optional<Person> linkToPerson(MissionFromClient mission) {
 
-    Optional<User> user = Security.getUser();
+    Optional<User> user = secureUtils.getCurrentUser();
     if (!user.isPresent()) {
       log.error(LOG_PREFIX + "Impossibile recuperare l'utente che ha inviato la missione: {}.", 
           mission);
@@ -558,7 +560,7 @@ public class MissionManager {
         absenceDao.persist(absence);
         //absence.save();
 
-        final Optional<User> currentUser = Security.getUser();
+        final Optional<User> currentUser = secureUtils.getCurrentUser();
         if (currentUser.isPresent()) {
           notificationManager.notificationAbsencePolicy(currentUser.get(), 
               absence, group, true, false, false);  
@@ -602,7 +604,7 @@ public class MissionManager {
     }
     for (Absence abs : missions) {
       result = atomicRemoval(abs, result);
-      final User currentUser = Security.getUser().get();
+      final User currentUser = secureUtils.getCurrentUser().get();
       notificationManager.notificationAbsencePolicy(currentUser, 
           abs, group, false, false, true);
       log.info(LOG_PREFIX + "Rimossa assenza {} del {} per {}.", 

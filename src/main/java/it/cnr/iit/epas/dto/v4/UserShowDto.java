@@ -14,13 +14,23 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.repo;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.Person;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
+import com.google.common.collect.Sets;
+import it.cnr.iit.epas.models.enumerate.AccountRole;
+import java.time.LocalDate;
+import java.util.Set;
+import lombok.Data;
 
-@Repository
-public interface PersonRepository extends PagingAndSortingRepository<Person, Long>{
-  //Empty
+@Data
+public class UserShowDto {
+
+  private String username;
+  private Long personId;
+  private Set<AccountRole> roles = Sets.newHashSet();
+  private boolean disabled;
+  private LocalDate expireDate;
+  private Long ownerId;
+  private String keycloakId;
+
 }

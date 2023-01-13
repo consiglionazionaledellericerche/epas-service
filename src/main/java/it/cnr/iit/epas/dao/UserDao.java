@@ -239,13 +239,13 @@ public class UserDao extends DaoBase<User> {
         Role.TECHNICAL_ADMIN)) {
       stampTypes.addAll(StampTypes.onlyActiveWithoutOffSiteWork());
     }
-    if (user.person.getQualification().getQualification() <= 3
-        && user.person.getOffice().checkConf(EpasParam.TR_AUTOCERTIFICATION, "true")) {
+    if (user.getPerson().getQualification().getQualification() <= 3
+        && user.getPerson().getOffice().checkConf(EpasParam.TR_AUTOCERTIFICATION, "true")) {
 
       stampTypes.addAll(StampTypes.onlyActiveWithoutOffSiteWork());
     }
-    if (user.person.getOffice().checkConf(EpasParam.WORKING_OFF_SITE, "true")
-        && user.person.checkConf(EpasParam.OFF_SITE_STAMPING, "true")) {
+    if (user.getPerson().getOffice().checkConf(EpasParam.WORKING_OFF_SITE, "true")
+        && user.getPerson().checkConf(EpasParam.OFF_SITE_STAMPING, "true")) {
       stampTypes.add(StampTypes.LAVORO_FUORI_SEDE);
     } else {
       stampTypes.add(StampTypes.MOTIVI_DI_SERVIZIO);
@@ -267,7 +267,7 @@ public class UserDao extends DaoBase<User> {
       return TeleworkStampTypes.onlyActive();
     }
     val stampTypes = Lists.<TeleworkStampTypes>newArrayList();
-    if (user.person.checkConf(EpasParam.TELEWORK_STAMPINGS, "true")) {
+    if (user.getPerson().checkConf(EpasParam.TELEWORK_STAMPINGS, "true")) {
       stampTypes.addAll(TeleworkStampTypes.onlyActiveInTelework());
     }
     return stampTypes;
