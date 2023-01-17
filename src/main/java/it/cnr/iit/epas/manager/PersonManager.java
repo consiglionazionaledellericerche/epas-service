@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Function;
@@ -67,6 +68,7 @@ public class PersonManager {
   private final UserManager userManager;
   private final RoleDao roleDao;
   private final Provider<EntityManager> emp;
+
   /**
    * Costrutture.
    *
@@ -351,7 +353,8 @@ public class PersonManager {
                 absence, absence.getPersonDay().getDate(), absence.expireRecoverDate,
                 absence.timeToRecover,
                 absence.timeVariations.stream().mapToInt(i -> i.getTimeVariation()).sum(),
-                Math.round(absence.timeVariations.stream().mapToInt(i -> i.getTimeVariation()).sum() 
+                Math.round(
+                    absence.timeVariations.stream().mapToInt(i -> i.getTimeVariation()).sum() 
                 / (float) absence.timeToRecover * 100)
                 );
               }

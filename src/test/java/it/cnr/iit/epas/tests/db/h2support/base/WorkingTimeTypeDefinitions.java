@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,10 @@ package it.cnr.iit.epas.tests.db.h2support.base;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 
+/**
+ * Esempio di definizione dei tipi di orario utilizzati nei test.
+ *
+ */
 public class WorkingTimeTypeDefinitions {
 
   public static Integer ONE_HOUR = 60;
@@ -30,6 +34,9 @@ public class WorkingTimeTypeDefinitions {
   public static Integer SIX_HOUR = 360;
   public static Integer SEVEN_HOUR = 420;
 
+  /**
+   * Definizioni di orario giornaliero da utilizzare nei test.
+   */
   public enum WorkingDayDefinition {
 
     Normal_1(1, 432, false, 360, 30, null, null),
@@ -69,6 +76,10 @@ public class WorkingTimeTypeDefinitions {
     }
 
   }
+
+  /**
+   * Definizioni di giornaliero lavorativo settimanale da utilizzare nei test.
+   */
 
   public enum WorkingDefinition {
 

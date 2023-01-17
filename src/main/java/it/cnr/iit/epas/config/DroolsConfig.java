@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.config;
 
 import org.kie.api.KieBase;
@@ -25,11 +26,20 @@ import org.kie.internal.io.ResourceFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configurazione delle drools utilizzate per il controllo delle autorizzazioni.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Configuration
 public class DroolsConfig {
 
   private static final String drlFile = "permissions.drl";
 
+  /**
+   * Produzione della configurazione di base del KIE delle Drools.
+   */
   @Bean
   public KieBase kieBase() {
     final KieServices ks = KieServices.Factory.get();

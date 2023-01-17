@@ -107,12 +107,13 @@ public class AbsenceEngineUtility {
     Integer specifiedMinutesFound = 0;
     Integer completeDayAddOvertimeFound = 0;
 
-    if (groupAbsenceType.getTakableAbsenceBehaviour ()== null) {
+    if (groupAbsenceType.getTakableAbsenceBehaviour() == null) {
       return justifiedTypes;
     }
     
-    for (AbsenceType absenceType : groupAbsenceType.getTakableAbsenceBehaviour().getTakableCodes()) {
-      for (JustifiedType justifiedType : absenceType.getJustifiedTypesPermitted()) { 
+    for (AbsenceType absenceType 
+          : groupAbsenceType.getTakableAbsenceBehaviour().getTakableCodes()) {
+      for (JustifiedType justifiedType : absenceType.getJustifiedTypesPermitted()) {
         if (justifiedType.getName().equals(JustifiedTypeName.all_day)) {
           allDayFound++;
           allDayVar = justifiedType.getName();
@@ -261,19 +262,21 @@ public class AbsenceEngineUtility {
     for (Contract contract : person.getContracts()) {
       for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
         if (DateUtility.isDateIntoInterval(date, cwtt.periodInterval())) {
-          if (cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1).holiday) {
+          if (cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
+              .get(date.getDayOfWeek().getValue() - 1).holiday) {
             if (absence.absenceType.isConsideredWeekEnd()) {
               LocalDate dateToChange = date;
               while (!DateUtility.isGeneralHoliday(Optional.<MonthDay>empty(), dateToChange)) {
                 dateToChange = dateToChange.plusDays(1);
               }
-              return cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(dateToChange.getDayOfWeek().getValue() - 1)
-                  .workingTime;
+              return cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
+                  .get(dateToChange.getDayOfWeek().getValue() - 1).getWorkingTime();
             } else {
               return 0;
             }
           }
-          return cwtt.getWorkingTimeType().getWorkingTimeTypeDays().get(date.getDayOfWeek().getValue() - 1)
+          return cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
+              .get(date.getDayOfWeek().getValue() - 1)
               .workingTime;
         }
       }

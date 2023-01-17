@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.persondays;
 
 import com.google.common.collect.Lists;
@@ -37,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class PersonDaysTest {
+class PersonDaysTest {
 
   public static LocalTime startLunch = LocalTime.of(1, 0, 0);
   public static LocalTime endLunch = LocalTime.of(23, 0, 0);
@@ -258,7 +259,8 @@ public class PersonDaysTest {
     stampings.add(stampings(personDay, 17, 00, WayType.out, null, null));
     personDay.setStampings(stampings);
 
-    List<PairStamping> validPairs = personDayManager.getValidPairStampings(personDay.getStampings());
+    List<PairStamping> validPairs = 
+        personDayManager.getValidPairStampings(personDay.getStampings());
 
     gapLunchPair = personDayManager
         .getGapLunchPairs(personDay, startLunch, endLunch, Optional.empty());
@@ -420,6 +422,7 @@ public class PersonDaysTest {
 
   /**
    * Supporto alla creazione di un WorkingTimeType da non mockare.
+   *
    * @return WorkingTimeTypeDay di default (quelle Normale).
    */
   public WorkingTimeTypeDay normalDay() {

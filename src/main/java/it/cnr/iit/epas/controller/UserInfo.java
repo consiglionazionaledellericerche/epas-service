@@ -23,12 +23,20 @@ import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.util.Optional;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller con i metodi REST relativi alla visualizzazione e gestione dei dati personali
+ * di un utente del sistema.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/userinfo")
@@ -38,6 +46,10 @@ public class UserInfo {
   private UserShowMapper mapper;
   private SecureUtils securityUtils;
   
+  /**
+   * Costruttore di default per l'injection.
+   */
+  @Inject
   UserInfo(UserRepository repo, UserShowMapper personMapper,
       SecureUtils securityUtils) {
     this.repo = repo;
@@ -46,7 +58,7 @@ public class UserInfo {
   }
 
   @GetMapping("/")
-  public ResponseEntity<UserShowDto> show() {
+  ResponseEntity<UserShowDto> show() {
     Optional<User> user = securityUtils.getCurrentUser();
     log.debug("UserInfo::show user = {}", user.orElse(null));
     if (!user.isPresent()) {

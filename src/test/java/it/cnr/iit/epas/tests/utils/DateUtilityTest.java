@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -27,9 +28,10 @@ import java.time.LocalTime;
 import org.joda.time.Days;
 import org.junit.jupiter.api.Test;
 
-public class DateUtilityTest {
+class DateUtilityTest {
 
-  public static int daysInInterval(org.joda.time.LocalDate begin, org.joda.time.LocalDate end) {
+  static int daysInInterval(
+      org.joda.time.LocalDate begin, org.joda.time.LocalDate end) {
 
     int days = Days.daysBetween(begin, end).getDays() + 1;
     //controllo compatibilità con vecchio algoritmo.
@@ -55,17 +57,21 @@ public class DateUtilityTest {
   @Test
   void daysIntervalNewToOld() {
     DateInterval dateInterval = new DateInterval(LocalDate.now(), LocalDate.now());
-    assertEquals(DateUtility.daysInInterval(dateInterval), daysInInterval(org.joda.time.LocalDate.now(), org.joda.time.LocalDate.now()));
+    assertEquals(
+        DateUtility.daysInInterval(dateInterval), 
+          daysInInterval(org.joda.time.LocalDate.now(), org.joda.time.LocalDate.now()));
     
     DateInterval dateInterval2 = new DateInterval(LocalDate.now(), LocalDate.now().plusDays(1));
-    assertEquals(DateUtility.daysInInterval(dateInterval2), daysInInterval(org.joda.time.LocalDate.now(), org.joda.time.LocalDate.now().plusDays(1)));
+    assertEquals(
+        DateUtility.daysInInterval(dateInterval2), 
+        daysInInterval(org.joda.time.LocalDate.now(), org.joda.time.LocalDate.now().plusDays(1)));
   }
 
   @Test
   public void toMinute() {
-    LocalDateTime aDateTime = LocalDateTime.of(2022,10,19,9,30,00);
-    assertEquals(DateUtility.toMinute(aDateTime), 9*60 + 30);
-    LocalTime aTime = LocalTime.of(9,30,0);
-    assertEquals(DateUtility.toMinute(aTime), 9*60 + 30);
+    LocalDateTime exampleDateTime = LocalDateTime.of(2022, 10, 19, 9, 30, 00);
+    assertEquals(DateUtility.toMinute(exampleDateTime), 9 * 60 + 30);
+    LocalTime exampleTime = LocalTime.of(9, 30, 0);
+    assertEquals(DateUtility.toMinute(exampleTime), 9 * 60 + 30);
   }
 }

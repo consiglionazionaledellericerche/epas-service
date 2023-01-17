@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personstamping;
 
 import com.google.common.collect.Lists;

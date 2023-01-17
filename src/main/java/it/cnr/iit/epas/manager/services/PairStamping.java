@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services;
 
 import it.cnr.iit.epas.models.Stamping;
@@ -68,7 +69,8 @@ public class PairStamping {
 
     // TODO: decidere se entrambe o almeno una.
     if ((first.getStampType() != null && first.getStampType().equals(StampTypes.PAUSA_PRANZO))
-        || (second.getStampType() != null && second.getStampType().equals(StampTypes.PAUSA_PRANZO))) {
+        || (second.getStampType() != null 
+        && second.getStampType().equals(StampTypes.PAUSA_PRANZO))) {
       prPair = true;
     }
   }

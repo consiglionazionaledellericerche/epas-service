@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
@@ -29,6 +30,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller con i metodi REST relativi alla visualizzazione e gestione degli uffici.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @RestController
 @RequestMapping("/rest/v3/offices")
 public class OfficeController {
@@ -38,8 +45,13 @@ public class OfficeController {
   @Inject
   OfficeShowMapper officeMapper;
 
+  OfficeController(OfficeDao officeDao, OfficeShowMapper officeMapper) {
+    this.officeDao = officeDao;
+    this.officeMapper = officeMapper;
+  }
+
   @GetMapping(ApiRoutes.SHOW)
-  public ResponseEntity<OfficeShowDto> show(@PathVariable("id") Long id) {
+  ResponseEntity<OfficeShowDto> show(@PathVariable("id") Long id) {
     Optional<Office> entity = Optional.ofNullable(officeDao.getOfficeById(id));
     if (entity.isEmpty()) {
       return ResponseEntity.notFound().build();

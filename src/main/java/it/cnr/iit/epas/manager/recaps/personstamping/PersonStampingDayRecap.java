@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personstamping;
 
 import com.google.common.collect.ImmutableList;
@@ -33,12 +34,12 @@ import it.cnr.iit.epas.models.StampModificationTypeCode;
 import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.Stamping.WayType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import java.time.LocalDateTime;
 
 /**
  * Oggetto che modella il giorno di una persona nelle viste - personStamping - stampings -
@@ -370,7 +371,8 @@ public class PersonStampingDayRecap {
   private List<String> getStampingsNote(List<StampingTemplate> stampingsTemplate) {
     List<String> note = Lists.newArrayList();
     for (StampingTemplate stampingTemplate : stampingsTemplate) {
-      if (stampingTemplate.getStamping().getNote() != null && !stampingTemplate.getStamping().getNote().equals("")) {
+      if (stampingTemplate.getStamping().getNote() != null 
+          && !stampingTemplate.getStamping().getNote().equals("")) {
         note.add(stampingTemplate.getHour() + ": " + stampingTemplate.getStamping().getNote());
       }
     }
@@ -379,7 +381,7 @@ public class PersonStampingDayRecap {
 
   /**
    * Metodo privato per la restituzione dell'intervallo orario.
-   * 
+   *
    * @param pwt il personal working time del dipendente.
    * @return l'intervallo orario di lavoro.
    */

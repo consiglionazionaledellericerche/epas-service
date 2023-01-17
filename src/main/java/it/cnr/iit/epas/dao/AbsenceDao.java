@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import com.google.common.base.Joiner;
@@ -97,9 +98,9 @@ public class AbsenceDao extends DaoBase<Absence> {
       condition.and(absence.personDay.person.eq(person.get()));
     }
     //FIXME: da correggere in seguito alla migrazione allo spring-boot
-//    if (forAttachment) {
-//      condition.and(absence.absenceFile.isNotNull());
-//    }
+    //    if (forAttachment) {
+    //      condition.and(absence.absenceFile.isNotNull());
+    //    }
     if (dateTo.isPresent()) {
       condition.and(absence.personDay.date.between(dateFrom, dateTo.get()));
     } else {

@@ -14,10 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.common.collect.Lists;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;
@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

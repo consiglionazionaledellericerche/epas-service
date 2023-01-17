@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
@@ -37,6 +38,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller con i metodi REST relativi alla visualizzazione e gestione delle persone.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/people")
@@ -46,10 +53,9 @@ public class PersonController {
   private PersonShowMapper personMapper;
   private ConsistencyManager consistencyManager;
   private SecureUtils securityUtils;
-  
-  
+
   @Inject
-  public PersonController(PersonRepository personRepository, PersonShowMapper personMapper,
+  PersonController(PersonRepository personRepository, PersonShowMapper personMapper,
       ConsistencyManager consistencyManager, SecureUtils securityUtils) {
     this.repo = personRepository;
     this.personMapper = personMapper;
@@ -58,12 +64,13 @@ public class PersonController {
   }
 
   @GetMapping
-  public ResponseEntity<List<PersonShowTerseDto>> byOffice(Long id, String code, String codeId, LocalDate atDate, Boolean terse) {
+  ResponseEntity<List<PersonShowTerseDto>> byOffice(
+      Long id, String code, String codeId, LocalDate atDate, Boolean terse) {
     return null;
   }
 
   @GetMapping(ApiRoutes.SHOW)
-  public ResponseEntity<PersonShowDto> show(@PathVariable("id") Long id) {
+  ResponseEntity<PersonShowDto> show(@PathVariable("id") Long id) {
     log.info("Chiamato metodo show con id = {}", id);
     log.info("currentUser = {}", securityUtils.getCurrentUser().get());
     long personId = id != null ? id : securityUtils.getCurrentUser().get().getId();
@@ -77,7 +84,7 @@ public class PersonController {
 
   @PatchMapping(ApiRoutes.PATCH)
   @Transactional
-  public ResponseEntity<PersonShowDto> update(@PathVariable("id") Long id) {
+  ResponseEntity<PersonShowDto> update(@PathVariable("id") Long id) {
     Optional<Person> entity = repo.findById(id);
     if (entity.isEmpty()) {
       return ResponseEntity.notFound().build();

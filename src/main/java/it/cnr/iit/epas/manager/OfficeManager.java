@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Preconditions;
@@ -105,10 +106,10 @@ public class OfficeManager {
     Preconditions.checkState(!ipAddresses.isEmpty());
 
     //FIXME: da correggere per il passaggio allo spring boot
-//    if ("true".equals(Play.configuration.getProperty(SKIP_IP_CHECK))) {
-//      log.debug("Skipped IP check");
-//      return new HashSet<>(officeDao.getAllOffices());
-//    }
+    //    if ("true".equals(Play.configuration.getProperty(SKIP_IP_CHECK))) {
+    //      log.debug("Skipped IP check");
+    //      return new HashSet<>(officeDao.getAllOffices());
+    //    }
 
     List<Office> officesWebStampingEnabled = officeDao.getOfficesWebStampingEnabled();
     log.debug("officesWebStampingEnabled= {}", officesWebStampingEnabled);

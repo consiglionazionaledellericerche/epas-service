@@ -20,6 +20,9 @@ package it.cnr.iit.epas.models.base;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import it.cnr.iit.epas.models.User;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,9 +36,6 @@ import lombok.Setter;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * Definisce il mapping con le revisioni envers.

@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.wrapper;
 
 import it.cnr.iit.epas.dao.AbsenceDao;
@@ -57,6 +58,7 @@ public class WrapperContract implements IWrapperContract {
     value = contract;
     return this;
   }
+
   /**
    * True se il contratto è l'ultimo contratto della persona per mese e anno selezionati.
    *
@@ -190,9 +192,8 @@ public class WrapperContract implements IWrapperContract {
   
   /**
    * Se il contratto è stato inizializzato per la parte residuale nel mese passato come argomento.
-   * 
+   *
    * @param yearMonth mese
-   * 
    * @return esito
    */
   @Override

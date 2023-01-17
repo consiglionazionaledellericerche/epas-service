@@ -340,7 +340,7 @@ public class ServiceFactories {
       absencePeriod.to = LocalDate.of(date.getYear(), 12, 31);
     } else if (absencePeriod.groupAbsenceType.getPeriodType().equals(PeriodType.month)) {
       absencePeriod.from = date.withDayOfMonth(1);
-      absencePeriod.to = DateUtility.endOfMonth(date);//
+      absencePeriod.to = DateUtility.endOfMonth(date);
     } else if (absencePeriod.groupAbsenceType.getPeriodType().equals(PeriodType.always)) {
       absencePeriod.from = null;
       absencePeriod.to = null;

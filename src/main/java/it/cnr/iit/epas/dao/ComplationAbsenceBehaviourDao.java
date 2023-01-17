@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -26,7 +27,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ComplationAbsenceBehaviourDao extends DaoBase<ComplationAbsenceBehaviour>{
+public class ComplationAbsenceBehaviourDao extends DaoBase<ComplationAbsenceBehaviour> {
 
   @Inject
   ComplationAbsenceBehaviourDao(Provider<EntityManager> emp) {
@@ -34,6 +35,7 @@ public class ComplationAbsenceBehaviourDao extends DaoBase<ComplationAbsenceBeha
   }
 
   public List<ComplationAbsenceBehaviour> findAll() {
-    return getQueryFactory().selectFrom(QComplationAbsenceBehaviour.complationAbsenceBehaviour).fetch();
+    return getQueryFactory()
+        .selectFrom(QComplationAbsenceBehaviour.complationAbsenceBehaviour).fetch();
   }
 }

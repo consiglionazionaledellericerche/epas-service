@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
@@ -33,6 +34,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller con i metodi REST relativi alla visualizzazione e gestione dei riepilogi
+ * giornalieri dei dipendenti.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/persondays")
@@ -42,6 +50,9 @@ public class PersonDaysController {
   private final PersonDao personDao;
   private final PersonDayMapper personDayMapper;
 
+  /**
+   * Costruttore di default per l'injection.
+   */
   @Inject
   public PersonDaysController(PersonDayDao personDayDao,
       PersonDao personDao, PersonDayMapper personDayMapper) {
@@ -51,7 +62,7 @@ public class PersonDaysController {
   }
 
   @GetMapping(ApiRoutes.LIST)
-  public ResponseEntity<List<PersonDayDto>> list(
+  ResponseEntity<List<PersonDayDto>> list(
       @RequestParam("personId") Long personId, 
       @RequestParam("year") Integer year, 
       @RequestParam("month") Integer month) {

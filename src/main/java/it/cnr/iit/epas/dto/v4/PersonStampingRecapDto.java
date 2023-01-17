@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
@@ -50,7 +51,8 @@ public class PersonStampingRecapDto {
   // I riepiloghi codici sul mese
   private Set<StampModificationTypeDto> stampModificationTypeSet = Sets.newHashSet();
   private Set<StampTypes> stampTypeSet = Sets.newHashSet();
-  private Map<AbsenceTypeShowTerseDto, Integer> absenceCodeMap = new HashMap<AbsenceTypeShowTerseDto, Integer>();
+  private Map<AbsenceTypeShowTerseDto, Integer> absenceCodeMap = 
+      new HashMap<AbsenceTypeShowTerseDto, Integer>();
   private List<AbsenceShowTerseDto> absenceList = Lists.newArrayList();
 
   // I riepiloghi mensili (uno per ogni contratto attivo nel mese)

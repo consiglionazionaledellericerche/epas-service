@@ -79,7 +79,7 @@ public class WrapperPerson implements IWrapperPerson {
   private Optional<Boolean> properSynchronized = Optional.empty();
 
   @Inject
-  WrapperPerson( 
+  WrapperPerson(
       ContractDao contractDao,
       //CompetenceManager competenceManager,
       PersonManager personManager,
@@ -326,7 +326,8 @@ public class WrapperPerson implements IWrapperPerson {
     //ricerca
     for (ContractWorkingTimeType cwtt : currentContract.get().getContractWorkingTimeType()) {
       if (DateUtility
-          .isDateIntoInterval(LocalDate.now(), new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
+          .isDateIntoInterval(
+              LocalDate.now(), new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
         currentWorkingTimeType = Optional.ofNullable(cwtt.getWorkingTimeType());
         return currentWorkingTimeType;
       }

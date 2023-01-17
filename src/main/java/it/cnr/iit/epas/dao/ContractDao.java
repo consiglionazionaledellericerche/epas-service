@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import com.google.common.base.Verify;
@@ -217,11 +218,11 @@ public class ContractDao extends DaoBase<Contract> {
     BooleanBuilder contractWithoutEndCondition = 
         new BooleanBuilder(contract.endDate.isNull().and(contract.endContract.isNull()));
     BooleanBuilder contractWithValidEndDate 
-      = new BooleanBuilder(contract.endDate.isNotNull().and(contract.endDate.goe(date)));
+        = new BooleanBuilder(contract.endDate.isNotNull().and(contract.endDate.goe(date)));
     BooleanBuilder contractWithValidEndContract 
-      = new BooleanBuilder(contract.endContract.isNotNull().and(contract.endContract.goe(date)));
+        = new BooleanBuilder(contract.endContract.isNotNull().and(contract.endContract.goe(date)));
     val currentContract = getQueryFactory().selectFrom(contract)
-      .where(
+        .where(
           contract.person.eq(person)
             .and(contract.beginDate.loe(date))
             .and(contractWithoutEndCondition
@@ -233,11 +234,11 @@ public class ContractDao extends DaoBase<Contract> {
     // incongruente con i dati presenti
     // TODO da sostituire con una query?
     //FIXME: da sostituire con una query
-//    for (Contract c : person.getContracts()) {
-//      if (DateUtility.isDateIntoInterval(date, factory.create(c).getContractDateInterval())) {
-//        return c;
-//      }
-//    }
+    //    for (Contract c : person.getContracts()) {
+    //      if (DateUtility.isDateIntoInterval(date, factory.create(c).getContractDateInterval())) {
+    //        return c;
+    //      }
+    //    }
   }
 
   /**

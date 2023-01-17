@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import com.querydsl.core.BooleanBuilder;
@@ -390,7 +391,9 @@ public class PersonDayDao extends DaoBase<PersonDay> {
    * Ritorna la lista dei giorni di lavoro di un dipendente con date tra begin e end
    * e che abbia almeno una timbratura del tipo passato con stampType.
    */
-  public List<PersonDay> getServiceExitPersonDaysByOFficeInPeriod(Office office, LocalDate begin, LocalDate end) {
-    return getStampTypePersonDaysByOFficeInPeriod(StampTypes.MOTIVI_DI_SERVIZIO, office, begin, end);
+  public List<PersonDay> getServiceExitPersonDaysByOfficeInPeriod(
+      Office office, LocalDate begin, LocalDate end) {
+    return getStampTypePersonDaysByOFficeInPeriod(
+        StampTypes.MOTIVI_DI_SERVIZIO, office, begin, end);
   }
 }

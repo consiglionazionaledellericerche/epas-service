@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Strings;
@@ -102,7 +103,8 @@ public class NotificationManager {
   @Inject
   public NotificationManager(SecureManager secureManager, RoleDao roleDao, AbsenceDao absenceDao,
       AbsenceComponentDao componentDao, GroupDao groupDao,
-      ConfigurationManager configurationManager, InformationRequestDao requestDao, SecureUtils secureUtils) {
+      ConfigurationManager configurationManager, 
+      InformationRequestDao requestDao, SecureUtils secureUtils) {
     this.secureManager = secureManager;
     this.roleDao = roleDao;
     this.absenceDao = absenceDao;
@@ -119,7 +121,8 @@ public class NotificationManager {
   private static final String DF = "dd/MM/YYYY";
 
   //FIXME: da correggere prima del passaggio a spring boot
-  private static final String BASE_URL = "/";//Play.configuration.getProperty("application.baseUrl");
+  //Play.configuration.getProperty("application.baseUrl");
+  private static final String BASE_URL = "/";
   private static final String PATH = "absencerequests/show";
   private static final String COMPETENCE_PATH = "competencerequests/show";
   private static final String INFORMATION_PATH = "informationrequests/show";
@@ -160,7 +163,8 @@ public class NotificationManager {
     
     final String message = 
         String.format(
-            template, person.fullName(), DateTimeFormatter.ofPattern(DTF).format(stamping.getDate()),
+            template, person.fullName(), 
+            DateTimeFormatter.ofPattern(DTF).format(stamping.getDate()),
             verso, stamping.getPlace(), stamping.getReason());
 
     person.getOffice().getUsersRolesOffices().stream()
@@ -204,10 +208,12 @@ public class NotificationManager {
       modifier = person.fullName();
     }
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DF);
-    final String message = String.format(template, modifier, dtf.format(absence.getPersonDay().getDate()),
+    final String message = 
+        String.format(template, modifier, dtf.format(absence.getPersonDay().getDate()),
         absence.absenceType.code);
     // controllare se dalla configurazione è possibile notificare le assenze da flusso
-    val config = configurationManager.configValue(person.getOffice(), EpasParam.SEND_FLOWS_NOTIFICATION,
+    val config = 
+        configurationManager.configValue(person.getOffice(), EpasParam.SEND_FLOWS_NOTIFICATION,
         LocalDate.now());
     if (config.equals(Boolean.FALSE)) {
       return;
@@ -228,13 +234,14 @@ public class NotificationManager {
       if (sendManagerNotification.equals(Boolean.TRUE)
           && !groupDao.myGroups(absence.getPersonDay().getPerson()).isEmpty()) {
         log.debug("Invio la notifica anche al responsabile di gruppo...");
-        groupDao.myGroups(absence.getPersonDay().getPerson()).stream().map(p -> p.getManager()).forEach(m -> {
-          //Mandare una mail solo nel caso del codice giornaliero o ad ore e minuti 
-          //(non l'assenza oraria)
-          if (absence.getJustifiedMinutes() != null) {
-            sendEmailToManagerFor661(m, absence);
-          }
-        });
+        groupDao.myGroups(absence.getPersonDay().getPerson()).stream().map(p -> p.getManager())
+            .forEach(m -> {
+              //Mandare una mail solo nel caso del codice giornaliero o ad ore e minuti 
+              //(non l'assenza oraria)
+              if (absence.getJustifiedMinutes() != null) {
+                sendEmailToManagerFor661(m, absence);
+              }
+            });
       } else {
         log.debug("Non invio mail al responsabile di gruppo perchè non presente "
             + "o non attivato da configurazione");
@@ -305,7 +312,8 @@ public class NotificationManager {
       return;
     }
     List<User> users =
-        person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.equals(roleDestination))
+        person.getOffice().getUsersRolesOffices().stream()
+        .filter(uro -> uro.role.equals(roleDestination))
         .map(uro -> uro.getUser()).collect(Collectors.toList());
     if (roleDestination.name.equals(Role.GROUP_MANAGER)) {
       log.info("Notifica al responsabile di gruppo per {}", absenceRequest);
@@ -344,10 +352,12 @@ public class NotificationManager {
     }
     if (absenceRequest.isAdministrativeApprovalRequired()
         && absenceRequest.getAdministrativeApproved() == null
-        && (absenceRequest.getManagerApproved() != null || !absenceRequest.isManagerApprovalRequired())) {
+        && (absenceRequest.getManagerApproved() != null 
+        || !absenceRequest.isManagerApprovalRequired())) {
       role = roleDao.getRoleByName(Role.PERSONNEL_ADMIN);
     }
-    if (absenceRequest.isOfficeHeadApprovalRequired() && absenceRequest.getOfficeHeadApproved() == null
+    if (absenceRequest.isOfficeHeadApprovalRequired() 
+        && absenceRequest.getOfficeHeadApproved() == null
         && ((!absenceRequest.isManagerApprovalRequired()
             && !absenceRequest.isAdministrativeApprovalRequired()
             || (absenceRequest.getManagerApproved() != null
@@ -359,7 +369,8 @@ public class NotificationManager {
       role = roleDao.getRoleByName(Role.SEAT_SUPERVISOR);
     }
     if (absenceRequest.isOfficeHeadApprovalForManagerRequired()
-        && absenceRequest.getOfficeHeadApproved() == null && absenceRequest.getPerson().isGroupManager()) {
+        && absenceRequest.getOfficeHeadApproved() == null 
+        && absenceRequest.getPerson().isGroupManager()) {
       role = roleDao.getRoleByName(Role.SEAT_SUPERVISOR);
     }
     return role;
@@ -404,7 +415,8 @@ public class NotificationManager {
     }
 
     // Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
-    if (secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
+    if (secureManager.officesWriteAllowed(currentUser)
+        .contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
@@ -447,13 +459,15 @@ public class NotificationManager {
       GroupAbsenceType groupAbsenceType, boolean insert, boolean update, boolean delete) {
 
     // Se l'user che ha fatto l'inserimento è utente di sistema esco
-    if (currentUser.isSystemUser() && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
+    if (currentUser.isSystemUser() 
+        && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
       return;
     }
 
     // Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
     if (currentUser.getPerson() != null
-        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
+        && secureManager.officesWriteAllowed(currentUser)
+        .contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
@@ -494,9 +508,11 @@ public class NotificationManager {
     final String message = String.format(
         "La richiesta di assenza di tipo \"%s\" dal %s al %s " + "è stata rifiutata da %s",
         TemplateExtensions.label(absenceRequest.getType()),
-        absenceRequest.getType().isAllDay() ? TemplateExtensions.format(absenceRequest.startAtAsDate())
+        absenceRequest.getType().isAllDay() 
+          ? TemplateExtensions.format(absenceRequest.startAtAsDate())
             : TemplateExtensions.format(absenceRequest.getStartAt()),
-            absenceRequest.getType().isAllDay() ? TemplateExtensions.format(absenceRequest.endToAsDate())
+            absenceRequest.getType().isAllDay() 
+              ? TemplateExtensions.format(absenceRequest.endToAsDate())
                 : TemplateExtensions.format(absenceRequest.getEndTo()),
                 refuser.getFullname());
 
@@ -519,9 +535,11 @@ public class NotificationManager {
     final String message = String.format(
         "La richiesta di assenza di tipo \"%s\" dal %s al %s " + "è stata accettata da %s",
         TemplateExtensions.label(absenceRequest.getType()),
-        absenceRequest.getType().isAllDay() ? TemplateExtensions.format(absenceRequest.startAtAsDate())
+        absenceRequest.getType().isAllDay() 
+          ? TemplateExtensions.format(absenceRequest.startAtAsDate())
             : TemplateExtensions.format(absenceRequest.getStartAt()),
-            absenceRequest.getType().isAllDay() ? TemplateExtensions.format(absenceRequest.endToAsDate())
+            absenceRequest.getType().isAllDay() 
+              ? TemplateExtensions.format(absenceRequest.endToAsDate())
                 : TemplateExtensions.format(absenceRequest.getEndTo()),
                 approver.getFullname());
 
@@ -550,7 +568,8 @@ public class NotificationManager {
               DateTimeFormatter.ofPattern(DF).format(a.getPersonDay().getDate())));
     });
 
-    person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.name.equals(role.name))
+    person.getOffice().getUsersRolesOffices().stream()
+        .filter(uro -> uro.role.name.equals(role.name))
         .map(uro -> uro.getUser()).forEach(user -> {
           Notification.builder().destination(user).message(message.toString())
           .subject(NotificationSubject.ABSENCE, absences.stream().findFirst().get().getId())
@@ -765,7 +784,8 @@ public class NotificationManager {
               absenceRequest.getEndTo());
       return;
     }
-    person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.equals(roleDestination))
+    person.getOffice().getUsersRolesOffices().stream()
+        .filter(uro -> uro.role.equals(roleDestination))
         .map(uro -> uro.getUser()).forEach(user -> {
           SimpleEmail simpleEmail = new SimpleEmail();
           // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
@@ -785,7 +805,8 @@ public class NotificationManager {
           } catch (EmailException e) {
             e.printStackTrace();
           }
-          simpleEmail.setSubject(String.format("ePas Approvazione flusso (%s)", absenceRequest.getId()));
+          simpleEmail.setSubject(
+              String.format("ePas Approvazione flusso (%s)", absenceRequest.getId()));
           val mailBody = createAbsenceRequestEmail(absenceRequest, user);
           try {
             simpleEmail.setMsg(mailBody);
@@ -820,7 +841,8 @@ public class NotificationManager {
         && !absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().getPerson())
+          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))
+          .map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
     //Email al responsabile di sede per i livelli I-III che SONO
@@ -831,7 +853,8 @@ public class NotificationManager {
         && absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)).map(uro -> uro.getUser().getPerson())
+          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))
+          .map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
     //Email al responsabile di gruppo per i livelli I-III del suo gruppo (se sono attive
@@ -858,7 +881,8 @@ public class NotificationManager {
           log.info(
               "Inviata email per richiesta di flusso richiesta: {}. "
                   + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                  absenceRequest, r.getUser().getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
+                  absenceRequest, r.getUser().getPerson().getEmail(),
+                  simpleEmail.getSubject(), mailBody);
         } catch (EmailException e) {
           log.error("Impossibile inviare l'email a {} che è destinatario del email "
               + "per la comunicazione dell'assenza di {}", 

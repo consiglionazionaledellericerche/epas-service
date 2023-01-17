@@ -118,14 +118,14 @@ public class TemplateUtility {
   private final BadgeSystemDao badgeSystemDao;
   private final CategoryGroupAbsenceTypeDao categoryGroupAbsenceTypeDao;
   private final ContractualReferenceDao contractualReferenceDao;
-//  private final SynchDiagnostic synchDiagnostic;
+  //  private final SynchDiagnostic synchDiagnostic;
   private final ConfigurationManager configurationManager;
   private final CompetenceCodeDao competenceCodeDao;
   private final MemoizedCollection<Notification> notifications;
   private final MemoizedCollection<Notification> archivedNotifications;
   private final AbsenceRequestDao absenceRequestDao;
   private final UsersRolesOfficesDao uroDao;
-  private final GroupDao groupDao;//
+  private final GroupDao groupDao;
   private final TimeSlotDao timeSlotDao;
   private final CompetenceRequestDao competenceRequestDao;
   private final InformationRequestDao informationRequestDao;
@@ -216,22 +216,23 @@ public class TemplateUtility {
   public boolean enableSmartworking() {
     return generalSettingDao.generalSetting().isEnableAutoconfigSmartworking();
   }
-  
+
   /**
    * Verifica nella configurazione generale se il flusso per la richiesta malattia è attivo.
    */
   public boolean enableIllnessFlow() {
     return generalSettingDao.generalSetting().isEnableIllnessFlow();
   }
-  
+
   /**
-   * 
+   * Attiva la presenza giornaliera per il responsabile di gruppo.
+   *
    * @return se è attiva la presenza giornaliera per il responsabile di gruppo.
    */
   public boolean enableDailyPresenceForManager() {
     return generalSettingDao.generalSetting().isEnableDailyPresenceForManager();
   }
-  
+
   /**
    * Metodo di utilità per far comparire il badge con la quantità di richieste di riposi 
    * compensativi da approvare nel template.
@@ -467,11 +468,15 @@ public class TemplateUtility {
     return year;
   }
 
-  // Liste di utilità per i template
+  //Liste di utilità per i template.
 
+  /*
+   * Uffici dove l'utente corrente può effettuare operazioni.
+   */
   public List<Office> officesAllowed() {
     return secureManager.officesWriteAllowed(secureUtils.getCurrentUser().get())
-        .stream().sorted((o, o1) -> o.getName().compareTo(o1.getName())).collect(Collectors.toList());
+        .stream().sorted((o, o1) -> o.getName().compareTo(o1.getName()))
+        .collect(Collectors.toList());
   }
 
   public List<Qualification> getAllQualifications() {
@@ -529,13 +534,13 @@ public class TemplateUtility {
    * @return true se sono attivi i flussi su ePAS, false altrimenti.
    * @throws NoSuchFieldException lancia eccezione se non esiste il campo in conf.
    */
-//  public boolean isFlowsActive() throws NoSuchFieldException {
-//    if ("true".equals(Play.configuration.getProperty(FLOWS_ACTIVE))) {
-//      return true;
-//    }
-//    return false;
-//  }
-  
+   //  public boolean isFlowsActive() throws NoSuchFieldException {
+   //    if ("true".equals(Play.configuration.getProperty(FLOWS_ACTIVE))) {
+   //      return true;
+   //    }
+   //    return false;
+   //  }
+
   /**
    * Gli user associati a tutte le persone appartenenti all'istituto.
    */
@@ -750,9 +755,9 @@ public class TemplateUtility {
     return this.wrapperFactory;
   }
 
-//  public SynchDiagnostic getSyncDiagnostic() {
-//    return this.synchDiagnostic;
-//  }
+  //  public SynchDiagnostic getSyncDiagnostic() {
+  //    return this.synchDiagnostic;
+  //  }
 
   public Object getObjectInConfiguration(EpasParam epasParam, String fieldValue) {
     return configurationManager.parseValue(epasParam, fieldValue);
@@ -893,33 +898,33 @@ public class TemplateUtility {
     return people;
   }
 
-//  /**
-//   * Sigla dell'ente/azienda che utilizza ePAS.
-//   */
-//  public String getCompanyCode() {
-//    return CompanyConfig.code();
-//  }
-//
-//  /**
-//   * Nome dell'ente/azienda che utilizza ePAS.
-//   */
-//  public String getCompanyName() {
-//    return CompanyConfig.name();
-//  }
-//
-//  /**
-//   * Indirizzo sito/web dell'ente/azienda che utilizza ePAS.
-//   */
-//  public String getCompanyUrl() {
-//    return CompanyConfig.url();
-//  }
+  //  /**
+  //   * Sigla dell'ente/azienda che utilizza ePAS.
+  //   */
+  //  public String getCompanyCode() {
+  //    return CompanyConfig.code();
+  //  }
+  //
+  //  /**
+  //   * Nome dell'ente/azienda che utilizza ePAS.
+  //   */
+  //  public String getCompanyName() {
+  //    return CompanyConfig.name();
+  //  }
+  //
+  //  /**
+  //   * Indirizzo sito/web dell'ente/azienda che utilizza ePAS.
+  //   */
+  //  public String getCompanyUrl() {
+  //    return CompanyConfig.url();
+  //  }
 
   
   /**
    * Indica se è permessa la configurabilità delle richieste di assenza 
    * per i livelli I-III.
    */
-  public boolean absenceRequestAuthorizationTopLevelEnabled () {
+  public boolean absenceRequestAuthorizationTopLevelEnabled(){
     return generalSettingDao.generalSetting().isEnableAbsenceTopLevelAuthorization();
   }
 }
