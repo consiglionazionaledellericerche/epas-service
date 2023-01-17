@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.db.h2support.base;
 
 import java.util.Optional;
@@ -85,7 +86,7 @@ public class H2WorkingTimeTypeSupport {
     workingTimeType.setDescription(workingDefinition.name());
     workingTimeType.setHorizontal(workingDefinition.horizontal);
     workingTimeTypeDao.persist(workingTimeType);
-    workingTimeType.setWorkingTimeTypeDays( 
+    workingTimeType.setWorkingTimeTypeDays(
         createWorkingTimeTypeDays(workingDefinition.orderedWorkingDayDefinition, workingTimeType));
     return workingTimeType;
   }

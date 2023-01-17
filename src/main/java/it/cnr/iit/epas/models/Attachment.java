@@ -50,9 +50,9 @@ public class Attachment extends MutableModel {
   @Enumerated(EnumType.STRING)
   public AttachmentType type;
 
-//  @NotNull
-//  @Column(nullable = false)
-//  public Blob file;
+  //  @NotNull
+  //  @Column(nullable = false)
+  //  public Blob file;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "office_id")

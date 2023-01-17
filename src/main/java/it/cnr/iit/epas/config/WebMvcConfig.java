@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.security.DroolsHandler;
@@ -25,7 +26,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * WebMvcConfig.
  *
- * @author daniele
+ * @author Daniele Murgia
+ * @author Cristian Lucchesi
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {

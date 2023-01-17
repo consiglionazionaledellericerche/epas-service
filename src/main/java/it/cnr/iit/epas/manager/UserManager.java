@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.CharMatcher;
@@ -179,31 +180,29 @@ public class UserManager {
   /**
    * Build an hexadecimal MD5 hash for a String
    * Metodo copiato dal play 1.5!
-   * 
-   * @param value
-   *            The String to hash
+   *
+   * @param value The String to hash
    * @return An hexadecimal Hash
    */
   static String hexMD5(String value) {
-      try {
-          MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-          messageDigest.reset();
-          messageDigest.update(value.getBytes("utf-8"));
-          byte[] digest = messageDigest.digest();
-          return byteToHexString(digest);
-      } catch (Exception ex) {
-          throw new RuntimeException(ex);
-      }
+    try {
+      MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+      messageDigest.reset();
+      messageDigest.update(value.getBytes("utf-8"));
+      byte[] digest = messageDigest.digest();
+      return byteToHexString(digest);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
   }
-  
+
   /**
    * Write a byte array as hexadecimal String.
-   * 
-   * @param bytes
-   *            byte array
+   *
+   * @param bytes byte array
    * @return The hexadecimal String
    */
   static String byteToHexString(byte[] bytes) {
-      return String.valueOf(Hex.encodeHex(bytes));
+    return String.valueOf(Hex.encodeHex(bytes));
   }
 }

@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.cache;
 
 import com.google.common.base.Preconditions;
@@ -57,7 +58,7 @@ public class CompetenceCodeManager {
 
     Preconditions.checkNotNull(code);
 
-   // String key = COMPETENCE_PREFIX + code;
+    // String key = COMPETENCE_PREFIX + code;
     //FIXME: da verificare se e come funziona con spring boot
     Cache cache = cacheManager.getCache(COMPETENCE_PREFIX);
     ValueWrapper value = cache.get(code);
@@ -67,7 +68,7 @@ public class CompetenceCodeManager {
       Preconditions.checkNotNull(cc);
       cache.put(code, cc);
     } else {
-      cc = (CompetenceCode)value.get();
+      cc = (CompetenceCode) value.get();
     }
     competenceCodeDao.merge(cc);
     return cc;

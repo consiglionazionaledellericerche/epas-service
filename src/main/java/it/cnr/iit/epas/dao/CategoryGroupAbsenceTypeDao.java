@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -35,7 +36,7 @@ public class CategoryGroupAbsenceTypeDao extends DaoBase<CategoryGroupAbsenceTyp
 
   @Inject
   CategoryGroupAbsenceTypeDao(Provider<EntityManager> emp) {
-    super( emp);
+    super(emp);
   }
 
   /**

@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.configurations;
 
 import com.google.common.base.Joiner;
@@ -677,7 +678,8 @@ public enum EpasParam {
       Office.class),
 
   /**
-   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie deli livelli I-III.
+   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie
+   * dei livelli I-III.
    */
   ABSENCE_TOP_LEVEL_OFFICE_HEAD_NOTIFICATION(
       "absence_top_level_office_head_notification",
@@ -687,9 +689,10 @@ public enum EpasParam {
       EpasParamValueType.formatValue(true),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-  
+
   /**
-   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie deli livelli I-III.
+   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie
+   * deli livelli I-III.
    */
   ABSENCE_TOP_LEVEL_OF_GROUP_MANAGER_OFFICE_HEAD_NOTIFICATION(
       "absence_top_level_of_group_manager_office_head_notification",
@@ -699,7 +702,7 @@ public enum EpasParam {
       EpasParamValueType.formatValue(true),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-  
+
   /**
    * Il responsabile di gruppo deve ricevere le notifiche delle comunicazioni di ferie deli livelli I-III.
    */

@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -26,7 +27,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PersonShiftDao extends DaoBase<PersonShift>{
+public class PersonShiftDao extends DaoBase<PersonShift> {
 
   @Inject
   PersonShiftDao(Provider<EntityManager> emp) {

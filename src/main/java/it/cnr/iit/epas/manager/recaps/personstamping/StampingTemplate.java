@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personstamping;
 
 import com.google.common.collect.Lists;
@@ -21,11 +22,11 @@ import it.cnr.iit.epas.manager.cache.StampTypeManager;
 import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
 import it.cnr.iit.epas.models.Stamping;
-import java.util.List;
-import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import lombok.Data;
 
 /**
  * Oggetto che modella la singola timbratura nelle viste personStamping e stampings.

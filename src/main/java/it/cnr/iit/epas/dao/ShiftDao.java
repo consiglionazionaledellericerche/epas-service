@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import com.querydsl.core.BooleanBuilder;
@@ -186,7 +187,8 @@ public class ShiftDao extends DaoBase<PersonShift> {
     return getQueryFactory().delete(sc)
         .where(sc.date.eq(personShiftDay.getDate())
             .and(sc.shiftType.eq(personShiftDay.getShiftType())
-                .and(sc.personShift.person.eq(personShiftDay.getPersonShift().getPerson())))).execute();
+                .and(sc.personShift.person.eq(
+                      personShiftDay.getPersonShift().getPerson())))).execute();
   }
 
 

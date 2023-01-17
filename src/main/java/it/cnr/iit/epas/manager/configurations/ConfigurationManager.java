@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.configurations;
 
 import com.google.common.base.Preconditions;
@@ -68,8 +69,7 @@ public class ConfigurationManager {
    */
   @Inject
   ConfigurationManager(Provider<EntityManager> emp,
-      PeriodManager periodManager, OfficeDao officeDao//, PersonDao personDao
-      ) {
+      PeriodManager periodManager, OfficeDao officeDao) { //, PersonDao personDao
     this.queryFactory = new JPAQueryFactory(emp.get());
     this.periodManager = periodManager;
     this.officeDao = officeDao;
@@ -694,26 +694,26 @@ public class ConfigurationManager {
   /**
    * Aggiorna la configurazione di tutte le persone.
    */
-  //FIXME: da correggere con il passaggio allo spring boot
-//  public void updatePeopleConfigurations() {
-//    List<Office> officeList = officeDao.allEnabledOffices();
-//
-//    for (Office office : officeList) {  
-//      new Job<Void>() {
-//        @Override
-//        public void doJob() {
-//          log.info("Aggiorno i parametri per i dipendenti di {}", office.name);
-//          List<Person> people = personDao.byOffice(office);
-//          for (Person person : people) {
-//            log.debug("Fix parametri di configurazione della persona {}", person.fullName());
-//            updateConfigurations(person);           
-//          }
-//        }        
-//      }.now();
-//      log.info("Fine aggiornamento parametri per {} dipendenti di {}", 
-//          office.getPersons().size(), office.getName());
-//    }
-//  }
+    //FIXME: da correggere con il passaggio allo spring boot
+  //  public void updatePeopleConfigurations() {
+  //    List<Office> officeList = officeDao.allEnabledOffices();
+  //
+  //    for (Office office : officeList) {  
+  //      new Job<Void>() {
+  //        @Override
+  //        public void doJob() {
+  //          log.info("Aggiorno i parametri per i dipendenti di {}", office.name);
+  //          List<Person> people = personDao.byOffice(office);
+  //          for (Person person : people) {
+  //            log.debug("Fix parametri di configurazione della persona {}", person.fullName());
+  //            updateConfigurations(person);           
+  //          }
+  //        }        
+  //      }.now();
+  //      log.info("Fine aggiornamento parametri per {} dipendenti di {}", 
+  //          office.getPersons().size(), office.getName());
+  //    }
+  //  }
 
   
 

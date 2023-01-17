@@ -42,7 +42,8 @@ public class ExtendedRevisionListener implements RevisionListener {
   private HttpServletRequest httpRequest;
 
   @Inject
-  public ExtendedRevisionListener(Provider<SecureUtils> secureUtils, HttpServletRequest httpRequest) {
+  public ExtendedRevisionListener(
+      Provider<SecureUtils> secureUtils, HttpServletRequest httpRequest) {
     this.secureUtils = secureUtils;
     this.httpRequest = httpRequest;
   }
@@ -54,8 +55,7 @@ public class ExtendedRevisionListener implements RevisionListener {
       final Optional<User> user = secureUtils.get().getCurrentUser();
       if (user.isPresent()) {
         revision.setOwner(user.orElse(null));
-      }
-      else {
+      } else {
         log.warn("unkown owner or user on revision {}", revision);
       }
       if (httpRequest != null && httpRequest.getRemoteAddr() != null) {

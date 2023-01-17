@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.collect.ImmutableList;
@@ -233,7 +234,7 @@ public class MissionManager {
 
       if (!atomicInsert(situation, body, actualDate)) {
         managedMissionOk = false;
-      };
+      }
       actualDate = actualDate.plusDays(1);
 
     }
@@ -342,8 +343,10 @@ public class MissionManager {
     if (missions.isEmpty()) {
       return false;
     }
-    LocalTimeInterval workInterval = (LocalTimeInterval) configurationManager.configValue(
-        body.person.getOffice(), EpasParam.WORK_INTERVAL_MISSION_DAY, body.dataInizio.toLocalDate());
+    LocalTimeInterval workInterval = 
+        (LocalTimeInterval) configurationManager.configValue(
+            body.person.getOffice(), 
+            EpasParam.WORK_INTERVAL_MISSION_DAY, body.dataInizio.toLocalDate());
     if (workInterval == null) {
       log.warn(LOG_PREFIX +  "Il parametro di orario di lavoro missione "
           + "non è valorizzato per la sede {}", body.person.getOffice().getName());
@@ -385,7 +388,7 @@ public class MissionManager {
       situation = getSituation(dateToConsider, body, workInterval);
       if (!atomicInsert(situation, body, dateToConsider)) {
         managedMissionOk = false;
-      };
+      }
       
     }
     /*
@@ -608,7 +611,8 @@ public class MissionManager {
       notificationManager.notificationAbsencePolicy(currentUser, 
           abs, group, false, false, true);
       log.info(LOG_PREFIX + "Rimossa assenza {} del {} per {}.", 
-          abs.absenceType.code, abs.getPersonDay().getDate(), abs.getPersonDay().getPerson().getFullname());
+          abs.absenceType.code, abs.getPersonDay().getDate(), 
+          abs.getPersonDay().getPerson().getFullname());
 
     }
     if (result) {
@@ -689,7 +693,8 @@ public class MissionManager {
    * @param body l'oggetto dto proveniente dal mission manager
    * @param actualDate la data attuale su cui lavorare
    */
-  private boolean atomicInsert(Situation situation, MissionFromClient body, LocalDateTime actualDate) {
+  private boolean atomicInsert(
+      Situation situation, MissionFromClient body, LocalDateTime actualDate) {
     boolean missionInserted = false;
     if (situation.isFirstOrLastDay) {
       if (situation.difference < 0) {

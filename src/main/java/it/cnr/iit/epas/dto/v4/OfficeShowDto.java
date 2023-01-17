@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,8 +18,10 @@
 package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -28,8 +30,10 @@ import lombok.ToString;
  * @author Cristian Lucchesi
  *
  */
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@ToString
 @Data
 public class OfficeShowDto {
 

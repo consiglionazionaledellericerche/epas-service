@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.absences;
 
 import com.google.common.collect.Lists;
@@ -410,7 +411,6 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
    * @param complationTime tempo di completamento
    * @param internalUse se uso interno
    * @param consideredWeekEnd se considerare week end
-   * @param timeForMealticket se il tempo contribuisce al buono pasto
    * @param certificateCode codice per attestati
    * @param expire data scadenza
    * @return entity creata o modificata

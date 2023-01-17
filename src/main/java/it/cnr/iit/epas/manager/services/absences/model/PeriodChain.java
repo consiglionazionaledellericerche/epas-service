@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.absences.model;
 
 import com.google.common.collect.Lists;
@@ -43,17 +44,17 @@ public class PeriodChain {
   public Person person;
   public GroupAbsenceType groupAbsenceType;
   public LocalDate date;
-  public LocalDate from = null;                                     
-  public LocalDate to = null;                                       
+  public LocalDate from = null;
+  public LocalDate to = null;
   public List<AbsencePeriod> periods = Lists.newArrayList();
-  
+
   //Tutte le assenze coinvolte nella catena 
   // - anche quelle di codici diversi (compresi i nuovi inserimenti) 
   public Map<LocalDate, Set<Absence>> allInvolvedAbsences = Maps.newHashMap();    
   //Le assenze coinvolte nella catena relative al gruppo
   // - di tutti i period, anche non assegnate, comprese le assenze inserite precedentemente
   public List<Absence> involvedAbsencesInGroup = Lists.newArrayList();
-  
+
   public List<Absence> previousInserts = Lists.newArrayList();
 
   //Assenze coinvolte nella catena (compresi i nuovi inserimenti) assegnate ad un periodo
@@ -151,7 +152,8 @@ public class PeriodChain {
     List<Absence> absences = Lists.newArrayList();
     for (AbsencePeriod period : this.periods) {
       for (DayInPeriod day : period.daysInPeriod.values()) {
-        if (period.initialization != null && !day.getDate().isAfter(period.initialization.getDate())) {
+        if (period.initialization != null 
+            && !day.getDate().isAfter(period.initialization.getDate())) {
           continue;
         }
         for (TakenAbsence takenAbsence : day.getTakenAbsences()) { //sia complation che non

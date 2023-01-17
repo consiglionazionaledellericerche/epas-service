@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
@@ -51,7 +52,7 @@ public class ContractMonthRecapDto extends BaseModelDto {
 
   private int buoniPastoUsatiNelMese = 0;
 
-  private int initResiduoAnnoCorrenteNelMese = 0;    //per il template (se sourceContract è del mese)
+  private int initResiduoAnnoCorrenteNelMese = 0;  //per il template (se sourceContract è del mese)
 
   private int initMonteOreAnnoPassato = 0;        //dal precedente recap ma è utile salvarlo
 

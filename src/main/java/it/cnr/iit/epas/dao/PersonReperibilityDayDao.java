@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import com.querydsl.core.BooleanBuilder;
@@ -57,7 +58,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param person la persona
    * @param date   la data
    * @return un personReperibilityDay nel caso in cui la persona person in data date fosse
-   * reperibile. Null altrimenti.
+   *     reperibile. Null altrimenti.
    */
   public Optional<PersonReperibilityDay> getPersonReperibilityDay(Person person, LocalDate date) {
     QPersonReperibilityDay prd = QPersonReperibilityDay.personReperibilityDay;
@@ -75,7 +76,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param person la persona
    * @param date   la data
    * @return una lista di personReperibilityDay nel caso in cui la persona person in data date fosse
-   * reperibile. Null altrimenti.
+   *     reperibile. Null altrimenti.
    */
   public List<PersonReperibilityDay> getPersonReperibilityDayByPerson(Person person,
       LocalDate date) {
@@ -131,7 +132,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param type tipo di reperibilità
    * @param day  il giorno da considerare
    * @return il numero di personReperibilityDay cancellati che hanno come parametri il tipo type e
-   * il giorno day.
+   *     il giorno day.
    */
   public long deletePersonReperibilityDay(PersonReperibilityType type, LocalDate day) {
     QPersonReperibilityDay prd = QPersonReperibilityDay.personReperibilityDay;
@@ -148,7 +149,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param type   il tipo di reperibilità
    * @param person la persona
    * @return la lista dei 'personReperibilityDay' della persona 'person' di tipo 'type' presenti nel
-   * periodo tra 'begin' e 'to'.
+   *     periodo tra 'begin' e 'to'.
    */
   public List<PersonReperibilityDay> getPersonReperibilityDaysByPeriodAndType(
       LocalDate begin, LocalDate to, PersonReperibilityType type, Person person) {
@@ -225,7 +226,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param description il nome del servizio
    * @param office      la sede su cui cercare
    * @return il tipo di reperibilità, se esiste, con descrizione uguale a quella passata come
-   * parametro.
+   *     parametro.
    */
   public Optional<PersonReperibilityType> getReperibilityTypeByDescription(String description,
       Office office) {
@@ -245,7 +246,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    * @param person la persona da cercare
    * @param type   il tipo di reperibilità
    * @return il PersonReperibility relativo alla persona person e al tipo type passati come
-   * parametro.
+   *     parametro.
    */
   public PersonReperibility getPersonReperibilityByPersonAndType(
       Person person, PersonReperibilityType type) {
@@ -260,7 +261,7 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
    *
    * @param type il tipo di reperibilità
    * @return la lista dei personReperibility che hanno come personReperibilityType il tipo passato
-   * come parametro.
+   *     come parametro.
    */
   public List<PersonReperibility> getPersonReperibilityByType(PersonReperibilityType type) {
     final QPersonReperibility pr = QPersonReperibility.personReperibility;

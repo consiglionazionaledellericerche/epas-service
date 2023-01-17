@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.absences;
 
 import com.google.common.collect.Sets;
@@ -66,8 +67,8 @@ public class Absence extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   public AbsenceType absenceType;
 
-//  @Column(name = "absence_file", nullable = true)
-//  public Blob absenceFile;
+  //  @Column(name = "absence_file", nullable = true)
+  //  public Blob absenceFile;
 
   public Integer justifiedMinutes;
 

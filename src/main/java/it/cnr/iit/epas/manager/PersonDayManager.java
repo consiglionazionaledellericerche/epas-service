@@ -958,7 +958,7 @@ public class PersonDayManager {
     final LocalDate sourceDateResidual = pd.getPersonDayContract().get().getSourceDateResidual();
     //se prima o uguale a source contract il problema è fixato
     if (sourceDateResidual != null && !personDay.getDate().isAfter(sourceDateResidual)) {
-      personDay.getTroubles().forEach( pdt -> {
+      personDay.getTroubles().forEach(pdt -> {
         personDayInTroubleDao.delete(pdt);
       });
       personDay.getTroubles().clear();

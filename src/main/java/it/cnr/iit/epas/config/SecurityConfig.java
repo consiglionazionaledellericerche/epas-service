@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.config;
 
 import org.springframework.context.annotation.Bean;
@@ -23,10 +24,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Configurazione della catena di filtri necessaria per la security dell'applicazione.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
+  /**
+   * Configurazione della catena di filtri di autenticazione da applicare ai metodi REST.
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/rest/**")

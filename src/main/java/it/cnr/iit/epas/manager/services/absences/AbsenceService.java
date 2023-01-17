@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.absences;
 
 import com.google.common.base.Preconditions;
@@ -83,7 +84,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AbsenceService {
 
-  private final static String VACATION_SITUATION_CACHE_KEY = "vacationSituation";
+  private static final  String VACATION_SITUATION_CACHE_KEY = "vacationSituation";
 
   private final AbsenceEngineUtility absenceEngineUtility;
   private final AbsenceComponentDao absenceComponentDao;
@@ -154,7 +155,8 @@ public class AbsenceService {
 
     if (groupAbsenceType == null || !groupAbsenceTypeDao.isPersistent(groupAbsenceType)) {
       groupAbsenceType =
-          absenceComponentDao.categoriesByPriority().get(0).getGroupAbsenceTypes().iterator().next();
+          absenceComponentDao.categoriesByPriority()
+          .get(0).getGroupAbsenceTypes().iterator().next();
     }
 
     AbsenceForm form = buildAbsenceForm(person, date, null, null, null, groupAbsenceType, true,
@@ -731,14 +733,14 @@ public class AbsenceService {
   private List<String> namesOfChildGroups() {
     List<String> names = Lists.newArrayList();
     names.add(DefaultGroup.G_23.name());
-//    names.add(DefaultGroup.G_24.name());
+    //    names.add(DefaultGroup.G_24.name());
     names.add(DefaultGroup.G_25.name());
     names.add(DefaultGroup.G_25A.name());
     names.add(DefaultGroup.G_232.name());
     names.add(DefaultGroup.G_233.name());
-//    names.add(DefaultGroup.G_242.name());
-//    names.add(DefaultGroup.G_243.name());
-//    names.add(DefaultGroup.G_244.name());
+    //    names.add(DefaultGroup.G_242.name());
+    //    names.add(DefaultGroup.G_243.name());
+    //    names.add(DefaultGroup.G_244.name());
     names.add(DefaultGroup.G_234.name());
     names.add(DefaultGroup.G_252.name());
     names.add(DefaultGroup.G_253.name());
@@ -751,7 +753,7 @@ public class AbsenceService {
     names.add(DefaultGroup.MALATTIA_FIGLIO_3.name());
     names.add(DefaultGroup.MALATTIA_FIGLIO_4.name());
     names.add(DefaultGroup.G_25P.name());
-//    names.add(DefaultGroup.G_COV50.name());
+    //    names.add(DefaultGroup.G_COV50.name());
     
     return names;
   }
@@ -807,11 +809,10 @@ public class AbsenceService {
                 .absenceProblem(AbsenceProblem.NotOnHoliday).build());
       } 
       if (!absenceResponse.getWarning().isEmpty()) {
-        templateRow.absenceErrors.add(AbsenceError.builder().absence(absenceResponse.getAbsenceAdded())
-            .absenceProblem(AbsenceProblem.MinimumTimeViolated).build());
-      }
-      
-      else {
+        templateRow.absenceErrors.add(
+            AbsenceError.builder().absence(absenceResponse.getAbsenceAdded())
+              .absenceProblem(AbsenceProblem.MinimumTimeViolated).build());
+      } else {
         templateRow.absenceErrors
             .add(AbsenceError.builder().absence(absenceResponse.getAbsenceAdded())
                 .absenceProblem(AbsenceProblem.LimitExceeded).build());
@@ -960,7 +961,8 @@ public class AbsenceService {
    * Inizializza il db.
    */
   public void enumInitializator() {
-    log.info("Initializing all epas enums (tab, category, absenceTypes, complations, takables, group");
+    log.info(
+        "Initializing all epas enums (tab, category, absenceTypes, complations, takables, group");
     if (absenceTypeDao.findAll().size() > 0) {
       return;
     }
@@ -1043,7 +1045,8 @@ public class AbsenceService {
           date, TypeSummary.VACATION);
       situation.permissionsCached = new VacationSummaryCached(situation.permissions, contract, year,
           date, TypeSummary.PERMISSION);
-      //XXX: prima del passaggio a spring boot la merge del contract era nel costruttore del VacationSummaryCached
+      //XXX: prima del passaggio a spring boot la merge del contract era nel costruttore del
+      //VacationSummaryCached
       contractDao.merge(contract);
 
       cache.put(lastYearKey, situation.lastYearCached);

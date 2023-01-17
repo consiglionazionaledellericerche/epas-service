@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
@@ -26,7 +27,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AbsenceTypeJustifiedBehaviourDao extends DaoBase<AbsenceTypeJustifiedBehaviour>{
+public class AbsenceTypeJustifiedBehaviourDao extends DaoBase<AbsenceTypeJustifiedBehaviour> {
 
   @Inject
   AbsenceTypeJustifiedBehaviourDao(Provider<EntityManager> emp) {
@@ -34,6 +35,7 @@ public class AbsenceTypeJustifiedBehaviourDao extends DaoBase<AbsenceTypeJustifi
   }
 
   public List<AbsenceTypeJustifiedBehaviour> findAll() {
-    return getQueryFactory().selectFrom(QAbsenceTypeJustifiedBehaviour.absenceTypeJustifiedBehaviour).fetch();
+    return getQueryFactory()
+        .selectFrom(QAbsenceTypeJustifiedBehaviour.absenceTypeJustifiedBehaviour).fetch();
   }
 }
