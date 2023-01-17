@@ -104,7 +104,7 @@ public class ShiftManager2 {
   private final ShiftTypeMonthDao shiftTypeMonthDao;
   private final GeneralSettingDao generalSettingDao;
   private final SecureUtils secureUtils;
-
+  private final HistoricalDao historicalDao;
 
   /**
    * Injector.
@@ -127,7 +127,7 @@ public class ShiftManager2 {
       ShiftDao shiftDao, ShiftTypeDao shiftTypeDao,
       CompetenceCodeDao competenceCodeDao, CompetenceDao competenceDao,
       PersonMonthRecapDao personMonthRecapDao, ShiftTypeMonthDao shiftTypeMonthDao,
-      GeneralSettingDao generalSettingDao, SecureUtils secureUtils) {
+      GeneralSettingDao generalSettingDao, SecureUtils secureUtils, HistoricalDao historicalDao) {
 
     this.personDayManager = personDayManager;
     this.personShiftDao = personShiftDao;
@@ -141,6 +141,7 @@ public class ShiftManager2 {
     this.shiftTypeMonthDao = shiftTypeMonthDao;
     this.generalSettingDao = generalSettingDao;
     this.secureUtils = secureUtils;
+    this.historicalDao = historicalDao;
   }
 
   /**
@@ -1184,7 +1185,7 @@ public class ShiftManager2 {
        *  cambio di date sul turno. In tal caso effettua il ricalcolo anche 
        *  sul giorno precedente (spostamento di un turno da un giorno all'altro)
        */
-      HistoricalDao.lastRevisionsOf(PersonShiftDay.class, personShiftDay.getId())
+      historicalDao.lastRevisionsOf(PersonShiftDay.class, personShiftDay.getId())
           .stream().limit(1).map(historyValue -> {
             PersonShiftDay pd = (PersonShiftDay) historyValue.value;
             return pd.getDate();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
@@ -59,4 +60,5 @@ public class PersonInfo {
     }
     return ResponseEntity.ok().body(mapper.convert(entity.get()));
   }
+
 }

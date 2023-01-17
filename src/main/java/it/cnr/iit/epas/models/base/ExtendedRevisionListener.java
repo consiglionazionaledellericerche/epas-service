@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,12 +14,15 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.base;
 
 import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.security.SecureUtils;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.RevisionListener;
 import org.springframework.stereotype.Component;
@@ -29,34 +32,37 @@ import org.springframework.stereotype.Component;
  * la revisione.
  *
  * @author Marco Andreini
+ * @author Cristian Lucchesi
  */
 @Slf4j
+@Component
 public class ExtendedRevisionListener implements RevisionListener {
 
-  //FIXME; da sistemare prima del passaggio a Spring boot
-  //private final static String REMOTE_ADDRESS = "request.remoteAddress";
+  private final Provider<SecureUtils> secureUtils;
+  private HttpServletRequest httpRequest;
+
   @Inject
-  //static Provider<Optional<User>> user;
-  
-  //@Inject
-  //@Named(REMOTE_ADDRESS)
-  //XXX: da riattivare prima del passaggio a Spring boot
-  //static Provider<String> ipaddress;
+  public ExtendedRevisionListener(Provider<SecureUtils> secureUtils, HttpServletRequest httpRequest) {
+    this.secureUtils = secureUtils;
+    this.httpRequest = httpRequest;
+  }
 
   @Override
   public void newRevision(Object revisionEntity) {
     try {
       final Revision revision = (Revision) revisionEntity;
-//      if (user.get().isPresent()) {
-//        revision.setOwner(user.get().orElse(null));
-//      } else {
-//        log.warn("unkown owner or user on revision {}", revision);
-//      }
-//      if (ipaddress.get() != null) {
-//        revision.setIpaddress(ipaddress.get());
-//      } else {
-//        log.warn("unkown owner or user on revision {}", revision);
-//      }
+      final Optional<User> user = secureUtils.get().getCurrentUser();
+      if (user.isPresent()) {
+        revision.setOwner(user.orElse(null));
+      }
+      else {
+        log.warn("unkown owner or user on revision {}", revision);
+      }
+      if (httpRequest != null && httpRequest.getRemoteAddr() != null) {
+        revision.setIpaddress(httpRequest.getRemoteAddr());
+      } else {
+        log.warn("unkown owner or user on revision {}", revision);
+      }
     } catch (NullPointerException ignored) {
       log.warn("NPE", ignored);
     }
