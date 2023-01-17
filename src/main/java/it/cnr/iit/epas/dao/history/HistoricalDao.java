@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,6 +20,7 @@ package it.cnr.iit.epas.dao.history;
 import com.google.common.base.Verify;
 import com.google.common.collect.FluentIterable;
 import com.querydsl.jpa.JPQLQueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.base.QRevision;
@@ -28,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.stereotype.Component;
@@ -35,15 +37,21 @@ import org.springframework.stereotype.Component;
 /**
  * DAO per le interrogazioni sullo storico.
  */
+@Slf4j
 @Component
 public class HistoricalDao {
 
+  private final Provider<EntityManager> emp;
+  private final JPQLQueryFactory queryFactory;
+  private final Provider<AuditReader> auditReader;
+
   @Inject
-  private static Provider<AuditReader> auditReader;
-  @Inject
-  private static JPQLQueryFactory queryFactory;
-  @Inject
-  private static Provider<EntityManager> emp;
+  HistoricalDao(Provider<EntityManager> emp, Provider<AuditReader> auditReader) {
+    this.emp = emp;
+    this.auditReader = auditReader;
+    this.queryFactory = new JPAQueryFactory(emp.get());
+    
+  }
 
   /**
    * Ritorna l'oggetto revisione.
@@ -51,7 +59,7 @@ public class HistoricalDao {
    * @param id the id to search.
    * @return the Revision object.
    */
-  public static Revision getRevision(int id) {
+  public Revision getRevision(int id) {
     return Verify.verifyNotNull(queryFactory.selectFrom(QRevision.revision)
         .where(QRevision.revision.id.eq(id))
         .fetchOne());
@@ -60,22 +68,29 @@ public class HistoricalDao {
 
   /**
    * Ritorna l'istanza di un'entità ad una specifica revisione.
-   *
+   * @deprecated non utilizzare fino a quando non è stato verificato se
+   *     il comportamento è uguale a quelle presente in ePAS per lo stsso metodo
    * @param cls Entity Class to search
    * @param id the entity primary key
    * @param revisionId the revision id
    * @return the entity instance at the specified revision.
    */
-//  public static <T extends BaseEntity> T valueAtRevision(Class<T> cls, long id, int revisionId) {
-//
-//    final T current = Verify.verifyNotNull(emp.get().find(cls, id));
-//    final T history = cls.cast(auditReader.get().createQuery()
-//        .forEntitiesAtRevision(cls, revisionId)
-//        .add(AuditEntity.id().eq(current.getId()))
-//        .getSingleResult());
-//    final LocalDateTime date = getRevision(revisionId).getRevisionDate();
-//    return HistoryViews.historicalViewOf(cls, current, history, date);
-//  }
+  @Deprecated
+  public <T extends BaseEntity> T valueAtRevision(Class<T> cls, long id, int revisionId) {
+
+    final T current = Verify.verifyNotNull(emp.get().find(cls, id));
+    final T history = cls.cast(auditReader.get().createQuery()
+        .forEntitiesAtRevision(cls, revisionId)
+        .add(AuditEntity.id().eq(current.getId()))
+        .getSingleResult());
+
+    //final LocalDateTime date = getRevision(revisionId).getRevisionDate();
+    //return HistoryViews.historicalViewOf(cls, current, history, date);
+
+    //XXX: verificare se è compatibile con la precedente versione presente in ePAS
+    return history;
+
+  }
 
   /**
    * Ritorna l'ultima revisione di una specifica entità.
@@ -84,9 +99,8 @@ public class HistoricalDao {
    * @param id the entity primary key
    * @return last revision of specified entity.
    */
-  @SuppressWarnings("rawtypes")
-  public static HistoryValue<? extends BaseEntity> lastRevisionOf(Class<? extends BaseEntity> cls, long id) {
-    List<HistoryValue> lastRevisions = lastRevisionsOf(cls, id);
+  public HistoryValue<? extends BaseEntity> lastRevisionOf(Class<? extends BaseEntity> cls, long id) {
+    List<HistoryValue<?>> lastRevisions = lastRevisionsOf(cls, id);
     if (lastRevisions.isEmpty()) {
       return null;
     }
@@ -101,7 +115,7 @@ public class HistoricalDao {
    * @return List of revisions for the specified entity instance.
    */
   @SuppressWarnings("unchecked")
-  public static List<HistoryValue> lastRevisionsOf(Class<? extends BaseEntity> cls, long id) {
+  public List<HistoryValue<?>> lastRevisionsOf(Class<? extends BaseEntity> cls, long id) {
     return FluentIterable.from(auditReader.get().createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .add(AuditEntity.id().eq(id))
@@ -118,27 +132,27 @@ public class HistoricalDao {
    * @param id the entity primary key
    * @return la versione precedente del istanza individuata da cls e id.
    */
-//  public static <T extends BaseEntity> T previousRevisionOf(Class<T> cls, long id) {
-//    final Integer currentRevision = (Integer) auditReader.get().createQuery()
-//        .forRevisionsOfEntity(cls, false, true)
-//        .add(AuditEntity.id().eq(id))
-//        .addProjection(AuditEntity.revisionNumber().max())
-//        .getSingleResult();
-//    final Integer previousRevision = (Integer) auditReader.get().createQuery()
-//        .forRevisionsOfEntity(cls, false, true)
-//        .addProjection(AuditEntity.revisionNumber().max())
-//        .add(AuditEntity.id().eq(id))
-//        .add(AuditEntity.revisionNumber().lt(currentRevision))
-//        .getSingleResult();
-//    log.debug("current-revision {} of ({}:{}), previous-revision: {}",
-//        currentRevision, cls, id, previousRevision);
-//    return valueAtRevision(cls, id, previousRevision);
-//  }
+  public <T extends BaseEntity> T previousRevisionOf(Class<T> cls, long id) {
+    final Integer currentRevision = (Integer) auditReader.get().createQuery()
+        .forRevisionsOfEntity(cls, false, true)
+        .add(AuditEntity.id().eq(id))
+        .addProjection(AuditEntity.revisionNumber().max())
+        .getSingleResult();
+    final Integer previousRevision = (Integer) auditReader.get().createQuery()
+        .forRevisionsOfEntity(cls, false, true)
+        .addProjection(AuditEntity.revisionNumber().max())
+        .add(AuditEntity.id().eq(id))
+        .add(AuditEntity.revisionNumber().lt(currentRevision))
+        .getSingleResult();
+    log.debug("current-revision {} of ({}:{}), previous-revision: {}",
+        currentRevision, cls, id, previousRevision);
+    return valueAtRevision(cls, id, previousRevision);
+  }
 
   /**
    * L'utente che ha effettuato l'ultima revisione dell'entity passata.
    */
-  public static User lastRevisionOperator(BaseEntity entity) {
+  public User lastRevisionOperator(BaseEntity entity) {
     return lastRevisionOf(entity.getClass(), entity.getId()).revision.owner;
   }
 

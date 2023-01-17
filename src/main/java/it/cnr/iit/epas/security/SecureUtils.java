@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecureUtils {
 
-  private UserDao userDao;
+  private final UserDao userDao;
   
   final String AUTHORITIES = "authorities";
 
