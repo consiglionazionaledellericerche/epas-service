@@ -22,6 +22,7 @@ import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.InitializationGroupDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
+import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
@@ -30,6 +31,7 @@ import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -48,6 +50,9 @@ public interface PersonVacationMapper {
   @Mapping(target = "topQualification", source = "person.topQualification")
   //@Mapping(target = "periods", source = "periodChain.periods")
   PersonVacationDto convert(PersonVacationRecap personVacation);
+
+  @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
+  VacationPeriodDto convert(VacationPeriod vacationPeriod);
 
   ContractDto convert(Contract contract);
 

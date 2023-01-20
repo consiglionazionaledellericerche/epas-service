@@ -30,7 +30,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class VacationPeriodDto extends BaseModelDto {
 
-  private VacationCode vacationCode;
+  private String vacationCode;
   private LocalDate beginDate;
   private LocalDate endDate;
 
