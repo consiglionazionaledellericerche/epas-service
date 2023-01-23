@@ -183,9 +183,9 @@ public class VacationFactory {
       }
       LocalDate beginDate = yearInterval.getBegin();
       periods.addAll(periodsFromProgression(person, contract, group, beginDate, 
-          YearProgression.whichVacationProgression(vacationPeriod.vacationCode), 
+          YearProgression.whichVacationProgression(vacationPeriod.getVacationCode()), 
           vacationPeriod, takableCodes, takenCodes));
-      limits.add(vacationPeriod.vacationCode.vacations);
+      limits.add(vacationPeriod.getVacationCode().vacations);
     }
     
     //Fix del caso sfortunato
@@ -264,9 +264,9 @@ public class VacationFactory {
       }
       LocalDate beginDate = yearInterval.getBegin();
       periods.addAll(periodsFromProgression(person, contract, group, beginDate, 
-          YearProgression.whichPermissionProgression(vacationPeriod.vacationCode),
+          YearProgression.whichPermissionProgression(vacationPeriod.getVacationCode()),
           vacationPeriod, takableCodes, takenCodes));
-      limits.add(vacationPeriod.vacationCode.permissions);
+      limits.add(vacationPeriod.getVacationCode().permissions);
     }
 
     //Fix del caso sfortunato
@@ -543,7 +543,7 @@ public class VacationFactory {
 
       AbsencePeriod absencePeriod = period(person, contract, group, date, endYear, 
           takableCodes, takenCodes, yearPortion.days, yearPortion.amount);
-      absencePeriod.vacationCode = vacationPeriod.vacationCode;
+      absencePeriod.vacationCode = vacationPeriod.getVacationCode();
       periods.add(absencePeriod);
       date = absencePeriod.to.plusDays(1);
       if (date.isAfter(endYear)) {

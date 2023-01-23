@@ -174,8 +174,7 @@ public class ContractManager {
 
     contract.vacationPeriods.addAll(contractVacationPeriods(contract));
     for (VacationPeriod vacationPeriod : contract.getVacationPeriods()) {
-      emp.get().merge(vacationPeriod);
-      //vacationPeriod.save();
+      emp.get().persist(vacationPeriod);
     }
 
     if (!wtt.isPresent()) {
@@ -302,10 +301,10 @@ public class ContractManager {
       final VacationCode vacationCode, final LocalDate beginFrom, final LocalDate endTo) {
 
     VacationPeriod vacationPeriod = new VacationPeriod();
-    vacationPeriod.contract = contract;
+    vacationPeriod.setContract(contract);
     vacationPeriod.setBeginDate(beginFrom);
     vacationPeriod.setEndDate(endTo);
-    vacationPeriod.vacationCode = vacationCode;
+    vacationPeriod.setVacationCode(vacationCode);
     return vacationPeriod;
   }
 
@@ -445,9 +444,9 @@ public class ContractManager {
     List<VacationPeriod> vpList = previousContract.getVacationPeriods();    
     VacationPeriod vp = null;
     for (VacationPeriod vpPrevious : vpList) {
-      if (vpPrevious.vacationCode.equals(VacationCode.CODE_26_4)) {
+      if (vpPrevious.getVacationCode().equals(VacationCode.CODE_26_4)) {
         twentysixplus4 = vpPrevious;
-      } else if (vpPrevious.vacationCode.equals(VacationCode.CODE_28_4)) {
+      } else if (vpPrevious.getVacationCode().equals(VacationCode.CODE_28_4)) {
         twentyeightplus4 = vpPrevious;
       } else {
         other = vpPrevious;
@@ -459,17 +458,17 @@ public class ContractManager {
     if (twentyeightplus4 != null && twentysixplus4 != null) {
       //in questo caso il nuovo contratto partirà già col piano ferie 28+4 dal primo giorno
       vp = new VacationPeriod();
-      vp.contract = contract;
+      vp.setContract(contract);
       vp.setBeginDate(contract.getBeginDate());
-      vp.vacationCode = VacationCode.CODE_28_4;
+      vp.setVacationCode(VacationCode.CODE_28_4);
       vp.setEndDate(contract.getEndDate());
     }
     if (twentysixplus4 != null && twentyeightplus4 == null) {
       // si calcola la durata del piano ferie 26+4 e in base a quello il nuovo contratto parte con
       // 26+4 e 28+4 parte dopo 3 anni dall'inizio di 26+4 nel vecchio contratto
       vp = new VacationPeriod();
-      vp.contract = contract;
-      vp.vacationCode = VacationCode.CODE_28_4;
+      vp.setContract(contract);
+      vp.setVacationCode(VacationCode.CODE_28_4);
       vp.setBeginDate(twentysixplus4.getBeginDate().plusYears(3));
       vp.setEndDate(contract.getEndDate());
     }
