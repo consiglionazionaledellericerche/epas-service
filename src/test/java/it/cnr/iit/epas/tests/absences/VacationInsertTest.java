@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,10 +17,9 @@
 package it.cnr.iit.epas.tests.absences;
 
 import static org.junit.Assert.assertEquals;
-import java.util.Optional;
+import static org.junit.Assert.assertNotNull;
+
 import com.google.common.collect.ImmutableSet;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
@@ -31,9 +30,14 @@ import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
 import it.cnr.iit.epas.tests.db.h2support.base.H2AbsenceSupport;
 import java.time.LocalDate;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -42,7 +46,7 @@ public class VacationInsertTest {
   
   public static final LocalDate EXPIRE_DATE_LAST_YEAR = LocalDate.of(2016, 8, 31);
   public static final LocalDate EXPIRE_DATE_CURRENT_YEAR = LocalDate.of(2017, 8, 31);
-  
+
   @Inject 
   private H2Examples h2Examples;
   @Inject 
@@ -51,7 +55,30 @@ public class VacationInsertTest {
   private AbsenceService absenceService;
   @Inject
   private AbsenceComponentDao absenceComponentDao;
+
+  @Test
+  @Transactional
+  public void contractVacationPeriods() {
+    absenceService.enumInitializator();
+
+    Person person = h2Examples.normalEmployee(LocalDate.of(2014, 3, 17),
+        Optional.of(LocalDate.of(2019, 3, 16)));
     
+    assertEquals(person.getContracts().size(), 1);
+    val contract = person.getContracts().get(0);
+    assertEquals(contract.getVacationPeriods().size(), 2);
+    val vacationPeriod26 = contract.getVacationPeriods().get(0);
+    assertNotNull(vacationPeriod26);
+    assertEquals(VacationCode.CODE_26_4, vacationPeriod26.getVacationCode());
+
+    val vacationPeriod28 = contract.getVacationPeriods().get(1);
+    assertNotNull(vacationPeriod28);
+    assertEquals(VacationCode.CODE_28_4, vacationPeriod28.getVacationCode());
+    val vacationPeriods = contract.getExtendedVacationPeriods();
+    assertNotNull(vacationPeriods);
+
+  }
+
   /**
    * Issue #258.
    */
@@ -65,7 +92,7 @@ public class VacationInsertTest {
         Optional.of(LocalDate.of(2019, 3, 16)));
     
     //le ferie del 2015 utilizzate
-    h2AbsenceSupport.multipleAllDayInstances(person, DefaultAbsenceType.A_31, 
+    val absences2016 = h2AbsenceSupport.multipleAllDayInstances(person, DefaultAbsenceType.A_31, 
         ImmutableSet.of(
             LocalDate.of(2016, 1, 4),
             LocalDate.of(2016, 1, 5),
@@ -78,8 +105,9 @@ public class VacationInsertTest {
             LocalDate.of(2016, 7, 26),
             LocalDate.of(2016, 7, 27)
             ));
+    assertEquals(10, absences2016.size());
     
-    h2AbsenceSupport.multipleAllDayInstances(person, DefaultAbsenceType.A_32, 
+    val absences2015 = h2AbsenceSupport.multipleAllDayInstances(person, DefaultAbsenceType.A_32, 
         ImmutableSet.of(
             LocalDate.of(2015, 7, 29),
             LocalDate.of(2015, 7, 30),
@@ -97,16 +125,21 @@ public class VacationInsertTest {
             LocalDate.of(2015, 12, 30),
             LocalDate.of(2015, 12, 31)
             ));
-    
+    assertEquals(15, absences2015.size());
+
     GroupAbsenceType vacationGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
-    
+    assertNotNull(vacationGroup);
+
     JustifiedType allDay = absenceComponentDao
         .getOrBuildJustifiedType(JustifiedTypeName.all_day);
-    
+    assertNotNull(allDay);
+    assertEquals(allDay.getName(), JustifiedTypeName.all_day);
+
     AbsenceType absenceType = absenceComponentDao
         .absenceTypeByCode(DefaultAbsenceType.A_32.getCode()).get();
-    
+    assertNotNull(absenceType);
+
     LocalDate today = LocalDate.of(2015, 8, 24);
     
     InsertReport insertReport = absenceService.insert(person, vacationGroup, today, null, 

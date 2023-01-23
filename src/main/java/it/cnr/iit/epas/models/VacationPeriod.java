@@ -30,6 +30,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 
 /**
@@ -37,6 +39,8 @@ import org.hibernate.envers.Audited;
  *
  * @author Alessandro Martelli
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "vacation_periods")
 @Audited
@@ -47,13 +51,12 @@ public class VacationPeriod extends PropertyInPeriod implements IPropertyInPerio
   @Enumerated(EnumType.STRING)
   @Column(name = "vacation_code")
   @NotNull
-  public VacationCode vacationCode;
+  private VacationCode vacationCode;
 
   @NotNull
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contract_id", nullable = false, updatable = false)
-  public Contract contract;
-  
+  private Contract contract;
 
   @Override
   public IPropertiesInPeriodOwner getOwner() {
