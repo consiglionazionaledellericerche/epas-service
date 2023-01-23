@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 /**
  * Factory per alcune Function di utilità da utilizzare nei Wrapper.
  */
+@Deprecated
 @Component
 public class WrapperModelFunctionFactory {
 

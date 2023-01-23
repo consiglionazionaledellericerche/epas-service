@@ -24,7 +24,9 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+@EnableAsync
 @EntityScan(basePackages = "it.cnr.iit.epas.models")
 @EnableJpaRepositories
 @EnableEnversRepositories

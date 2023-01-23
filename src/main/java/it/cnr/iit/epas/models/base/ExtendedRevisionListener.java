@@ -26,6 +26,10 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.RevisionListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Revision listener che aggiunge le informazioni su owner e ipaddress che hanno modificato
@@ -36,16 +40,14 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequestScope
 public class ExtendedRevisionListener implements RevisionListener {
 
   private final Provider<SecureUtils> secureUtils;
-  private HttpServletRequest httpRequest;
 
   @Inject
-  public ExtendedRevisionListener(
-      Provider<SecureUtils> secureUtils, HttpServletRequest httpRequest) {
+  public ExtendedRevisionListener(Provider<SecureUtils> secureUtils) {
     this.secureUtils = secureUtils;
-    this.httpRequest = httpRequest;
   }
 
   @Override
@@ -58,13 +60,19 @@ public class ExtendedRevisionListener implements RevisionListener {
       } else {
         log.warn("unkown owner or user on revision {}", revision);
       }
-      if (httpRequest != null && httpRequest.getRemoteAddr() != null) {
-        revision.setIpaddress(httpRequest.getRemoteAddr());
-      } else {
-        log.warn("unkown owner or user on revision {}", revision);
-      }
+      revision.setIpaddress(getRemoteAddress());
     } catch (NullPointerException ignored) {
       log.warn("NPE", ignored);
     }
+  }
+
+  private String getRemoteAddress() {
+    RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
+    log.info("getRequestAttributes = {}", attribs);
+    if (attribs instanceof NativeWebRequest) {
+      HttpServletRequest request = (HttpServletRequest) ((NativeWebRequest) attribs).getNativeRequest();
+      return request.getRemoteAddr();
+    }
+    return null;
   }
 }

@@ -23,3 +23,8 @@ Inserendo il token precedentemente ottenuto nella variabile ACCESS_TOKEN è poss
 $ curl https://auth.iit.cnr.it/auth/realms/testing/protocol/openid-connect/userinfo --header "Authorization: Bearer $ACCESS_TOKEN"
 
 {"sub":"0c0fef69-0b23-4532-8cd3-f8ea6929e659","email_verified":true,"name":"Cristian Lucchesi","preferred_username":"cristian.lucchesi","locale":"it","given_name":"Cristian","family_name":"Lucchesi","email":"cristian.lucchesi@iit.cnr.it"}
+
+Per utilizzare l'access token con httpie su epas-service è possibile utilizzare
+la sintassi tipo:
+
+$ http GET :8080/rest/v4/userinfo/ "Authorization: Bearer $ACCESS_TOKEN"
