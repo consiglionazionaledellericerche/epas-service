@@ -19,7 +19,9 @@ package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.security.DroolsHandler;
 import javax.inject.Inject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -44,6 +46,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(droolsHandler);
+  }
+
+  @Bean
+  public RequestContextListener requestContextListener(){
+    return new RequestContextListener();
   }
 
 }

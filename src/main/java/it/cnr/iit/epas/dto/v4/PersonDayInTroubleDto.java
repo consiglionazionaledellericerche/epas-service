@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,23 +17,17 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import it.cnr.iit.epas.models.enumerate.Troubles;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * Dati esportati in Json per la Persona.
- *
- * @author Cristian Lucchesi
- *
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PersonShowTerseDto extends BaseModelDto {
+public class PersonDayInTroubleDto extends BaseModelDto {
 
-  private String fullname;
-  private String fiscalCode;
-  private String email;
-  private String number; //Matricola
-  private String eppn;
-
+  private Long personId;
+  private LocalDate date;
+  private Troubles cause;
+  private boolean emailSent;
 }

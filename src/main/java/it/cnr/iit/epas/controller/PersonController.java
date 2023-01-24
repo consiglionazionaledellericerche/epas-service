@@ -71,8 +71,8 @@ public class PersonController {
 
   @GetMapping(ApiRoutes.SHOW)
   ResponseEntity<PersonShowDto> show(@PathVariable("id") Long id) {
-    log.info("Chiamato metodo show con id = {}", id);
-    log.info("currentUser = {}", securityUtils.getCurrentUser().get());
+    log.debug("Chiamato metodo show con id = {}", id);
+    log.debug("currentUser = {}", securityUtils.getCurrentUser().get());
     long personId = id != null ? id : securityUtils.getCurrentUser().get().getId();
     Optional<Person> entity = repo.findById(personId);
     if (entity.isEmpty()) {

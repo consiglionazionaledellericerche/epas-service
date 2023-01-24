@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,10 +19,11 @@ package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import it.cnr.iit.epas.dao.PersonDayDao;
+import com.google.common.collect.Lists;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayInTroubleDao;
+import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
-import  it.cnr.iit.epas.dao.wrapper.function.WrapperModelFunctionFactory;
 import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.models.Contract;
@@ -36,13 +37,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.SimpleEmail;
-//import play.libs.Mail;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -53,8 +56,8 @@ import org.springframework.stereotype.Component;
 public class PersonDayInTroubleManager {
 
   private final Provider<IWrapperFactory> factory;
-  private final PersonDayDao personDayDao;
   private final PersonDayInTroubleDao personDayInTroubleDao;
+  private final PersonDao personDao;
   private final ConfigurationManager configurationManager;
   private final Provider<EntityManager> emp;
 
@@ -64,18 +67,16 @@ public class PersonDayInTroubleManager {
    * @param personDayInTroubleDao       personDayInTroubleDao
    * @param configurationManager        configurationManager
    * @param factory                     factory
-   * @param wrapperModelFunctionFactory wrapperModelFunctionFactory
    */
   @Inject
   public PersonDayInTroubleManager(
-      PersonDayDao personDayDao,
       PersonDayInTroubleDao personDayInTroubleDao,
+      PersonDao personDao,
       ConfigurationManager configurationManager,
       Provider<IWrapperFactory> factory,
-      WrapperModelFunctionFactory wrapperModelFunctionFactory,
       Provider<EntityManager> emp) {
-    this.personDayDao = personDayDao;
     this.personDayInTroubleDao = personDayInTroubleDao;
+    this.personDao = personDao;
     this.configurationManager = configurationManager;
     this.factory = factory;
     this.emp = emp;
@@ -263,29 +264,32 @@ public class PersonDayInTroubleManager {
    *
    * @param person persona
    */
-  public final void cleanPersonDayInTrouble(Person person) {
-    //FIXME: da correggere per il passaggio a Spring Boot
-//    new Job<Void>() {
-//      @Override
-//      public void doJob() {
-//        final List<PersonDayInTrouble> pdtList = 
-//            personDayInTroubleDao.getPersonDayInTroubleInPeriod(
-//            person, Optional.empty(), Optional.empty(), Optional.empty());
-//
-//        List<IWrapperContract> wrapperContracts = FluentIterable.from(person.getContracts())
-//            .transform(wrapperModelFunctionFactory.contract()).toList();
-//
-//        for (PersonDayInTrouble pdt : pdtList) {
-//          boolean toDelete = wrapperContracts.stream()
-//              .noneMatch(wrContract -> DateUtility.isDateIntoInterval(pdt.getPersonDay().getDate(),
-//                  wrContract.getContractDatabaseInterval()));
-//          if (toDelete) {
-//            log.info("Eliminato Pd-Trouble di {} data {}", person.fullName(), pdt.getPersonDay().getDate());
-//            emp.get().remove(pdt);
-//            //pdt.delete();
-//          }
-//        }         
-//      }
-//    }.now();
+  @Transactional
+  @Async
+  public CompletableFuture<List<PersonDayInTrouble>> cleanPersonDayInTrouble(Person person) {
+    log.debug("Chiamata cleanPersonDayInTrouble per {}", person.getFullname());
+    person = personDao.byId(person.getId()).get();
+    final List<PersonDayInTrouble> pdtList =
+        personDayInTroubleDao.getPersonDayInTroubleInPeriod(
+            person, Optional.empty(), Optional.empty(), Optional.empty());
+    log.debug("Trovati {} PersonDayInTrouble per {}", pdtList.size(), person.getFullname());
+    List<IWrapperContract> wrapperContracts = 
+        person.getContracts().stream()
+          .map(contract -> factory.get().create(contract))
+          .collect(Collectors.toList());
+
+    List<PersonDayInTrouble> deleted = Lists.newArrayList();
+    for (PersonDayInTrouble pdt : pdtList) {
+      boolean toDelete = wrapperContracts.stream()
+          .noneMatch(wrContract -> DateUtility.isDateIntoInterval(pdt.getPersonDay().getDate(),
+              wrContract.getContractDatabaseInterval()));
+      if (toDelete) {
+        log.info("Eliminato PersonDayInTrouble di {} data {}", 
+            person.fullName(), pdt.getPersonDay().getDate());
+        personDayInTroubleDao.delete(pdt);
+        deleted.add(pdt);
+      }
+    }
+    return CompletableFuture.completedFuture(deleted);
   }
 }

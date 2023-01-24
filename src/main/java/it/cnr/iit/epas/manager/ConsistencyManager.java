@@ -724,7 +724,7 @@ public class ConsistencyManager {
     // Contiene il riepilogo da costruire.
     ContractMonthRecap currentMonthRecap;
 
-    while (!yearMonthToCompute.isAfter(lastMonthToCompute)) {
+    while (lastMonthToCompute.compareTo(yearMonthToCompute) > 0) {
 
       currentMonthRecap = buildContractMonthRecap(contract, yearMonthToCompute);
 
@@ -740,9 +740,8 @@ public class ConsistencyManager {
               Optional.ofNullable(timeVariationList));
 
       emp.get().merge(recap.get());
-      //cap.get().save();
       contract.getValue().contractMonthRecaps.add(recap.get());
-      contractDao.save(contract.getValue());
+      contractDao.merge(contract.getValue());
 
       previousMonthRecap = Optional.ofNullable(currentMonthRecap);
       yearMonthToCompute = yearMonthToCompute.plusMonths(1);
