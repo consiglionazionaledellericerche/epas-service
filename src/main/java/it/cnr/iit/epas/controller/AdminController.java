@@ -23,7 +23,6 @@ import it.cnr.iit.epas.dto.v4.PersonDayInTroubleDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonDayInTroubleMapper;
 import it.cnr.iit.epas.manager.PersonDayInTroubleManager;
 import it.cnr.iit.epas.models.PersonDayInTrouble;
-import it.cnr.iit.epas.security.NoCheck;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -60,7 +59,6 @@ public class AdminController {
     this.personDayInTroubleDao = personDayInTroubleDao;
   }
 
-  @NoCheck
   @DeleteMapping(CLEAN_PERSON_DAYS_IN_TROUBLE_API)
   ResponseEntity<List<PersonDayInTroubleDto>> cleanPersonDaysInTrouble(
       @RequestParam("personId") Long personId) {

@@ -267,24 +267,25 @@ public class PersonDayInTroubleManager {
   @Transactional
   @Async
   public CompletableFuture<List<PersonDayInTrouble>> cleanPersonDayInTrouble(Person person) {
+    log.debug("Chiamata cleanPersonDayInTrouble per {}", person.getFullname());
     person = personDao.byId(person.getId()).get();
-    log.info("Current Thread ASYNC cleanPersonDayInTrouble = {}", Thread.currentThread());
     final List<PersonDayInTrouble> pdtList =
         personDayInTroubleDao.getPersonDayInTroubleInPeriod(
             person, Optional.empty(), Optional.empty(), Optional.empty());
-
+    log.debug("Trovati {} PersonDayInTrouble per {}", pdtList.size(), person.getFullname());
     List<IWrapperContract> wrapperContracts = 
         person.getContracts().stream()
           .map(contract -> factory.get().create(contract))
           .collect(Collectors.toList());
-    
+
     List<PersonDayInTrouble> deleted = Lists.newArrayList();
     for (PersonDayInTrouble pdt : pdtList) {
       boolean toDelete = wrapperContracts.stream()
           .noneMatch(wrContract -> DateUtility.isDateIntoInterval(pdt.getPersonDay().getDate(),
               wrContract.getContractDatabaseInterval()));
       if (toDelete) {
-        log.info("Eliminato Pd-Trouble di {} data {}", person.fullName(), pdt.getPersonDay().getDate());
+        log.info("Eliminato PersonDayInTrouble di {} data {}", 
+            person.fullName(), pdt.getPersonDay().getDate());
         personDayInTroubleDao.delete(pdt);
         deleted.add(pdt);
       }

@@ -25,6 +25,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableAsync
 @EntityScan(basePackages = "it.cnr.iit.epas.models")
@@ -32,6 +33,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableEnversRepositories
 @EnableAspectJAutoProxy
 @EnableCaching
+@EnableTransactionManagement
 @SpringBootApplication
 public class EpasApplication {
 

@@ -270,11 +270,8 @@ public class ContractManager {
       for (ContractMonthRecap cmr : contract.contractMonthRecaps) {
         if (!yearMonthFrom.isAfter(YearMonth.of(cmr.year, cmr.month))) {
           if (cmr.getId() != null) {
-            emp.get().refresh(cmr);
+            emp.get().remove(cmr);
           }
-//          if (cmr.isPersistent()) {
-//            cmr.delete();
-//          }          
         }
       }
       //XXX: serve?
