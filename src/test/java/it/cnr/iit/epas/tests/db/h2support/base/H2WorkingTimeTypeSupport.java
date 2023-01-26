@@ -17,18 +17,24 @@
 
 package it.cnr.iit.epas.tests.db.h2support.base;
 
-import java.util.Optional;
 import com.google.common.collect.Lists;
-import javax.inject.Inject;
 import it.cnr.iit.epas.dao.WorkingTimeTypeDao;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.tests.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDayDefinition;
 import it.cnr.iit.epas.tests.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDefinition;
 import java.util.List;
+import java.util.Optional;
+import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * Classe di supporto per prelevare e/o creare tipologie di lavoro
+ * durante i test.
+ *
+ * @author Cristian Lucchesi
+ */
 @Slf4j
 @Component
 public class H2WorkingTimeTypeSupport {

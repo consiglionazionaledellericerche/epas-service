@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.repo;
 
 import it.cnr.iit.epas.models.User;
@@ -21,6 +22,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<User, Long>{
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
   //Empty
 }

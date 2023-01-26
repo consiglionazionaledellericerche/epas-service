@@ -14,11 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.absences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
@@ -41,7 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class Absences661Test {
+class Absences661Test {
 
   public static final LocalDate BEGIN_2016 = LocalDate.of(2016, 1, 1);
   public static final LocalDate MID_2016 = LocalDate.of(2016, 7, 1);

@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.missions;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class MissionManagerTest {
+class MissionManagerTest {
 
   @Inject
   MissionManager missionManager;

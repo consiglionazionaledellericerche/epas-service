@@ -1,6 +1,5 @@
-package it.cnr.iit.epas.tests;
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -16,14 +15,21 @@ package it.cnr.iit.epas.tests;
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package it.cnr.iit.epas.tests;
+
 import java.sql.Types;
 
-//This is to address the mapping exception when using uuid data type in
-//PostgreSQL with Hibernate
-//javax.persistence.PersistenceException: org.hibernate.MappingException:
-//  No Dialect mapping for JDBC type: 1111
-//This makes the assumption that no other fields types will be using the java.sql.Types.OTHER
-//data type
+/**
+ * This is to address the mapping exception when using uuid data type in
+ * PostgreSQL with Hibernate
+ * javax.persistence.PersistenceException: org.hibernate.MappingException:
+ * No Dialect mapping for JDBC type: 1111
+ * This makes the assumption that no other fields types will be using the java.sql.Types.OTHER
+ * data type
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 public class OurH2Dialect extends org.hibernate.dialect.H2Dialect {
 
   /**

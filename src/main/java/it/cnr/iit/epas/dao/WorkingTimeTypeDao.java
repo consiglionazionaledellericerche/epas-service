@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,7 @@ import it.cnr.iit.epas.models.QContractWorkingTimeType;
 import it.cnr.iit.epas.models.QWorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
+import it.cnr.iit.epas.models.dto.HorizontalWorkingTime;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.val;
+import org.joda.time.DateTimeConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -189,4 +191,62 @@ public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
         .where(cwtt.id.eq(id)).fetchOne();
   }
 
+  /**
+   * Dal pattern orizzontale costruisce il tipo orario con ogni giorno di lavoro e persiste i dati.
+   */
+  public WorkingTimeType buildWorkingTimeType(
+      final HorizontalWorkingTime pattern, final Office office) {
+    WorkingTimeType wtt = new WorkingTimeType();
+
+    wtt.setHorizontal(true);
+    wtt.setDescription(pattern.getName());
+    wtt.setOffice(office);
+    wtt.setDisabled(false);
+    wtt.setExternalId(pattern.getExternalId());
+    wtt.setEnableAdjustmentForQuantity(pattern.isReproportionAbsenceCodesEnabled());
+    emp.get().persist(wtt);
+    //wtt.save();
+    
+    for (int i = 0; i < DateTimeConstants.DAYS_PER_WEEK; i++) {
+
+      WorkingTimeTypeDay wttd = new WorkingTimeTypeDay();
+      wttd.dayOfWeek = i + 1;
+      wttd.workingTime =
+          pattern.workingTimeHour * DateTimeConstants.SECONDS_PER_MINUTE
+                      + pattern.workingTimeMinute;
+      wttd.holiday = isHoliday(pattern, wttd);
+
+      if (pattern.mealTicketEnabled) {
+        wttd.mealTicketTime =
+            pattern.mealTicketTimeHour
+                        *
+                        DateTimeConstants.SECONDS_PER_MINUTE
+                        +
+                        pattern.mealTicketTimeMinute;
+        wttd.breakTicketTime = pattern.breakTicketTime;
+
+        if (pattern.afternoonThresholdEnabled) {
+          wttd.ticketAfternoonThreshold =
+              pattern.ticketAfternoonThresholdHour
+                          *
+                          DateTimeConstants.SECONDS_PER_MINUTE
+                          +
+                          pattern.ticketAfternoonThresholdMinute;
+          wttd.ticketAfternoonWorkingTime =
+              pattern.ticketAfternoonWorkingTime;
+        }
+      }
+
+      wttd.workingTimeType = wtt;
+      emp.get().persist(wttd);
+      //wttd.save();
+    }
+    return wtt;
+  }
+
+  private final boolean isHoliday(
+      final HorizontalWorkingTime hwtt, final WorkingTimeTypeDay wttd) {
+    return hwtt.holidays.contains(org.joda.time.LocalDate.now()
+            .withDayOfWeek(wttd.dayOfWeek).dayOfWeek().getAsText());
+  }
 }

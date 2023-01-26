@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class Startup implements ApplicationRunner {
+class Startup implements ApplicationRunner {
 
   @Autowired
   EntityManagerFactory entityManagerFactory;

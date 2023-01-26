@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,12 @@
 package it.cnr.iit.epas.manager.configurations;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.dao.OfficeDao;
-import it.cnr.iit.epas.manager.PeriodManager;
-import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamTimeType;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.IpList;
 import it.cnr.iit.epas.manager.configurations.EpasParam.EpasParamValueType.LocalTimeInterval;
@@ -60,20 +58,24 @@ import org.springframework.stereotype.Component;
 public class ConfigurationManager {
 
   protected final JPQLQueryFactory queryFactory;
-  private final PeriodManager periodManager;
+  private final PersonDao personDao;
   private final OfficeDao officeDao;
-  //private final PersonDao personDao;
+  private final ConfigurationManagerUtils utils;
+  private final ConfigurationManagerAsync async;
 
   /**
    * Default constructor per l'injection.
    */
   @Inject
   ConfigurationManager(Provider<EntityManager> emp,
-      PeriodManager periodManager, OfficeDao officeDao) { //, PersonDao personDao
+      PersonDao personDao,
+      OfficeDao officeDao,
+      ConfigurationManagerUtils utils, ConfigurationManagerAsync async) {
     this.queryFactory = new JPAQueryFactory(emp.get());
-    this.periodManager = periodManager;
+    this.personDao = personDao;
     this.officeDao = officeDao;
-    //this.personDao = personDao;
+    this.utils = utils;
+    this.async = async;
   }
 
   /**
@@ -103,7 +105,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateLocalTime(EpasParam epasParam, IPropertiesInPeriodOwner target,
       LocalTime localTime, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.LOCALTIME);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(localTime), begin, end, false, persist);
   }
 
@@ -122,7 +124,7 @@ public class ConfigurationManager {
       IPropertiesInPeriodOwner target, LocalTime from, LocalTime to,
       Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.LOCALTIME_INTERVAL);
-    return build(epasParam, target, EpasParamValueType.formatValue(new LocalTimeInterval(from, to)),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(new LocalTimeInterval(from, to)),
         begin, end, false, persist);
   }
 
@@ -139,7 +141,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateLocalDate(EpasParam epasParam, IPropertiesInPeriodOwner target,
       LocalDate localDate, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.LOCALDATE);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(localDate), begin, end, false, persist);
   }
 
@@ -157,7 +159,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateDayMonth(EpasParam epasParam, IPropertiesInPeriodOwner target,
       int day, int month, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.DAY_MONTH);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(MonthDay.of(month, day)), begin, end, false, persist);
   }
 
@@ -176,7 +178,7 @@ public class ConfigurationManager {
       IPropertiesInPeriodOwner target, int day, int month, int year, boolean applyToTheEnd,
       boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.DAY_MONTH);
-    return build(epasParam, target, EpasParamValueType.formatValue(MonthDay.of(month, day)),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(MonthDay.of(month, day)),
         Optional.ofNullable(targetYearBegin(target, year)),
         Optional.ofNullable(targetYearEnd(target, year)), applyToTheEnd, persist);
   }
@@ -197,7 +199,7 @@ public class ConfigurationManager {
       int month, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     // TODO: validare il valore 1-12 o fare un tipo specifico.
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.MONTH);
-    return build(epasParam, target, EpasParamValueType.formatValue(month), begin, end, false,
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(month), begin, end, false,
         persist);
   }
 
@@ -215,7 +217,7 @@ public class ConfigurationManager {
       int month, int year, boolean applyToTheEnd, boolean persist) {
     // TODO: validare il valore 1-12 o fare un tipo specifico.
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.MONTH);
-    return build(epasParam, target, EpasParamValueType.formatValue(month),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(month),
         Optional.ofNullable(targetYearBegin(target, year)),
         Optional.ofNullable(targetYearEnd(target, year)), applyToTheEnd, persist);
   }
@@ -233,7 +235,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateBoolean(EpasParam epasParam, IPropertiesInPeriodOwner target,
       boolean value, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.BOOLEAN);
-    return build(epasParam, target, EpasParamValueType.formatValue(value),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(value),
         begin, end, false, persist);
   }
 
@@ -250,7 +252,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateInteger(EpasParam epasParam, IPropertiesInPeriodOwner target,
       Integer value, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.INTEGER);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(value), begin, end, false, persist);
   }
 
@@ -268,7 +270,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateEnum(EpasParam epasParam, IPropertiesInPeriodOwner target,
       BlockType value, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.ENUM);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(value), begin, end, false, persist);
   }
 
@@ -285,7 +287,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateYearlyInteger(EpasParam epasParam, IPropertiesInPeriodOwner target,
       int value, int year, boolean applyToTheEnd, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.INTEGER);
-    return build(epasParam, target, EpasParamValueType.formatValue(value),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(value),
         Optional.ofNullable(targetYearBegin(target, year)),
         Optional.ofNullable(targetYearEnd(target, year)), applyToTheEnd, persist);
   }
@@ -303,7 +305,7 @@ public class ConfigurationManager {
   public IPropertyInPeriod updateIpList(EpasParam epasParam, IPropertiesInPeriodOwner target,
       List<String> values, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.IP_LIST);
-    return build(epasParam, target, EpasParamValueType.formatValue(new IpList(values)),
+    return utils.build(epasParam, target, EpasParamValueType.formatValue(new IpList(values)),
         begin, end, false, persist);
   }
 
@@ -321,80 +323,8 @@ public class ConfigurationManager {
       String email, Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     // TODO: validare il valore o fare un tipo specifico.
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.EMAIL);
-    return build(epasParam, target,
+    return utils.build(epasParam, target,
         EpasParamValueType.formatValue(email), begin, end, false, persist);
-  }
-
-  /**
-   * Costruttore generico di una configurazione periodica. Effettua tutti i passaggi di
-   * validazione.
-   */
-  private IPropertyInPeriod build(EpasParam epasParam, IPropertiesInPeriodOwner target,
-      String fieldValue, Optional<LocalDate> begin, Optional<LocalDate> end, boolean applyToTheEnd,
-      boolean persist) {
-    if (applyToTheEnd) {
-      end = Optional.ofNullable(target.calculatedEnd());
-    }
-
-    IPropertyInPeriod configurationInPeriod = null;
-
-    if (epasParam.target.equals(Office.class)) {
-      Configuration configuration = new Configuration();
-      configuration.office = (Office) target;
-      configuration.fieldValue = fieldValue;
-      configuration.epasParam = epasParam;
-      configuration.setBeginDate(configuration.office.getBeginDate());
-      if (begin.isPresent()) {
-        configuration.setBeginDate(begin.get());
-      }
-      if (end.isPresent()) {
-        configuration.setEndDate(end.get());
-      }
-      configurationInPeriod = configuration;
-    }
-
-    if (epasParam.target.equals(Person.class)) {
-      PersonConfiguration configuration = new PersonConfiguration();
-      configuration.setPerson((Person) target);
-      configuration.setFieldValue(fieldValue);
-      configuration.setEpasParam(epasParam);
-      configuration.setBeginDate(configuration.getPerson().getBeginDate());
-      if (begin.isPresent()) {
-        configuration.setBeginDate(begin.get());
-      }
-      if (end.isPresent()) {
-        configuration.setEndDate(end.get());
-      }
-      configurationInPeriod = configuration;
-    }
-
-    //Controllo sul fatto di essere un parametro generale, annuale, o periodico.
-    //Decidere se rimandare un errore al chiamante.
-    Verify.verify(validateTimeType(epasParam, configurationInPeriod));
-
-    periodManager.updatePeriods(configurationInPeriod, persist);
-    return configurationInPeriod;
-  }
-
-  /**
-   * Valida il parametro di configurazione sulla base del suo tipo tempo.
-   *
-   * @param configuration parametro
-   * @return esito.
-   */
-  public boolean validateTimeType(EpasParam epasParam, IPropertyInPeriod configuration) {
-
-    if (epasParam.epasParamTimeType == EpasParamTimeType.GENERAL) {
-      //il parametro deve coprire tutta la durata di un owner.
-      return DateUtility.areIntervalsEquals(
-          new DateInterval(configuration.getBeginDate(), configuration.calculatedEnd()),
-          new DateInterval(configuration.getOwner().getBeginDate(),
-              configuration.getOwner().calculatedEnd()));
-    }
-
-    //il parametro PERIODIC non ha vincoli, il parametro YEARLY lo costruisco opportunamente 
-    // passando dal builder.
-    return true;
   }
 
   /**
@@ -577,21 +507,6 @@ public class ConfigurationManager {
 
   }
 
-  /**
-   * Costruttore della configurazione di default se non esiste.<br> Verificare che venga chiamata
-   * esclusivamente nel caso di nuovo enumerato !!! Di norma la configurazione di default andrebbe
-   * creata tramite migrazione o al momento della creazione della sede.
-   *
-   * @param target sede o persona o ??
-   * @param epasParam epasParam
-   * @return il valore di default per tutto il periodo del target
-   */
-  private IPropertyInPeriod buildDefault(IPropertiesInPeriodOwner target, EpasParam epasParam) {
-
-    return build(epasParam, target, (String) epasParam.defaultValue,
-        Optional.ofNullable(target.getBeginDate()), Optional.empty(), true, true);
-
-  }
 
   /**
    * Preleva il valore del parametro generale.
@@ -634,50 +549,12 @@ public class ConfigurationManager {
     return configValue(owner, epasParam, date);
   }
 
-  /**
-   * Aggiunge i nuovi epasParam quando vengono definiti (con il valore di default). Da chiamare al
-   * momento della creazione dell'owner (person/office) ed al bootstrap di epas.
-   *
-   * @param owner sede o persona
-   */
-  public void updateConfigurations(IPropertiesInPeriodOwner owner) {
+  public void updateConfigurations(Person owner) {
+    utils.updateConfigurations(owner);
+  }
 
-    for (EpasParam epasParam : EpasParam.values()) {
-
-      // Casi uscita
-      if (owner instanceof Office && !epasParam.target.equals(Office.class)) {
-        continue;
-      }
-      if (owner instanceof Person && !epasParam.target.equals(Person.class)) {
-        continue;
-      }
-
-      // Casi da gestire
-      if (owner instanceof Office) {
-        boolean toCreate = true;
-        for (Configuration configuration : ((Office) owner).getConfigurations()) {
-          if (configuration.epasParam == epasParam) {
-            toCreate = false;
-          }
-        }
-        if (toCreate) {
-          log.trace("Creazione del parametro di default {} per {}", epasParam, owner);
-          buildDefault(owner, epasParam);
-          log.trace("Creato parametro {} per {}", epasParam, owner);
-        }
-      }
-      if (owner instanceof Person) {
-        boolean toCreate = true;
-        for (PersonConfiguration configuration : ((Person) owner).getPersonConfigurations()) {
-          if (configuration.getEpasParam() == epasParam) {
-            toCreate = false;
-          }
-        }
-        if (toCreate) {
-          buildDefault(owner, epasParam);
-        }
-      }
-    }
+  public void updateConfigurations(Office owner) {
+    utils.updateConfigurations(owner);
   }
 
   /**
@@ -687,35 +564,29 @@ public class ConfigurationManager {
     List<Office> offices = officeDao.allOffices().list();
     for (Office office : offices) {
       log.debug("Fix parametri di configurazione della sede {}", office);
-      updateConfigurations(office);
+      async.updateConfigurations(office);
     }
   }
 
   /**
    * Aggiorna la configurazione di tutte le persone.
    */
-    //FIXME: da correggere con il passaggio allo spring boot
-  //  public void updatePeopleConfigurations() {
-  //    List<Office> officeList = officeDao.allEnabledOffices();
-  //
-  //    for (Office office : officeList) {  
-  //      new Job<Void>() {
-  //        @Override
-  //        public void doJob() {
-  //          log.info("Aggiorno i parametri per i dipendenti di {}", office.name);
-  //          List<Person> people = personDao.byOffice(office);
-  //          for (Person person : people) {
-  //            log.debug("Fix parametri di configurazione della persona {}", person.fullName());
-  //            updateConfigurations(person);           
-  //          }
-  //        }        
-  //      }.now();
-  //      log.info("Fine aggiornamento parametri per {} dipendenti di {}", 
-  //          office.getPersons().size(), office.getName());
-  //    }
-  //  }
 
-  
+  public void updatePeopleConfigurations() {
+    List<Office> officeList = officeDao.allEnabledOffices();
+
+    for (Office office : officeList) {
+      log.info("Aggiorno i parametri per i dipendenti di {}", office.getName());
+      List<Person> people = personDao.byOffice(office);
+      for (Person person : people) {
+        log.debug("Fix parametri di configurazione della persona {}", person.fullName());
+        async.updateConfigurations(person);           
+      }
+      log.info("Fine aggiornamento parametri per {} dipendenti di {}", 
+          office.getPersons().size(), office.getName());
+    }
+  }
+
 
   /**
    * Converte il formato stringa in formato oggetto per l'epasParam.

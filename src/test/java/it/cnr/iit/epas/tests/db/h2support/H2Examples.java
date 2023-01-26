@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.db.h2support;
 
 import it.cnr.iit.epas.dao.ContractDao;
@@ -60,6 +61,7 @@ public class H2Examples {
   private final ContractDao contractDao;
   private final ContractWorkingTimeTypeDao contractWorkingTimeTypeDao;
   private final H2WorkingTimeTypeSupport workingTimeTypeSupport;
+
   /**
    * Injection. 
    */
@@ -184,6 +186,7 @@ public class H2Examples {
     cwtt.setWorkingTimeType(workingTimeTypeSupport.getWorkingTimeType(WorkingDefinition.Normal));
     return cwtt;
   }
+
   /**
    * Istanza di un dipendente con orario PartTime 50.
    *
