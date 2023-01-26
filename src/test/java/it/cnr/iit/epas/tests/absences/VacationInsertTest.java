@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class VacationInsertTest {
+class VacationInsertTest {
   
   public static final LocalDate EXPIRE_DATE_LAST_YEAR = LocalDate.of(2016, 8, 31);
   public static final LocalDate EXPIRE_DATE_CURRENT_YEAR = LocalDate.of(2017, 8, 31);

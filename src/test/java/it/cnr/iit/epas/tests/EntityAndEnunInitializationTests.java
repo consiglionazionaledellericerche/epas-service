@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -47,6 +48,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  *
  * @author Cristian Lucchesi
  */
+@Transactional
 @SpringBootTest
 class EntityAndEnunInitializationTests {
 
@@ -67,7 +69,6 @@ class EntityAndEnunInitializationTests {
 
   @Order(1)
   @Test
-  @Transactional
   void buildOffice() {
     String name = UUID.randomUUID().toString();
     Office office = new Office();
@@ -81,7 +82,6 @@ class EntityAndEnunInitializationTests {
   
   @Order(2)
   @Test
-  @Transactional
   void buildPerson() {
     String username = UUID.randomUUID().toString();
     User user = new User();
@@ -95,14 +95,14 @@ class EntityAndEnunInitializationTests {
     person.setBeginDate(LocalDate.now());
     person.setUser(user);
     person.setOffice(officeDao.allEnabledOffices().get(0));
-    person.setQualification(qualificationDao.findById(H2Examples.DEFAULT_PERSON_QUALIFICATION).get());
+    person.setQualification(
+        qualificationDao.findById(H2Examples.DEFAULT_PERSON_QUALIFICATION).get());
     personDao.persist(person);
     assertNotNull(person.getId());
   }
-  
+
   @Order(3)
   @Test
-  @Transactional
   void initializeEpasEnums() {
     absenceService.enumInitializator();
     val person = examples.normalEmployee(LocalDate.now(), Optional.empty());
@@ -110,7 +110,6 @@ class EntityAndEnunInitializationTests {
   }
 
   @Test
-  @Transactional
   void currentContract() {
     val person = examples.normalEmployee(LocalDate.now(), Optional.empty());
     assertEquals(1, person.getContracts().size());

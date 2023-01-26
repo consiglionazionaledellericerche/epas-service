@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class AsyncCompetenceManager {
+public class CompetenceManagerAsync {
 
   private final CompetenceCodeDao competenceCodeDao;
   private final PersonStampingRecapFactory stampingsRecapFactory;
@@ -50,7 +50,7 @@ public class AsyncCompetenceManager {
   private final PersonDao personDao;
 
   @Inject
-  AsyncCompetenceManager(
+  CompetenceManagerAsync(
       CompetenceCodeDao competenceCodeDao, 
       PersonStampingRecapFactory stampingsRecapFactory,
       CompetenceDao competenceDao, PersonDao personDao) {

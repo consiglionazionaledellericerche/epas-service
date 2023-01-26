@@ -14,13 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.flows.enumerate;
 
 /**
  * Enumerato per le tipologie di stato nel flusso di approvazione delle richieste
  * di flusso informativo.
- * 
- * @author dario
+ *
+ * @author Dario Tagliaferri
  *
  */
 public enum InformationRequestEventType {

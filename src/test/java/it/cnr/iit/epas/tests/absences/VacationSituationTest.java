@@ -20,9 +20,7 @@ package it.cnr.iit.epas.tests.absences;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import java.util.Optional;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
@@ -34,11 +32,16 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
 import it.cnr.iit.epas.tests.db.h2support.base.H2AbsenceSupport;
 import java.time.LocalDate;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Transactional
 @SpringBootTest
-public class VacationSituationTest {
+class VacationSituationTest {
 
   public static final LocalDate EXPIRE_DATE_LAST_YEAR = LocalDate.of(2016, 8, 31);
   public static final LocalDate EXPIRE_DATE_CURRENT_YEAR = LocalDate.of(2017, 8, 31);
@@ -52,9 +55,9 @@ public class VacationSituationTest {
   @Inject
   private AbsenceComponentDao absenceComponentDao;
 
+  @Order(1)
   @Test
-  @Transactional
-  public void vacationsTestBase() {
+  void vacationsTestBase() {
     
     absenceService.enumInitializator();
 
@@ -137,8 +140,7 @@ public class VacationSituationTest {
    * Dal secondo anno può usufruire di tutte le ferie.
    */
   @Test
-  @Transactional
-  public void onlyAccruedUntilFirstContractYear() {
+  void onlyAccruedUntilFirstContractYear() {
     
     absenceService.enumInitializator();
 
@@ -183,8 +185,7 @@ public class VacationSituationTest {
    * Giorni calcolati    4
    */
   @Test
-  @Transactional
-  public void theCuriousCaseOfMariaTaverniti() {
+  void theCuriousCaseOfMariaTaverniti() {
 
     absenceService.enumInitializator();
 
@@ -246,8 +247,7 @@ public class VacationSituationTest {
    * (gli altri campi sono inutili)                  
    */
   @Test
-  @Transactional
-  public void initializationShouldWorksTheNextYear() {
+  void initializationShouldWorksTheNextYear() {
 
     //Esempio Pinna IMM - Lecce
     

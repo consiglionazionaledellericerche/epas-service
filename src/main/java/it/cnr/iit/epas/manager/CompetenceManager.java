@@ -101,7 +101,7 @@ public class CompetenceManager {
   private final PersonReperibilityDayDao reperibilityDao;
   private final PersonStampingRecapFactory stampingsRecapFactory;
   private final PersonShiftDayDao personShiftDayDao;
-  private final AsyncCompetenceManager asyncCompetenceManager;
+  private final CompetenceManagerAsync competenceManagerAsync;
 
   private final PersonDao personDao;
   private final Provider<EntityManager> emp;
@@ -123,7 +123,7 @@ public class CompetenceManager {
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
       PersonDao personDao, Provider<EntityManager> emp, 
-      AsyncCompetenceManager asyncCompetenceManager) {
+      CompetenceManagerAsync competenceManagerAsync) {
 
     this.competenceCodeDao = competenceCodeDao;
     this.officeDao = officeDao;
@@ -136,7 +136,7 @@ public class CompetenceManager {
     this.personShiftDayDao = personshiftDayDao;
     this.personDao = personDao;
     this.emp = emp;
-    this.asyncCompetenceManager = asyncCompetenceManager;
+    this.competenceManagerAsync = competenceManagerAsync;
   }
 
   public static Predicate<CompetenceCode> isReperibility() {
@@ -992,7 +992,7 @@ public class CompetenceManager {
     for (Office o : offices) {
       personList = personDao.listForCompetence(Sets.newHashSet(o), yearMonth, code);
       for (Person person : personList) {
-        results.add(asyncCompetenceManager.applyBonusPerPerson(person, yearMonth, code));
+        results.add(competenceManagerAsync.applyBonusPerPerson(person, yearMonth, code));
         log.debug("Assegnata la competenza {} alla persona {}", code, person);
       }
     }

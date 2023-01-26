@@ -14,12 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.dto;
 
 import com.google.common.collect.Range;
 import it.cnr.iit.epas.models.Person;
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Giorni di reperibilità in giornate lavorative.

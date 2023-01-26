@@ -14,35 +14,30 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.dto;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import lombok.Data;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
-import org.springframework.stereotype.Component;
 
 /**
  * Rappresenta le informazioni di un'orario di lavoro di tipo orizzontale.
  */
-@Component
+@Data
 public class HorizontalWorkingTime {
 
-  private final Provider<EntityManager> emp;
-  
   @Inject
-  public HorizontalWorkingTime(Provider<EntityManager> emp) {
-    this.emp = emp;
+  public HorizontalWorkingTime() {
     this.holidays = Lists.newArrayList();
     this.holidays.add(LocalDate.now().withDayOfWeek(
             DateTimeConstants.SATURDAY).dayOfWeek().getAsText());
@@ -98,118 +93,57 @@ public class HorizontalWorkingTime {
   /**
    * Dal tipo orario ricava il pattern originario.
    */
-  //FIXME: da correggere prima del passaggio a spring boot
-//  public HorizontalWorkingTime(final WorkingTimeType wtt) {
-//
-//    this.name = wtt.description;
-//    this.holidays = Lists.newArrayList();
-//    this.reproportionAbsenceCodesEnabled = wtt.enableAdjustmentForQuantity;
-//
-//    for (WorkingTimeTypeDay wttd : wtt.workingTimeTypeDays) {
-//
-//      if (wttd.holiday) {
-//        this.holidays.add(holidayName(wttd.dayOfWeek));
-//        continue;
-//      }
-//
-//      this.workingTimeHour =
-//              wttd.workingTime / DateTimeConstants.SECONDS_PER_MINUTE;
-//      this.workingTimeMinute =
-//              wttd.workingTime % DateTimeConstants.SECONDS_PER_MINUTE;
-//
-//      if (wttd.mealTicketTime > 0) {
-//        this.mealTicketEnabled = true;
-//        this.mealTicketTimeHour =
-//                wttd.mealTicketTime / DateTimeConstants.SECONDS_PER_MINUTE;
-//        this.mealTicketTimeMinute =
-//                wttd.mealTicketTime % DateTimeConstants.SECONDS_PER_MINUTE;
-//        this.breakTicketTime = wttd.breakTicketTime;
-//      } else {
-//        this.mealTicketEnabled = false;
-//      }
-//
-//      if (wttd.ticketAfternoonThreshold > 0) {
-//        this.afternoonThresholdEnabled = true;
-//        this.ticketAfternoonThresholdHour =
-//                wttd.ticketAfternoonThreshold
-//                        /
-//                        DateTimeConstants.SECONDS_PER_MINUTE;
-//
-//        this.ticketAfternoonThresholdMinute =
-//                wttd.ticketAfternoonThreshold
-//                        %
-//                        DateTimeConstants.SECONDS_PER_MINUTE;
-//        this.ticketAfternoonWorkingTime =
-//                wttd.ticketAfternoonWorkingTime;
-//      } else {
-//        this.afternoonThresholdEnabled = false;
-//      }
-//    }
-//  }
+  public HorizontalWorkingTime(final WorkingTimeType wtt) {
+
+    this.name = wtt.getDescription();
+    this.holidays = Lists.newArrayList();
+    this.reproportionAbsenceCodesEnabled = wtt.isEnableAdjustmentForQuantity();
+
+    for (WorkingTimeTypeDay wttd : wtt.getWorkingTimeTypeDays()) {
+
+      if (wttd.holiday) {
+        this.holidays.add(holidayName(wttd.dayOfWeek));
+        continue;
+      }
+
+      this.workingTimeHour =
+              wttd.workingTime / DateTimeConstants.SECONDS_PER_MINUTE;
+      this.workingTimeMinute =
+              wttd.workingTime % DateTimeConstants.SECONDS_PER_MINUTE;
+
+      if (wttd.mealTicketTime > 0) {
+        this.mealTicketEnabled = true;
+        this.mealTicketTimeHour =
+                wttd.mealTicketTime / DateTimeConstants.SECONDS_PER_MINUTE;
+        this.mealTicketTimeMinute =
+                wttd.mealTicketTime % DateTimeConstants.SECONDS_PER_MINUTE;
+        this.breakTicketTime = wttd.breakTicketTime;
+      } else {
+        this.mealTicketEnabled = false;
+      }
+
+      if (wttd.ticketAfternoonThreshold > 0) {
+        this.afternoonThresholdEnabled = true;
+        this.ticketAfternoonThresholdHour =
+                wttd.ticketAfternoonThreshold
+                        /
+                        DateTimeConstants.SECONDS_PER_MINUTE;
+
+        this.ticketAfternoonThresholdMinute =
+                wttd.ticketAfternoonThreshold
+                        %
+                        DateTimeConstants.SECONDS_PER_MINUTE;
+        this.ticketAfternoonWorkingTime =
+                wttd.ticketAfternoonWorkingTime;
+      } else {
+        this.afternoonThresholdEnabled = false;
+      }
+    }
+  }
 
   private static final String holidayName(final int dayOfWeek) {
 
     return LocalDate.now().withDayOfWeek(dayOfWeek).dayOfWeek().getAsText();
-  }
-
-  /**
-   * Dal pattern orizzontale costruisce il tipo orario con ogni giorno di lavoro e persiste i dati.
-   */
-  public final void buildWorkingTimeType(final Office office) {
-
-    WorkingTimeType wtt = new WorkingTimeType();
-
-    wtt.setHorizontal(true);
-    wtt.setDescription(this.name);
-    wtt.setOffice(office);
-    wtt.setDisabled(false);
-    wtt.setExternalId(this.externalId);
-    wtt.setEnableAdjustmentForQuantity(this.reproportionAbsenceCodesEnabled);
-
-    emp.get().persist(wtt);
-    //wtt.save();
-
-    for (int i = 0; i < DateTimeConstants.DAYS_PER_WEEK; i++) {
-
-      WorkingTimeTypeDay wttd = new WorkingTimeTypeDay();
-      wttd.dayOfWeek = i + 1;
-      wttd.workingTime =
-              this.workingTimeHour * DateTimeConstants.SECONDS_PER_MINUTE
-                      + this.workingTimeMinute;
-      wttd.holiday = isHoliday(wttd);
-
-      if (this.mealTicketEnabled) {
-        wttd.mealTicketTime =
-                this.mealTicketTimeHour
-                        *
-                        DateTimeConstants.SECONDS_PER_MINUTE
-                        +
-                        this.mealTicketTimeMinute;
-        wttd.breakTicketTime = this.breakTicketTime;
-
-        if (this.afternoonThresholdEnabled) {
-          wttd.ticketAfternoonThreshold =
-                  this.ticketAfternoonThresholdHour
-                          *
-                          DateTimeConstants.SECONDS_PER_MINUTE
-                          +
-                          this.ticketAfternoonThresholdMinute;
-          wttd.ticketAfternoonWorkingTime =
-                  this.ticketAfternoonWorkingTime;
-        }
-      }
-
-      wttd.workingTimeType = wtt;
-      emp.get().persist(wttd);
-      //wttd.save();
-
-    }
-  }
-
-  private final boolean isHoliday(final WorkingTimeTypeDay wttd) {
-
-    return this.holidays.contains(LocalDate.now()
-            .withDayOfWeek(wttd.dayOfWeek).dayOfWeek().getAsText());
   }
 
   /**
@@ -221,6 +155,5 @@ public class HorizontalWorkingTime {
             .omitEmptyStrings()
             .split(value)));
   }
-
 
 }
