@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -72,14 +72,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -87,11 +88,10 @@ import org.springframework.stereotype.Component;
  *
  * @author Alessandro Martelli
  */
+@Slf4j
 @Component
 public class CompetenceManager {
 
-
-  private static final Logger log = LoggerFactory.getLogger(CompetenceManager.class);
   private final CompetenceCodeDao competenceCodeDao;
   private final OfficeDao officeDao;
   private final PersonDayDao personDayDao;
@@ -101,6 +101,7 @@ public class CompetenceManager {
   private final PersonReperibilityDayDao reperibilityDao;
   private final PersonStampingRecapFactory stampingsRecapFactory;
   private final PersonShiftDayDao personShiftDayDao;
+  private final AsyncCompetenceManager asyncCompetenceManager;
 
   private final PersonDao personDao;
   private final Provider<EntityManager> emp;
@@ -121,8 +122,8 @@ public class CompetenceManager {
       PersonDayDao personDayDao, Provider<IWrapperFactory> wrapperFactory,
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
-      PersonDao personDao,
-      Provider<EntityManager> emp) {
+      PersonDao personDao, Provider<EntityManager> emp, 
+      AsyncCompetenceManager asyncCompetenceManager) {
 
     this.competenceCodeDao = competenceCodeDao;
     this.officeDao = officeDao;
@@ -131,10 +132,11 @@ public class CompetenceManager {
     this.wrapperFactory = wrapperFactory;
     this.personDayManager = personDayManager;
     this.reperibilityDao = reperibilityDao;
-    this.stampingsRecapFactory = stampingsRecapFactory;   
-    this.personShiftDayDao = personshiftDayDao;    
+    this.stampingsRecapFactory = stampingsRecapFactory;
+    this.personShiftDayDao = personshiftDayDao;
     this.personDao = personDao;
     this.emp = emp;
+    this.asyncCompetenceManager = asyncCompetenceManager;
   }
 
   public static Predicate<CompetenceCode> isReperibility() {
@@ -467,8 +469,9 @@ public class CompetenceManager {
         ? reperibilityDao.getReperibilityTypeByOffice(
             office, Optional.ofNullable(false)).size()
             : 0;
-    return numbers * 
-        (DateUtility.endOfMonth(LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1))).getDayOfMonth();
+    return numbers
+           * (DateUtility.endOfMonth(
+                 LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1))).getDayOfMonth();
   }
 
   /**
@@ -510,7 +513,8 @@ public class CompetenceManager {
     List<Competence> peopleMonthList = competenceDao.getCompetencesInOffice(comp.year,
         comp.month, groupCodes, comp.getPerson().getOffice(), false);
     int peopleSum = peopleMonthList.stream()
-        .filter(competence -> competence.getId() != comp.getId()).mapToInt(i -> i.valueApproved).sum();
+        .filter(competence -> competence.getId() 
+            != comp.getId()).mapToInt(i -> i.valueApproved).sum();
     if (peopleSum - comp.valueApproved + value > maxDays) {
       return false;
     }
@@ -717,7 +721,8 @@ public class CompetenceManager {
 
         if (item.code.equals("T1") || item.code.equals("T2") || item.code.equals("T3")) {
           PersonShift personShift = 
-              personShiftDayDao.getPersonShiftByPerson(pcc.get().getPerson(), pcc.get().getBeginDate());
+              personShiftDayDao.getPersonShiftByPerson(
+                  pcc.get().getPerson(), pcc.get().getBeginDate());
           if (personShift != null) {
             personShift.setEndDate(endMonth);
             emp.get().merge(personShift);
@@ -974,7 +979,7 @@ public class CompetenceManager {
    * @param code il codice di competenza a presenza mensile da conteggiare
    * @param yearMonth l'anno/mese per cui fare i conteggi
    */
-  public void applyBonus(Optional<Office> office,  
+  public void applyBonus(Optional<Office> office, 
       CompetenceCode code, YearMonth yearMonth) {
 
     Set<Office> offices = office.isPresent() ? Sets.newHashSet(office.get())
@@ -982,93 +987,20 @@ public class CompetenceManager {
 
     List<Person> personList = Lists.newArrayList();
 
-    //FIXME: da correggere prima del passaggio a spring boot
-//    final List<Promise<Void>> results = new ArrayList<>();
-//    for (Office o : offices) {
-//
-//      personList = personDao.listForCompetence(Sets.newHashSet(o), yearMonth, code);
-//      for (Person p : personList) {
-//        results.add(new Job<Void>() {
-//
-//          @Override
-//          public void doJob() {
-//            final Person person = Person.findById(p.id);
-//
-//            applyBonusPerPerson(person, yearMonth, code);
-//            log.debug("Assegnata la competenza {} alla persona ... {}", code, person);
-//          }
-//        }.now());
-//      }
-//
-//    }
-//    Promise.waitAll(results);
-  }
+    List<CompletableFuture<Boolean>> results = Lists.<CompletableFuture<Boolean>>newArrayList();
 
-  /**
-   * Effettua automaticamente l'aggiornamento del valore per la competenza a presenza mensile 
-   * passata come parametro.
-   *
-   * @param person la persona su cui fare i conteggi
-   * @param yearMonth l'anno/mese in cui fare i conteggi
-   * @param code il codice di competenza da riconteggiare
-   */
-  public void applyBonusPerPerson(Person person, YearMonth yearMonth, CompetenceCode code) {
-    LocalDate date = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1);
-    Optional<PersonCompetenceCodes> pcc = competenceCodeDao
-        .getByPersonAndCodeAndDate(person, code, date);
-    if (pcc.isPresent()) {
-
-      switch (code.limitType) {
-        case onMonthlyPresence:
-          PersonStampingRecap psDto = stampingsRecapFactory
-              .create(person, yearMonth.getYear(), yearMonth.getMonthValue(), true);
-          addSpecialCompetence(person, yearMonth, code, Optional.ofNullable(psDto));
-          break;
-        case entireMonth:
-          addSpecialCompetence(person, yearMonth, code, Optional.<PersonStampingRecap>empty());
-          break;
-        default:
-          break;
+    for (Office o : offices) {
+      personList = personDao.listForCompetence(Sets.newHashSet(o), yearMonth, code);
+      for (Person person : personList) {
+        results.add(asyncCompetenceManager.applyBonusPerPerson(person, yearMonth, code));
+        log.debug("Assegnata la competenza {} alla persona {}", code, person);
       }
-    } else {
-      log.warn("La competenza {} non risulta abilitata per il dipendente {} nel mese "
-          + "e nell'anno selezionati", code, person.fullName());
     }
-  }
-
-  /**
-   * assegna le competenze speciali (su presenza mensile o assegnano interamente un mese).
-   *
-   * @param person la persona a cui assegnare la competenza
-   * @param yearMonth l'anno mese per cui assegnare la competenza
-   * @param code il codice competenza da assegnare
-   * @param psDto (opzionale) se presente serve al calcolo dei giorni di presenza
-   */
-  private void addSpecialCompetence(Person person, YearMonth yearMonth, CompetenceCode code, 
-      Optional<PersonStampingRecap> psDto) {
-    int value = 0;
-    if (psDto.isPresent()) {
-      value = psDto.get().basedWorkingDays;
-    } else {
-      value = code.limitValue;
+    try {
+      CompletableFuture.allOf(results.toArray(new CompletableFuture[results.size()])).get();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Exception applying bonus for offices {}", offices, e);
     }
-    Optional<Competence> competence = competenceDao
-        .getCompetence(person, yearMonth.getYear(), yearMonth.getMonthValue(), code);
-    if (competence.isPresent()) {
-      competence.get().valueApproved = value;
-      emp.get().merge(competence.get());
-      //competence.get().save();
-    } else {
-      Competence comp = new Competence();
-      comp.competenceCode = code;
-      comp.setPerson(person);
-      comp.year = yearMonth.getYear();
-      comp.month = yearMonth.getMonthValue();
-      comp.valueApproved = value;
-      emp.get().persist(comp);
-      //comp.save();
-    }
-    log.debug("Assegnata competenza a {}", person.fullName());
   }
 
 
