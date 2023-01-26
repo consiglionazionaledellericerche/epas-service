@@ -16,14 +16,7 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Maps;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
-import it.cnr.iit.epas.models.absences.AmountType;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
-import it.cnr.iit.epas.models.absences.InitializationGroup;
-import java.time.LocalDate;
-import java.util.SortedMap;
 import lombok.Data;
 
 @Data

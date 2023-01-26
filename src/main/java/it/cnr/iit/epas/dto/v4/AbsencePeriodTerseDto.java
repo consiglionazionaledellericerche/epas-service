@@ -16,29 +16,30 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
+import it.cnr.iit.epas.models.absences.AmountType;
+import it.cnr.iit.epas.models.absences.InitializationGroup;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-/**
- * DTO per l'esportazione via REST delle informazioni 
- * principali delle ferie.
- *
- * @since versione 4 dell'API REST
- * @author Andrea Generosi
- *
- */
 @Data
-@EqualsAndHashCode
-public class VacationSituationDto extends BaseModelDto {
+public class AbsencePeriodTerseDto {
 
   private Long personId;
-  private int year;
-  private LocalDate date;
 
-  private VacationSummaryTerseDto lastYear;
-  private VacationSummaryTerseDto currentYear;
-  private VacationSummaryTerseDto permissions;
+  private InitializationGroup initialization;
+  private LocalDate from;
+  private LocalDate to;
+
+  private AmountType takeAmountType;
+  private GroupAbsenceTypeDto groupAbsenceType;
+
+  private boolean containsCriticalErrors;
+  //  private boolean containsAbsencesErrors;
+  private boolean takableWithLimit;
+  private long periodTakableAmount;
+  private long remainingAmount;
+
+
+//  private SortedMap<LocalDate, DayInPeriod> daysInPeriod = Maps.newTreeMap();
 
 }

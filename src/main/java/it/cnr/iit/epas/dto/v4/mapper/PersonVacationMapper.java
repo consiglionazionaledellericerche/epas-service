@@ -17,14 +17,14 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
 import it.cnr.iit.epas.dto.v4.ContractDto;
-import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.InitializationGroupDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
-import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.VacationSummaryTerseDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
@@ -63,7 +63,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-  AbsencePeriodDto convert(AbsencePeriod period);
+  AbsencePeriodTerseDto convert(AbsencePeriod period);
 
   PeriodChainDto convert(PeriodChain periodChain);
 
@@ -74,6 +74,6 @@ public interface PersonVacationMapper {
   @Mapping(target = "used", expression = "java(vacationSummary.used())")
   @Mapping(target = "usableTotal", expression = "java(vacationSummary.usableTotal())")
   @Mapping(target = "usable", expression = "java(vacationSummary.usable())")
-  VacationSummaryDto convert(VacationSummary vacationSummary);
+  VacationSummaryTerseDto convert(VacationSummary vacationSummary);
 
 }

@@ -40,11 +40,11 @@ public class AbsencePeriodDto {
   private GroupAbsenceTypeDto groupAbsenceType;
 
   private boolean containsCriticalErrors;
-  //  private boolean containsAbsencesErrors;
   private boolean takableWithLimit;
   private long periodTakableAmount;
   private long remainingAmount;
 
+  private List<AbsencePeriodDto> subPeriods;
 
 //  private SortedMap<LocalDate, DayInPeriod> daysInPeriod = Maps.newTreeMap();
 

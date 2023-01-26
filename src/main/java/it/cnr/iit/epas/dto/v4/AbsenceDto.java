@@ -16,29 +16,22 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali delle ferie.
+ * DTO per l'esportazione via REST delle informazioni
+ * principali di un'assenza.
  *
  * @since versione 4 dell'API REST
- * @author Andrea Generosi
+ * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode
-public class VacationSituationDto extends BaseModelDto {
+@EqualsAndHashCode(callSuper = true)
+public class AbsenceDto extends AbsenceShowTerseDto {
 
-  private Long personId;
-  private int year;
-  private LocalDate date;
-
-  private VacationSummaryTerseDto lastYear;
-  private VacationSummaryTerseDto currentYear;
-  private VacationSummaryTerseDto permissions;
+  private PersonDayDto personDay;
+  private AbsenceTypeDto absenceType;
 
 }

@@ -15,6 +15,7 @@
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import com.google.common.collect.Lists;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
@@ -22,9 +23,10 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import java.time.LocalDate;
@@ -39,26 +41,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author Andrea Generosi
  */
 @Slf4j
-public class PersonVacationRecap {
+public class PersonVacationSummary {
 
   public Person person;
   public int year;
-
-  boolean showVacationPeriods;
-
-  // I riepiloghi delle ferie e permessi
-  public List<VacationSituation> vacationSituations = Lists.newArrayList();
+  public Long contractId;
+  public TypeSummary typeSummary;
+  public VacationSummary vacationSummary;
   public List<Contract> contracts;
-
-  public GroupAbsenceType permissionGroup;
-  public PeriodChain periodChain;
-  public AbsenceForm categorySwitcher;
-
-  // I riepiloghi mensili (uno per ogni contratto attivo nel mese)
-  public List<IWrapperContractMonthRecap> contractMonths = Lists.newArrayList();
-
-  // Le informazioni su eventuali assenze a recupero (es.: 91CE)
-  //public List<AbsenceToRecoverDto> absencesToRecoverList = Lists.newArrayList();
 
   /**
    * Costruisce l'oggetto contenente tutte le informazioni da renderizzare nella pagina riepilogo
@@ -66,46 +56,47 @@ public class PersonVacationRecap {
    *
    * @param absenceComponentDao absenceComponentDao
    * @param absenceService      absenceService
-   * @param wrapperFactory      wrapperFactory
    * @param year                year
    * @param person              person
-   */
-  public PersonVacationRecap(AbsenceComponentDao absenceComponentDao,
-      AbsenceService absenceService, IWrapperFactory wrapperFactory,
-      int year, Person person) {
+   * @param contractId          contractId
+   * @param typeSummary         typeSummary
+   * */
+  public PersonVacationSummary(ContractDao contractDao, AbsenceComponentDao absenceComponentDao,
+      AbsenceService absenceService, int year, Person person,
+      Long contractId, TypeSummary typeSummary) {
 
     final long start = System.currentTimeMillis();
-    log.trace("inizio creazione nuovo PersonVacationRecap. Person = {}, year = {}",
-        person.getFullname(), year);
+    log.trace("inizio creazione nuovo PersonVacationSummary. Person = {}, year = {}, contractId = {}, typeSummary = {}",
+        person.getFullname(), year, contractId, typeSummary);
     this.person = person;
     this.year = year;
+    this.contractId = contractId;
+    this.typeSummary = typeSummary;
 
-    contracts = wrapperFactory.create(person).orderedYearContracts(year);
+    Contract contract = contractDao.getContractById(contractId);
+//    com.google.common.base.Optional<User> currentUser = Security.getUser();
+//    if (contract == null || type == null
+//        || !currentUser.isPresent() || currentUser.get().getPerson() == null
+//        || !contract.getPerson().equals(currentUser.get().getPerson())) {
+//      forbidden();
+//    }
+
+    log.debug("contract>>>> {} this.typeSummary {}",contract, this.typeSummary);
 
     GroupAbsenceType vacationGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
 
-    for (Contract contract : contracts) {
-      log.debug("contract {}", contract );
-      VacationSituation vacationSituation = absenceService.buildVacationSituation(contract, year,
-          vacationGroup, Optional.empty(), false);
-      vacationSituations.add(vacationSituation);
+        if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
+      vacationSummary = absenceService.buildVacationSituation(contract, year,
+          vacationGroup, java.util.Optional.empty(), false).permissions;
+    } else {
+      vacationSummary = absenceService.buildVacationSituation(contract, year,
+          vacationGroup, Optional.empty(), false).currentYear;
     }
 
-    permissionGroup = absenceComponentDao
-        .groupAbsenceTypeByName(DefaultGroup.G_661.name()).get();
+    log.debug("vacationSummary>>>> {}",vacationSummary.total());
 
-    periodChain = absenceService
-        .residual(person, permissionGroup, LocalDate.now());
-
-    categorySwitcher = absenceService
-        .buildForCategorySwitch(person, LocalDate.now(), permissionGroup);
-
-    showVacationPeriods = true;
-
-    log.debug("periodChain {}>> {}", periodChain.periods.size(), periodChain.periods.get(0) );
-
-    log.debug("fine creazione nuovo PersonVacationRecap in {} ms. Person = {}, year = {}",
+    log.debug("fine creazione nuovo PersonVacationSummary in {} ms. Person = {}, year = {}",
         System.currentTimeMillis() - start, person.getFullname(), year);
   }
 }

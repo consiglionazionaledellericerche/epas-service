@@ -17,12 +17,8 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
-import it.cnr.iit.epas.models.Contract;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -31,31 +27,17 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class VacationSummaryDto extends BaseModelDto {
+public class VacationSummaryTerseDto extends BaseModelDto {
 
   private TypeSummary type;
   private int year;
   private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
+  //private ContractDto contract;
   private long total;
   private long accrued;
   private long used;
   private long usableTotal;
   private long usable;
-  private LocalDate upperLimit;
-  private long sourced;
-
-  private List<AbsenceDto> absencesUsed = Lists.newArrayList();
-  private List<AbsenceDto> postPartum = Lists.newArrayList();
-
-  private long accruedDayTotal;
-  private long subAmount;
-  private boolean subFixedPostPartum;
-  private long subAmountBeforeFixedPostPartum;
-  private long subTotalAmount;
-  private long subDayProgression;
-  private long subDayPostPartum;
-  private long subDayToFixPostPartum;
-  private boolean subAccrued;
-  private LocalDate contractEndFirstYearInPeriod;
+  //public AbsencePeriod absencePeriod;
 
 }

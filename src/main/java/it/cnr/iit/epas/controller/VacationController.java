@@ -17,20 +17,19 @@
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
-import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
-import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
+import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
-import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
-import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
+import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
-import it.cnr.iit.epas.manager.services.absences.model.VacationFactory;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
-import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
-import java.time.LocalDate;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import java.time.YearMonth;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -50,16 +49,22 @@ public class VacationController {
   private final IWrapperFactory wrapperFactory;
   private final PersonVacationRecapFactory personvacationFactory;
   private final PersonVacationMapper personVacationMapper;
+  private final PersonVacationSummaryFactory personVacationSummaryFactory;
+  private final PersonVacationSummaryMapper personVacationSummaryMapper;
 
   @Inject
   public VacationController(
       PersonDao personDao, IWrapperFactory wrapperFactory,
       PersonVacationRecapFactory personvacationFactory,
-      PersonVacationMapper personVacationMapper) {
+      PersonVacationMapper personVacationMapper,
+      PersonVacationSummaryFactory personVacationSummaryFactory,
+      PersonVacationSummaryMapper personVacationSummaryMapper) {
     this.personDao = personDao;
     this.wrapperFactory = wrapperFactory;
     this.personvacationFactory = personvacationFactory;
     this.personVacationMapper = personVacationMapper;
+    this.personVacationSummaryFactory = personVacationSummaryFactory;
+    this.personVacationSummaryMapper = personVacationSummaryMapper;
   }
 
   @GetMapping(ApiRoutes.LIST)
@@ -83,4 +88,27 @@ public class VacationController {
     PersonVacationRecap psrDto = personvacationFactory.create(person.get(), year);
     return ResponseEntity.ok().body(personVacationMapper.convert(psrDto));
   }
+
+  @GetMapping("/summary")
+  public ResponseEntity<PersonVacationSummaryDto> summary(
+      @RequestParam("personId") Long personId,
+      @RequestParam("contractId") Long contractId,
+      @RequestParam("year") Integer year,
+      @RequestParam("month") Integer month,
+      @RequestParam("type") TypeSummary typeSummary) {
+    log.debug("REST method {} invoked with parameters personId={}, contractId={}, year={}, type={}",
+        "/rest/v4/vacations/summary", personId, contractId, year, typeSummary);
+
+    val person = personDao.byId(personId);
+
+    val wrPerson = wrapperFactory.create(person.get());
+    if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
+      return ResponseEntity.notFound().build();
+    }
+
+    PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year, contractId, typeSummary);
+    log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
+    return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
+  }
+
 }
