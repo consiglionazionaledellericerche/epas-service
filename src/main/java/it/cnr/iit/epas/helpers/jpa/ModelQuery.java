@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.helpers.jpa;
 
 import com.google.common.base.Function;
@@ -41,15 +42,15 @@ public class ModelQuery {
   protected final Provider<EntityManager> emp;
 
   public ModelQuery(Provider<EntityManager> emp) {
-   this.emp = emp;
-   this.queryFactory = new JPAQueryFactory(emp.get());
- }
+    this.emp = emp;
+    this.queryFactory = new JPAQueryFactory(emp.get());
+  }
 
- public JPQLQuery<?> createQuery() {
+  public JPQLQuery<?> createQuery() {
     return queryFactory.query();
   }
 
-   /**
+  /**
    * Il simpleresult che wrappa la lista o i listresults.
    *
    * @return a simplequery object, wrap list or listResults.

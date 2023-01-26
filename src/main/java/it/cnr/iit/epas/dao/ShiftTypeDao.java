@@ -29,7 +29,7 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ShiftTypeDao extends DaoBase<ShiftType>{
+public class ShiftTypeDao extends DaoBase<ShiftType> {
 
   @Inject
   ShiftTypeDao(Provider<EntityManager> emp) {

@@ -14,9 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models;
 
 import com.google.common.base.MoreObjects;
+import it.cnr.iit.epas.models.base.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -26,7 +28,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import it.cnr.iit.epas.models.base.BaseEntity;
 
 /**
  * Associazione di un ruolo per un utente per una determinata sede.

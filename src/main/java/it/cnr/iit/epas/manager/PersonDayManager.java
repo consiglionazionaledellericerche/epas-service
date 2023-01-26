@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Preconditions;
@@ -95,7 +96,8 @@ public class PersonDayManager {
    */
   @Inject
   public PersonDayManager(ConfigurationManager configurationManager,
-      PersonDayInTroubleManager personDayInTroubleManager, PersonDayInTroubleDao personDayInTroubleDao,
+      PersonDayInTroubleManager personDayInTroubleManager, 
+      PersonDayInTroubleDao personDayInTroubleDao,
       PersonDayDao personDayDao,
       PersonShiftDayDao personShiftDayDao, WorkingTimeTypeDao workingTimeTypeDao, ZoneDao zoneDao,
       AbsenceComponentDao absenceComponentDao, Provider<EntityManager> emp) {
@@ -120,7 +122,8 @@ public class PersonDayManager {
    */
   public Optional<Absence> getPreventMealTicket(PersonDay personDay) {
     for (Absence absence : personDay.getAbsences()) {
-      if (absence.absenceType.getMealTicketBehaviour().equals(MealTicketBehaviour.preventMealTicket)) { 
+      if (absence.absenceType.getMealTicketBehaviour()
+          .equals(MealTicketBehaviour.preventMealTicket)) { 
         return Optional.of(absence);
       }
     }
@@ -161,7 +164,8 @@ public class PersonDayManager {
    */
   public Optional<Absence> getCompleteDayAndAddOvertime(PersonDay personDay) {
     for (Absence absence : personDay.getAbsences()) {
-      if (absence.getJustifiedType().getName().equals(JustifiedTypeName.complete_day_and_add_overtime)) {
+      if (absence.getJustifiedType().getName()
+          .equals(JustifiedTypeName.complete_day_and_add_overtime)) {
         return Optional.of(absence);
       }
     }
@@ -300,7 +304,8 @@ public class PersonDayManager {
             && (valid.first.getStampType() == null
             || valid.first.getStampType().isGapLunchPairs())) {
           Optional<ZoneToZones> zoneToZones = 
-              zoneDao.getByLinkNames(previous.second.getStampingZone(), valid.first.getStampingZone());
+              zoneDao.getByLinkNames(
+                  previous.second.getStampingZone(), valid.first.getStampingZone());
           if (zoneToZones.isPresent()) {
             if (!isTimeInDelay(previous, valid, zoneToZones)) {
               allGapPairs.add(new PairStamping(previous.second, valid.first));
@@ -370,10 +375,12 @@ public class PersonDayManager {
         Stamping second = validPair.first;
         //almeno una delle due permesso breve
         if ((first.getStampType() != null && first.getStampType() == StampTypes.PERMESSO_BREVE) 
-            || (second.getStampType() != null && second.getStampType() == StampTypes.PERMESSO_BREVE)) {
+            || (second.getStampType() != null 
+            && second.getStampType() == StampTypes.PERMESSO_BREVE)) {
           //solo permessi brevi
           if ((first.getStampType() == null || first.getStampType() == StampTypes.PERMESSO_BREVE)
-              && (second.getStampType() == null || second.getStampType() == StampTypes.PERMESSO_BREVE)) {
+              && (second.getStampType() == null 
+              || second.getStampType() == StampTypes.PERMESSO_BREVE)) {
             gapTime += new PairStamping(first, second).timeInPair;
           }
         }
@@ -443,7 +450,8 @@ public class PersonDayManager {
     Optional<Absence> assignAllDay = getAssignAllDay(personDay);
     if (assignAllDay.isPresent()) {
       personDay.setTimeAtWork(wttd.workingTime);
-      setTicketStatusIfNotForced(personDay, assignAllDay.get().absenceType.getMealTicketBehaviour());
+      setTicketStatusIfNotForced(
+          personDay, assignAllDay.get().absenceType.getMealTicketBehaviour());
       return personDay;
     }
 
@@ -707,7 +715,8 @@ public class PersonDayManager {
     for (PairStamping validPair : validPairs) {
       if (temp != null && stampingsBetweenZones(temp, validPair)) {
         Optional<ZoneToZones> zoneToZones = 
-            zoneDao.getByLinkNames(temp.second.getStampingZone(), validPair.first.getStampingZone());
+            zoneDao.getByLinkNames(
+                temp.second.getStampingZone(), validPair.first.getStampingZone());
         if (zoneToZones.isPresent()) {
 
           Range<LocalTime> range = Range.closed(temp.second.getDate().toLocalTime(), 
@@ -1187,7 +1196,8 @@ public class PersonDayManager {
       LocalDateTime outTime = validPair.second.getDate();
       LocalDateTime inTime = validPair.first.getDate();
       List<Stamping> serviceStampingsInSinglePair = serviceStampingsToCheck.stream()
-          .filter(stamping -> stamping.getDate().isAfter(inTime) && stamping.getDate().isBefore(outTime))
+          .filter(stamping -> stamping.getDate().isAfter(inTime) 
+              && stamping.getDate().isBefore(outTime))
           .collect(Collectors.toList());
       //check
       Stamping serviceExit = null;
@@ -1332,7 +1342,8 @@ public class PersonDayManager {
    */
   public boolean isOnMission(PersonDay personDay) {
     return personDay.getAbsences().stream()
-        .filter(absence -> absence.absenceType.getCode().equals(AbsenceTypeMapping.MISSIONE.getCode()))
+        .filter(absence -> absence.absenceType.getCode()
+            .equals(AbsenceTypeMapping.MISSIONE.getCode()))
         .findAny().isPresent();
   }
 
@@ -1407,7 +1418,8 @@ public class PersonDayManager {
    * @return la quantità in eccesso, se c'è, nei giorni in cui una persona è in turno.
    */
   public int getExceedInShift(PersonDay pd) {
-    Optional<PersonShiftDay> psd = personShiftDayDao.getPersonShiftDay(pd.getPerson(), pd.getDate());
+    Optional<PersonShiftDay> psd = 
+        personShiftDayDao.getPersonShiftDay(pd.getPerson(), pd.getDate());
     if (psd.isPresent()) {
       return pd.getDifference();
     }
@@ -1662,7 +1674,9 @@ public class PersonDayManager {
       Range<LocalTime> mandatoryTimeSlotRange) {
     val workingTimeRangeSet = TreeRangeSet.<LocalTime>create();
 
-    val pairs = getValidPairStampings(personDay.getStampings()).stream().collect(Collectors.toList());
+    val pairs = 
+        getValidPairStampings(
+            personDay.getStampings()).stream().collect(Collectors.toList());
 
     for (PairStamping ps : pairs) {
       val vpr = Range.closed(ps.first.getDate().toLocalTime(), ps.second.getDate().toLocalTime());

@@ -14,13 +14,14 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.enumerate;
 
 /**
  * enumerato contenente le tipologie di comportamento dei codici d'assenza 
  * per la maturazione del buono pasto.
- * 
- * @author dario
+ *
+ * @author Dario Tagliaferri
  *
  */
 public enum MealTicketBehaviour {

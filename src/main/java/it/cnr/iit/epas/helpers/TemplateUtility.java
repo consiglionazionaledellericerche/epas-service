@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.helpers;
 
 import com.google.common.base.Supplier;
@@ -862,14 +863,14 @@ public class TemplateUtility {
   /**
    * Url del servizio Attestati.
    */
-//  public String getAttestatiUrl() {
-//    try {
-//      return AttestatiApis.getAttestatiBaseUrl();
-//    } catch (NoSuchFieldException e) {
-//      // Empty URL
-//      return "#";
-//    }
-//  }
+  //  public String getAttestatiUrl() {
+  //    try {
+  //      return AttestatiApis.getAttestatiBaseUrl();
+  //    } catch (NoSuchFieldException e) {
+  //      // Empty URL
+  //      return "#";
+  //    }
+  //  }
   
   /**
    * Verifica se la persona è reperible in data odierna.

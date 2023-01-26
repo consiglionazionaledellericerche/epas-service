@@ -755,7 +755,8 @@ public class AbsenceManager {
           log.info("Rimossa assenza del {} per {}", actualDate, person.getFullname());
         }
       }
-      if (pd.getDate().isAfter(today) && pd.getAbsences().isEmpty() && pd.getStampings().isEmpty()) {
+      if (pd.getDate().isAfter(today) && pd.getAbsences().isEmpty() 
+          && pd.getStampings().isEmpty()) {
         pd.reset();
         personDayDao.merge(pd);
       }

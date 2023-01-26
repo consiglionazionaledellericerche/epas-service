@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/v4/admin")
 public class AdminController {
 
-  private final static String CLEAN_PERSON_DAYS_IN_TROUBLE_API = "/cleanPersonDaysInTrouble";
+  private static final String CLEAN_PERSON_DAYS_IN_TROUBLE_API = "/cleanPersonDaysInTrouble";
 
   private final PersonDao personDao;
   private final PersonDayInTroubleManager personDayInTroubleManager;

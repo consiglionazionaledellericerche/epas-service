@@ -27,7 +27,7 @@ import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JustifiedTypeDao extends DaoBase<JustifiedType>{
+public class JustifiedTypeDao extends DaoBase<JustifiedType> {
 
   @Inject
   JustifiedTypeDao(Provider<EntityManager> emp) {

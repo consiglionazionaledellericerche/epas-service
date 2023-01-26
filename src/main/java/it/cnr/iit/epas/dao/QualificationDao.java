@@ -29,7 +29,7 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 
 @Component
-public class QualificationDao extends DaoBase<Qualification>{
+public class QualificationDao extends DaoBase<Qualification> {
 
   @Inject
   QualificationDao(Provider<EntityManager> emp) {

@@ -14,12 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.enumerate;
 
+import it.cnr.iit.epas.manager.configurations.EpasParam;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import it.cnr.iit.epas.manager.configurations.EpasParam;
 
 /**
  * Enumerato che gestisce la tipologia di richiesta informativa.

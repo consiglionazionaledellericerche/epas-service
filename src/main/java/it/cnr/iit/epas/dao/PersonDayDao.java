@@ -374,7 +374,7 @@ public class PersonDayDao extends DaoBase<PersonDay> {
    * Ritorna la lista dei giorni di lavoro di un dipendente con date tra begin e end
    * e che abbia almeno una timbratura del tipo passato con stampType.
    */
-  public List<PersonDay> getStampTypePersonDaysByOFficeInPeriod(
+  public List<PersonDay> getStampTypePersonDaysByOfficeInPeriod(
       StampTypes stampType, Office office, LocalDate begin, LocalDate end) {
     QPersonDay personDay = QPersonDay.personDay;
     QStamping stamping = QStamping.stamping;
@@ -393,7 +393,7 @@ public class PersonDayDao extends DaoBase<PersonDay> {
    */
   public List<PersonDay> getServiceExitPersonDaysByOfficeInPeriod(
       Office office, LocalDate begin, LocalDate end) {
-    return getStampTypePersonDaysByOFficeInPeriod(
+    return getStampTypePersonDaysByOfficeInPeriod(
         StampTypes.MOTIVI_DI_SERVIZIO, office, begin, end);
   }
 }
