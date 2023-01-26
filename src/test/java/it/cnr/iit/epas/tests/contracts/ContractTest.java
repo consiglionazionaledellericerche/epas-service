@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.tests.contracts;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class ContractTest {
+class ContractTest {
 
   @Inject
   H2Examples example;
@@ -45,7 +46,7 @@ public class ContractTest {
   @Test
   @Transactional
   void testCurrentContract() {
-    val beginDate = LocalDate.of(2009, 2, 01);
+    val beginDate = LocalDate.now();
     val person = example.normalEmployee(beginDate, Optional.empty());
     assertEquals(1, person.getContracts().size());
     val contract = person.getContracts().get(0);
