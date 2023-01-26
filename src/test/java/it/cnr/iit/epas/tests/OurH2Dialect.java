@@ -1,4 +1,4 @@
-package it.cnr.iit.epas.config;
+package it.cnr.iit.epas.tests;
 /*
  * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
  *
