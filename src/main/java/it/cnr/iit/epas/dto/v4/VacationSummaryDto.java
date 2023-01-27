@@ -34,6 +34,7 @@ import lombok.EqualsAndHashCode;
 public class VacationSummaryDto extends BaseModelDto {
 
   private TypeSummary type;
+  private ContractDto contract;
   private int year;
   private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
   private long total;
@@ -46,6 +47,7 @@ public class VacationSummaryDto extends BaseModelDto {
 
   private List<AbsenceDto> absencesUsed = Lists.newArrayList();
   private List<AbsenceDto> postPartum = Lists.newArrayList();
+  private long postPartumSize;
 
   private long accruedDayTotal;
   private long subAmount;

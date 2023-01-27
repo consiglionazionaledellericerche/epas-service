@@ -36,6 +36,7 @@ public class VacationSituationDto extends BaseModelDto {
   private Long personId;
   private int year;
   private LocalDate date;
+  private ContractDto contract;
 
   private VacationSummaryTerseDto lastYear;
   private VacationSummaryTerseDto currentYear;

@@ -16,13 +16,11 @@
  */
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.AbsenceDto;
-import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
-import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
-import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.*;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.absences.Absence;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -48,6 +46,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "upperLimit", expression = "java(vacationSummary.upperLimit())")
   @Mapping(target = "sourced", expression = "java(vacationSummary.sourced())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
+  @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size)")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
   @Mapping(target = "subAmount", expression = "java(vacationSummary.subAmount(period))")
@@ -67,6 +66,8 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceDto convert(Absence absence);
+
+  ContractDto convert(Contract contract);
 
   //  @Mapping(target = "absencesUsed", expression = "java(vacationSummary.absencesUsed())")
 //  @Mapping(target = "postPartum", expression = "java(vacationSummary.postPartum())")

@@ -19,6 +19,8 @@ package it.cnr.iit.epas.dto.v4;
 
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import java.time.LocalDate;
+
+import it.cnr.iit.epas.models.Contract;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -38,6 +40,7 @@ public class VacationSummaryTerseDto extends BaseModelDto {
   private long used;
   private long usableTotal;
   private long usable;
+
   //public AbsencePeriod absencePeriod;
 
 }
