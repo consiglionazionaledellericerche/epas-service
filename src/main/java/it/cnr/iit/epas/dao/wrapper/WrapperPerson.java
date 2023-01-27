@@ -48,18 +48,18 @@ import java.util.SortedMap;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.transaction.TransactionScoped;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Wrapper per la person.
- * Il @TransactionScoped è necessario per avere un'istanza diversa per ogni richesta, altrimenti
- * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richeste.
+ * Il @RequestScope è necessario per avere un'istanza diversa per ogni richesta, altrimenti
+ * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richieste.
  *
  * @author Marco Andreini
  */
 @Component
-@TransactionScoped
+@RequestScope
 public class WrapperPerson implements IWrapperPerson {
 
   private Person value;

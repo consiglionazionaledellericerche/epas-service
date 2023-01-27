@@ -37,18 +37,20 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.transaction.TransactionScoped;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Wrapper personDay.
- * Il @TransactionScoped è necessario per avere un'istanza diversa per ogni transazione, altrimenti
- * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richeste.
+ * Il @RequestScope è necessario per avere un'istanza diversa per ogni transazione, altrimenti
+ * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richieste.
  *
  * @author Alessandro Martelli
  */
 @Slf4j
 @Component
-@TransactionScoped
+@RequestScope
 public class WrapperPersonDay implements IWrapperPersonDay {
 
   private PersonDay value;
