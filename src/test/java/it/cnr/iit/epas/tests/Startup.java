@@ -17,7 +17,6 @@
 
 package it.cnr.iit.epas.tests;
 
-import com.google.common.io.Resources;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,6 +33,7 @@ import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -73,45 +73,46 @@ class Startup implements ApplicationRunner {
   public void run(ApplicationArguments args) throws Exception {
     log.info("Inizializzazione del db per i test");
     Session session = (Session) entityManagerFactory.createEntityManager().getDelegate();
+
     session.doWork(
         new DatasetImport(
-            DatabaseOperation.INSERT,
-            Resources.getResource(
-                Startup.class, "data/qualifications.xml")));
-    //competenceCode
-    session.doWork(
-        new DatasetImport(
-            DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/competence-codes.xml")));
-    //competenceCode
-    session.doWork(
-        new DatasetImport(
-            DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/stamp-modification-types.xml")));
+            DatabaseOperation.INSERT, new ClassPathResource("data/qualifications.xml").getURL()));
 
     //competenceCode
     session.doWork(
         new DatasetImport(
             DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/roles.xml")));
+            new ClassPathResource("data/competence-codes.xml").getURL()));
+
+    //competenceCode
+    session.doWork(
+        new DatasetImport(
+            DatabaseOperation.INSERT,
+                new ClassPathResource("data/stamp-modification-types.xml").getURL()));
+
+    //competenceCode
+    session.doWork(
+        new DatasetImport(
+            DatabaseOperation.INSERT,
+            new ClassPathResource("data/roles.xml").getURL()));
 
     //office
     session.doWork(
         new DatasetImport(
             DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/office-with-deps.xml")));
+            new ClassPathResource("data/office-with-deps.xml").getURL()));
 
     //workingTimeType workingTimeTypeDay
     session.doWork(
         new DatasetImport(
             DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/working-time-types.xml")));
+            new ClassPathResource("data/working-time-types.xml").getURL()));
 
     //lucchesi slim 2016-04
     session.doWork(
         new DatasetImport(
             DatabaseOperation.INSERT,
-            Resources.getResource(Startup.class, "data/lucchesi-login-logout.xml")));
+            new ClassPathResource("data/lucchesi-login-logout.xml").getURL()));
 
     log.info("Terminato inserimento dati nel db di test");
   }

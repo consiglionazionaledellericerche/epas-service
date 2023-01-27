@@ -42,6 +42,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Transactional
 @SpringBootTest
 class VacationInsertTest {
   
@@ -58,7 +59,6 @@ class VacationInsertTest {
   private AbsenceComponentDao absenceComponentDao;
 
   @Test
-  @Transactional
   public void contractVacationPeriods() {
     absenceService.enumInitializator();
 
@@ -84,7 +84,6 @@ class VacationInsertTest {
    * Issue #258.
    */
   @Test
-  @Transactional
   public void bucciCase() {
     
     absenceService.enumInitializator();

@@ -42,6 +42,7 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Transactional
 @SpringBootTest
 class Absences661Test {
 
@@ -68,7 +69,6 @@ class Absences661Test {
   private AbsenceService absenceService;
 
   @Test
-  @Transactional
   public void test() {
 
     absenceService.enumInitializator();
@@ -119,7 +119,6 @@ class Absences661Test {
    * ore annue di 661 si riducono proporzionalmente.
    */
   @Test
-  @Transactional
   public void adjustmentLimit() {
         
     absenceService.enumInitializator();
@@ -181,7 +180,6 @@ class Absences661Test {
    * Quando il mio orario di lavoro è 7:12 la conversione del 661G deve essere 6 ore.
    */
   @Test
-  @Transactional
   public void sixHourRule() {
 
     absenceService.enumInitializator();

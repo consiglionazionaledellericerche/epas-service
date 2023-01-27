@@ -61,7 +61,8 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
     if (getContract().getValue().getSourceDateResidual() == null) {
       return false;
     }
-    return YearMonth.from(getContract().getValue().getSourceDateResidual()).equals(YearMonth.of(year, month));
+    return YearMonth.from(getContract().getValue().getSourceDateResidual())
+            .equals(YearMonth.of(year, month));
   }
 
   /**

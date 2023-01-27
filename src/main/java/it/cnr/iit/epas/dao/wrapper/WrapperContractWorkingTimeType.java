@@ -36,6 +36,7 @@ public class WrapperContractWorkingTimeType implements IWrapperContractWorkingTi
     this.value = cwtt;
     return this;
   }
+
   @Override
   public ContractWorkingTimeType getValue() {
     return value;

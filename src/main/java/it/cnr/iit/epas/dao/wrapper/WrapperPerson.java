@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.wrapper;
 
 import com.google.common.base.Preconditions;
@@ -47,14 +48,18 @@ import java.util.SortedMap;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.TransactionScoped;
 import org.springframework.stereotype.Component;
 
 /**
  * Wrapper per la person.
+ * Il @TransactionScoped è necessario per avere un'istanza diversa per ogni richesta, altrimenti
+ * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richeste.
  *
  * @author Marco Andreini
  */
 @Component
+@TransactionScoped
 public class WrapperPerson implements IWrapperPerson {
 
   private Person value;
@@ -413,7 +418,7 @@ public class WrapperPerson implements IWrapperPerson {
   @Override
   public Integer getPositiveResidualInMonth(int year, int month) {
     return null;
-  //FIXME: dipendenza circolare da capire come risolvere
+    //FIXME: dipendenza circolare da capire come risolvere
     //return competenceManager.positiveResidualInMonth(value, year, month) / 60;
   }
 
@@ -540,7 +545,8 @@ public class WrapperPerson implements IWrapperPerson {
     }
     YearMonth last = null;
     for (Certification certification : value.certifications) {
-      if (last == null || last.isBefore(YearMonth.of(certification.getYear(), certification.getMonth()))) {
+      if (last == null 
+          || last.isBefore(YearMonth.of(certification.getYear(), certification.getMonth()))) {
         last = YearMonth.of(certification.getYear(), certification.getMonth());
       }
     }
@@ -560,8 +566,9 @@ public class WrapperPerson implements IWrapperPerson {
     return previousContract;
   }
 
+  @Override
   public int getNumberOfMealTicketsPreviousMonth(YearMonth yearMonth) {
- // ******************************************************************************************
+    // ******************************************************************************************
     // DATI MENSILI
     // ******************************************************************************************
     // I riepiloghi mensili (uno per ogni contratto attivo nel mese)

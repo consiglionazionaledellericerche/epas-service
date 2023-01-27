@@ -109,20 +109,9 @@ public class ShiftManager2 {
 
   /**
    * Injector.
-   *
-   * @param personDayManager il personDayManager
-   * @param personShiftDayDao il dao sul personShiftDay
-   * @param personDayDao il dao sul personDay
-   * @param shiftDao il dao sui turni
-   * @param competenceUtility il manager per le competenze
-   * @param competenceCodeDao il dao per i competenceCode
-   * @param competenceDao il dao per le competenze
-   * @param personMonthRecapDao il dao sui residui mensili
-   * @param shiftTypeMonthDao il dao sulle attribuzioni mensili dei turni
-   * @param generalSettingDao il dao sui parametri generali
    */
   @Inject
-  public ShiftManager2(PersonDayManager personDayManager, 
+  ShiftManager2(PersonDayManager personDayManager, 
       PersonShiftDao personShiftDao, PersonShiftDayDao personShiftDayDao,
       PersonDayDao personDayDao, PersonShiftDayInTroubleDao personShiftDayInTroubleDao,
       ShiftDao shiftDao, ShiftTypeDao shiftTypeDao,
@@ -180,7 +169,8 @@ public class ShiftManager2 {
       }
       if (currentUser.hasRoles(Role.PERSONNEL_ADMIN)) {
         activities.addAll(currentUser.getUsersRolesOffices().stream()
-            .flatMap(uro -> uro.getOffice().getShiftCategories().stream().filter(st -> !st.isDisabled())
+            .flatMap(uro -> uro.getOffice().getShiftCategories().stream()
+                .filter(st -> !st.isDisabled())
                 .flatMap(shiftCategories -> shiftCategories.getShiftTypes().stream())
                 .sorted(Comparator.comparing(o -> o.getType())))
             .collect(Collectors.toList()));
@@ -842,7 +832,8 @@ public class ShiftManager2 {
             }
 
           } else {    
-            if (shift.getOrganizationShiftSlot().getPaymentType() == PaymentType.SPLIT_CALCULATION) {
+            if (shift.getOrganizationShiftSlot().getPaymentType() 
+                  == PaymentType.SPLIT_CALCULATION) {
               shiftCompetences += quantityCountForShift(shift, pd, timeInterval);
             } else {
               shiftCompetences += shift.getOrganizationShiftSlot().getMinutesPaid() 
@@ -1074,7 +1065,8 @@ public class ShiftManager2 {
             totalHolidayPeopleCompetences.merge(person, activityCompetence, 
                 (previousValue, newValue) -> newValue + previousValue);
             //Cerco le competenze di turno notturno...
-            activityCompetence = calculatePersonShiftCompetencesInPeriod(monthStatus.getShiftType(), 
+            activityCompetence = 
+                calculatePersonShiftCompetencesInPeriod(monthStatus.getShiftType(), 
                 person, monthBegin, lastDay, ShiftPeriod.nightly);
             totalNightlyPeopleCompetences.merge(person, activityCompetence, 
                 (previousValue, newValue) -> newValue + previousValue);
@@ -1135,8 +1127,10 @@ public class ShiftManager2 {
             shiftTypeMonth.getYearMonth().getMonth().getValue(), shiftCode);
 
     Competence newCompetence = 
-        shiftCompetence.orElse(new Competence(person, shiftCode, shiftTypeMonth.getYearMonth().getYear(), 
-            shiftTypeMonth.getYearMonth().getMonth().getValue()));
+        shiftCompetence.orElse(
+            new Competence(
+                person, shiftCode, shiftTypeMonth.getYearMonth().getYear(), 
+                shiftTypeMonth.getYearMonth().getMonth().getValue()));
     newCompetence.setValueApproved(totalShiftMinutes / 60);
     newCompetence.setExceededMins(totalShiftMinutes % 60);
     // newCompetence.valueRequested = ; e qui cosa ci va?

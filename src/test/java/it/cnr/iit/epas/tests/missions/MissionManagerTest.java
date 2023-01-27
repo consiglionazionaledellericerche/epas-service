@@ -20,8 +20,6 @@ package it.cnr.iit.epas.tests.missions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import it.cnr.iit.epas.dao.ContractDao;
-import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.manager.MissionManager;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
@@ -33,11 +31,14 @@ import java.time.YearMonth;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Slf4j
+@Transactional
 @SpringBootTest
 class MissionManagerTest {
 
@@ -46,23 +47,21 @@ class MissionManagerTest {
   @Inject
   AbsenceService absenceService;
   @Inject
-  PersonDao personDao;
-  @Inject
-  ContractDao contractDao;
-  @Inject
   WrapperFactory wrapperFactory;
   @Inject
   H2Examples h2Examples;
 
   @Test
-  @Transactional
   public void createMission() {
     absenceService.enumInitializator();
     
-    val currentYear = YearMonth.now().getYear();
-    val person = h2Examples.normalEmployee(LocalDate.of(2009, 2, 01), Optional.empty());
+    val person = h2Examples.normalEmployee(LocalDate.now(), Optional.empty());
     assertEquals(1, person.getContracts().size());
-    assertTrue(wrapperFactory.create(person).getCurrentContract().isPresent());
+    log.info("createMission -> Created person id = {}. {}", person.getId(), person);
+    val currentContract = wrapperFactory.create(person).getCurrentContract();
+    log.info("createMission -> currentContract {}", currentContract);
+    assertTrue(currentContract.isPresent());
+    val currentYear = YearMonth.now().getYear();
     val mission = MissionFromClient.builder()
         .id(currentYear * 100000 + 10101L)
         .anno(currentYear).codiceSede(person.getOffice().getCode())

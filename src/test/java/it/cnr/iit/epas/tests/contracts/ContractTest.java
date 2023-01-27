@@ -33,6 +33,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Transactional
 @SpringBootTest
 class ContractTest {
 
@@ -44,7 +45,6 @@ class ContractTest {
   IWrapperFactory wrapperFactory;
 
   @Test
-  @Transactional
   void testCurrentContract() {
     val beginDate = LocalDate.now();
     val person = example.normalEmployee(beginDate, Optional.empty());
