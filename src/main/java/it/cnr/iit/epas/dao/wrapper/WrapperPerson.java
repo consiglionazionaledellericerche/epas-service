@@ -49,13 +49,17 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Wrapper per la person.
+ * Il @RequestScope è necessario per avere un'istanza diversa per ogni richesta, altrimenti
+ * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richieste.
  *
  * @author Marco Andreini
  */
 @Component
+@RequestScope
 public class WrapperPerson implements IWrapperPerson {
 
   private Person value;
@@ -414,7 +418,7 @@ public class WrapperPerson implements IWrapperPerson {
   @Override
   public Integer getPositiveResidualInMonth(int year, int month) {
     return null;
-  //FIXME: dipendenza circolare da capire come risolvere
+    //FIXME: dipendenza circolare da capire come risolvere
     //return competenceManager.positiveResidualInMonth(value, year, month) / 60;
   }
 
@@ -541,7 +545,8 @@ public class WrapperPerson implements IWrapperPerson {
     }
     YearMonth last = null;
     for (Certification certification : value.certifications) {
-      if (last == null || last.isBefore(YearMonth.of(certification.getYear(), certification.getMonth()))) {
+      if (last == null 
+          || last.isBefore(YearMonth.of(certification.getYear(), certification.getMonth()))) {
         last = YearMonth.of(certification.getYear(), certification.getMonth());
       }
     }
@@ -561,8 +566,9 @@ public class WrapperPerson implements IWrapperPerson {
     return previousContract;
   }
 
+  @Override
   public int getNumberOfMealTicketsPreviousMonth(YearMonth yearMonth) {
- // ******************************************************************************************
+    // ******************************************************************************************
     // DATI MENSILI
     // ******************************************************************************************
     // I riepiloghi mensili (uno per ogni contratto attivo nel mese)

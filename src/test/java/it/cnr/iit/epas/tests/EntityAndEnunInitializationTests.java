@@ -79,7 +79,7 @@ class EntityAndEnunInitializationTests {
     officeDao.persist(office);
     assertNotNull(office.getId());
   }
-  
+
   @Order(2)
   @Test
   void buildPerson() {

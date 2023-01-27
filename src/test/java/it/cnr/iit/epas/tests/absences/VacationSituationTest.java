@@ -168,7 +168,7 @@ class VacationSituationTest {
     assertEquals(vacationSituation.currentYear.usable(), 26);
 
   }
-  
+
   /**
    * Cambiando piano ferie nel corso dell'anno 2015 per quell'anno disponeva di soli 25 giorni.
    * Quindi gliene diamo uno in più che viene maturata immediatamente.
@@ -263,7 +263,7 @@ class VacationSituationTest {
 
     GroupAbsenceType vacationGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
-    
+
     VacationSituation vacationSituation = absenceService.buildVacationSituation(
         contract, 2016, vacationGroup, Optional.of(LocalDate.of(2016, 1, 1)), false);
 

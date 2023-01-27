@@ -28,13 +28,14 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Transactional
 @SpringBootTest
 class DbObjectCreationTest {
   
   @Inject
   private H2Examples h2Examples;
 
-  @Transactional
+
   @Test
   void testNormalEmployee() {
     val normalEmployee = h2Examples.normalEmployee(LocalDate.now(), Optional.empty());

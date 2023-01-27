@@ -420,7 +420,7 @@ public class ContractManager {
 
     for (ContractMandatoryTimeSlot cmts : contract.getContractMandatoryTimeSlots()) {
       if (DateUtility.isDateIntoInterval(
-          date, new DateInterval(cmts.getBeginDate(), cmts.getEndDate()))) {
+            date, new DateInterval(cmts.getBeginDate(), cmts.getEndDate()))) {
         return Optional.of(cmts);
       }
     }
@@ -555,7 +555,7 @@ public class ContractManager {
       if (temp != null) {
         contract.setPreviousContract(null);
         if (temp.getEndDate() != null 
-            && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
+              && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
           splitVacationPeriods(contract);
         }
       }
@@ -596,7 +596,7 @@ public class ContractManager {
       contract.setPreviousContract(null);
       log.debug("Rimosso temporaneamente previousContract su contratto id={}", contract.getId());
       contractDao.merge(contract);
-      log.debug("contratto precedente corretto da impostare = {}",
+      log.debug("contratto precedente corretto da impostare = {}", 
           contractDao.getPreviousContract(contract));
       applyPreviousContractLink(contract, true);
       log.info("Impostato previousContract {} su contratto id={}",

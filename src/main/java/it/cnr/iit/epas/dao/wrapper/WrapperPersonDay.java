@@ -35,16 +35,22 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.transaction.TransactionScoped;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Wrapper personDay.
+ * Il @RequestScope è necessario per avere un'istanza diversa per ogni transazione, altrimenti
+ * questo componente potrebbe portarsi dietro variabili d'istanza popolate in altre richieste.
  *
  * @author Alessandro Martelli
  */
 @Slf4j
 @Component
+@RequestScope
 public class WrapperPersonDay implements IWrapperPersonDay {
 
   private PersonDay value;
@@ -267,7 +273,8 @@ public class WrapperPersonDay implements IWrapperPersonDay {
     }
 
     if (getPersonDayContract().isPresent()) {
-      log.trace("WrapperPersonDay::getWorkingTimeTypeDay() -> trovato contratto nel giorno {}", getValue().getDate());
+      log.trace("WrapperPersonDay::getWorkingTimeTypeDay() -> trovato contratto nel giorno {}",
+          getValue().getDate());
       for (ContractWorkingTimeType cwtt :
               this.getPersonDayContract().get().getContractWorkingTimeType()) {
 
