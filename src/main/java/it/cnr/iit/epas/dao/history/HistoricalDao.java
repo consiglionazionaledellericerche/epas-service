@@ -68,12 +68,13 @@ public class HistoricalDao {
 
   /**
    * Ritorna l'istanza di un'entità ad una specifica revisione.
-   * @deprecated non utilizzare fino a quando non è stato verificato se
-   *     il comportamento è uguale a quelle presente in ePAS per lo stsso metodo
-   * @param cls Entity Class to search
+   *
+   * @param cls Entity Class to search.
    * @param id the entity primary key
    * @param revisionId the revision id
    * @return the entity instance at the specified revision.
+   * @deprecated non utilizzare fino a quando non è stato verificato se
+   *     il comportamento è uguale a quelle presente in ePAS per lo stsso metodo
    */
   @Deprecated
   public <T extends BaseEntity> T valueAtRevision(Class<T> cls, long id, int revisionId) {
@@ -99,7 +100,8 @@ public class HistoricalDao {
    * @param id the entity primary key
    * @return last revision of specified entity.
    */
-  public HistoryValue<? extends BaseEntity> lastRevisionOf(Class<? extends BaseEntity> cls, long id) {
+  public HistoryValue<? extends BaseEntity> lastRevisionOf(
+      Class<? extends BaseEntity> cls, long id) {
     List<HistoryValue<?>> lastRevisions = lastRevisionsOf(cls, id);
     if (lastRevisions.isEmpty()) {
       return null;

@@ -64,8 +64,8 @@ public class Group extends MutableModel {
   @OneToMany(mappedBy = "group")
   private List<Affiliation> affiliations = Lists.newArrayList();
 
-//  @As(binder = NullStringBinder.class)
-//  @Unique(value = "office, externalId")
+  //  @As(binder = NullStringBinder.class)
+  //  @Unique(value = "office, externalId")
   private String externalId;
 
   private LocalDate endDate;

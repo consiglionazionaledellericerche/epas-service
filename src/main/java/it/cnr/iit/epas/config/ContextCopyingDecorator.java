@@ -34,25 +34,25 @@ import org.springframework.web.context.request.RequestContextHolder;
  */
 @Component
 class ContextCopyingDecorator implements TaskDecorator {
-  
+
   @Autowired
   RequestScopeData requestScopeData;
-  
+
   @Nonnull
   @Override
   public Runnable decorate(@Nonnull Runnable runnable) {
-      RequestAttributes context =
-              RequestContextHolder.currentRequestAttributes();
-      SecurityContext securityContext = SecurityContextHolder.getContext();
-      return () -> {
-          try {
-              RequestContextHolder.setRequestAttributes(context);
-              SecurityContextHolder.setContext(securityContext);
-              runnable.run();
-          } finally {
-              RequestContextHolder.resetRequestAttributes();
-              SecurityContextHolder.clearContext();
-          }
-      };
+    RequestAttributes context =
+        RequestContextHolder.currentRequestAttributes();
+    SecurityContext securityContext = SecurityContextHolder.getContext();
+    return () -> {
+      try {
+        RequestContextHolder.setRequestAttributes(context);
+        SecurityContextHolder.setContext(securityContext);
+        runnable.run();
+      } finally {
+        RequestContextHolder.resetRequestAttributes();
+        SecurityContextHolder.clearContext();
+      }
+    };
   }
 }

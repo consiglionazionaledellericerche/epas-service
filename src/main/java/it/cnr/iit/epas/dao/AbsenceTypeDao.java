@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dao;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
+
 import com.google.common.base.Preconditions;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;

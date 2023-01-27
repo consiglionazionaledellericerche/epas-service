@@ -14,16 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.absences.errors;
 
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDate;
 
 /**
  * Rappresenta gli errori critici durante la gestione di un'assenza.

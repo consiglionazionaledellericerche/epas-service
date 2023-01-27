@@ -30,9 +30,9 @@ public class DaoUtils {
         if (field == null) {
           throw new Exception();
         }
-        qSuper = (EntityPathBase<?>)field.get(qSuper);
+        qSuper = (EntityPathBase<?>) field.get(qSuper);
       }
-      return (QBaseEntity)qSuper;
+      return (QBaseEntity) qSuper;
     } catch (Exception ex) {
       throw new IllegalStateException("QBaseEntity non riconosciuto");  
     }

@@ -58,17 +58,17 @@ public class ContractualReference extends PeriodModel {
   @ManyToMany(mappedBy = "contractualReferences")
   private List<ContractualClause> contractualClauses = Lists.newArrayList();
 
-//  @Transient
-//  public long getLength() {
-//    return file == null ? 0 : file.length();
-//  }
-
-//  @PreRemove
-//  private void onDelete() {
-//    if (file != null && file.getFile() != null) {
-//      file.getFile().delete();  
-//    }    
-//  }
+  //  @Transient
+  //  public long getLength() {
+  //    return file == null ? 0 : file.length();
+  //  }
+  
+  //  @PreRemove
+  //  private void onDelete() {
+  //    if (file != null && file.getFile() != null) {
+  //      file.getFile().delete();  
+  //    }    
+  //  }
 
   @Override
   public String toString() {

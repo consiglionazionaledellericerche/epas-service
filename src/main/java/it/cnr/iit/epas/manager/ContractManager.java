@@ -126,7 +126,8 @@ public class ContractManager {
       return false;
     }
 
-    if (contract.getEndContract() != null && contract.getEndContract().isBefore(contract.getBeginDate())) {
+    if (contract.getEndContract() != null 
+        && contract.getEndContract().isBefore(contract.getBeginDate())) {
       return false;
     }
 
@@ -418,7 +419,8 @@ public class ContractManager {
       final Contract contract, final LocalDate date) {
 
     for (ContractMandatoryTimeSlot cmts : contract.getContractMandatoryTimeSlots()) {
-      if (DateUtility.isDateIntoInterval(date, new DateInterval(cmts.getBeginDate(), cmts.getEndDate()))) {
+      if (DateUtility.isDateIntoInterval(
+          date, new DateInterval(cmts.getBeginDate(), cmts.getEndDate()))) {
         return Optional.of(cmts);
       }
     }
@@ -552,8 +554,8 @@ public class ContractManager {
       Contract temp = contract.getPreviousContract();
       if (temp != null) {
         contract.setPreviousContract(null);
-        if (temp.getEndDate() != null && 
-            contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
+        if (temp.getEndDate() != null 
+            && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
           splitVacationPeriods(contract);
         }
       }
@@ -565,7 +567,7 @@ public class ContractManager {
    * Controlla che se è presente un previousContract e che
    * sia effettivamento il contratto precedente, altrimenti 
    * lo corregge.
-   * 
+   *
    * @param contract il contratto da verificare e correggere se necessario
    */
   public boolean fixPreviousContract(Contract contract) {
@@ -581,9 +583,11 @@ public class ContractManager {
       return false;
     }
 
-    log.info("Contratto con previousContract da correggere {}", contract, contract.getPerson().getFullname());
+    log.info("Contratto con previousContract da correggere {}",
+        contract, contract.getPerson().getFullname());
     if (contract.getPerson().getContracts().size() == 1) {
-      log.debug("Contratto id={} singolo con riferimento al previousContract uguale a se stesso", contract.getId());
+      log.debug("Contratto id={} singolo con riferimento al previousContract uguale a se stesso",
+          contract.getId());
       applyPreviousContractLink(contract, false);
       log.info("Rimosso previousContract su contratto id={}", contract.getId());
     } else {
@@ -592,9 +596,11 @@ public class ContractManager {
       contract.setPreviousContract(null);
       log.debug("Rimosso temporaneamente previousContract su contratto id={}", contract.getId());
       contractDao.merge(contract);
-      log.debug("contratto precedente corretto da impostare = {}", contractDao.getPreviousContract(contract));
+      log.debug("contratto precedente corretto da impostare = {}",
+          contractDao.getPreviousContract(contract));
       applyPreviousContractLink(contract, true);
-      log.info("Impostato previousContract {} su contratto id={}", contract.getPreviousContract(), contract.getId());
+      log.info("Impostato previousContract {} su contratto id={}",
+          contract.getPreviousContract(), contract.getId());
       contractDao.merge(contract);
     }
     log.info("Dopo la correzione -> {}", contract);
@@ -606,7 +612,7 @@ public class ContractManager {
    * Controlla tutti i contratti con previousContract impostato
    * che potrebbero avere dei problemi e li corregge se necessario.
    */
-  public int fixContractsWithWrongPreviousContract(Optional<Integer> maxSize){
+  public int fixContractsWithWrongPreviousContract(Optional<Integer> maxSize) {
     AtomicInteger contractFixed = new AtomicInteger(0);
     Stream<Contract> contractToFixStream = 
         contractDao.getContractsWithWrongPreviousContract().stream();
@@ -614,9 +620,9 @@ public class ContractManager {
       contractToFixStream = contractToFixStream.limit(maxSize.get());
     }
     contractToFixStream.forEach(contract -> {
-        if (fixPreviousContract(contract)) {
-          contractFixed.getAndIncrement();
-        };
+      if (fixPreviousContract(contract)) {
+        contractFixed.getAndIncrement();
+      }
     });
     return contractFixed.get();
   }

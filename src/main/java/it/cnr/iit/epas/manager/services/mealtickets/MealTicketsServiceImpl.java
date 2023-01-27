@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.mealtickets;
 
 import com.google.common.base.Preconditions;
@@ -59,6 +60,7 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
   private MealTicketRecapBuilder mealTicketRecapBuilder;
   private ConfigurationManager configurationManager;
   private Provider<EntityManager> emp;
+
   /**
    * Costrutture.
    *

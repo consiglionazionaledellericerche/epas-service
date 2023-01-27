@@ -21,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.common.base.Function;
 import it.cnr.iit.epas.helpers.rest.JacksonModule;
 import it.cnr.iit.epas.models.absences.Absence;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDate;
 
 /**
  * DTO per contenere le informazioni relative all'esito di un inserimento di assenza. 

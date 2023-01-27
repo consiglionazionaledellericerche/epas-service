@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.absences.model;
 
 import com.google.common.collect.Lists;
@@ -26,8 +27,8 @@ import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour.TakeCountBehaviou
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.io.Serializable;
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Contiene lo stato ferie annuale di un contratto.

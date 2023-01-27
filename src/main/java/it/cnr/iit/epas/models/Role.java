@@ -14,16 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
+import it.cnr.iit.epas.models.base.BaseEntity;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.hibernate.envers.Audited;
-import it.cnr.iit.epas.models.base.BaseEntity;
 
 /**
  * Ruolo all'interno di ePAS.

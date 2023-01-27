@@ -45,8 +45,8 @@ public class Qualification extends BaseEntity {
   @OneToMany(mappedBy = "qualification")
   private List<Person> person;
 
-//  @ManyToMany(mappedBy = "qualifications")
-//  public List<AbsenceType> absenceTypes;
+  //  @ManyToMany(mappedBy = "qualifications")
+  //  public List<AbsenceType> absenceTypes;
 
   @NotNull
   private int qualification;

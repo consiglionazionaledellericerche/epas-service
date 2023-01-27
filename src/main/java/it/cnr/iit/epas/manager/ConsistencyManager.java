@@ -99,6 +99,7 @@ public class ConsistencyManager {
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceDao absenceDao;
   private final Provider<EntityManager> emp;
+
   /**
    * Constructor.
    *
