@@ -972,19 +972,24 @@ public class NotificationManager {
     message.append(String.format("\r\n per una assenza di tipo: %s", requestType));
     if (absenceRequest.getStartAt().isEqual(absenceRequest.getEndTo())) {
       message.append(String.format("\r\n per il giorno: %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
     } else {
       message.append(String.format("\r\n dal: %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
       message.append(
-          String.format("  al: %s", DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getEndTo().toLocalDate())));
+          String.format("  al: %s",
+              DateTimeFormatter.ofPattern(dateFormatter)
+              .format(absenceRequest.getEndTo().toLocalDate())));
     }
     String baseUrl = BASE_URL;
     if (!baseUrl.endsWith("/")) {
       baseUrl = baseUrl + "/";
     }
 
-    baseUrl = baseUrl + PATH + "?id=" + absenceRequest.getId() + "&type=" + absenceRequest.getType();
+    baseUrl = 
+        baseUrl + PATH + "?id=" + absenceRequest.getId() + "&type=" + absenceRequest.getType();
 
     message.append(String.format("\r\n Verifica cliccando sul link seguente: %s", baseUrl));
 
@@ -1058,12 +1063,16 @@ public class NotificationManager {
     message.append(String.format("una assenza di tipo \"%s\" ", requestType));
     if (absenceRequest.getStartAt().isEqual(absenceRequest.getEndTo())) {
       message.append(String.format("per il giorno %s.",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
     } else {
       message.append(String.format("dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
       message.append(
-          String.format(" al %s.", DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getEndTo().toLocalDate())));
+          String.format(" al %s.", 
+              DateTimeFormatter.ofPattern(dateFormatter)
+              .format(absenceRequest.getEndTo().toLocalDate())));
     }
     return message.toString();
   }
@@ -1083,12 +1092,16 @@ public class NotificationManager {
         requestType));
     if (absenceRequest.getStartAt().isEqual(absenceRequest.getEndTo())) {
       message.append(String.format("assenza per il giorno %s.",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
     } else {
       message.append(String.format("assenza dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getStartAt().toLocalDate())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(absenceRequest.getStartAt().toLocalDate())));
       message.append(
-          String.format(" al %s.", DateTimeFormatter.ofPattern(dateFormatter).format(absenceRequest.getEndTo().toLocalDate())));
+          String.format(" al %s.", 
+              DateTimeFormatter.ofPattern(dateFormatter)
+                .format(absenceRequest.getEndTo().toLocalDate())));
     }
     return message.toString();
 
@@ -1243,7 +1256,8 @@ public class NotificationManager {
     if (competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
       message.append(String.format("\r\n per il giorno %s con il giorno %s.",
           DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive()),
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToAsk())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(competenceRequest.getBeginDateToAsk())));
     } else {
       message.append(String.format("\r\n per i giorni %s - %s con i giorni %s - %s.",
           DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive()),
@@ -1310,7 +1324,8 @@ public class NotificationManager {
     if (userDestination == null) {
       log.warn("Non si è trovato il ruolo a cui inviare la mail per la richiesta d'assenza di "
           + "{} di tipo {} con date {}, {}",
-          competenceRequest.getPerson(), competenceRequest.getType(), competenceRequest.getStartAt(),
+          competenceRequest.getPerson(), competenceRequest.getType(),
+          competenceRequest.getStartAt(),
           competenceRequest.getEndTo());
       return;
     }
@@ -1330,7 +1345,8 @@ public class NotificationManager {
     Mail.send(simpleEmail);
     log.info("Inviata email per richiesta di flusso richiesta: {}. "
         + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-        competenceRequest, userDestination.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
+        competenceRequest, userDestination.getPerson().getEmail(),
+        simpleEmail.getSubject(), mailBody);
 
   }
 
@@ -1349,16 +1365,20 @@ public class NotificationManager {
     if (competenceRequest.getBeginDateToAsk() != null 
         && competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
       message.append(String.format("per il giorno %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToAsk())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(competenceRequest.getBeginDateToAsk())));
       message.append(String.format(" in cambio del giorno %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(competenceRequest.getBeginDateToGive())));
     } else {
       message.append(String.format("dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToAsk())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(competenceRequest.getBeginDateToAsk())));
       message.append(String.format(" al %s",
           DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToAsk())));
       message.append(String.format(" in cambio dei giorni dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive())));
+          DateTimeFormatter.ofPattern(dateFormatter)
+          .format(competenceRequest.getBeginDateToGive())));
       message.append(String.format(" al %s",
           DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToGive())));
     }
@@ -1445,7 +1465,8 @@ public class NotificationManager {
     if (userDestination == null) {
       log.info("Non si è trovato l'utente a cui inviare la notifica per la richiesta di "
           + "{} di tipo {} con date {}, {}",
-          competenceRequest.getPerson(), competenceRequest.getType(), competenceRequest.getBeginDateToAsk(),
+          competenceRequest.getPerson(), competenceRequest.getType(),
+          competenceRequest.getBeginDateToAsk(),
           competenceRequest.getEndDateToAsk());
       return;
     }
@@ -1467,13 +1488,15 @@ public class NotificationManager {
       boolean insert, boolean update, boolean delete) {
 
     //Se l'user che ha fatto l'inserimento è utente di sistema esco
-    if (currentUser.isSystemUser() && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
+    if (currentUser.isSystemUser() 
+        && !currentUser.getRoles().contains(AccountRole.MISSIONS_MANAGER)) {
       return;
     }
 
     //Se l'user che ha fatto l'inserimento è amministratore di se stesso esco
     if (currentUser.getPerson() != null
-        && secureManager.officesWriteAllowed(currentUser).contains(currentUser.getPerson().getOffice())) {
+        && secureManager.officesWriteAllowed(currentUser)
+          .contains(currentUser.getPerson().getOffice())) {
       return;
     }
 
@@ -1712,7 +1735,8 @@ public class NotificationManager {
           .collect(Collectors.toList());
     } else {
       users =
-          person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.equals(roleDestination))
+          person.getOffice().getUsersRolesOffices().stream()
+          .filter(uro -> uro.role.equals(roleDestination))
           .map(uro -> uro.getUser()).collect(Collectors.toList());
     }
 
@@ -1745,7 +1769,8 @@ public class NotificationManager {
     switch (request.getInformationType()) {
       case ILLNESS_INFORMATION:
         subject = NotificationSubject.ILLNESS_INFORMATION;
-        message.append(String.format(" dal giorno %s", illnessRequest.get().getBeginDate().toString()));
+        message.append(
+            String.format(" dal giorno %s", illnessRequest.get().getBeginDate().toString()));
         message.append(String.format(" al giorno %s",
             illnessRequest.get().getEndDate().toString()));
         break;
@@ -1811,30 +1836,8 @@ public class NotificationManager {
       return;
     }
     if (roleDestination.equals(roleDao.getRoleByName(Role.GROUP_MANAGER))) {
-      person.getAffiliations().stream().map(gp -> gp.getGroup().getManager().getUser()).forEach(user -> {
-        SimpleEmail simpleEmail = new SimpleEmail();
-        // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
-        try {
-          simpleEmail.addTo(user.getPerson().getEmail());
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
-        simpleEmail.setSubject("ePas Approvazione flusso");
-        val mailBody = createInformationRequestEmail(informationRequest, user);
-        try {
-          simpleEmail.setMsg(mailBody);
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
-        Mail.send(simpleEmail);
-        log.info(
-            "Inviata email per richiesta di flusso richiesta: {}. "
-                + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                informationRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
-      });
-    } else {
-      person.getOffice().getUsersRolesOffices().stream().filter(uro -> uro.role.equals(roleDestination))
-          .map(uro -> uro.getUser()).forEach(user -> {
+      person.getAffiliations().stream().map(
+          gp -> gp.getGroup().getManager().getUser()).forEach(user -> {
             SimpleEmail simpleEmail = new SimpleEmail();
             // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
             try {
@@ -1850,10 +1853,35 @@ public class NotificationManager {
               e.printStackTrace();
             }
             Mail.send(simpleEmail);
-            log.info("Inviata email per richiesta di flusso richiesta: {}. "
-                  + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
-                  informationRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
+            log.info(
+                "Inviata email per richiesta di flusso richiesta: {}. "
+                    + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
+                    informationRequest, user.getPerson().getEmail(),
+                    simpleEmail.getSubject(), mailBody);
           });
+    } else {
+      person.getOffice().getUsersRolesOffices().stream()
+        .filter(uro -> uro.role.equals(roleDestination))
+        .map(uro -> uro.getUser()).forEach(user -> {
+          SimpleEmail simpleEmail = new SimpleEmail();
+          // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
+          try {
+            simpleEmail.addTo(user.getPerson().getEmail());
+          } catch (EmailException e) {
+            e.printStackTrace();
+          }
+          simpleEmail.setSubject("ePas Approvazione flusso");
+          val mailBody = createInformationRequestEmail(informationRequest, user);
+          try {
+            simpleEmail.setMsg(mailBody);
+          } catch (EmailException e) {
+            e.printStackTrace();
+          }
+          Mail.send(simpleEmail);
+          log.info("Inviata email per richiesta di flusso richiesta: {}. "
+              + "Mail: \n\tTo: {}\n\tSubject: {}\n\tbody: {}",
+              informationRequest, user.getPerson().getEmail(), simpleEmail.getSubject(), mailBody);
+        });
     }
 
   }

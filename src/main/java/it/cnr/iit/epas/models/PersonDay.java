@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.absences.Absence;
@@ -249,8 +250,8 @@ public class PersonDay extends BaseEntity {
       case preventMealTicket:
         this.isTicketAvailable = false;
         break;
-        default:
-          break;
+      default:
+        break;
     }
   }
 

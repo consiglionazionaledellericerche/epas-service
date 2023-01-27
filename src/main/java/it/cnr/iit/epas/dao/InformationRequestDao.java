@@ -101,8 +101,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     if (informationType.equals(InformationType.SERVICE_INFORMATION) 
         && uroList.stream().anyMatch(uro -> uro.role.name.equals(Role.GROUP_MANAGER))) {
       results.addAll(toApproveResultsAsGroupManager(uroList, informationType, signer, conditions));
-    }
-    else {
+    } else {
       results.addAll(toApproveResultsAsSeatSuperVisor(uroList,
           informationType, signer, conditions));
     }
@@ -272,7 +271,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
    *
    * @param ids la lista di id di richieste di malattia
    * @return la lista delle richieste di malattia appartenenti alla lista di id passati come
-   * parametro.
+   *     parametro.
    */
   public List<IllnessRequest> illnessByIds(List<Long> ids) {
     final QIllnessRequest illnessRequest = QIllnessRequest.illnessRequest;
@@ -286,7 +285,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
    *
    * @param ids la lista di id di richieste di uscita di servizio
    * @return la lista delle richieste di uscita di servizio appartenenti alla lista di id passati
-   * come parametro.
+   *     come parametro.
    */
   public List<ServiceRequest> servicesByIds(List<Long> ids) {
     final QServiceRequest serviceRequest = QServiceRequest.serviceRequest;
@@ -299,7 +298,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
    *
    * @param ids la lista di id di richieste di telelavoro
    * @return la lista delle richieste di telelavoro appartenenti alla lista di id passati come
-   * parametro.
+   *     parametro.
    */
   public List<TeleworkRequest> teleworksByIds(List<Long> ids) {
     final QTeleworkRequest teleworkRequest = QTeleworkRequest.teleworkRequest;
@@ -312,7 +311,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
    *
    * @param person la persona di cui ricercare le richieste di telelavoro
    * @return la lista di tutte le richieste di telelavoro effettuate dalla persona passata come
-   * parametro.
+   *     parametro.
    */
   public List<TeleworkRequest> personTeleworkList(Person person) {
     final QTeleworkRequest teleworkRequest = QTeleworkRequest.teleworkRequest;
@@ -327,7 +326,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
    * @param month  il mese della richiesta di telelavoro
    * @param year   l'anno della richieste di telelavoro
    * @return la richiesta di telelavoro effettuate dalla persona del mese ed anno passati come
-   * parametro.
+   *     parametro.
    */
   public Optional<TeleworkRequest> personTeleworkInPeriod(Person person, Integer month,
       Integer year) {
@@ -336,7 +335,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     final BooleanBuilder conditions = new BooleanBuilder();
     conditions.and(teleworkRequest.person.eq(person))
         .and(teleworkRequest.month.eq(month)
-            .and(teleworkRequest.year.eq(year)));
+        .and(teleworkRequest.year.eq(year)));
 
     final TeleworkRequest result = getQueryFactory().selectFrom(teleworkRequest)
         .where(conditions).fetchFirst();
@@ -381,7 +380,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
       return Lists.newArrayList();
     }
   }
-  
+
   /**
    * Lista delle InformationRequest da approvare come responsabile di gruppo.
    */
@@ -412,7 +411,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
     condition.and(informationRequest.person.office.in(officeList))
         .and(informationRequest.officeHeadApprovalRequired.isTrue()
-            .and(informationRequest.officeHeadApproved.isNull()));
+        .and(informationRequest.officeHeadApproved.isNull()));
 
     return condition;
   }
@@ -431,25 +430,27 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
     condition.and(informationRequest.person.office.in(officeList))
         .and(informationRequest.administrativeApprovalRequired.isTrue()
-            .and(informationRequest.administrativeApproved.isNull()));
+        .and(informationRequest.administrativeApproved.isNull()));
 
     return condition;
   }
-  
+
   /**
    * Ritorna le condizioni con l'aggiunta di quelle relative al responsabile di gruppo.
    *
    * @param officeList la lista delle sedi
    * @param condition  le condizioni pregresse
    * @param signer     colui che deve firmare la richiesta
-   * @return le condizioni per determinare se il responsabile di gruppo è coinvolto nell'approvazione.
+   *
+   * @return le condizioni per determinare se il responsabile di gruppo è coinvolto
+   *     nell'approvazione.
    */
   private BooleanBuilder groupManagerQuery(List<Office> officeList, 
       BooleanBuilder condition, Person signer) {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
     condition.and(informationRequest.person.office.in(officeList))
-    .and(informationRequest.managerApprovalRequired.isTrue()
-        .and(informationRequest.managerApproved.isNull()));
+            .and(informationRequest.managerApprovalRequired.isTrue()
+            .and(informationRequest.managerApproved.isNull()));
     return condition;
   }
 
@@ -475,8 +476,8 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
     conditions.and(informationRequest.startAt.after(fromDate))
         .and(informationRequest.informationType.eq(informationType)
-            .and(informationRequest.flowEnded.isTrue())
-            .and(informationRequest.person.office.in(officeList)));
+        .and(informationRequest.flowEnded.isTrue())
+        .and(informationRequest.person.office.in(officeList)));
 
     if (toDate.isPresent()) {
       conditions.and(informationRequest.endTo.before(toDate.get()));
@@ -505,8 +506,8 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     BooleanBuilder conditions = new BooleanBuilder();
     conditions.and(informationRequest.startAt.after(fromDate))
         .and(informationRequest.informationType.eq(informationType)
-            .and(informationRequest.flowEnded.isTrue())
-            .and(informationRequest.person.office.eq(signer.getOffice())));
+        .and(informationRequest.flowEnded.isTrue())
+        .and(informationRequest.person.office.eq(signer.getOffice())));
 
     if (toDate.isPresent()) {
       conditions.and(informationRequest.endTo.before(toDate.get()));
@@ -514,25 +515,25 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))) {
       conditions.and(
           informationRequest.officeHeadApprovalRequired.isTrue()
-              .and(informationRequest.officeHeadApproved.isNotNull())
-              .and(person.office.in(officeList)));
+          .and(informationRequest.officeHeadApproved.isNotNull())
+          .and(person.office.in(officeList)));
     } 
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))){
+    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))) {
       conditions.and(
           informationRequest.administrativeApprovalRequired.isTrue()
-              .and(informationRequest.administrativeApproved.isNotNull())
-              .and(person.office.in(officeList)));
+          .and(informationRequest.administrativeApproved.isNotNull())
+          .and(person.office.in(officeList)));
     } else {
       conditions.and(
           informationRequest.managerApprovalRequired.isTrue()
-              .and(informationRequest.managerApproved.isNotNull())
-              .and(person.office.in(officeList)));
+          .and(informationRequest.managerApproved.isNotNull())
+          .and(person.office.in(officeList)));
     }
     return getQueryFactory().selectFrom(informationRequest)
         .join(informationRequest.person, person)
         .join(person.office, office)
         .where(office.in(uros.stream().map(
-                userRoleOffices -> userRoleOffices.office)
+            userRoleOffices -> userRoleOffices.office)
             .collect(Collectors.toSet())).and(conditions))
         .orderBy(informationRequest.startAt.desc())
         .fetch();

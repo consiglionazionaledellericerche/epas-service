@@ -29,11 +29,11 @@ import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.time.LocalDate;
 
 /**
  * Contiene le informazioni per generare e controlla la

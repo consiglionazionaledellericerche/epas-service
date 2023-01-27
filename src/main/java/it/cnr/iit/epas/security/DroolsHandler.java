@@ -64,8 +64,8 @@ public class DroolsHandler implements HandlerInterceptor {
       Method method = hm.getMethod();
       Class<?> clazz = method.getDeclaringClass();
 
-      //  Chiamata delle drools su tutti i metodi dei RestController non annotati con la Preauthorize
-      // o NoCheck
+      //  Chiamata delle drools su tutti i metodi dei RestController non annotati 
+      //con la Preauthorize o NoCheck
       if (clazz.isAnnotationPresent(RestController.class)
           && !clazz.isAnnotationPresent(NoCheck.class)
           && !method.isAnnotationPresent(PreAuthorize.class)

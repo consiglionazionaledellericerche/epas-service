@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.services.absences.errors;
 
 import com.google.common.collect.Lists;
@@ -23,11 +24,11 @@ import it.cnr.iit.epas.manager.services.absences.errors.CriticalError.CriticalPr
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceTrouble.AbsenceProblem;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import java.time.LocalDate;
 
 /**
  * Contenitore delle varie tipologie di warning, errori ed errori critici sulle assenze.
