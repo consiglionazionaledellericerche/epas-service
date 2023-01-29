@@ -22,6 +22,7 @@ import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.SortedMap;
@@ -35,6 +36,7 @@ public class AbsencePeriodDto {
   private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
+  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;

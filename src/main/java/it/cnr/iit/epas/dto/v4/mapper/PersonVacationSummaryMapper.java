@@ -21,6 +21,7 @@ import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

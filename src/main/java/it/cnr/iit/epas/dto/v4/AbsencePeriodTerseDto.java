@@ -18,6 +18,7 @@ package it.cnr.iit.epas.dto.v4;
 
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class AbsencePeriodTerseDto {
   private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
+  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
