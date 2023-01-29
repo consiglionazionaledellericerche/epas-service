@@ -89,6 +89,7 @@ public class PersonVacationRecap {
       log.debug("contract {}", contract );
       VacationSituation vacationSituation = absenceService.buildVacationSituation(contract, year,
           vacationGroup, Optional.empty(), false);
+      log.debug("vacationSituation {}>> {}", vacationSituation, vacationSituation.contract );
       vacationSituations.add(vacationSituation);
     }
 
@@ -103,7 +104,7 @@ public class PersonVacationRecap {
 
     showVacationPeriods = true;
 
-    log.debug("periodChain {}>> {}", periodChain.periods.size(), periodChain.periods.get(0) );
+//    log.debug("periodChain {}>> {}", periodChain.periods.size(), periodChain.periods.get(0) );
 
     log.debug("fine creazione nuovo PersonVacationRecap in {} ms. Person = {}, year = {}",
         System.currentTimeMillis() - start, person.getFullname(), year);

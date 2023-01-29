@@ -554,8 +554,8 @@ public class AbsenceService {
    */
   public List<GroupAbsenceType> groupsPermitted(Person person, boolean readOnly) {
     List<GroupAbsenceType> groupsPermitted = absenceComponentDao.allGroupAbsenceType(false);
-    log.debug("Configurazione groupsPermitted, readOnly = {}, groupsPermitted = {}", readOnly,
-        groupsPermitted);
+//    log.debug("Configurazione groupsPermitted, readOnly = {}, groupsPermitted = {}", readOnly,
+//        groupsPermitted);
     if (readOnly) {
       return groupsPermitted;
     }

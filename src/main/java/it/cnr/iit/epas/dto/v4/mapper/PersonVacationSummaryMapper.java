@@ -46,8 +46,17 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "upperLimit", expression = "java(vacationSummary.upperLimit())")
   @Mapping(target = "sourced", expression = "java(vacationSummary.sourced())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
-  @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size)")
+  @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
+  @Mapping(target = "postPartumisEmpty", expression = "java(vacationSummary.postPartum().isEmpty())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
+
+  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
+
+  @Mapping(target = "personId", source = "person.id")
+  @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
+  @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
+  @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
+  AbsencePeriodDto convert(AbsencePeriod period);
 
   @Mapping(target = "subAmount", expression = "java(vacationSummary.subAmount(period))")
   @Mapping(target = "subFixedPostPartum", expression = "java(vacationSummary.subFixedPostPartum(period))")
@@ -59,8 +68,6 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "subAccrued", expression = "java(vacationSummary.subAccrued(period))")
   @Mapping(target = "contractEndFirstYearInPeriod", expression = "java(vacationSummary.contractEndFirstYearInPeriod(period))")
   VacationSummaryDto convert(VacationSummary vacationSummary, AbsencePeriod period);
-
-
 
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")

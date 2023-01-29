@@ -47,7 +47,9 @@ public class VacationSummaryDto extends BaseModelDto {
 
   private List<AbsenceDto> absencesUsed = Lists.newArrayList();
   private List<AbsenceDto> postPartum = Lists.newArrayList();
+  private AbsencePeriodDto absencePeriod;
   private long postPartumSize;
+  private boolean postPartumisEmpty;
 
   private long accruedDayTotal;
   private long subAmount;

@@ -16,13 +16,15 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 
 @Data
-public class AbsencePeriodTerseDto {
+public class AbsenceSubPeriodDto {
 
   private Long personId;
 
@@ -32,14 +34,5 @@ public class AbsencePeriodTerseDto {
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
-
-  private boolean containsCriticalErrors;
-
-  private boolean takableWithLimit;
-  private long periodTakableAmount;
-  private long remainingAmount;
-
-
-//  private SortedMap<LocalDate, DayInPeriod> daysInPeriod = Maps.newTreeMap();
 
 }

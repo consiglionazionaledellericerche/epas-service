@@ -48,13 +48,7 @@ public interface PersonVacationMapper {
 
   @Mapping(target = "personId", source = "person.id")
   @Mapping(target = "topQualification", source = "person.topQualification")
-  //@Mapping(target = "periods", source = "periodChain.periods")
   PersonVacationDto convert(PersonVacationRecap personVacation);
-
-  @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
-  VacationPeriodDto convert(VacationPeriod vacationPeriod);
-
-  ContractDto convert(Contract contract);
 
   @Mapping(target = "personId", source = "person.id")
   InitializationGroupDto convert(InitializationGroup initialization);
@@ -67,7 +61,12 @@ public interface PersonVacationMapper {
 
   PeriodChainDto convert(PeriodChain periodChain);
 
+  @Mapping(target = "personId", source = "person.id")
   VacationSituationDto convert(VacationSituation vacationSituation);
+  ContractDto convert(Contract contract);
+
+  @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
+  VacationPeriodDto convert(VacationPeriod vacationPeriod);
 
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")
