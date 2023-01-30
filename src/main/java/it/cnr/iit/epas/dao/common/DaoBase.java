@@ -48,6 +48,9 @@ public abstract class DaoBase<T extends BaseEntity> {
     return emp.get().<T>merge(object);
   }
 
+  /**
+   * Se l'oggetto è già persistent effettua la merge, altrimenti la persist.
+   */
   public T save(T object) {
     if (isPersistent(object)) {
       return emp.get().<T>merge(object);

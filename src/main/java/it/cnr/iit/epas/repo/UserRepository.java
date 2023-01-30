@@ -21,6 +21,9 @@ import it.cnr.iit.epas.models.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * User repository for crud operations with paging and sorting.
+ */
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
   //Empty

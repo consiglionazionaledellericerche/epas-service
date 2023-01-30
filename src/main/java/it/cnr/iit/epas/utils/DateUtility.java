@@ -307,15 +307,16 @@ public class DateUtility {
 
   }
 
-//  /**
-//   * Conta il numero di mesi appartenenti all'intervallo, estremi compresi.
-//   *
-//   * @param inter intervallo
-//   * @return numero di mesi
-//   */
-//  public static int monthsInInterval(final DateInterval inter) {
-//    return Months.monthsBetween(inter.getBegin(), inter.getEnd()).getMonths() + 1;
-//  }
+  //FIXME: da implementare prima del passaggio a spring boot.
+  //  /**
+  //   * Conta il numero di mesi appartenenti all'intervallo, estremi compresi.
+  //   *
+  //   * @param inter intervallo
+  //   * @return numero di mesi
+  //   */
+  //  public static int monthsInInterval(final DateInterval inter) {
+  //    return Months.monthsBetween(inter.getBegin(), inter.getEnd()).getMonths() + 1;
+  //  }
 
   /**
    * Se il primo intervallo di date è contenuto nel secondo intervallo.
@@ -464,25 +465,25 @@ public class DateUtility {
     }
     return string;
   }
-//
-//
-//  /**
-//   * Parser della stringa contenente la data in un oggetto LocalDate.
-//   *
-//   * @param date data.
-//   * @param pattern : default dd/MM
-//   * @return effettua il parsing di una stringa che contiene solo giorno e Mese
-//   */
-//  public static LocalDate dayMonth(final String date, final Optional<String> pattern) {
-//
-//    DateTimeFormatter dtf;
-//    if (pattern.isPresent()) {
-//      dtf = DateTimeFormat.forPattern(pattern.get());
-//    } else {
-//      dtf = DateTimeFormat.forPattern("dd/MM");
-//    }
-//    return LocalDate.parse(date, dtf);
-//  }
+
+  //FIXME: da implementare prima del passaggio a Spring boot
+  //  /**
+  //   * Parser della stringa contenente la data in un oggetto LocalDate.
+  //   *
+  //   * @param date data.
+  //   * @param pattern : default dd/MM
+  //   * @return effettua il parsing di una stringa che contiene solo giorno e Mese
+  //   */
+  //  public static LocalDate dayMonth(final String date, final Optional<String> pattern) {
+  //
+  //    DateTimeFormatter dtf;
+  //    if (pattern.isPresent()) {
+  //      dtf = DateTimeFormat.forPattern(pattern.get());
+  //    } else {
+  //      dtf = DateTimeFormat.forPattern("dd/MM");
+  //    }
+  //    return LocalDate.parse(date, dtf);
+  //  }
 
   /**
    * Ritorna la data del primo giorno del mese.
