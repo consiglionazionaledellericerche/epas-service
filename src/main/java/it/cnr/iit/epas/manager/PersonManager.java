@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.dao.UsersRolesOfficesDao;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
@@ -67,6 +69,7 @@ public class PersonManager {
   private final OfficeManager officeManager;
   private final UserManager userManager;
   private final RoleDao roleDao;
+  private final PersonDao personDao;
   private final Provider<EntityManager> emp;
 
   /**
@@ -88,6 +91,7 @@ public class PersonManager {
       OfficeManager officeManager,
       UserManager userManager, 
       RoleDao roleDao,
+      PersonDao personDao,
       Provider<EntityManager> emp) {
     this.contractDao = contractDao;
     this.personDayDao = personDayDao;
@@ -97,7 +101,14 @@ public class PersonManager {
     this.officeManager = officeManager;
     this.userManager = userManager;
     this.roleDao = roleDao;
+    this.personDao = personDao;
     this.emp = emp;
+  }
+
+  @Transactional
+  public Person updateEppn(Person person, String eppn) {
+    person.setEppn(eppn);
+    return personDao.save(person);
   }
 
   /**

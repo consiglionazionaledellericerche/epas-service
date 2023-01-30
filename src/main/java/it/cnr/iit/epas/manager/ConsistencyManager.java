@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 //import play.db.jpa.JPA;
@@ -48,6 +49,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Alessandro Martelli
  */
+@Transactional
 @Slf4j
 @Component
 public class ConsistencyManager {
@@ -162,8 +164,8 @@ public class ConsistencyManager {
    * @param personId id della persona
    * @param from data dalla quale effettuare i ricalcoli
    */
-  public void updatePersonSituation(Long personId, LocalDate from) {
-    consistencyManagerUtils.updatePersonSituationEngine(
+  public Optional<Contract> updatePersonSituation(Long personId, LocalDate from) {
+    return consistencyManagerUtils.updatePersonSituationEngine(
         personId, from, Optional.<LocalDate>empty(), false);
   }
 
