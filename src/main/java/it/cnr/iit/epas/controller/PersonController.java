@@ -18,12 +18,12 @@
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.manager.ConsistencyManager;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.security.NoCheck;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.time.LocalDate;
@@ -50,15 +50,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/v4/people")
 public class PersonController {
 
-  private PersonRepository repo;
+  private PersonDao personDao;
   private PersonShowMapper personMapper;
   private ConsistencyManager consistencyManager;
   private SecureUtils securityUtils;
 
   @Inject
-  PersonController(PersonRepository personRepository, PersonShowMapper personMapper,
+  PersonController(PersonDao personRepository, PersonShowMapper personMapper,
       ConsistencyManager consistencyManager, SecureUtils securityUtils) {
-    this.repo = personRepository;
+    this.personDao = personRepository;
     this.personMapper = personMapper;
     this.consistencyManager = consistencyManager;
     this.securityUtils = securityUtils;
@@ -75,7 +75,7 @@ public class PersonController {
     log.debug("Chiamato metodo show con id = {}", id);
     log.debug("currentUser = {}", securityUtils.getCurrentUser().get());
     long personId = id != null ? id : securityUtils.getCurrentUser().get().getId();
-    Optional<Person> entity = repo.findById(personId);
+    Optional<Person> entity = personDao.byId(personId);
     if (entity.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
@@ -87,7 +87,7 @@ public class PersonController {
   @PatchMapping(ApiRoutes.PATCH)
   @Transactional
   ResponseEntity<PersonShowDto> update(@PathVariable("id") Long id) {
-    Optional<Person> entity = repo.findById(id);
+    Optional<Person> entity = personDao.byId(id);
     if (entity.isEmpty()) {
       return ResponseEntity.notFound().build();
     }

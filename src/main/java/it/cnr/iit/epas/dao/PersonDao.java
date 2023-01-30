@@ -58,6 +58,7 @@ import it.cnr.iit.epas.models.QUser;
 import it.cnr.iit.epas.models.QWorkingTimeType;
 import it.cnr.iit.epas.models.flows.QAffiliation;
 import it.cnr.iit.epas.models.flows.QGroup;
+import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
@@ -79,27 +80,22 @@ import org.springframework.stereotype.Component;
 @Component
 public final class PersonDao extends DaoBase<Person> {
 
-  @Inject
-  public PersonDayDao personDayDao;
-
-  @Inject
-  PersonDao(Provider<EntityManager> emp) {
-    super(emp);
-  }
-
-  /**
-   * Persona (se esiste) a partire dal id.
-   *
-   * @param id l'id della persona.
-   * @return la persona che ha associato l'id.
-   */
-  public Optional<Person> byId(Long id) {
-    final QPerson person = QPerson.person;
-    final Person result = getQueryFactory().selectFrom(person).where(person.id.eq(id))
-        .fetchOne();
-    return Optional.ofNullable(result);
-  }
+  private PersonDayDao personDayDao;
+  private final PersonRepository repo;
   
+  @Inject
+  PersonDao(
+      PersonRepository repo, PersonDayDao personDayDao, 
+      Provider<EntityManager> emp) {
+    super(emp);
+    this.personDayDao = personDayDao;
+    this.repo = repo;
+  }
+
+  public Optional<Person> byId(Long id) {
+    return repo.findById(id);
+  }
+
   /**
    * Lista di persone attive per anno/mese su set di sedi.
    *
@@ -374,7 +370,8 @@ public final class PersonDao extends DaoBase<Person> {
 
     final QContract contract = QContract.contract;
 
-    final List<Contract> results = getQueryFactory().selectFrom(contract)
+    final List<Contract> results = getQueryFactory()
+        .selectFrom(contract)
         .where(contract.person.eq(person))
         .orderBy(contract.beginDate.desc()).fetch();
 
@@ -393,8 +390,10 @@ public final class PersonDao extends DaoBase<Person> {
     final QContract qcontract = QContract.contract;
 
     final List<Contract> results =
-        getQueryFactory().selectFrom(qcontract).where(qcontract.person.eq(contract.person))
-            .orderBy(qcontract.beginDate.desc()).fetch();
+        getQueryFactory()
+          .selectFrom(qcontract)
+          .where(qcontract.person.eq(contract.person))
+          .orderBy(qcontract.beginDate.desc()).fetch();
 
     final int indexOf = results.indexOf(contract);
     if (indexOf + 1 < results.size()) {
@@ -448,7 +447,9 @@ public final class PersonDao extends DaoBase<Person> {
     if (onlyWithMealTicket) {
       condition.and(qpd.isTicketAvailable.eq(true));
     }
-    return getQueryFactory().selectFrom(qpd).where(condition).orderBy(qpd.date.asc()).fetch();
+    return getQueryFactory()
+        .selectFrom(qpd)
+        .where(condition).orderBy(qpd.date.asc()).fetch();
   }
 
   /**
@@ -478,7 +479,9 @@ public final class PersonDao extends DaoBase<Person> {
    */
   public Person getPersonByNumber(String number) {
     final QPerson person = QPerson.person;
-    return getQueryFactory().selectFrom(person).where(person.number.eq(number)).fetchOne();
+    return getQueryFactory()
+        .selectFrom(person)
+        .where(person.number.eq(number)).fetchOne();
   }
 
 
@@ -513,8 +516,8 @@ public final class PersonDao extends DaoBase<Person> {
 
     final QPerson person = QPerson.person;
 
-    final Person result = getQueryFactory().selectFrom(person).where(person.email.eq(email))
-        .fetchOne();
+    final Person result = 
+        getQueryFactory().selectFrom(person).where(person.email.eq(email)).fetchOne();
 
     return Optional.ofNullable(result);
   }
@@ -597,7 +600,6 @@ public final class PersonDao extends DaoBase<Person> {
   public Person getPersonByPerseoId(Long perseoId) {
 
     final QPerson person = QPerson.person;
-
     return getQueryFactory().selectFrom(person).where(person.perseoId.eq(perseoId)).fetchOne();
   }
 
@@ -924,7 +926,8 @@ public final class PersonDao extends DaoBase<Person> {
 
     // Fetch della persona e dei suoi contratti
 
-    final Person person = getQueryFactory().selectFrom(qperson).leftJoin(qperson.contracts)
+    final Person person = getQueryFactory()
+        .selectFrom(qperson).leftJoin(qperson.contracts)
         .fetchJoin()
         .where(qperson.id.eq(id)).distinct()
         .fetchOne();
@@ -969,10 +972,10 @@ public final class PersonDao extends DaoBase<Person> {
 
     if (!person.isEmpty()) {
       // Fetch dei tipi orario associati ai contratti (verificare l'utilità)
-      getQueryFactory().selectFrom(cwtt)
-          .leftJoin(cwtt.workingTimeType, wtt).fetchJoin()
-          .where(cwtt.contract.in(contracts).and(cwtt.contract.person.in(person))).distinct()
-          .fetch();
+      getQueryFactory()
+        .selectFrom(cwtt).leftJoin(cwtt.workingTimeType, wtt).fetchJoin()
+        .where(cwtt.contract.in(contracts).and(cwtt.contract.person.in(person)))
+        .distinct().fetch();
     }
   }
 
@@ -1086,7 +1089,7 @@ public final class PersonDao extends DaoBase<Person> {
         .where(baseCondition, trAutoCertificationEnabledCondition)
         .select(person.id);
 
-    return queryFactory.selectFrom(person)
+    return getQueryFactory().selectFrom(person)
         .where(
             person.id.in(personSendEmailTrue),
             person.id.in(personAutocertDisabled)
@@ -1147,7 +1150,7 @@ public final class PersonDao extends DaoBase<Person> {
         .where(baseCondition, trAutoCertificationEnabledCondition)
         .select(person.id);
 
-    return queryFactory.selectFrom(person)
+    return getQueryFactory().selectFrom(person)
         .where(
             person.id.in(personSendEmailTrue),
             person.id.in(trAutocertEnabled))
@@ -1162,8 +1165,8 @@ public final class PersonDao extends DaoBase<Person> {
   public List<Person> peopleWithoutConfiguration() {
     final QPerson person = QPerson.person;
     return getQueryFactory()
-        .selectFrom(person).where(person.personConfigurations.isEmpty()).fetch();   
-    
+        .selectFrom(person)
+        .where(person.personConfigurations.isEmpty()).fetch();   
   }
 
   /**

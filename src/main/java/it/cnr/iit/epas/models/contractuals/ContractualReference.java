@@ -17,7 +17,6 @@
 
 package it.cnr.iit.epas.models.contractuals;
 
-
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.base.PeriodModel;
 import java.util.List;
@@ -53,16 +52,19 @@ public class ContractualReference extends PeriodModel {
   
   private String filename;
 
-//  public Blob file;
+  //FIXME: da implementare prima del passaggio a spring boot
+  //  public Blob file;
 
   @ManyToMany(mappedBy = "contractualReferences")
   private List<ContractualClause> contractualClauses = Lists.newArrayList();
 
+  //FIXME: da implementare prima del passaggio a spring boot
   //  @Transient
   //  public long getLength() {
   //    return file == null ? 0 : file.length();
   //  }
   
+  //FIXME: da implementare prima del passaggio a spring boot
   //  @PreRemove
   //  private void onDelete() {
   //    if (file != null && file.getFile() != null) {

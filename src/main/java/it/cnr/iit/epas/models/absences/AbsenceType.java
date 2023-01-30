@@ -87,11 +87,11 @@ public class AbsenceType extends BaseEntity {
 
   @Column(name = "considered_week_end")
   private boolean consideredWeekEnd = false;
-  
-//  @Getter
-//  @Column(name = "time_for_mealticket")
-//  public boolean timeForMealTicket = false;
-  
+
+  //FIXME: da implementare prima del passaggio a spring boot
+  //  @Getter
+  //  @Column(name = "time_for_mealticket")
+  //  public boolean timeForMealTicket = false;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "meal_ticket_behaviour")

@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
@@ -79,18 +80,17 @@ public class StampTypeManager {
     Preconditions.checkNotNull(code);
 
     Cache cache = cacheManager.getCache(SMT_PREFIX);
-    StampModificationType value = (StampModificationType) cache.get(code);
+    ValueWrapper valueWrapper = cache.get(code);
+    StampModificationType value = null;
 
-    if (value == null) {
-
+    if (valueWrapper == null) {
       value = getStampModificationTypeByCode(code);
-
       Preconditions.checkNotNull(value);
-
       cache.put(code, value);
+    } else {
+      value = (StampModificationType) valueWrapper.get();
     }
     emp.get().merge(value);
-    //value.merge();
     return value;
 
   }
