@@ -405,7 +405,8 @@ public class AbsencePeriod {
 
     int complationAmount = getInitializationComplationUsed(absenceEngineUtility);
     for (DayInPeriod dayInPeriod : this.daysInPeriod.values()) {
-      if (this.initialization != null && !dayInPeriod.getDate().isAfter(this.initialization.getDate())) {
+      if (this.initialization != null 
+          && !dayInPeriod.getDate().isAfter(this.initialization.getDate())) {
         continue;
       }
       if (dayInPeriod.getExistentComplations().isEmpty()) {

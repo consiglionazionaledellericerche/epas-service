@@ -22,6 +22,9 @@ import it.cnr.iit.epas.models.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+/**
+ * Mapper da Person al suo DTO per la visualizzazione via REST.
+ */
 @Mapper(componentModel = "spring")
 public interface PersonShowMapper {
 

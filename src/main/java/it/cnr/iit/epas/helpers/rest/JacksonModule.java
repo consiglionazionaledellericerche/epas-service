@@ -61,14 +61,14 @@ public class JacksonModule implements Module {
   public ObjectMapper getObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
     mapper  
-    //FIXME: verificare se servono questi due moduli
-    //        .registerModule(new AfterburnerModule())
-    //        .registerModule(new Hibernate5Module())
-            .setVisibility(PropertyAccessor.FIELD, Visibility.PUBLIC_ONLY)
-            .setVisibility(PropertyAccessor.GETTER, Visibility.PUBLIC_ONLY)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(SerializationFeature.INDENT_OUTPUT)
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        //FIXME: verificare se servono questi due moduli
+        //        .registerModule(new AfterburnerModule())
+        //        .registerModule(new Hibernate5Module())
+        .setVisibility(PropertyAccessor.FIELD, Visibility.PUBLIC_ONLY)
+        .setVisibility(PropertyAccessor.GETTER, Visibility.PUBLIC_ONLY)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     // .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     return mapper;
   }

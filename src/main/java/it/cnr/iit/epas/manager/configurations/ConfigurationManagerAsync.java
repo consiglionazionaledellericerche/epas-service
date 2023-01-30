@@ -27,6 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servizio per lanciare in asincrono alcuni metodi
+ * del ConfigurationManager.
+ *
+ */
 @Transactional
 @Slf4j
 @Service
@@ -43,6 +48,9 @@ public class ConfigurationManagerAsync {
     this.utils = utils;
   }
 
+  /**
+   * Metodo asincrono per aggiornare i parametri di configurazione di una persona.
+   */
   @Async
   public void updateConfigurations(Person owner) {
     log.debug("async updateConfigurations for {}", owner);
@@ -50,6 +58,9 @@ public class ConfigurationManagerAsync {
     utils.updateConfigurations(owner);
   }
 
+  /**
+   * Metodo asincrono per aggiornare i parametri di configurazione di un ufficio.
+   */
   @Async
   public void updateConfigurations(Office owner) {
     log.debug("async updateConfigurations for {}", owner);

@@ -18,7 +18,7 @@
 package it.cnr.iit.epas.models.enumerate;
 
 import com.google.common.collect.Range;
-//import models.Qualification;
+import it.cnr.iit.epas.models.Qualification;
 
 /**
  * Differenziazione tra livelli 1-3 e 4-10.
@@ -39,8 +39,8 @@ public enum QualificationMapping {
     return qualifiche;
   }
 
-//  public boolean contains(Qualification qualification) {
-//    return qualifiche.contains(qualification.qualification);
-//  }
+  public boolean contains(Qualification qualification) {
+    return qualifiche.contains(qualification.getQualification());
+  }
 
 }

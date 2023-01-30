@@ -28,6 +28,9 @@ import javax.persistence.EntityManager;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
+/**
+ * Dao di base per i tipi di turno.
+ */
 @Component
 public class ShiftTypeDao extends DaoBase<ShiftType> {
 
@@ -40,6 +43,9 @@ public class ShiftTypeDao extends DaoBase<ShiftType> {
     return getQueryFactory().selectFrom(QShiftType.shiftType).fetch();
   }
   
+  /**
+   * Cerca il tipo di turno per id.
+   */
   public Optional<ShiftType> findById(Long id) {
     val sfhiftType = QShiftType.shiftType;
     return Optional.ofNullable(

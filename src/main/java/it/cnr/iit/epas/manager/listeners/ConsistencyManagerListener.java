@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Aspect
 @Component
-public class ConsistencyManagerListener {
+class ConsistencyManagerListener {
 
   private ContractDao contractDao;
   private AbsenceComponentDao absenceComponentDao;
@@ -49,10 +49,14 @@ public class ConsistencyManagerListener {
   }
 
   @AfterReturning(
-      pointcut="execution(public java.util.Optional<it.cnr.iit.epas.models.Contract> it.cnr.iit.epas.manager.ConsistencyManager.updatePersonSituationEngine(Long,java.time.LocalDate,java.util.Optional<java.time.LocalDate>, boolean))",
-      returning="contract")
-  public void updatePersonSituationEngine(Optional<Contract> contract) {
-    log.debug("ConsistencyManagerListener.updatePersonSituationEngine started, contract = {}", contract.orElse(null));
+      pointcut = "execution("
+          + "public java.util.Optional<it.cnr.iit.epas.models.Contract> "
+          + "it.cnr.iit.epas.manager.ConsistencyManager.updatePersonSituationEngine("
+          + "Long,java.time.LocalDate,java.util.Optional<java.time.LocalDate>, boolean))",
+      returning = "contract")
+  void updatePersonSituationEngine(Optional<Contract> contract) {
+    log.debug("ConsistencyManagerListener.updatePersonSituationEngine started, contract = {}", 
+        contract.orElse(null));
     if (contract.isPresent()) {
       Verify.verifyNotNull(contract.get().getId());
       Contract currentContract = contractDao.byId(contract.get().getId());
@@ -62,9 +66,11 @@ public class ConsistencyManagerListener {
           .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
       absenceService.buildVacationSituation(currentContract, LocalDate.now().getYear(),
           vacationGroup, Optional.empty(), true);
-      log.debug("ConsistencyManagerListener.updatePersonSituationEngine ended, contract = {}", contract.get());
+      log.debug("ConsistencyManagerListener.updatePersonSituationEngine ended, contract = {}",
+          contract.get());
     } else {
-      log.debug("Listener ConsistencyManagerListener.updatePersonSituationEngine started but no contract present");
+      log.debug("Listener ConsistencyManagerListener.updatePersonSituationEngine started but"
+          + " no contract present");
     }
   }
 }

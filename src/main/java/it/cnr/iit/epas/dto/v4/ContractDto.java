@@ -21,6 +21,9 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * DTO con le info principali di un contratto.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ContractDto extends BaseModelDto {

@@ -27,6 +27,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * Classe principale per l'avvio del servizio epas-service.
+ */
 @EnableAsync
 @EntityScan(basePackages = "it.cnr.iit.epas.models")
 @EnableJpaRepositories

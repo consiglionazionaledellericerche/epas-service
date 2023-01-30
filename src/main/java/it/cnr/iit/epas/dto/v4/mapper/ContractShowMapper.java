@@ -21,6 +21,9 @@ import it.cnr.iit.epas.dto.v4.ContractDto;
 import it.cnr.iit.epas.models.Contract;
 import org.mapstruct.Mapper;
 
+/**
+ * Mapper da Contratto al suo DTO per la visualizzazione via REST.
+ */
 @Mapper(componentModel = "spring")
 public interface ContractShowMapper {
 

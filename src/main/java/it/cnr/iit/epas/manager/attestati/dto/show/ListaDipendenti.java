@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,26 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.manager.attestati.dto.show;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.collect.Lists;
+import java.util.List;
 
 /**
- * DTO con le info di base di tutte le entity.
+ * DTO per la rappresentazione della lista dei dipendenti.
  */
-@Getter
-@Setter
-public class BaseModelDto {
+public class ListaDipendenti {
 
-  private Long id;
+  public String codiceSede;
+  public int anno;
+  public int mese;
+  public List<Matricola> dipendenti = Lists.newArrayList();
+
+  /**
+   * Rappresenta la Matricola di un dipendente.
+   */
+  public static class Matricola {
+    public String matricola;
+  }
 
 }

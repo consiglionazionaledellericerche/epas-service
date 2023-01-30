@@ -17,11 +17,11 @@
 
 package it.cnr.iit.epas.utils;
 
-import java.util.Optional;
 import com.google.common.base.Preconditions;
-import lombok.NoArgsConstructor;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import lombok.NoArgsConstructor;
 
 /**
  * Classe di utilità per la gestione dei tempi e orari.

@@ -100,7 +100,8 @@ public class TimeSlotDao extends DaoBase<TimeSlot> {
     if (contract != null) {
       for (ContractMandatoryTimeSlot mts : contract.getContractMandatoryTimeSlots()) {
 
-        if (DateUtility.isDateIntoInterval(date, new DateInterval(mts.getBeginDate(), mts.getEndDate()))) {
+        if (DateUtility.isDateIntoInterval(
+            date, new DateInterval(mts.getBeginDate(), mts.getEndDate()))) {
           return Optional.of(mts.timeSlot);
         }
       }

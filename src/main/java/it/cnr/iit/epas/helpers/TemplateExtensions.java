@@ -98,9 +98,10 @@ public class TemplateExtensions {
     return format(date.toDate());
   }
 
-//  public static String format(LocalDate date, String format) {
-//    return format(date.toDate(), format, I18N.getDateFormat());
-//  }
+  //FIXME: da completare prima del passaggio a spring boot
+  //  public static String format(LocalDate date, String format) {
+  //    return format(date.toDate(), format, I18N.getDateFormat());
+  //  }
   
   public static String format(LocalDateTime dt) {
     return DT_FORMATTER.print(dt);
@@ -264,19 +265,21 @@ public class TemplateExtensions {
     return COMMA_SPLITTER.split(value);
   }
 
-  /**
-   * Ritorna la stringa cryptata con aes e chiave play predefinita.
-   *
-   * @param value la stringa da criptare
-   * @return la stringa cryptata con aes e chiave play predefinita.
-   */
-//  public static String encrypt(String value) {
-//    return Crypto.encryptAES(value);
-//  }
+  //FIXME: da completare prima del passaggio a spring boot
+  //  /**
+  //   * Ritorna la stringa cryptata con aes e chiave play predefinita.
+  //   *
+  //   * @param value la stringa da criptare
+  //   * @return la stringa cryptata con aes e chiave play predefinita.
+  //   */
+  //  public static String encrypt(String value) {
+  //    return Crypto.encryptAES(value);
+  //  }
 
-//  public static String toJson(Object obj) {
-//    return new Gson().toJson(obj);
-//  }
+  //FIXME: da completare prima del passaggio a spring boot
+  //  public static String toJson(Object obj) {
+  //    return new Gson().toJson(obj);
+  //  }
 
   public static String escapeAttribute(String str) {
     return str.replace("\"", "&quot;");
@@ -320,18 +323,20 @@ public class TemplateExtensions {
     return DateUtility.fromMinuteToHourMinute(minutes);
   }
 
-//  public static String dayOfWeek(Integer day) {
-//    return WordUtils.capitalize(LocalDate.now().withDayOfWeek(day).dayOfWeek().getAsText());
-//  }
+  //FIXME: da completare prima del passaggio a spring boot
+  //  public static String dayOfWeek(Integer day) {
+  //    return WordUtils.capitalize(LocalDate.now().withDayOfWeek(day).dayOfWeek().getAsText());
+  //  }
 
-  /**
-   * Ritorna la stringa dell'anno mese passato come parametro.
-   *
-   * @param month Yearmoth da formattare
-   * @return La Stringa in formato Mese(nome) Anno
-   */
-//  public static String asText(YearMonth month) {
-//    return WordUtils.capitalize(month.monthOfYear().getAsText()) + " " + month.getYear();
-//  }
+  //FIXME: da completare prima del passaggio a spring boot
+  //  /**
+  //   * Ritorna la stringa dell'anno mese passato come parametro.
+  //   *
+  //   * @param month Yearmoth da formattare
+  //   * @return La Stringa in formato Mese(nome) Anno
+  //   */
+  //  public static String asText(YearMonth month) {
+  //    return WordUtils.capitalize(month.monthOfYear().getAsText()) + " " + month.getYear();
+  //  }
 
 }

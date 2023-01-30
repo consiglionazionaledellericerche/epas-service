@@ -471,7 +471,7 @@ public class TemplateUtility {
 
   //Liste di utilità per i template.
 
-  /*
+  /**
    * Uffici dove l'utente corrente può effettuare operazioni.
    */
   public List<Office> officesAllowed() {
@@ -529,18 +529,19 @@ public class TemplateUtility {
     return contractualReferenceDao.all(Optional.of(false));
   }
   
-  /**
-   * Controlla se i flussi sono attivi.
-   *
-   * @return true se sono attivi i flussi su ePAS, false altrimenti.
-   * @throws NoSuchFieldException lancia eccezione se non esiste il campo in conf.
-   */
-   //  public boolean isFlowsActive() throws NoSuchFieldException {
-   //    if ("true".equals(Play.configuration.getProperty(FLOWS_ACTIVE))) {
-   //      return true;
-   //    }
-   //    return false;
-   //  }
+  //FIXME: da controllare prima del passaggio a spring boot
+  //  /**
+  //   * Controlla se i flussi sono attivi.
+  //   *
+  //   * @return true se sono attivi i flussi su ePAS, false altrimenti.
+  //   * @throws NoSuchFieldException lancia eccezione se non esiste il campo in conf.
+  //   */
+  //  public boolean isFlowsActive() throws NoSuchFieldException {
+  //    if ("true".equals(Play.configuration.getProperty(FLOWS_ACTIVE))) {
+  //      return true;
+  //    }
+  //    return false;
+  //  }
 
   /**
    * Gli user associati a tutte le persone appartenenti all'istituto.
@@ -860,9 +861,10 @@ public class TemplateUtility {
     return format;
   }
 
-  /**
-   * Url del servizio Attestati.
-   */
+  //FIXME: da completare prima del passaggio a spring boot
+  //  /**
+  //   * Url del servizio Attestati.
+  //   */
   //  public String getAttestatiUrl() {
   //    try {
   //      return AttestatiApis.getAttestatiBaseUrl();
@@ -925,7 +927,7 @@ public class TemplateUtility {
    * Indica se è permessa la configurabilità delle richieste di assenza 
    * per i livelli I-III.
    */
-  public boolean absenceRequestAuthorizationTopLevelEnabled(){
+  public boolean absenceRequestAuthorizationTopLevelEnabled() {
     return generalSettingDao.generalSetting().isEnableAbsenceTopLevelAuthorization();
   }
 }

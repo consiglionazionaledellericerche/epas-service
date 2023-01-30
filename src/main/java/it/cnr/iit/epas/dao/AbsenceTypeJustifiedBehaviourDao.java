@@ -26,6 +26,10 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * Dao per AbsenceTypeJustifiedBehaviour.
+ *
+ */
 @Component
 public class AbsenceTypeJustifiedBehaviourDao extends DaoBase<AbsenceTypeJustifiedBehaviour> {
 

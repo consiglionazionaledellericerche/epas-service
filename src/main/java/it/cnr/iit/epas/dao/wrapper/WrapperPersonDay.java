@@ -35,9 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.transaction.TransactionScoped;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 

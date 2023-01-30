@@ -17,7 +17,6 @@ package it.cnr.iit.epas.manager.recaps.personstamping;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-//import controllers.Resecure;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
@@ -36,15 +35,16 @@ import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.utils.DateUtility;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import java.time.LocalDate;
-import java.time.YearMonth;
+import lombok.val;
+
 
 /**
  * Oggetto che modella il contenuto della vista contenente il tabellone timbrature. Gerarchia:
@@ -119,9 +119,10 @@ public class PersonStampingRecap {
     // DATI DELLA PERSONA
     //FIXME: da correggere prima dell'utilizzo di spring boot
     canEditStampings = true;
-//    if (Session.current() != null && Security.getUser() != null && Security.getUser().isPresent()) {
-//      canEditStampings = Resecure.check("Stampings.edit", null);
-//    }
+    //if (Session.current() != null && Security.getUser() != null 
+    //  && Security.getUser().isPresent()) {
+    //  canEditStampings = Resecure.check("Stampings.edit", null);
+    //}
     final long start = System.currentTimeMillis();
     log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {}",
         person.getFullname(), year, month);

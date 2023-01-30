@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,32 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.manager.attestati.dto.show;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.base.MoreObjects;
 
 /**
- * DTO con le info di base di tutte le entity.
+ * Rappresenta una riga di competenza di attestati.
  */
-@Getter
-@Setter
-public class BaseModelDto {
+public class RigaCompetenza {
+  
+  public int id;
+  public String codiceCompetenza;
+  public String numOre;
+  
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(RigaCompetenza.class)
+        .add("id", id)
+        .add("codiceCompetenza", codiceCompetenza)
+        .add("numOre", numOre)
+        .toString();
+  }
 
-  private Long id;
-
+  /**
+   * Serializzazione della riga nel formato di attestati.
+   */
+  public String serializeContent() {
+    return this.codiceCompetenza + ";" + this.numOre;
+  }
 }

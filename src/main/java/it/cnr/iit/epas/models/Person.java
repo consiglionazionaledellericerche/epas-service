@@ -24,14 +24,17 @@ import it.cnr.iit.epas.models.absences.InitializationGroup;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.base.PeriodModel;
+import it.cnr.iit.epas.models.enumerate.CertificationType;
 import it.cnr.iit.epas.models.flows.Affiliation;
 import it.cnr.iit.epas.models.flows.Group;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -110,8 +113,9 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
   /**
    * Campo da usarsi in caso di autenticazione via shibboleth.
    */
-//  @Unique
-//  @As(binder = NullStringBinder.class)
+  //FIXME: introdurre dei validatori/binder analoghi per spring boot
+  //  @Unique
+  //  @As(binder = NullStringBinder.class)
   private String eppn;
 
   private String telephone;
@@ -343,15 +347,16 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
     this.updatedAt = LocalDateTime.now();
   }
 
-//  @PreRemove
-//  private void onDelete() {
-//    this.getGroups().stream().forEach(g -> { 
-//      g.getAffiliations().stream().filter(a -> a.getPerson().equals(this)).forEach(a -> {
-//        a.delete();
-//        log.info("Rimossa associazione {} a gruppo {}", getFullname(), g.name);
-//      });
-//    });
-//  }
+  //FIXME: da correggere prima del passaggio a spring boot
+  //  @PreRemove
+  //  private void onDelete() {
+  //    this.getGroups().stream().forEach(g -> { 
+  //      g.getAffiliations().stream().filter(a -> a.getPerson().equals(this)).forEach(a -> {
+  //        a.delete();
+  //        log.info("Rimossa associazione {} a gruppo {}", getFullname(), g.name);
+  //      });
+  //    });
+  //  }
   
   /**
    * Comparatore di persone per fullname e poi id.
@@ -385,25 +390,25 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    * Verifica se il mese passato come parametro è successivo all'ultimo mese inviato con gli
    * attestati.
    *
-   * @param readablePartial La 'data' da verificare
-   * @return true se la data passata come parametro è successiva all'ultimo mese sul quale sono
+   * @param yearMonth La 'data' da verificare
+   * @return true se la data passata come parametro è successiva all'ultimo mese sulquale sono
    *     stati inviati gli attestai per la persona interessata.
    */
-//  public boolean checkLastCertificationDate(final ReadablePartial readablePartial) {
-//
-//    //Gli attestati relativi ai MEAL Ticket vengono ignorati perchè vengono 
-//    //salvati i Certification relativi su ePAS anche se non stati effettivamente inviati
-//    //ad attestati.
-//    final Optional<Certification> ultimo = certifications.stream()
-//        .filter(c -> c.certificationType != CertificationType.MEAL)
-//        .max(Certification.comparator());
-//    if (ultimo.isPresent()) {
-//      return ultimo.get().getYearMonth().isBefore(readablePartial) 
-//          || ultimo.get().attestatiId == null;
-//    }
-//    // Se non c'è nessun mese presente considero che la condizione sia sempre vera
-//    return true;
-//  }
+  public boolean checkLastCertificationDate(final YearMonth yearMonth) {
+
+    //Gli attestati relativi ai MEAL Ticket vengono ignorati perchè vengono 
+    //salvati i Certification relativi su ePAS anche se non stati effettivamente inviati
+    //ad attestati.
+    final Optional<Certification> ultimo = certifications.stream()
+        .filter(c -> c.getCertificationType() != CertificationType.MEAL)
+        .max(Certification.comparator());
+    if (ultimo.isPresent()) {
+      return ultimo.get().getYearMonth().isBefore(yearMonth) 
+          || ultimo.get().getAttestatiId() == null;
+    }
+    // Se non c'è nessun mese presente considero che la condizione sia sempre vera
+    return true;
+  }
 
   /**
    * Associazione tra le zone.

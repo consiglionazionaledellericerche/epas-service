@@ -232,7 +232,8 @@ public class GroupAbsenceType extends BaseEntity {
             }
           } else {
             if (this.complationAbsenceBehaviour == null 
-                || !defaultGroup.complation.name().equals(this.complationAbsenceBehaviour.getName())) {
+                || !defaultGroup.complation.name().equals(
+                    this.complationAbsenceBehaviour.getName())) {
               return Optional.of(false);
             }
           }

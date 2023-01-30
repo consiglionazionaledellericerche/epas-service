@@ -21,6 +21,9 @@ import it.cnr.iit.epas.dto.v4.OfficeShowDto;
 import it.cnr.iit.epas.models.Office;
 import org.mapstruct.Mapper;
 
+/**
+ * Mapper da Office al suo DTO per la visualizzazione via REST.
+ */
 @Mapper(componentModel = "spring")
 public interface OfficeShowMapper {
 
