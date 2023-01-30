@@ -130,9 +130,6 @@ public abstract class CommonBaseEntityDao<T extends BaseEntity> implements IBase
     return new BooleanBuilder();
   }
 
-  /**
-   *
-   */
   protected List<T> pageableImpl(Integer page, Integer offset, OrderSpecifier<?> order,
       Map<DaoArg, Object> args) {
     JPQLQuery<T> query = permissionFilterCondition(entityJoin().distinct())

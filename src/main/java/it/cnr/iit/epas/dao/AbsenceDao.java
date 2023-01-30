@@ -124,9 +124,9 @@ public class AbsenceDao extends DaoBase<Absence> {
 
     final BooleanBuilder condition = new BooleanBuilder();
     //FIXME: da corregere in seguito alla migrazione allo spring-boot
-//    if (forAttachment) {
-//      condition.and(absence.getAbsenceFile().isNotNull());
-//    }
+    //    if (forAttachment) {
+    //      condition.and(absence.getAbsenceFile().isNotNull());
+    //    }
     if (person.isPresent()) {
       condition.and(absence.personDay.person.eq(person.get()));
     }

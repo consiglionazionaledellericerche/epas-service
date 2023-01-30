@@ -101,7 +101,8 @@ public class WrapperWorkingTimeType implements IWrapperWorkingTimeType {
     //XXX: metodo spostato qui dal ContractManager in seguito al passaggio a Spring boot
     for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
 
-      if (DateUtility.isDateIntoInterval(date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
+      if (DateUtility.isDateIntoInterval(
+          date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
         return cwtt;
       }
     }

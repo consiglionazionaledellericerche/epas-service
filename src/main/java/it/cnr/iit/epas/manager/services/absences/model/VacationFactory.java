@@ -386,7 +386,8 @@ public class VacationFactory {
     GroupAbsenceType reducingGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.RIDUCE_FERIE_CNR.name()).get();
     periods.get(0).reducingAbsences = absenceComponentDao.orderedAbsences(person, 
-        beginPostPartum, endPostPartum, reducingGroup.getTakableAbsenceBehaviour().getTakableCodes());
+        beginPostPartum, endPostPartum, 
+        reducingGroup.getTakableAbsenceBehaviour().getTakableCodes());
     long postPartum = periods.get(0).reducingAbsences.size();
     if (postPartum == 0) {
       return periods;
@@ -495,8 +496,9 @@ public class VacationFactory {
 
         // assegno l'inizializzazione se è ricaduta proprio nel periodo splitted
         // (trasferendo l'intero postPonedAmount)
-        if (splittedWith.initialization != null && DateUtility
-            .isDateIntoInterval(splittedWith.initialization.getDate(), splittedWith.periodInterval())) {
+        if (splittedWith.initialization != null 
+            && DateUtility.isDateIntoInterval(
+                splittedWith.initialization.getDate(), splittedWith.periodInterval())) {
 
           // qualche verifica per assicurarmi che non perdo nessuna informazione ...
           Preconditions.checkState(subPeriod.initialization.getUnitsInput() == 0);

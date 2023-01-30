@@ -110,11 +110,12 @@ public class UsersRolesOfficesDao extends DaoBase<UsersRolesOffices> {
    */
   public List<UsersRolesOffices> getAdministrativeUsersRolesOfficesByUser(User user) {
     final QUsersRolesOffices uro = QUsersRolesOffices.usersRolesOffices;
-    return getQueryFactory().selectFrom(uro).where(uro.user.eq(user), uro.role.name.eq(Role.ABSENCE_MANAGER)
-        .or(uro.role.name.eq(Role.GROUP_MANAGER))
-        .or(uro.role.name.eq(Role.PERSONNEL_ADMIN))
-        .or(uro.role.name.eq(Role.PERSONNEL_ADMIN_MINI))
-        .or(uro.role.name.eq(Role.SEAT_SUPERVISOR))).fetch();
+    return getQueryFactory().selectFrom(uro)
+        .where(uro.user.eq(user), uro.role.name.eq(Role.ABSENCE_MANAGER)
+          .or(uro.role.name.eq(Role.GROUP_MANAGER))
+          .or(uro.role.name.eq(Role.PERSONNEL_ADMIN))
+          .or(uro.role.name.eq(Role.PERSONNEL_ADMIN_MINI))
+          .or(uro.role.name.eq(Role.SEAT_SUPERVISOR))).fetch();
   }
 
   

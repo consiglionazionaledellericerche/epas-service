@@ -21,6 +21,9 @@ import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.models.Person;
 import org.mapstruct.Mapper;
 
+/**
+ * Mapper da Person al suo DTO per la visualizzazione coincisa (terse) via REST.
+ */
 @Mapper(componentModel = "spring")
 public interface PersonShowTerseMapper {
 

@@ -124,7 +124,9 @@ public class ConfigurationManager {
       IPropertiesInPeriodOwner target, LocalTime from, LocalTime to,
       Optional<LocalDate> begin, Optional<LocalDate> end, boolean persist) {
     Preconditions.checkState(epasParam.epasParamValueType == EpasParamValueType.LOCALTIME_INTERVAL);
-    return utils.build(epasParam, target, EpasParamValueType.formatValue(new LocalTimeInterval(from, to)),
+    return utils.build(
+        epasParam, target, 
+        EpasParamValueType.formatValue(new LocalTimeInterval(from, to)),
         begin, end, false, persist);
   }
 

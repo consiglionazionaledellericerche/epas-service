@@ -9,14 +9,18 @@ import it.cnr.iit.epas.security.NoCheck;
 import java.time.LocalDate;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Metodi REST per la gestione delle informazioni sui contratti.
+ */
+@Transactional
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/contracts")
@@ -34,12 +38,11 @@ public class ContractController {
     this.contractManager = contractManager;
   }
   
-  @Transactional
   @NoCheck
   @PutMapping("/endContract/" + ApiRoutes.ID_REGEX)
   public ResponseEntity<ContractDto> endContract(
       @PathVariable("id") Long id) {
-     // , @RequestParam("endContract") LocalDate endContract) {
+    // , @RequestParam("endContract") LocalDate endContract) {
     log.debug("Chiamato metodo endContract con id = {}", id);
     val entity = contractDao.byId(id);
     if (entity == null) {

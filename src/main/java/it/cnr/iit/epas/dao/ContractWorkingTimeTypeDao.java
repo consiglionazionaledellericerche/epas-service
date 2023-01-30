@@ -26,8 +26,12 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * Dao per le tipologie di orario di lavoro collegate ai contratti
+ * dei dipendenti.
+ */
 @Component
-public class ContractWorkingTimeTypeDao extends DaoBase<ContractWorkingTimeType>{
+public class ContractWorkingTimeTypeDao extends DaoBase<ContractWorkingTimeType> {
 
   @Inject
   ContractWorkingTimeTypeDao(Provider<EntityManager> emp) {

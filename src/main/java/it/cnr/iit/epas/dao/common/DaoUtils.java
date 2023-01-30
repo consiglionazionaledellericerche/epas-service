@@ -17,9 +17,9 @@
 
 package it.cnr.iit.epas.dao.common;
 
-import java.lang.reflect.Field;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import it.cnr.iit.epas.models.base.QBaseEntity;
+import java.lang.reflect.Field;
 
 public class DaoUtils {
 

@@ -704,7 +704,8 @@ public enum EpasParam {
       Office.class),
 
   /**
-   * Il responsabile di gruppo deve ricevere le notifiche delle comunicazioni di ferie deli livelli I-III.
+   * Il responsabile di gruppo deve ricevere le notifiche delle comunicazioni 
+   * di ferie deli livelli I-III.
    */
   ABSENCE_TOP_LEVEL_GROUP_MANAGER_NOTIFICATION(
       "absence_top_level_group_manager_notification",
@@ -1162,20 +1163,21 @@ public enum EpasParam {
       return null;
     }
   }
-
-  /**
-   * Verifica la lista dei cds non abilitati a visualizzare la 
-   * "Presenze automatica".
-   *
-   * @return la lista dei cds che non sono abilitati a visualizzare la 
-   *     "Presenza automatica" sui contratti dei dipendenti.
-   */
-//  public static Set<String> revokedCdsStampProfilePermission() {
-//    val cds = ImmutableSet.copyOf(
-//        Play.configuration.getProperty("permission.revoke.contract.stamp_profile.cds", "000")
-//        .split(","));
-//    log.trace("revokedCds4StampProfilePermission = {}", cds);    
-//    return cds;
-//  }
+  
+  //FIXME: verificare se serve ancora con la migrazione a spring boot
+  //  /**
+  //   * Verifica la lista dei cds non abilitati a visualizzare la 
+  //   * "Presenze automatica".
+  //   *
+  //   * @return la lista dei cds che non sono abilitati a visualizzare la 
+  //   *     "Presenza automatica" sui contratti dei dipendenti.
+  //   */
+  //  public static Set<String> revokedCdsStampProfilePermission() {
+  //    val cds = ImmutableSet.copyOf(
+  //        Play.configuration.getProperty("permission.revoke.contract.stamp_profile.cds", "000")
+  //        .split(","));
+  //    log.trace("revokedCds4StampProfilePermission = {}", cds);    
+  //    return cds;
+  //  }
 
 }

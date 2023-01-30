@@ -26,6 +26,9 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * DAO per i ComplationAbsenceBehaviour.
+ */
 @Component
 public class ComplationAbsenceBehaviourDao extends DaoBase<ComplationAbsenceBehaviour> {
 

@@ -101,11 +101,11 @@ public enum NotificationSubject {
   private String toUrl(String action, Map<String, Object> params) {
     //FIXME: da sistemare prima del passaggio a spring boot
     return "/";
-//    if (params == null) {
-//      return Router.reverse(action).url;
-//    } else {
-//      return Router.reverse(action, params).url;
-//    }
+    //    if (params == null) {
+    //      return Router.reverse(action).url;
+    //    } else {
+    //      return Router.reverse(action, params).url;
+    //    }
   }
 
   /**

@@ -61,8 +61,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 import org.springframework.stereotype.Component;
@@ -326,7 +326,8 @@ public class AbsenceManager {
 
     log.debug("Ricevuta richiesta di inserimento assenza per {}. AbsenceType = {} dal {} al {}, "
             + "mealTicket = {}. Attachment = {}, justifiedMinites = {}", 
-            person.fullName(), absenceType.code, dateFrom, dateTo.orElse(dateFrom), mealTicket.orElse(null),
+            person.fullName(), absenceType.code, 
+            dateFrom, dateTo.orElse(dateFrom), mealTicket.orElse(null),
             file.orElse(null), justifiedMinutes.orElse(null));
 
     AbsenceInsertReport air = new AbsenceInsertReport();
@@ -479,16 +480,16 @@ public class AbsenceManager {
         absence.setPersonDay(pd);
         absence.absenceType = absenceType;
         PersonDay beginAbsence = personDayDao.getPersonDay(person, startAbsence).orElse(null);
-      //FIXME: ripristinare prima del pasasggio a spring boot
-//        if (beginAbsence.getDate().isEqual(date)) {
-//          absence.absenceFile = file.orElse(null);
-//        } else {
-//          for (Absence abs : beginAbsence.getAbsences()) {
-//            if (abs.absenceFile == null) {
-//              absence.absenceFile = file.orElse(null);
-//            }
-//          }
-//        }
+        //FIXME: ripristinare prima del passaggio a spring boot
+        //        if (beginAbsence.getDate().isEqual(date)) {
+        //          absence.absenceFile = file.orElse(null);
+        //        } else {
+        //          for (Absence abs : beginAbsence.getAbsences()) {
+        //            if (abs.absenceFile == null) {
+        //              absence.absenceFile = file.orElse(null);
+        //            }
+        //          }
+        //        }
 
         log.info("Inserita nuova assenza {} per {} in data: {}",
             absence.absenceType.code, absence.getPersonDay().getPerson().getFullname(),
@@ -501,7 +502,8 @@ public class AbsenceManager {
         absence.date = pd.getDate();
 
         log.debug("Simulato inserimento nuova assenza {} per {} (matricola = {}) in data: {}",
-            absence.absenceType.code, pd.getPerson(), pd.getPerson().getNumber(), absence.getDate());
+            absence.absenceType.code, pd.getPerson(), pd.getPerson().getNumber(), 
+            absence.getDate());
       }
 
       ar.setAbsenceAdded(absence);
@@ -673,7 +675,8 @@ public class AbsenceManager {
     Optional<WorkingTimeType> wtt = wrPerson.getCurrentWorkingTimeType();
     if (wtt.isPresent()) {
       java.util.Optional<WorkingTimeTypeDay> wttd = wtt.get().getWorkingTimeTypeDays().stream()
-          .filter(w -> w.dayOfWeek == absence.getAbsenceDate().getDayOfWeek().getValue()).findFirst();
+          .filter(
+              w -> w.dayOfWeek == absence.getAbsenceDate().getDayOfWeek().getValue()).findFirst();
       if (wttd.isPresent()) {
         absence.timeToRecover = wttd.get().workingTime;
       } else {
@@ -691,10 +694,10 @@ public class AbsenceManager {
    */
   public void removeAbsence(Absence absence) {
     val pd = absence.getPersonDay();
-      //FIXME: correggere prima del passaggio a spring boot 
-//    if (absence.absenceFile.exists()) {
-//      absence.absenceFile.getFile().delete();
-//    }
+    //FIXME: correggere prima del passaggio a spring boot 
+    //    if (absence.absenceFile.exists()) {
+    //      absence.absenceFile.getFile().delete();
+    //    }
     
     absenceDao.delete(absence);
     pd.getAbsences().remove(absence);
@@ -742,9 +745,9 @@ public class AbsenceManager {
       for (Absence absence : absenceList) {
         if (absence.absenceType.code.equals(absenceType.code)) {
           //FIXME: correggere prima del passaggio a spring boot
-//          if (absence.absenceFile.exists()) {
-//            absence.absenceFile.getFile().delete();
-//          }
+          //          if (absence.absenceFile.exists()) {
+          //            absence.absenceFile.getFile().delete();
+          //          }
           
           absenceDao.delete(absence);
           pd.getAbsences().remove(absence);

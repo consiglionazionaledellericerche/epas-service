@@ -235,8 +235,7 @@ public class PersonDay extends BaseEntity {
   }
 
   /**
-   * 
-   * @param mealTicketBehaviour
+   * Imposta la disponibilità del ticket nel giorno in funzione del MealTicketBehaviour.
    */
   @Transient
   public void setTicketAvailable(MealTicketBehaviour mealTicketBehaviour) {

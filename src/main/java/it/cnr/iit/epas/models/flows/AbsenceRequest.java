@@ -88,11 +88,12 @@ public class AbsenceRequest extends MutableModel {
    */
   private String note;
 
-//  /**
-//   * Eventuale allegato alla richiesta.
-//   */
-//  @Column(name = "attachment", nullable = true)
-//  public Blob attachment;
+  //FIXME: da correggere prima del passaggio a spring boot
+  //  /**
+  //   * Eventuale allegato alla richiesta.
+  //   */
+  //  @Column(name = "attachment", nullable = true)
+  //  public Blob attachment;
 
 
   /**

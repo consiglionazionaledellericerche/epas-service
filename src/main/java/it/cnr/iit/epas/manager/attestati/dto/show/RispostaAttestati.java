@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
-
-import lombok.Getter;
-import lombok.Setter;
+package it.cnr.iit.epas.manager.attestati.dto.show;
 
 /**
- * DTO con le info di base di tutte le entity.
+ * Rappresenta una riga di risposta di attestati.
  */
-@Getter
-@Setter
-public class BaseModelDto {
-
-  private Long id;
+public class RispostaAttestati {
+  
+  public String message;
+  public boolean isFromApplication;
 
 }

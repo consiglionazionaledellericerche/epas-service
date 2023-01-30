@@ -24,6 +24,10 @@ import it.cnr.iit.epas.models.absences.Absence;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+/**
+ * Mapper da PersonDay al suo DTO per la visualizzazione via REST.
+ * Contiene anche il mapping delle assenze associate al PersonDay.
+ */
 @Mapper(componentModel = "spring")
 public interface PersonDayMapper {
 

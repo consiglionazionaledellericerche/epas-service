@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.models.absences;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
@@ -27,6 +28,7 @@ import it.cnr.iit.epas.models.base.BaseEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -179,30 +181,30 @@ public class Absence extends BaseEntity {
     return false;
   }
 
-//  /**
-//   * Le altre assenze con ruolo di rimpiazzamento nel giorno per quel gruppo.
-//   *
-//   * @param groupAbsenceType gruppo
-//   * @return lista di assenze.
-//   */
-//  @Transient
-//  public List<Absence> replacingAbsences(GroupAbsenceType groupAbsenceType) {
-//    if (this.personDay == null || !this.personDay.isPersistent()) {
-//      return Lists.newArrayList();
-//    }
-//    List<Absence> replacings = Lists.newArrayList();
-//    for (Absence absence : this.personDay.getAbsences()) {
-//      if (absence.equals(this)) {
-//        continue;
-//      }
-//      if (groupAbsenceType.getComplationAbsenceBehaviour() != null
-//          && groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes()
-//          .contains(absence.absenceType)) {
-//        replacings.add(absence);
-//      }
-//    }
-//    return replacings;
-//  }
+  /**
+   * Le altre assenze con ruolo di rimpiazzamento nel giorno per quel gruppo.
+   *
+   * @param groupAbsenceType gruppo
+   * @return lista di assenze.
+   */
+  @Transient
+  public List<Absence> replacingAbsences(GroupAbsenceType groupAbsenceType) {
+    if (this.personDay == null || this.personDay.getId() == null) {
+      return Lists.newArrayList();
+    }
+    List<Absence> replacings = Lists.newArrayList();
+    for (Absence absence : this.personDay.getAbsences()) {
+      if (absence.equals(this)) {
+        continue;
+      }
+      if (groupAbsenceType.getComplationAbsenceBehaviour() != null
+          && groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes()
+          .contains(absence.absenceType)) {
+        replacings.add(absence);
+      }
+    }
+    return replacings;
+  }
 
   /**
    * Se l'assenza ha un codice di rimpiazzamento nel giorno a lei associabile.
@@ -224,29 +226,30 @@ public class Absence extends BaseEntity {
     return false;
   }
 
-//  /**
-//   * Se l'assenza ha un ruolo di rimpiazzamento ma nel giorno non esiste il completamento che l'ha
-//   * generata.
-//   *
-//   * @param involvedGroups i gruppi da controllare
-//   * @return esito
-//   */
-//  @Transient
-//  public boolean isOrphanReplacing(Set<GroupAbsenceType> involvedGroups) {
-//    for (GroupAbsenceType groupAbsenceType : involvedGroups) {
-//      if (groupAbsenceType.getComplationAbsenceBehaviour() == null) {
-//        continue;
-//      }
-//      if (groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes().contains(this.absenceType)) {
-//        for (Absence absence : this.personDay.getAbsences()) {
-//          if (absence.replacingAbsences(groupAbsenceType).contains(this)) {
-//            return false;
-//          }
-//        }
-//      }
-//    }
-//    return true;
-//  }
+  /**
+   * Se l'assenza ha un ruolo di rimpiazzamento ma nel giorno non esiste il completamento che l'ha
+   * generata.
+   *
+   * @param involvedGroups i gruppi da controllare
+   * @return esito
+   */
+  @Transient
+  public boolean isOrphanReplacing(Set<GroupAbsenceType> involvedGroups) {
+    for (GroupAbsenceType groupAbsenceType : involvedGroups) {
+      if (groupAbsenceType.getComplationAbsenceBehaviour() == null) {
+        continue;
+      }
+      if (groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes().contains(
+          this.absenceType)) {
+        for (Absence absence : this.personDay.getAbsences()) {
+          if (absence.replacingAbsences(groupAbsenceType).contains(this)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
 
   /**
    * Se l'assenza ha il ruolo di rimpiazzamento per quei gruppi.
@@ -260,7 +263,8 @@ public class Absence extends BaseEntity {
       if (groupAbsenceType.getComplationAbsenceBehaviour() == null) {
         continue;
       }
-      if (groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes().contains(this.absenceType)) {
+      if (groupAbsenceType.getComplationAbsenceBehaviour().getReplacingCodes().contains(
+          this.absenceType)) {
         return true;
       }
     }

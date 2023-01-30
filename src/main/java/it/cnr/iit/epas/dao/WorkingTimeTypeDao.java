@@ -144,7 +144,8 @@ public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
     if (contract != null) {
       for (ContractWorkingTimeType cwtt : contract.getContractWorkingTimeType()) {
 
-        if (DateUtility.isDateIntoInterval(date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
+        if (DateUtility.isDateIntoInterval(
+            date, new DateInterval(cwtt.getBeginDate(), cwtt.getEndDate()))) {
           return Optional.of(cwtt.getWorkingTimeType());
         }
       }

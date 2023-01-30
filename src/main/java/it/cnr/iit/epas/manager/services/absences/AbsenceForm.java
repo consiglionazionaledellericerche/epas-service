@@ -168,7 +168,8 @@ public class AbsenceForm {
     } else if (absenceType == null && !this.automaticChoiceExists) {
       // se non ho specificato il tipo e non esiste una gestione automatica utilizzo il primo tipo
       this.absenceTypeSelected = this.absenceTypes.iterator().next();
-      this.justifiedTypes = Lists.newArrayList(this.absenceTypeSelected.getJustifiedTypesPermitted());
+      this.justifiedTypes = 
+          Lists.newArrayList(this.absenceTypeSelected.getJustifiedTypesPermitted());
 
     } else if (absenceType != null) {
       // ho specificato il tipo
@@ -314,7 +315,8 @@ public class AbsenceForm {
       if (group.isAutomatic()) { 
         continue;
       }
-      this.tabsVisibile.put(group.getCategory().getTab().getPriority(), group.getCategory().getTab());
+      this.tabsVisibile.put(
+          group.getCategory().getTab().getPriority(), group.getCategory().getTab());
     }
   }
 

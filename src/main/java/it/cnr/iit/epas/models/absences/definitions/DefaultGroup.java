@@ -171,7 +171,8 @@ public enum DefaultGroup {
   //      GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, DefaultTakable.T_ESENZ_19, 
   //      null, null, false, false),
 
-  PROROGA_FERIE_2020("31_2020 - Proroga ferie 2020", "", DefaultCategoryType.PROROGA_FERIE_2020, 2, // must be greater than FERIE_CNR
+  PROROGA_FERIE_2020("31_2020 - Proroga ferie 2020", "", 
+      DefaultCategoryType.PROROGA_FERIE_2020, 2, // must be greater than FERIE_CNR
       GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, 
       DefaultTakable.T_FERIE_CNR_PROROGA_2020, null, null, false, false),
   FERIE_CNR_DIPENDENTI("Ferie e permessi legge", "",
@@ -569,10 +570,10 @@ public enum DefaultGroup {
     List<String> g232 = getCodes(DefaultGroup.G_232);
     List<String> g233 = getCodes(DefaultGroup.G_233);
     List<String> g234 = getCodes(DefaultGroup.G_234);
-//    List<String> g24 = getCodes(DefaultGroup.G_24);
-//    List<String> g242 = getCodes(DefaultGroup.G_242);
-//    List<String> g243 = getCodes(DefaultGroup.G_243);
-//    List<String> g244 = getCodes(DefaultGroup.G_244);
+    //    List<String> g24 = getCodes(DefaultGroup.G_24);
+    //    List<String> g242 = getCodes(DefaultGroup.G_242);
+    //    List<String> g243 = getCodes(DefaultGroup.G_243);
+    //    List<String> g244 = getCodes(DefaultGroup.G_244);
     List<String> g25 = getCodes(DefaultGroup.G_25);
     List<String> g252 = getCodes(DefaultGroup.G_252);
     List<String> g253 = getCodes(DefaultGroup.G_253);

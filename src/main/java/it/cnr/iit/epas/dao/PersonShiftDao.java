@@ -26,6 +26,9 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * Dao di base per i giorni di turno.
+ */
 @Component
 public class PersonShiftDao extends DaoBase<PersonShift> {
 

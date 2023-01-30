@@ -92,8 +92,8 @@ public class ConsistencyManager {
    * @param user utente loggato
    * @param fromDate dalla data
    * @param onlyRecap se si vuole aggiornare solo i riepiloghi
-   * @throws ExecutionException 
-   * @throws InterruptedException 
+   * @throws ExecutionException  in caso di problemi con i CompletableFuture
+   * @throws InterruptedException  in caso di interruzione dei CompletableFuture
    */
   //FIXME: da correggere prima di passare a spring boot
   public void fixPersonSituation(Optional<Person> person, Optional<User> user, LocalDate fromDate,
@@ -127,10 +127,13 @@ public class ConsistencyManager {
    * @param personList la lista delle persone da ricalcolare
    * @param fromDate dalla data
    * @param onlyRecap se si vuole aggiornare solo i riepiloghi
-   * @throws ExecutionException 
-   * @throws InterruptedException 
+   *
+   * @throws ExecutionException nel caso di problemi con i CompletableFuture
+   * @throws InterruptedException nel caso di interruzione dei CompletableFuture 
    */
-  public void fixPersonSituation(List<Person> personList, LocalDate fromDate, boolean onlyRecap) throws InterruptedException, ExecutionException {
+  public void fixPersonSituation(
+      List<Person> personList, LocalDate fromDate, boolean onlyRecap) 
+          throws InterruptedException, ExecutionException {
 
     final List<CompletableFuture<Void>> results = Lists.newArrayList();
 
@@ -149,7 +152,8 @@ public class ConsistencyManager {
    * @param from data dalla quale effettuare i ricalcoli
    */
   public void updatePersonRecaps(Long personId, LocalDate from) {
-    consistencyManagerUtils.updatePersonSituationEngine(personId, from, Optional.<LocalDate>empty(), true);
+    consistencyManagerUtils.updatePersonSituationEngine(
+        personId, from, Optional.<LocalDate>empty(), true);
   }
 
   /**
@@ -159,7 +163,8 @@ public class ConsistencyManager {
    * @param from data dalla quale effettuare i ricalcoli
    */
   public void updatePersonSituation(Long personId, LocalDate from) {
-    consistencyManagerUtils.updatePersonSituationEngine(personId, from, Optional.<LocalDate>empty(), false);
+    consistencyManagerUtils.updatePersonSituationEngine(
+        personId, from, Optional.<LocalDate>empty(), false);
   }
 
   /**
@@ -171,7 +176,8 @@ public class ConsistencyManager {
   public void updateContractSituation(Contract contract, LocalDate from) {
 
     LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
-    consistencyManagerUtils.updatePersonSituationEngine(contract.person.getId(), from, Optional.ofNullable(to), false);
+    consistencyManagerUtils.updatePersonSituationEngine(
+        contract.person.getId(), from, Optional.ofNullable(to), false);
   }
 
   /**
@@ -183,7 +189,8 @@ public class ConsistencyManager {
   public void updateContractRecaps(Contract contract, LocalDate from) {
 
     LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
-    consistencyManagerUtils.updatePersonSituationEngine(contract.person.getId(), from, Optional.ofNullable(to), true);
+    consistencyManagerUtils.updatePersonSituationEngine(
+        contract.person.getId(), from, Optional.ofNullable(to), true);
   }
 
   /**
@@ -217,8 +224,8 @@ public class ConsistencyManager {
       //FIXME: ma servono davvero??
       emp.get().flush();
       emp.get().clear();
-//      JPA.em().flush();
-//      JPA.em().clear();
+      //JPA.em().flush();
+      //JPA.em().clear();
     }
   }
 

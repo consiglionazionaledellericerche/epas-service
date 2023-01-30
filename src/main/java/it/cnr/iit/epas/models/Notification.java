@@ -73,8 +73,6 @@ public class Notification extends MutableModel {
 
   /**
    * Interfaccia per la creazione del tipo di notifica.
-   * @author dario
-   *
    */
   public interface NotificationBuilderTypeCreate {
     Notification create();
@@ -82,8 +80,6 @@ public class Notification extends MutableModel {
 
   /**
    * Interfaccia per la creazione della notifica.
-   * @author dario
-   *
    */
   public interface NotificationBuilderType {
 

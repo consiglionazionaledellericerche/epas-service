@@ -17,6 +17,8 @@
 
 package it.cnr.iit.epas.models;
 
+import com.google.common.base.MoreObjects;
+import it.cnr.iit.epas.manager.attestati.dto.show.SeatCertification.PersonCertification;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.CertificationType;
 import java.time.YearMonth;
@@ -105,16 +107,16 @@ public class Certification extends BaseEntity {
     return code + ";" + value;
   }
 
-//  @Override
-//  public String toString() {
-//    return MoreObjects.toStringHelper(PersonCertification.class)
-//        .add("person", person.fullName())
-//        .add("matricola", person.getNumber())
-//        .add("year", year)
-//        .add("month", month)
-//        .add("key", aMapKey())
-//        .toString();
-//  }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(PersonCertification.class)
+        .add("person", person.fullName())
+        .add("matricola", person.getNumber())
+        .add("year", year)
+        .add("month", month)
+        .add("key", aMapKey())
+        .toString();
+  }
 
   /**
    * YearMonth costruito da anno e mese.
