@@ -97,7 +97,6 @@ public class ConsistencyManager {
    * @throws ExecutionException  in caso di problemi con i CompletableFuture
    * @throws InterruptedException  in caso di interruzione dei CompletableFuture
    */
-  //FIXME: da correggere prima di passare a spring boot
   public void fixPersonSituation(Optional<Person> person, Optional<User> user, LocalDate fromDate,
       boolean onlyRecap) throws InterruptedException, ExecutionException {
 

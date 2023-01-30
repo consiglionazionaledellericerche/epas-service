@@ -205,24 +205,7 @@ class ConsistencyManagerUtils {
     absenceService.emptyVacationCache(person, from);
     final Optional<Contract> contract = wrPerson.getCurrentContract();
 
-    //FIXME: questa parte è stata sposta nel ConsistencyManagerListener::updatePersonSituationEngine
-    //    if (contract.isPresent()) {
-    //      new Job<Void>() {
-    //        @Override
-    //        public void doJob() {
-    //          Verify.verifyNotNull(contract.get().id);
-    //          Contract currentContract = Contract.findById(contract.get().id);
-    //          Verify.verifyNotNull(currentContract, 
-    //              String.format("currentcontract is null, contract.id = %s", contract.get().id));
-    //          GroupAbsenceType vacationGroup = absenceComponentDao
-    //              .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
-    //          absenceService.buildVacationSituation(currentContract, LocalDate.now().getYear(),
-    //              vacationGroup, Optional.absent(), true);
-    //        }
-    //      }.afterRequest();
-    //    }
     // (6) Controllo se per quel giorno person ha anche un turno associato ed effettuo, i ricalcoli
-
 
     Optional<PersonShiftDay> psd = personShiftDayDao.byPersonAndDate(person, from);
     if (psd.isPresent()) {
