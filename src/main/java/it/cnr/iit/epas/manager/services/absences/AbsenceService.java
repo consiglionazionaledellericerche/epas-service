@@ -46,7 +46,7 @@ import it.cnr.iit.epas.manager.services.absences.model.ServiceFactories;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
-import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummaryCached;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSummaryCached;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
@@ -596,7 +596,7 @@ public class AbsenceService {
         .groupAbsenceTypeByName(DefaultGroup.G_182_PARENTI_DIPENDENTI.name()).get();
     final GroupAbsenceType medicalExams = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_631_DIPENDENTI.name()).get();
-    final GroupAbsenceType cod39LA = absenceComponentDao
+    final GroupAbsenceType cod39La = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_39LA.name()).get();
     final GroupAbsenceType smart = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_SMART.name()).get();
@@ -716,7 +716,7 @@ public class AbsenceService {
       
       if ((Boolean) confManager.configValue(person, 
           EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE)) {
-        groupsPermitted.add(cod39LA);
+        groupsPermitted.add(cod39La);
       }
       
       if ((Boolean) confManager.configValue(person, EpasParam.SMARTWORKING)) {
@@ -1009,9 +1009,12 @@ public class AbsenceService {
 
     // Provo a prelevare la situazione dalla cache
     if (useCache) {
-      situation.lastYearCached = (VacationSummaryCached) cache.get(lastYearKey);
-      situation.currentYearCached = (VacationSummaryCached) cache.get(currentYearKey);
-      situation.permissionsCached = (VacationSummaryCached) cache.get(permissionsKey);
+      if (cache.get(lastYearKey) != null && cache.get(currentYearKey) != null
+          && cache.get(permissionsKey) != null) {
+        situation.lastYearCached = (VacationSummaryCached) cache.get(lastYearKey).get();
+        situation.currentYearCached = (VacationSummaryCached) cache.get(currentYearKey).get();
+        situation.permissionsCached = (VacationSummaryCached) cache.get(permissionsKey).get();
+      }
       if (situation.lastYearCached != null // && situation.lastYearCached.date.isEqual(date)
           && situation.currentYearCached != null // &&
           // situation.currentYearCached.date.isEqual(date)

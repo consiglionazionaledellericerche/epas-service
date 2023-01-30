@@ -113,7 +113,14 @@ class ConsistencyManagerUtils {
     this.emp = emp;
   }
 
-  Optional<Contract> updatePersonSituationEngine(
+  /**
+   * Effettua l'aggiornamento della situazione dei riepiloghi
+   * giornalieri e mensili della persona indicata.
+   * Attenzione il metodo deve essere pubblico perché c'è un
+   * listener @AfterRequest per questo metodo che effettua delle
+   * operazioni aggiuntive.
+   */
+  public Optional<Contract> updatePersonSituationEngine(
       Long personId, LocalDate from, Optional<LocalDate> to,
       boolean updateOnlyRecaps) {
     log.debug("updatePersonSituationEngine started. personId={}, from={}, to={}.",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -46,12 +46,14 @@ class ConsistencyManagerListener {
       AbsenceComponentDao absenceComponentDao,
       AbsenceService absenceService) {
     this.contractDao = contractDao;
+    this.absenceComponentDao = absenceComponentDao;
+    this.absenceService = absenceService;
   }
 
   @AfterReturning(
       pointcut = "execution("
           + "public java.util.Optional<it.cnr.iit.epas.models.Contract> "
-          + "it.cnr.iit.epas.manager.ConsistencyManager.updatePersonSituationEngine("
+          + "it.cnr.iit.epas.manager.ConsistencyManagerUtils.updatePersonSituationEngine("
           + "Long,java.time.LocalDate,java.util.Optional<java.time.LocalDate>, boolean))",
       returning = "contract")
   void updatePersonSituationEngine(Optional<Contract> contract) {
@@ -73,4 +75,5 @@ class ConsistencyManagerListener {
           + " no contract present");
     }
   }
+
 }
