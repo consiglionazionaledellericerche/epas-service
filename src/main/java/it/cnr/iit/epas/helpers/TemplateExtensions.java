@@ -266,20 +266,15 @@ public class TemplateExtensions {
   }
 
   //FIXME: da completare prima del passaggio a spring boot
-  //  /**
-  //   * Ritorna la stringa cryptata con aes e chiave play predefinita.
-  //   *
-  //   * @param value la stringa da criptare
-  //   * @return la stringa cryptata con aes e chiave play predefinita.
-  //   */
-  //  public static String encrypt(String value) {
-  //    return Crypto.encryptAES(value);
-  //  }
-
-  //FIXME: da completare prima del passaggio a spring boot
-  //  public static String toJson(Object obj) {
-  //    return new Gson().toJson(obj);
-  //  }
+  //    /**
+  //     * Ritorna la stringa cryptata con aes e chiave play predefinita.
+  //     *
+  //     * @param value la stringa da criptare
+  //     * @return la stringa cryptata con aes e chiave play predefinita.
+  //     */
+  //    public static String encrypt(String value) {
+  //      return Crypto.encryptAES(value);
+  //    }
 
   public static String escapeAttribute(String str) {
     return str.replace("\"", "&quot;");

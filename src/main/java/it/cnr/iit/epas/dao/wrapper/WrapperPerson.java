@@ -25,6 +25,7 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.PersonMonthRecapDao;
+import it.cnr.iit.epas.manager.CompetenceManager;
 import it.cnr.iit.epas.manager.PersonManager;
 import it.cnr.iit.epas.models.CertificatedData;
 import it.cnr.iit.epas.models.Certification;
@@ -72,6 +73,7 @@ public class WrapperPerson implements IWrapperPerson {
   private final Provider<IWrapperFactory> wrapperFactory;
   private final CompetenceDao competenceDao;
   private final Provider<EntityManager> emp;
+  private final Provider<CompetenceManager> competenceManager;
 
   private List<Contract> sortedContracts;
   private Optional<Contract> currentContract;
@@ -90,9 +92,10 @@ public class WrapperPerson implements IWrapperPerson {
       PersonManager personManager,
       PersonDao personDao, PersonMonthRecapDao personMonthRecapDao,
       PersonDayDao personDayDao, CompetenceDao competenceDao,
-      Provider<IWrapperFactory> wrapperFactory, Provider<EntityManager> emp) {
+      Provider<IWrapperFactory> wrapperFactory, Provider<EntityManager> emp,
+      Provider<CompetenceManager> competenceManager) {
     this.contractDao = contractDao;
-    //this.competenceManager = competenceManager;
+    this.competenceManager = competenceManager;
     this.personManager = personManager;
     this.personDao = personDao;
     this.personMonthRecapDao = personMonthRecapDao;
@@ -414,12 +417,9 @@ public class WrapperPerson implements IWrapperPerson {
   /**
    * Il residuo positivo del mese fatto dalla person.
    */
-  
   @Override
   public Integer getPositiveResidualInMonth(int year, int month) {
-    return null;
-    //FIXME: dipendenza circolare da capire come risolvere
-    //return competenceManager.positiveResidualInMonth(value, year, month) / 60;
+    return competenceManager.get().positiveResidualInMonth(value, year, month) / 60;
   }
 
   /**
