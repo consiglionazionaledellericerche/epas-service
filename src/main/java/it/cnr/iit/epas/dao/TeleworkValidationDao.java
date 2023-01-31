@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,41 +18,36 @@
 package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.models.QQualification;
-import it.cnr.iit.epas.models.Qualification;
-import java.util.List;
+import it.cnr.iit.epas.models.QTeleworkValidation;
+import it.cnr.iit.epas.models.TeleworkValidation;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import lombok.val;
 import org.springframework.stereotype.Component;
 
 /**
- * Dao per le entityQualification.
- *
- * @author Cristian Lucchesi
- *
+ * DAO per i TeleworkValidation.
  */
 @Component
-public class QualificationDao extends DaoBase<Qualification> {
+public class TeleworkValidationDao extends DaoBase<TeleworkValidation> {
 
   @Inject
-  QualificationDao(Provider<EntityManager> emp) {
+  TeleworkValidationDao(Provider<EntityManager> emp) {
     super(emp);
   }
 
-  public List<Qualification> findAll() {
-    return getQueryFactory().selectFrom(QQualification.qualification1).fetch();
+  /**
+   * Ritorna il CompetenceRequestEvent identificato dall'id passato come parametro.
+   */
+  public Optional<TeleworkValidation> findById(Long id) {
+    final QTeleworkValidation teleworkValidation = 
+        QTeleworkValidation.teleworkValidation;
+    return 
+        Optional.of(
+            getQueryFactory()
+              .selectFrom(teleworkValidation)
+              .where(teleworkValidation.id.eq(id)).fetchOne());
   }
 
-  /**
-   * Preveleva il Qualification tramite il suo id.
-   */
-  public Optional<Qualification> findById(Long id) {
-    val qualification = QQualification.qualification1;
-    return Optional.ofNullable(
-        getQueryFactory().selectFrom(qualification)
-          .where(qualification.id.eq(id)).fetchOne());
-  }
 }

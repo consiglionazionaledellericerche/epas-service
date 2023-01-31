@@ -211,8 +211,9 @@ public class WrapperOffice implements IWrapperOffice {
     List<UsersRolesOffices> uroList = Lists.newArrayList();
     for (UsersRolesOffices uro : this.value.getUsersRolesOffices()) {
 
-      if (uro.office.getId().equals(this.value.getId()) && uro.role.getId().equals(role.getId())
-          && uro.user.getPerson() != null) {
+      if (uro.getOffice().getId().equals(this.value.getId()) 
+          && uro.role.getId().equals(role.getId())
+          && uro.getUser().getPerson() != null) {
         uroList.add(uro);
       }
     }

@@ -81,8 +81,8 @@ public class OfficeManager {
     if (!uro.isPresent()) {
 
       UsersRolesOffices newUro = new UsersRolesOffices();
-      newUro.user = user;
-      newUro.office = office;
+      newUro.setUser(user);
+      newUro.setOffice(office);
       newUro.role = role;
       emp.get().persist(newUro);
       //newUro.save();

@@ -26,6 +26,12 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * Dao ler TakableAbsenceBehaviour.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Component
 public class TakableAbsenceBehaviourDao extends DaoBase<TakableAbsenceBehaviour> {
 

@@ -679,8 +679,8 @@ public class TemplateUtility {
     }
 
     for (UsersRolesOffices uro : user.get().getUsersRolesOffices()) {
-      if (uro.role.name.equals(Role.TECHNICAL_ADMIN)) {
-        offices.add(uro.office);
+      if (uro.role.getName().equals(Role.TECHNICAL_ADMIN)) {
+        offices.add(uro.getOffice());
       }
     }
     return offices;
@@ -697,7 +697,7 @@ public class TemplateUtility {
     for (User user : badgeReaders) {
       boolean insert = true;
       for (UsersRolesOffices uro : user.getUsersRolesOffices()) {
-        if (uro.office.getId().equals(office.getId())) {
+        if (uro.getOffice().getId().equals(office.getId())) {
           insert = false;
           break;
         }

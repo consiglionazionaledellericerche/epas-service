@@ -60,7 +60,7 @@ public class CompetenceDao extends DaoBase<Competence> {
    *
    * @return la competenza relativa all'id passato come parametro.
    */
-  public Competence getCompetenceById(Long id) {
+  public Competence findById(Long id) {
 
     final QCompetence competence = QCompetence.competence;
 

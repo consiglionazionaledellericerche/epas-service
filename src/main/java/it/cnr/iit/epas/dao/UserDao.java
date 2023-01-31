@@ -284,8 +284,8 @@ public class UserDao extends DaoBase<User> {
   public List<User> getUsersWithRoles(final Office office, String... roles) {
 
     return office.getUsersRolesOffices().stream()
-        .filter(uro -> Arrays.asList(roles).contains(uro.role.name))
-        .map(uro -> uro.user).distinct().collect(Collectors.toList());
+        .filter(uro -> Arrays.asList(roles).contains(uro.getRole().getName()))
+        .map(uro -> uro.getUser()).distinct().collect(Collectors.toList());
   }
 
   /**

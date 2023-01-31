@@ -66,10 +66,10 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private String username;
 
-  @Size(min=5)
+  @Size(min = 5)
   private String password;
 
-  //@NotAudited
+  @NotAudited
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
   private Person person;
 
@@ -150,6 +150,6 @@ public class User extends BaseEntity {
    */
   public boolean hasRoles(String... args) {
     return usersRolesOffices.stream()
-        .anyMatch(uro -> Arrays.asList(args).contains(uro.role.name));
+        .anyMatch(uro -> Arrays.asList(args).contains(uro.role.getName()));
   }
 }
