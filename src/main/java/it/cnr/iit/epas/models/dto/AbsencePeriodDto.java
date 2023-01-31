@@ -19,6 +19,7 @@ package it.cnr.iit.epas.models.dto;
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 
 /**
@@ -35,6 +36,7 @@ public class AbsencePeriodDto {
   public boolean takableWithLimit;
   public long periodTakableAmount;
   public long remainingAmount;
+  public VacationCode vacationCode;
 
   /**
    * Costruttore.
@@ -43,15 +45,16 @@ public class AbsencePeriodDto {
    * @param initialization initialization
    * @param from from
    * @param to to
-   * @param takeAmountType
-   * @param groupAbsenceType
-   * @param takableWithLimit
-   * @param periodTakableAmount
-   * @param remainingAmount
+   * @param takeAmountType takeAmountType
+   * @param groupAbsenceType groupAbsenceType
+   * @param takableWithLimit takableWithLimit
+   * @param periodTakableAmount periodTakableAmount
+   * @param remainingAmount remainingAmount
+   * @param vacationCode vacationCode
    */
   public AbsencePeriodDto(long personId, InitializationGroup initialization, LocalDate from,
       LocalDate to, AmountType takeAmountType, GroupAbsenceType groupAbsenceType, boolean takableWithLimit,
-      long periodTakableAmount, long remainingAmount) {
+      long periodTakableAmount, long remainingAmount, VacationCode vacationCode ) {
 
     this.personId = personId;
     this.initialization = initialization;
@@ -62,6 +65,7 @@ public class AbsencePeriodDto {
     this.takableWithLimit = takableWithLimit;
     this.periodTakableAmount = periodTakableAmount;
     this.remainingAmount = remainingAmount;
+    this.vacationCode = vacationCode;
   }
 
 }

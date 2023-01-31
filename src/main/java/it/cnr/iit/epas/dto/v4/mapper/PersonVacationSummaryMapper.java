@@ -23,8 +23,11 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
+import java.time.LocalDate;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 /**
  * Mapping delle informazioni per il riepilogo di un mese lavorativo
@@ -39,6 +42,14 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "personId", source = "person.id")
   PersonVacationSummaryDto convert(PersonVacationSummary vacationSummary);
 
+  @Mapping(target = "personId", source = "person.id")
+  @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
+  @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
+  @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
+  AbsencePeriodDto convert(AbsencePeriod period);
+
+  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
+
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")
   @Mapping(target = "used", expression = "java(vacationSummary.used())")
@@ -51,34 +62,11 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "postPartumisEmpty", expression = "java(vacationSummary.postPartum().isEmpty())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
-  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
-
-  @Mapping(target = "personId", source = "person.id")
-  @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
-  @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
-  @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-  AbsencePeriodDto convert(AbsencePeriod period);
-
-  @Mapping(target = "subAmount", expression = "java(vacationSummary.subAmount(period))")
-  @Mapping(target = "subFixedPostPartum", expression = "java(vacationSummary.subFixedPostPartum(period))")
-  @Mapping(target = "subAmountBeforeFixedPostPartum", expression = "java(vacationSummary.subAmountBeforeFixedPostPartum(period))")
-  @Mapping(target = "subTotalAmount", expression = "java(vacationSummary.subTotalAmount(period))")
-  @Mapping(target = "subDayProgression", expression = "java(vacationSummary.subDayProgression(period))")
-  @Mapping(target = "subDayPostPartum", expression = "java(vacationSummary.subDayPostPartum(period))")
-  @Mapping(target = "subDayToFixPostPartum", expression = "java(vacationSummary.subDayToFixPostPartum(period))")
-  @Mapping(target = "subAccrued", expression = "java(vacationSummary.subAccrued(period))")
-  @Mapping(target = "contractEndFirstYearInPeriod", expression = "java(vacationSummary.contractEndFirstYearInPeriod(period))")
-  VacationSummaryDto convert(VacationSummary vacationSummary, AbsencePeriod period);
-
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceDto convert(Absence absence);
 
   ContractDto convert(Contract contract);
-
-  //  @Mapping(target = "absencesUsed", expression = "java(vacationSummary.absencesUsed())")
-//  @Mapping(target = "postPartum", expression = "java(vacationSummary.postPartum())")
-
 
 }

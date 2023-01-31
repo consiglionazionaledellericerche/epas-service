@@ -32,9 +32,18 @@ public class AbsenceSubPeriodDto {
   private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
-  private String vacationCode;
+  private VacationCodeDto vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
-
+  private long subAmount;
+  private boolean subFixedPostPartum;
+  private long subAmountBeforeFixedPostPartum;
+  private long subTotalAmount;
+  private long subDayProgression;
+  private long subDayPostPartum;
+  private long subDayToFixPostPartum;
+  private boolean subAccrued;
+  private LocalDate contractEndFirstYearInPeriod;
+  private long dayInInterval;
 }

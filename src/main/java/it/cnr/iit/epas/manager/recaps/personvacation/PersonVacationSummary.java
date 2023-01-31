@@ -21,6 +21,7 @@ import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
+import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
@@ -29,6 +30,7 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,7 @@ public class PersonVacationSummary {
   public TypeSummary typeSummary;
   public VacationSummary vacationSummary;
   public List<Contract> contracts;
+  public long subAmount;
 
   /**
    * Costruisce l'oggetto contenente tutte le informazioni da renderizzare nella pagina riepilogo
@@ -86,7 +89,7 @@ public class PersonVacationSummary {
     GroupAbsenceType vacationGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
 
-        if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
+      if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
       vacationSummary = absenceService.buildVacationSituation(contract, year,
           vacationGroup, java.util.Optional.empty(), false).permissions;
     } else {
@@ -94,7 +97,20 @@ public class PersonVacationSummary {
           vacationGroup, Optional.empty(), false).currentYear;
     }
 
-    log.debug("vacationSummary>>>> {}",vacationSummary.total());
+    log.debug("vacationSummary>>>> {}",vacationSummary.absencePeriod.subPeriods);
+    for (AbsencePeriod period : vacationSummary.absencePeriod.subPeriods) {
+      period.subAmount = vacationSummary.subAmount(period);
+      period.subFixedPostPartum = vacationSummary.subFixedPostPartum(period);
+      period.subAmountBeforeFixedPostPartum = vacationSummary.subAmountBeforeFixedPostPartum(period);
+      period.subTotalAmount = vacationSummary.subTotalAmount(period);
+      period.subDayProgression = vacationSummary.subDayProgression(period);
+      period.subDayPostPartum = vacationSummary.subDayPostPartum(period);
+      period.subDayToFixPostPartum = vacationSummary.subDayToFixPostPartum(period);
+      period.subAccrued = vacationSummary.subAccrued(period);
+      period.contractEndFirstYearInPeriod = vacationSummary.contractEndFirstYearInPeriod(period);
+      period.dayInInterval = period.periodInterval().dayInInterval();
+    }
+
 
     log.debug("fine creazione nuovo PersonVacationSummary in {} ms. Person = {}, year = {}",
         System.currentTimeMillis() - start, person.getFullname(), year);
