@@ -37,14 +37,14 @@ import org.springframework.stereotype.Component;
 @Component
 class ConsistencyManagerListener {
 
-  private ContractDao contractDao;
-  private AbsenceComponentDao absenceComponentDao;
-  private AbsenceService absenceService;
+  private final ContractDao contractDao;
+  private final AbsenceComponentDao absenceComponentDao;
+  private final AbsenceService absenceService;
+
 
   @Inject
-  public ConsistencyManagerListener(ContractDao contractDao,
-      AbsenceComponentDao absenceComponentDao,
-      AbsenceService absenceService) {
+  ConsistencyManagerListener(ContractDao contractDao,
+      AbsenceComponentDao absenceComponentDao, AbsenceService absenceService) {
     this.contractDao = contractDao;
     this.absenceComponentDao = absenceComponentDao;
     this.absenceService = absenceService;
@@ -55,7 +55,7 @@ class ConsistencyManagerListener {
           + "public java.util.Optional<it.cnr.iit.epas.models.Contract> "
           + "it.cnr.iit.epas.manager.ConsistencyManagerUtils.updatePersonSituationEngine("
           + "Long,java.time.LocalDate,java.util.Optional<java.time.LocalDate>, boolean))",
-      returning = "contract")
+          returning = "contract")
   void updatePersonSituationEngine(Optional<Contract> contract) {
     log.debug("ConsistencyManagerListener.updatePersonSituationEngine started, contract = {}", 
         contract.orElse(null));

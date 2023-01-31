@@ -19,7 +19,6 @@ package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.base.Verify;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -100,7 +99,8 @@ public class PersonDayManager {
       PersonDayInTroubleDao personDayInTroubleDao,
       PersonDayDao personDayDao,
       PersonShiftDayDao personShiftDayDao, WorkingTimeTypeDao workingTimeTypeDao, ZoneDao zoneDao,
-      AbsenceComponentDao absenceComponentDao, Provider<EntityManager> emp) {
+      AbsenceComponentDao absenceComponentDao,
+      Provider<EntityManager> emp) {
 
     this.configurationManager = configurationManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
@@ -990,7 +990,7 @@ public class PersonDayManager {
     final boolean isCompleteDayAndAddOvertimeAbsence = 
         isCompleteDayAndAddOvertimeAbsence(personDay);
 
-    log.info("PersonDay = {}. isPersistent=()", personDay, personDayDao.isPersistent(personDay));
+    log.debug("PersonDay = {}. isPersistent=()", personDay, personDayDao.isPersistent(personDay));
 
     // PRESENZA AUTOMATICA
     if (isFixedTimeAtWork && !allValidStampings) {
@@ -1761,7 +1761,7 @@ public class PersonDayManager {
    *     (l'assenza non è persita), Optional.empty() se tutta la fascia obbligatoria 
    *     è coperta come orario. 
    */
-  private Optional<Absence> buildShortPermissionAbsence(PersonDay personDay, 
+  Optional<Absence> buildShortPermissionAbsence(PersonDay personDay, 
       TimeSlot mandatoryTimeSlot) {
     val mandatoryTimeSlotRange = Range.closed(mandatoryTimeSlot.beginSlot, 
         mandatoryTimeSlot.endSlot);
@@ -1801,103 +1801,6 @@ public class PersonDayManager {
       return Optional.empty(); 
     }
 
-  }
-
-  /**
-   * Verifica e gestisce eventuali Permessi brevi legati a fascie orarie obbligatorie
-   * per il dipendente.
-   *
-   * @param personDay il personday da verificare per l'eventuale permesso breve
-   */
-  public void checkAndManageMandatoryTimeSlot(PersonDay personDay) {
-    Verify.verifyNotNull(personDay);
-    Verify.verifyNotNull(personDay.getPerson());
-
-    //FIXME da correggere per il passaggio allo spring boot
-//    new Job<Void>() {
-//      @Override
-//      public void doJob() {
-//        val mandatoryTimeSlot = contractDao
-//            .getContractMandatoryTimeSlot(personDay.date, personDay.person.id);
-//        if (!mandatoryTimeSlot.isPresent()) {
-//          log.trace("Le timbrature di {} del giorno {} NON necessitano di controlli "
-//              + "sulla fascia obbligatoria",
-//              personDay.person, personDay.date);
-//          return;
-//        }
-//        log.trace("Le timbrature di {} del giorno {} necessitano di controlli "
-//            + "sulla fascia obbligatoria", 
-//            personDay.person, personDay.date);
-//
-//        //I turni non hanno vincoli di fascia obbligatoria nei giorni in cui sono in turno
-//        boolean inShift = personShiftDayDao
-//            .getPersonShiftDay(personDay.person, personDay.date).isPresent();
-//
-//        //Se sono presenti assenze giornalieri la fascia obbigatoria non deve essere 
-//        //rispettata anche in presenta di timbrature
-//        boolean isAllDayAbsencePresent = isAllDayAbsences(personDay); 
-//
-//        val previousShortPermission = 
-//            personDay.absences.stream().filter(a -> a.absenceType.code.equals("PB")).findFirst();
-//
-//        if (inShift || isAllDayAbsencePresent || personDay.isHoliday()) {
-//          if (previousShortPermission.isPresent()) {
-//            //Viene fatta prima la merge perché l'assenza è detached
-//            previousShortPermission.get().merge()._delete();
-//            log.info("Rimosso permesso breve di {} minuti nel giorno {} per {} poiché sono presenti"
-//                + " assenze giornaliere oppure il dipendente è in turno, "
-//                + "oppure è un giorno festivo.",
-//                previousShortPermission.get().justifiedMinutes, personDay.date, 
-//                personDay.person.getFullname());
-//            return;
-//          } else {
-//            log.debug("Le timbrature di {} del giorno {} NON necessitano di controlli sulla fascia "
-//                + "obbligatoria poichè sono presenti assenze giornaliere oppure il dipendente "
-//                + "è in turno, oppure è un giorno festivo.",
-//                personDay.person, personDay.date);
-//            return;
-//          }
-//        }
-//
-//        val shortPermission = 
-//            buildShortPermissionAbsence(personDay, mandatoryTimeSlot.get().timeSlot);
-//
-//        if (!shortPermission.isPresent() && !previousShortPermission.isPresent()) {
-//          return;
-//        }
-//
-//        if (shortPermission.isPresent() && !previousShortPermission.isPresent()) {
-//          log.info("Inserito permesso breve di {} minuti nel giorno {} per {}",
-//              shortPermission.get().justifiedMinutes, personDay.date, 
-//              personDay.person.getFullname());
-//          shortPermission.get().save();
-//          return;
-//        }
-//
-//        if (!shortPermission.isPresent() && previousShortPermission.isPresent()) {
-//          //Viene fatta prima la merge perché l'assenza è detached
-//          previousShortPermission.get().merge()._delete();
-//          log.info("Rimosso permesso breve di {} minuti nel giorno {} per {}",
-//              previousShortPermission.get().justifiedMinutes, personDay.date, 
-//              personDay.person.getFullname());          
-//          return;
-//        }
-//
-//        //Se era già presente un permesso breve di durata diversa dall'attuale viene aggiornato 
-//        //il precedente permesso breve
-//        if (!previousShortPermission.get().justifiedMinutes
-//            .equals(shortPermission.get().justifiedMinutes)) {
-//          val newShortPermission = previousShortPermission.get().<Absence>merge();
-//          newShortPermission.justifiedMinutes = shortPermission.get().justifiedMinutes;
-//          newShortPermission.save();
-//          log.debug("Permesso breve esistente nel giorno {} per {}, aggiornato da {} a {} minuti", 
-//              personDay.date, personDay.person.getFullname(),
-//              previousShortPermission.get().justifiedMinutes, 
-//              shortPermission.get().justifiedMinutes);
-//        }
-//
-//      }
-//    }.afterRequest();
   }
 
 }

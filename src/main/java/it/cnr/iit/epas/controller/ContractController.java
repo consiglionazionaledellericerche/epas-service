@@ -54,10 +54,10 @@ public class ContractController {
     this.mapper = mapper;
     this.contractManager = contractManager;
   }
-  
+
   @NoCheck
   @PutMapping("/endContract/" + ApiRoutes.ID_REGEX)
-  public ResponseEntity<ContractDto> endContract(
+  ResponseEntity<ContractDto> endContract(
       @PathVariable("id") Long id) {
     // , @RequestParam("endContract") LocalDate endContract) {
     log.debug("Chiamato metodo endContract con id = {}", id);

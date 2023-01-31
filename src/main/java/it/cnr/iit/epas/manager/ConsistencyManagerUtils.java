@@ -81,6 +81,7 @@ class ConsistencyManagerUtils {
   private final ConfigurationManager configurationManager;
   private final StampTypeManager stampTypeManager;
   private final ContractMonthRecapManager contractMonthRecapManager;
+  private final TimeSlotManager timeSlotManager;
   private final Provider<IWrapperFactory> wrapperFactory;
   private final Provider<EntityManager> emp;
 
@@ -95,6 +96,7 @@ class ConsistencyManagerUtils {
       ConfigurationManager configurationManager,
       StampTypeManager stampTypeManager,
       ContractMonthRecapManager contractMonthRecapManager,
+      TimeSlotManager timeSlotManager,
       Provider<IWrapperFactory> wrapperFactory,
       Provider<EntityManager> emp) {
     this.personDao = personDao;
@@ -108,6 +110,7 @@ class ConsistencyManagerUtils {
     this.personDayManager = personDayManager;
     this.configurationManager = configurationManager;
     this.stampTypeManager = stampTypeManager;
+    this.timeSlotManager = timeSlotManager;
     this.wrapperFactory = wrapperFactory;
     this.contractMonthRecapManager = contractMonthRecapManager;
     this.emp = emp;
@@ -119,6 +122,8 @@ class ConsistencyManagerUtils {
    * Attenzione il metodo deve essere pubblico perché c'è un
    * listener @AfterRequest per questo metodo che effettua delle
    * operazioni aggiuntive.
+   *
+   * @see it.cnr.iit.epas.manager.listeners.ConsistencyManagerListener
    */
   public Optional<Contract> updatePersonSituationEngine(
       Long personId, LocalDate from, Optional<LocalDate> to,
@@ -244,9 +249,10 @@ class ConsistencyManagerUtils {
    * (1) Controlla che il personDay sia ben formato (altrimenti lo inserisce nella tabella
    * PersonDayInTrouble) (2) Popola i valori aggiornati del person day e li persiste nel db.
    */
-  private void populatePersonDay(IWrapperPersonDay pd) {
+  private PersonDay populatePersonDay(IWrapperPersonDay pd) {
 
     // isHoliday = personManager.isHoliday(this.value.person, this.value.date);
+    log.debug("PopulatePersonDay for {}", pd.getValue());
 
     // il contratto non esiste più nel giorno perchè è stata inserita data terminazione
     if (!pd.getPersonDayContract().isPresent()) {
@@ -258,7 +264,7 @@ class ConsistencyManagerUtils {
           MealTicketBehaviour.notAllowMealTicket);
       pd.getValue().setStampModificationType(null);
       personDayDao.save(pd.getValue());
-      return;
+      return pd.getValue();
     }
 
     // Nel caso in cui il personDay non sia successivo a sourceContract imposto i valori a 0
@@ -275,7 +281,7 @@ class ConsistencyManagerUtils {
           MealTicketBehaviour.notAllowMealTicket);
       pd.getValue().setStampModificationType(null);
       personDayDao.save(pd.getValue());
-      return;
+      return pd.getValue();
     }
 
     // decido festivo / lavorativo
@@ -315,7 +321,7 @@ class ConsistencyManagerUtils {
    
     personDayManager.updateProgressive(pd.getValue(), pd.getPreviousForProgressive());
     
-    personDayManager.checkAndManageMandatoryTimeSlot(pd.getValue());
+    timeSlotManager.activateAfterRequesCheckAndManageMandatoryTimeSlot(pd.getValue());
 
     //FIXME: nella versione play1 questo ricaricamento dal db non serviva, perchè?
     pd.setValue(personDayDao.getPersonDayById(pd.getValue().getId()));
@@ -327,8 +333,9 @@ class ConsistencyManagerUtils {
 
     personDayDao.save(pd.getValue());
     log.debug("populatePersonDay -> person day saved {}", pd.getValue());
+    return pd.getValue();
   }
-  
+
   /**
    * Se al giorno precedente l'ultima timbratura è una entrata disaccoppiata e nel giorno attuale vi
    * è una uscita nei limiti notturni in configurazione, allora vengono aggiunte le timbrature
