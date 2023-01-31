@@ -63,8 +63,9 @@ public class SecureManager {
       return Sets.newHashSet(officeDao.allOffices().list());
     }
 
-    return user.getUsersRolesOffices().stream().filter(uro -> rolesNames.contains(uro.role.name))
-        .map(uro -> uro.office).distinct().collect(Collectors.toSet());
+    return user.getUsersRolesOffices().stream()
+        .filter(uro -> rolesNames.contains(uro.role.getName()))
+        .map(uro -> uro.getOffice()).distinct().collect(Collectors.toSet());
   }
 
   /**

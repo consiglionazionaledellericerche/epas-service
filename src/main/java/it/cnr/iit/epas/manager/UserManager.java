@@ -168,9 +168,9 @@ public class UserManager {
     for (Role role : roles) {
       for (Office office : offices) {
         UsersRolesOffices uro = new UsersRolesOffices();
-        uro.user = user;
-        uro.office = office;
-        uro.role = role;
+        uro.setUser(user);
+        uro.setOffice(office);
+        uro.setRole(role);
         emp.get().persist(uro);
         //uro.save();
       }

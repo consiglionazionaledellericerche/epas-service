@@ -142,17 +142,18 @@ public class UsersRolesOfficesDao extends DaoBase<UsersRolesOffices> {
     Map<Long, Set<String>> urosMap = Maps.newHashMap();
 
     for (UsersRolesOffices uroItem : uroList) {
-      if (uroItem.user.getPerson() == null || uroItem.user.getPerson().getPerseoId() == null) {
+      if (uroItem.getUser().getPerson() == null 
+          || uroItem.getUser().getPerson().getPerseoId() == null) {
         continue;
       }
-      if (office.isPresent() && !office.get().equals(uroItem.user.getPerson().getOffice())) {
+      if (office.isPresent() && !office.get().equals(uroItem.getUser().getPerson().getOffice())) {
         continue;
       }
-      Set<String> personUros = urosMap.get(uroItem.user.getPerson().getPerseoId());
+      Set<String> personUros = urosMap.get(uroItem.getUser().getPerson().getPerseoId());
       if (personUros == null) {
         personUros = Sets.newHashSet();
         personUros.add(formatUro(uroItem));
-        urosMap.put(uroItem.user.getPerson().getPerseoId(), personUros);
+        urosMap.put(uroItem.getUser().getPerson().getPerseoId(), personUros);
       } else {
         personUros.add(formatUro(uroItem));
       }
@@ -177,7 +178,7 @@ public class UsersRolesOfficesDao extends DaoBase<UsersRolesOffices> {
    * Formatta come stringa le info sullo UsersRolesOffices.
    */
   public String formatUro(UsersRolesOffices uro) {
-    return uro.role.toString() + " - " + uro.office.getName();
+    return uro.role.toString() + " - " + uro.getOffice().getName();
   }
 
 }

@@ -32,27 +32,43 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum InformationType {
 
-  ILLNESS_INFORMATION(true, false,
+  ILLNESS_INFORMATION(true, false, false,
       Optional.of(EpasParam.ILLNESS_INFORMATION_I_III_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.ILLNESS_INFORMATION_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.ILLNESS_INFORMATION_I_III_ADMINISTRATIVE_APPROVAL_REQUIRED),
-      Optional.of(EpasParam.ILLNESS_INFORMATION_IV_VIII_ADMINISTRATIVE_APPROVAL_REQUIRED)),
-  TELEWORK_INFORMATION(false, true,
+      Optional.of(EpasParam.ILLNESS_INFORMATION_IV_VIII_ADMINISTRATIVE_APPROVAL_REQUIRED),
+      Optional.empty(),
+      Optional.empty()),
+  TELEWORK_INFORMATION(false, true, false,
       Optional.of(EpasParam.TELEWORK_INFORMATION_I_III_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.of(EpasParam.TELEWORK_INFORMATION_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
       Optional.empty()),
-  SERVICE_INFORMATION(false, true,
+  SERVICE_INFORMATION(false, true, false,
       Optional.empty(),
       Optional.of(EpasParam.SERVICE_INFORMATION_IV_VIII_OFFICE_HEAD_APPROVAL_REQUIRED),
       Optional.empty(),
+      Optional.empty(),
+      Optional.empty(),
+      Optional.of(EpasParam.SERVICE_INFORMATION_IV_VIII_MANAGER_APPROVAL_REQUIRED)),
+  PARENTAL_LEAVE_INFORMATION(true, false, true,
+      Optional.empty(),
+      Optional.empty(),
+      Optional.of(EpasParam.FATHER_PARENTAL_LEAVE_I_III_ADMINISTRATIVE_APPROVAL_REQUIRED),
+      Optional.of(EpasParam.FATHER_PARENTAL_LEAVE_IV_VIII_ADMINISTRATIVE_APPROVAL_REQUIRED),
+      Optional.empty(),
       Optional.empty());
   
-  public final boolean alwaysSkipOfficeHeadApproval;
-  public final boolean alwaysSkipAdministrativeApproval;
-  public final Optional<EpasParam> officeHeadApprovalRequiredTopLevel;
-  public final Optional<EpasParam> officeHeadApprovalRequiredTechnicianLevel;
-  public final Optional<EpasParam> administrativeApprovalRequiredTopLevel;
-  public final Optional<EpasParam> administrativeApprovalRequiredTechnicianLevel;
+  private final boolean alwaysSkipOfficeHeadApproval;
+  private final boolean alwaysSkipAdministrativeApproval;
+  private final boolean alwaysSkipManagerApproval;
+  private final Optional<EpasParam> officeHeadApprovalRequiredTopLevel;
+  private final Optional<EpasParam> officeHeadApprovalRequiredTechnicianLevel;
+  private final Optional<EpasParam> administrativeApprovalRequiredTopLevel;
+  private final Optional<EpasParam> administrativeApprovalRequiredTechnicianLevel;
+  private final Optional<EpasParam> managerApprovalRequiredTopLevel;
+  private final Optional<EpasParam> managerApprovalRequiredTechnicianLevel;
 
 }

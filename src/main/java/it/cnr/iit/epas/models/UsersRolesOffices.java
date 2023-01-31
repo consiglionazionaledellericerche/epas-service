@@ -50,7 +50,7 @@ public class UsersRolesOffices extends BaseEntity {
   @JoinColumn(name = "user_id")
   //@Required
   @NotNull
-  public User user;
+  private User user;
 
   
   @ManyToOne
@@ -58,7 +58,7 @@ public class UsersRolesOffices extends BaseEntity {
   //@Required
   @NotNull
   //@Unique("user office role")
-  public Office office;
+  private Office office;
 
   
   @ManyToOne

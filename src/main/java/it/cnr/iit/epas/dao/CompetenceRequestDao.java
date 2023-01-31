@@ -54,6 +54,15 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
   }
 
   /**
+   * La richieste di competenza con id passato come parametro.
+   */
+  public CompetenceRequest findById(Long id) {
+    final QCompetenceRequest competenceRequest = QCompetenceRequest.competenceRequest;
+    return getQueryFactory().selectFrom(competenceRequest)
+        .where(competenceRequest.id.eq(id)).fetchOne();
+  }
+
+  /**
    * Lista delle richiesta di assenza per persona e data.
    *
    * @param person La persona della quale recuperare le richieste di competenza
@@ -105,7 +114,7 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
     final QPerson person = QPerson.person;
     final QPersonReperibility pr = QPersonReperibility.personReperibility;
 
-    if (uros.stream().noneMatch(uro -> uro.role.name.equals(Role.EMPLOYEE)
+    if (uros.stream().noneMatch(uro -> uro.role.getName().equals(Role.EMPLOYEE)
         || !signer.getReperibilityTypes().isEmpty())) {
       return Lists.newArrayList();
     }
@@ -113,7 +122,7 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
     BooleanBuilder conditions = new BooleanBuilder();
 
     val results = Lists.<CompetenceRequest>newArrayList();
-    List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
     conditions.and(competenceRequest.startAt.after(fromDate))
         .and(competenceRequest.type.eq(competenceRequestType)
         .and(competenceRequest.flowStarted.isTrue())
@@ -164,7 +173,7 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
 
     BooleanBuilder conditions = new BooleanBuilder();
 
-    if (roleList.stream().noneMatch(uro -> uro.role.name.equals(Role.EMPLOYEE)
+    if (roleList.stream().noneMatch(uro -> uro.role.getName().equals(Role.EMPLOYEE)
         || !signer.getReperibilityTypes().isEmpty())) {
       return Lists.newArrayList();
     }
@@ -178,7 +187,8 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
     List<CompetenceRequest> results = new ArrayList<>();
 
     if (!signer.getReperibilityTypes().isEmpty()) {
-      List<Office> officeList = roleList.stream().map(u -> u.office).collect(Collectors.toList());
+      List<Office> officeList = 
+          roleList.stream().map(u -> u.getOffice()).collect(Collectors.toList());
       conditions = managerQuery(officeList, conditions, signer);
       List<CompetenceRequest> queryResults = getQueryFactory().selectFrom(competenceRequest)
           .join(competenceRequest.person, person)
@@ -215,7 +225,8 @@ public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
     BooleanBuilder conditions = new BooleanBuilder();
     List<CompetenceRequest> results = new ArrayList<>();
     JPQLQuery<CompetenceRequest> query;
-    List<Office> officeList = roleList.stream().map(u -> u.office).collect(Collectors.toList());
+    List<Office> officeList = 
+        roleList.stream().map(u -> u.getOffice()).collect(Collectors.toList());
     conditions.and(competenceRequest.startAt.after(fromDate))
         .and(competenceRequest.type.eq(type).and(competenceRequest.flowEnded.isTrue())
             .and(competenceRequest.person.office.in(officeList)));

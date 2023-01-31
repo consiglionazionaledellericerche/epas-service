@@ -32,7 +32,9 @@ import it.cnr.iit.epas.models.base.InformationRequest;
 import it.cnr.iit.epas.models.base.QInformationRequest;
 import it.cnr.iit.epas.models.enumerate.InformationType;
 import it.cnr.iit.epas.models.informationrequests.IllnessRequest;
+import it.cnr.iit.epas.models.informationrequests.ParentalLeaveRequest;
 import it.cnr.iit.epas.models.informationrequests.QIllnessRequest;
+import it.cnr.iit.epas.models.informationrequests.QParentalLeaveRequest;
 import it.cnr.iit.epas.models.informationrequests.QServiceRequest;
 import it.cnr.iit.epas.models.informationrequests.QTeleworkRequest;
 import it.cnr.iit.epas.models.informationrequests.ServiceRequest;
@@ -77,9 +79,9 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
 
     BooleanBuilder conditions = new BooleanBuilder();
 
-    if (uroList.stream().noneMatch(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)
-        || uro.role.name.equals(Role.PERSONNEL_ADMIN)
-        || uro.role.name.equals(Role.GROUP_MANAGER))) {
+    if (uroList.stream().noneMatch(uro -> uro.getRole().getName().equals(Role.SEAT_SUPERVISOR)
+        || uro.getRole().getName().equals(Role.PERSONNEL_ADMIN)
+        || uro.getRole().getName().equals(Role.GROUP_MANAGER))) {
       return Lists.newArrayList();
     }
     if (fromDate.isPresent()) {
@@ -93,13 +95,14 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
         .and(informationRequest.flowEnded.isFalse()));
 
     List<InformationRequest> results = new ArrayList<>();
-    if (informationType.equals(InformationType.ILLNESS_INFORMATION)
-        && uroList.stream().anyMatch(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))) {
+    if ((informationType.equals(InformationType.ILLNESS_INFORMATION) 
+        || informationType.equals(InformationType.PARENTAL_LEAVE_INFORMATION))
+        && uroList.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.PERSONNEL_ADMIN))) {
       results.addAll(toApproveResultsAsPersonnelAdmin(uroList,
           informationType, signer, conditions));
     } 
     if (informationType.equals(InformationType.SERVICE_INFORMATION) 
-        && uroList.stream().anyMatch(uro -> uro.role.name.equals(Role.GROUP_MANAGER))) {
+        && uroList.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.GROUP_MANAGER))) {
       results.addAll(toApproveResultsAsGroupManager(uroList, informationType, signer, conditions));
     } else {
       results.addAll(toApproveResultsAsSeatSuperVisor(uroList,
@@ -207,6 +210,40 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     return getQueryFactory().selectFrom(serviceRequest)
         .where(conditions).orderBy(serviceRequest.startAt.desc()).fetch();
   }
+  
+  /**
+   * Lista delle richieste di congedo parentale per il padre.
+   *
+   * @param person          La persona della quale recuperare le richieste di assenza
+   * @param fromDate        La data iniziale dell'intervallo temporale da considerare
+   * @param toDate          La data finale dell'intervallo temporale da considerare (opzionale)
+   * @param informationType Il tipo di richiesta di assenza specifico
+   * @return la lista delle richieste del congedo parentale per il padre.
+   */
+  public List<ParentalLeaveRequest> parentalLeaveByPersonAndDate(Person person,
+      LocalDateTime fromDate, Optional<LocalDateTime> toDate,
+      InformationType informationType, boolean active) {
+    
+    Preconditions.checkNotNull(person);
+    Preconditions.checkNotNull(fromDate);
+    
+    final QParentalLeaveRequest parentaLeaveRequest = QParentalLeaveRequest.parentalLeaveRequest;
+    
+    BooleanBuilder conditions = new BooleanBuilder(parentaLeaveRequest.person.eq(person)
+        .and(parentaLeaveRequest.startAt.after(fromDate))
+        .and(parentaLeaveRequest.informationType.eq(informationType)));
+    if (toDate.isPresent()) {
+      conditions.and(parentaLeaveRequest.endTo.before(toDate.get()));
+    }
+    if (active) {
+      conditions.and(parentaLeaveRequest.flowEnded.eq(false));
+    } else {
+      conditions.and(parentaLeaveRequest.flowEnded.eq(true));
+    }
+    return getQueryFactory().selectFrom(parentaLeaveRequest)
+        .where(conditions).orderBy(parentaLeaveRequest.startAt.desc()).fetch();
+  }
+  
 
   /**
    * Ritorna la richiesta informativa con id passato come parametro.
@@ -263,7 +300,22 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     final TeleworkRequest result = getQueryFactory()
         .selectFrom(teleworkRequest).where(teleworkRequest.id.eq(id)).fetchFirst();
     return Optional.ofNullable(result);
+  }
 
+  /**
+   * Cerca e ritorna la richiesta di congedo parentale per padre (se esiste) con id uguale 
+   * a quello passato.
+   *
+   * @param id l'identificativo della richiesta di congedo parentale per il padre
+   * @return la richiesta di congedo parentale per il padre (se esiste) con id uguale a 
+   *     quello passato
+   */
+  public Optional<ParentalLeaveRequest> getParentalLeaveById(Long id) {
+    final QParentalLeaveRequest parentalLeaveRequest = QParentalLeaveRequest.parentalLeaveRequest;
+    
+    final ParentalLeaveRequest result = getQueryFactory()
+        .selectFrom(parentalLeaveRequest).where(parentalLeaveRequest.id.eq(id)).fetchFirst();
+    return Optional.ofNullable(result);
   }
 
   /**
@@ -355,9 +407,9 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
       InformationType informationType, Person signer, BooleanBuilder conditions) {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
 
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR)
-        || uro.role.name.equals(Role.PERSONNEL_ADMIN))) {
-      List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    if (uros.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.SEAT_SUPERVISOR)
+        || uro.getRole().getName().equals(Role.PERSONNEL_ADMIN))) {
+      List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
       conditions = seatSupervisorQuery(officeList, conditions, signer);
       return getQueryFactory().selectFrom(informationRequest).where(conditions).fetch();
     } else {
@@ -372,8 +424,8 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
       InformationType informationType, Person signer, BooleanBuilder conditions) {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
 
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))) {
-      List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    if (uros.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.PERSONNEL_ADMIN))) {
+      List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
       conditions = personnelAdminQuery(officeList, conditions, signer);
       return getQueryFactory().selectFrom(informationRequest).where(conditions).fetch();
     } else {
@@ -387,8 +439,8 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
   private List<InformationRequest> toApproveResultsAsGroupManager(List<UsersRolesOffices> uros,
       InformationType informationType, Person signer, BooleanBuilder conditions) {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.GROUP_MANAGER))) {
-      List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    if (uros.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.GROUP_MANAGER))) {
+      List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
       conditions = groupManagerQuery(officeList, conditions, signer);
       return getQueryFactory().selectFrom(informationRequest).where(conditions).fetch();
     } else {
@@ -449,8 +501,8 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
       BooleanBuilder condition, Person signer) {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
     condition.and(informationRequest.person.office.in(officeList))
-            .and(informationRequest.managerApprovalRequired.isTrue()
-            .and(informationRequest.managerApproved.isNull()));
+        .and(informationRequest.managerApprovalRequired.isTrue()
+        .and(informationRequest.managerApproved.isNull()));
     return condition;
   }
 
@@ -473,7 +525,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     BooleanBuilder conditions = new BooleanBuilder();
     List<InformationRequest> results = new ArrayList<>();
 
-    List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
     conditions.and(informationRequest.startAt.after(fromDate))
         .and(informationRequest.informationType.eq(informationType)
         .and(informationRequest.flowEnded.isTrue())
@@ -502,7 +554,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     final QInformationRequest informationRequest = QInformationRequest.informationRequest;
     final QPerson person = QPerson.person;
     final QOffice office = QOffice.office;
-    List<Office> officeList = uros.stream().map(u -> u.office).collect(Collectors.toList());
+    List<Office> officeList = uros.stream().map(u -> u.getOffice()).collect(Collectors.toList());
     BooleanBuilder conditions = new BooleanBuilder();
     conditions.and(informationRequest.startAt.after(fromDate))
         .and(informationRequest.informationType.eq(informationType)
@@ -512,13 +564,13 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
     if (toDate.isPresent()) {
       conditions.and(informationRequest.endTo.before(toDate.get()));
     }
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))) {
+    if (uros.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.SEAT_SUPERVISOR))) {
       conditions.and(
           informationRequest.officeHeadApprovalRequired.isTrue()
           .and(informationRequest.officeHeadApproved.isNotNull())
           .and(person.office.in(officeList)));
     } 
-    if (uros.stream().anyMatch(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))) {
+    if (uros.stream().anyMatch(uro -> uro.getRole().getName().equals(Role.PERSONNEL_ADMIN))) {
       conditions.and(
           informationRequest.administrativeApprovalRequired.isTrue()
           .and(informationRequest.administrativeApproved.isNotNull())
@@ -533,7 +585,7 @@ public class InformationRequestDao extends DaoBase<InformationRequest> {
         .join(informationRequest.person, person)
         .join(person.office, office)
         .where(office.in(uros.stream().map(
-            userRoleOffices -> userRoleOffices.office)
+                userRoleOffices -> userRoleOffices.getOffice())
             .collect(Collectors.toSet())).and(conditions))
         .orderBy(informationRequest.startAt.desc())
         .fetch();

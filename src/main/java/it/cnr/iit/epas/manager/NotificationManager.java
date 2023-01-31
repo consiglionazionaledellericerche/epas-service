@@ -57,6 +57,7 @@ import it.cnr.iit.epas.models.flows.Group;
 import it.cnr.iit.epas.models.flows.enumerate.AbsenceRequestType;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
 import it.cnr.iit.epas.models.informationrequests.IllnessRequest;
+import it.cnr.iit.epas.models.informationrequests.ParentalLeaveRequest;
 import it.cnr.iit.epas.models.informationrequests.ServiceRequest;
 import it.cnr.iit.epas.models.informationrequests.TeleworkRequest;
 import it.cnr.iit.epas.security.SecureUtils;
@@ -70,8 +71,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import org.springframework.stereotype.Component;
@@ -86,14 +87,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationManager {
 
-  private SecureManager secureManager;
-  private RoleDao roleDao;
-  private AbsenceDao absenceDao;
-  private AbsenceComponentDao componentDao;
-  private GroupDao groupDao;
-  private ConfigurationManager configurationManager;
-  private InformationRequestDao requestDao;
-  private SecureUtils secureUtils;
+  private final SecureManager secureManager;
+  private final RoleDao roleDao;
+  private final AbsenceDao absenceDao;
+  private final AbsenceComponentDao componentDao;
+  private final GroupDao groupDao;
+  private final ConfigurationManager configurationManager;
+  private final InformationRequestDao requestDao;
+  private final SecureUtils secureUtils;
 
   final String dateFormatter = "dd/MM/YYYY";
 
@@ -168,8 +169,8 @@ public class NotificationManager {
             verso, stamping.getPlace(), stamping.getReason());
 
     person.getOffice().getUsersRolesOffices().stream()
-        .filter(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN)
-            || uro.role.name.equals(Role.SEAT_SUPERVISOR))
+        .filter(uro -> uro.getRole().getName().equals(Role.PERSONNEL_ADMIN)
+            || uro.getRole().getName().equals(Role.SEAT_SUPERVISOR))
         .map(uro -> uro.getUser()).forEach(user -> {
           if (operation != Crud.DELETE) {
             Notification.builder().destination(user).message(message)
@@ -219,8 +220,8 @@ public class NotificationManager {
       return;
     }
     person.getOffice().getUsersRolesOffices().stream()
-        .filter(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN)
-              || uro.role.name.equals(Role.SEAT_SUPERVISOR))
+        .filter(uro -> uro.role.getName().equals(Role.PERSONNEL_ADMIN)
+              || uro.role.getName().equals(Role.SEAT_SUPERVISOR))
         .map(uro -> uro.getUser()).forEach(user -> {
           Notification.builder().destination(user).message(message)
             .subject(NotificationSubject.ABSENCE, absence.getId()).create();
@@ -314,9 +315,9 @@ public class NotificationManager {
     }
     List<User> users =
         person.getOffice().getUsersRolesOffices().stream()
-        .filter(uro -> uro.role.equals(roleDestination))
+        .filter(uro -> uro.getRole().equals(roleDestination))
         .map(uro -> uro.getUser()).collect(Collectors.toList());
-    if (roleDestination.name.equals(Role.GROUP_MANAGER)) {
+    if (roleDestination.getName().equals(Role.GROUP_MANAGER)) {
       log.info("Notifica al responsabile di gruppo per {}", absenceRequest);
       List<Group> groups =
           groupDao.groupsByOffice(person.getOffice(), Optional.empty(), Optional.of(false));
@@ -360,13 +361,13 @@ public class NotificationManager {
     if (absenceRequest.isOfficeHeadApprovalRequired() 
         && absenceRequest.getOfficeHeadApproved() == null
         && ((!absenceRequest.isManagerApprovalRequired()
-            && !absenceRequest.isAdministrativeApprovalRequired()
+            && !absenceRequest.isAdministrativeApprovalRequired())
             || (absenceRequest.getManagerApproved() != null
-            && !absenceRequest.isAdministrativeApprovalRequired()
+            && !absenceRequest.isAdministrativeApprovalRequired())
             || (absenceRequest.getManagerApproved() != null
             && absenceRequest.getAdministrativeApproved() != null)
             || (!absenceRequest.isManagerApprovalRequired()
-                && absenceRequest.getAdministrativeApproved() != null))))) {
+                && absenceRequest.getAdministrativeApproved() != null))) {
       role = roleDao.getRoleByName(Role.SEAT_SUPERVISOR);
     }
     if (absenceRequest.isOfficeHeadApprovalForManagerRequired()
@@ -472,13 +473,13 @@ public class NotificationManager {
       return;
     }
 
-    if (groupAbsenceType.name.equals(DefaultGroup.FERIE_CNR_DIPENDENTI.name())
-        || groupAbsenceType.name.equals(DefaultGroup.MISSIONE_GIORNALIERA.name())
-        || groupAbsenceType.name.equals(DefaultGroup.MISSIONE_ORARIA.name())
-        || groupAbsenceType.name.equals(DefaultGroup.RIPOSI_CNR_DIPENDENTI.name())
-        || groupAbsenceType.name.equals(DefaultGroup.G_661.name())
-        || groupAbsenceType.name.equals(DefaultGroup.FERIE_CNR_PROROGA.name())
-        || groupAbsenceType.name.equals(DefaultGroup.LAVORO_FUORI_SEDE.name())) {
+    if (groupAbsenceType.getName().equals(DefaultGroup.FERIE_CNR_DIPENDENTI.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.MISSIONE_GIORNALIERA.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.MISSIONE_ORARIA.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.RIPOSI_CNR_DIPENDENTI.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.G_661.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.FERIE_CNR_PROROGA.name())
+        || groupAbsenceType.getName().equals(DefaultGroup.LAVORO_FUORI_SEDE.name())) {
       if (insert) {
         notifyAbsence(absence, groupAbsenceType, currentUser, NotificationManager.Crud.CREATE);
         return;
@@ -570,7 +571,7 @@ public class NotificationManager {
     });
 
     person.getOffice().getUsersRolesOffices().stream()
-        .filter(uro -> uro.role.name.equals(role.name))
+        .filter(uro -> uro.role.getName().equals(role.getName()))
           .map(uro -> uro.getUser()).forEach(user -> {
             Notification.builder().destination(user).message(message.toString())
             .subject(NotificationSubject.ABSENCE, absences.stream().findFirst().get().getId())
@@ -640,19 +641,21 @@ public class NotificationManager {
     Verify.verify(!contracts.isEmpty());
     Verify.verifyNotNull(personShiftType);
 
-    val shiftType = personShiftType.getShiftType().type;
-    val supervisor = personShiftType.getShiftType().shiftCategories.getSupervisor();
+    val shiftType = personShiftType.getShiftType().getType();
+    val supervisor = personShiftType.getShiftType().getShiftCategories().getSupervisor();
 
-    log.info("turno tipo {} descrizione {}", shiftType, personShiftType.getShiftType().description);
+    log.info("turno tipo {} descrizione {}", shiftType, 
+        personShiftType.getShiftType().getDescription());
 
     final StringBuffer message = new StringBuffer(
         String.format("Le seguenti persone sono state eliminate dal turno %s perchè il "
             + "loro contratto è scaduto:", shiftType));
 
     contracts.forEach(c -> {
-      log.info("Utente {}  scadenza getEndContact {}", c.person.getFullname(), c.calculatedEnd());
+      log.info("Utente {}  scadenza getEndContact {}", 
+          c.getPerson().getFullname(), c.calculatedEnd());
       message.append(String.format("\r\n- Utente: %s\tData scadenza contratto: %s",
-          c.person.fullName(), c.calculatedEnd()));
+          c.getPerson().fullName(), c.calculatedEnd()));
     });
 
     SimpleEmail simpleEmail = new SimpleEmail();
@@ -702,9 +705,10 @@ public class NotificationManager {
             + "perchè il loro contratto è scaduto:", description));
 
     contracts.forEach(c -> {
-      log.info("Utente {}  scadenza getEndContact {}", c.person.getFullname(), c.calculatedEnd());
+      log.info("Utente {}  scadenza getEndContact {}", 
+          c.getPerson().getFullname(), c.calculatedEnd());
       message.append(String.format("\r\n- Utente: %s\tData scadenza contratto: %s",
-          c.person.fullName(), c.calculatedEnd()));
+          c.getPerson().fullName(), c.calculatedEnd()));
     });
 
     SimpleEmail simpleEmail = new SimpleEmail();
@@ -790,7 +794,7 @@ public class NotificationManager {
         .map(uro -> uro.getUser()).forEach(user -> {
           SimpleEmail simpleEmail = new SimpleEmail();
           // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
-          if (roleDestination.name.equals(Role.GROUP_MANAGER)) {
+          if (roleDestination.getName().equals(Role.GROUP_MANAGER)) {
             Optional<Group> group = groupDao.checkManagerPerson(user.getPerson(), person);
             if (!group.isPresent()) {
               return;
@@ -842,7 +846,7 @@ public class NotificationManager {
         && !absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))
+          .filter(uro -> uro.role.getName().equals(Role.SEAT_SUPERVISOR))
           .map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
@@ -854,7 +858,7 @@ public class NotificationManager {
         && absenceRequest.getPerson().isGroupManager()) {
       recipients = 
           absenceRequest.getPerson().getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.SEAT_SUPERVISOR))
+          .filter(uro -> uro.role.getName().equals(Role.SEAT_SUPERVISOR))
           .map(uro -> uro.getUser().getPerson())
           .collect(Collectors.toSet());
     }
@@ -1188,8 +1192,8 @@ public class NotificationManager {
       return;
     }
     person.getOffice().getUsersRolesOffices().stream()
-        .filter(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN)
-            || uro.role.name.equals(Role.SEAT_SUPERVISOR))
+        .filter(uro -> uro.role.getName().equals(Role.PERSONNEL_ADMIN)
+            || uro.role.getName().equals(Role.SEAT_SUPERVISOR))
         .map(uro -> uro.getUser()).forEach(user -> {
           Notification.builder().destination(user).message(message)
           .subject(NotificationSubject.COMPETENCE, competence.getId()).create();
@@ -1254,17 +1258,37 @@ public class NotificationManager {
           approver, requestType));
     }
 
-    if (competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
-      message.append(String.format("\r\n per il giorno %s con il giorno %s.",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive()),
-          DateTimeFormatter.ofPattern(dateFormatter)
-          .format(competenceRequest.getBeginDateToAsk())));
+    if (competenceRequest.getBeginDateToAsk() != null) {
+      if (competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
+        message.append(String.format("\r\n per il giorno %s con il giorno %s.",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive()),
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToAsk())));
+      } else {
+        message.append(String.format("\r\n per i giorni %s - %s con i giorni %s - %s.",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive()),
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getEndDateToGive()),
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToAsk()),
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getEndDateToAsk())));
+      }
     } else {
-      message.append(String.format("\r\n per i giorni %s - %s con i giorni %s - %s.",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToGive()),
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToGive()),
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getBeginDateToAsk()),
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToAsk())));
+      //Questo è il caso di cessione di giorni di reperibilità senza prenderne in cambio.
+      if (competenceRequest.getBeginDateToGive().isEqual(competenceRequest.getEndDateToGive())) {
+        message.append(String.format("\r\n per il giorno %s senza cedere giorni in cambio.",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive())));
+      } else {
+        message.append(String.format("\r\n per i giorni %s - %s senza cedere giorni in cambio.",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive()),
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getEndDateToGive())));
+      }
     }
 
     val mailBody = message.toString();
@@ -1363,26 +1387,46 @@ public class NotificationManager {
         competenceRequest.getPerson().fullName()));
     message.append(String.format(" di tipo %s\r\n", requestType));
 
-    if (competenceRequest.getBeginDateToAsk() != null 
-        && competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
-      message.append(String.format("per il giorno %s",
-          DateTimeFormatter.ofPattern(dateFormatter)
-          .format(competenceRequest.getBeginDateToAsk())));
-      message.append(String.format(" in cambio del giorno %s",
-          DateTimeFormatter.ofPattern(dateFormatter)
-          .format(competenceRequest.getBeginDateToGive())));
+    if (competenceRequest.getBeginDateToAsk() != null) { 
+      if (competenceRequest.getBeginDateToAsk().isEqual(competenceRequest.getEndDateToAsk())) {
+        message.append(String.format("per il giorno %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToAsk())));
+        message.append(String.format(" in cambio del giorno %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive())));
+      } else {
+        message.append(String.format("dal %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToAsk())));
+        message.append(String.format(" al %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getEndDateToAsk())));
+        message.append(String.format(" in cambio dei giorni dal %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getBeginDateToGive())));
+        message.append(String.format(" al %s",
+            DateTimeFormatter.ofPattern(dateFormatter).format(
+                competenceRequest.getEndDateToGive())));
+      }
     } else {
-      message.append(String.format("dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter)
-          .format(competenceRequest.getBeginDateToAsk())));
-      message.append(String.format(" al %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToAsk())));
-      message.append(String.format(" in cambio dei giorni dal %s",
-          DateTimeFormatter.ofPattern(dateFormatter)
-          .format(competenceRequest.getBeginDateToGive())));
-      message.append(String.format(" al %s",
-          DateTimeFormatter.ofPattern(dateFormatter).format(competenceRequest.getEndDateToGive())));
+      //Questo è il caso in cui si cedono giorni senza riceverne in cambio
+      if (competenceRequest.getBeginDateToGive().isEqual(competenceRequest.getEndDateToGive())) {
+        message.append(
+            String.format("per cedere i giorno %s (senza prendere in cambio un altro giorno)",
+                DateTimeFormatter.ofPattern(dateFormatter).format(
+                    competenceRequest.getBeginDateToGive())));
+      } else {
+        message.append(
+            String.format(
+                "per cedere ii giorni dal %s al %s (senza prendere in cambio altri giorni)",
+                DateTimeFormatter.ofPattern(dateFormatter).format(
+                    competenceRequest.getBeginDateToGive()),
+                DateTimeFormatter.ofPattern(dateFormatter).format(
+                    competenceRequest.getEndDateToGive())));
+      }
     }
+
     message.append(String.format(", con destinatario %s.\r\n",
         competenceRequest.getTeamMate().fullName()));
     String baseUrl = BASE_URL;
@@ -1713,6 +1757,9 @@ public class NotificationManager {
       case TELEWORK_INFORMATION:
         subject = NotificationSubject.TELEWORK_INFORMATION;
         break;
+      case PARENTAL_LEAVE_INFORMATION:
+        subject = NotificationSubject.PARENTAL_LEAVE_INFORMATION;
+        break;
       default:
         break;
     }
@@ -1739,7 +1786,7 @@ public class NotificationManager {
     } else {
       users =
           person.getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.equals(roleDestination))
+          .filter(uro -> uro.getRole().equals(roleDestination))
           .map(uro -> uro.getUser()).collect(Collectors.toList());
     }
 
@@ -1759,6 +1806,7 @@ public class NotificationManager {
    */
   public void notificationInformationRequestRefused(Optional<ServiceRequest> serviceRequest,
       Optional<IllnessRequest> illnessRequest, Optional<TeleworkRequest> teleworkRequest,
+      Optional<ParentalLeaveRequest> parentalLeaveRequest,
       Person refuser) {
 
     val request = serviceRequest.isPresent() ? serviceRequest.get() :
@@ -1787,6 +1835,13 @@ public class NotificationManager {
         message.append(String.format(" per il mese %s",
             DateUtility.fromIntToStringMonth(teleworkRequest.get().getMonth())));
         message.append(String.format(" dell'anno %s", teleworkRequest.get().getYear()));
+        break;
+      case PARENTAL_LEAVE_INFORMATION:
+        subject = NotificationSubject.PARENTAL_LEAVE_INFORMATION;
+        message.append(String.format("dal giorno %s", 
+            parentalLeaveRequest.get().getBeginDate().toString()));
+        message.append(String.format(" al giorno %s", 
+            parentalLeaveRequest.get().getEndDate().toString()));
         break;
       default:
         break;
@@ -1865,7 +1920,7 @@ public class NotificationManager {
           });
     } else {
       person.getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.equals(roleDestination))
+          .filter(uro -> uro.getRole().equals(roleDestination))
           .map(uro -> uro.getUser()).forEach(user -> {
             SimpleEmail simpleEmail = new SimpleEmail();
             // Per i responsabili di gruppo l'invio o meno dell'email è parametrizzato.
@@ -1904,8 +1959,10 @@ public class NotificationManager {
       requestType = Messages.get("InformationType.SERVICE_INFORMATION");
     } else if (informationRequest.getInformationType() == InformationType.TELEWORK_INFORMATION) {
       requestType = Messages.get("InformationType.TELEWORK_INFORMATION");
-    } else {
+    } else if (informationRequest.getInformationType() == InformationType.ILLNESS_INFORMATION) {
       requestType = Messages.get("InformationType.ILLNESS_INFORMATION");
+    } else {
+      requestType = Messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
     }
     final StringBuilder message =
         new StringBuilder().append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
@@ -1941,6 +1998,21 @@ public class NotificationManager {
             DateUtility.fromIntToStringMonth(teleworkRequest.getMonth())));
         message.append(String.format(" dell'anno %s", teleworkRequest.getYear()));
         break;
+      case PARENTAL_LEAVE_INFORMATION:
+        ParentalLeaveRequest parentalLeaveRequest = requestDao
+            .getParentalLeaveById(informationRequest.getId()).get();
+        if (parentalLeaveRequest.getBeginDate().isEqual(parentalLeaveRequest.getEndDate())) {
+          message.append(String.format(" per il giorno: %s",
+              parentalLeaveRequest.getStartAt().toLocalDate().toString()));
+        } else {
+          message.append(String.format(" dal: %s",
+              parentalLeaveRequest.getBeginDate().toString()));
+          if (parentalLeaveRequest.getEndDate() != null) {
+            message.append(String.format(" al: %s",
+                parentalLeaveRequest.getEndDate().toString()));
+          }
+        }
+        break;
       default:
         break;
     }
@@ -1973,6 +2045,9 @@ public class NotificationManager {
     } else if (informationRequest.getInformationType()
           .equals(InformationType.TELEWORK_INFORMATION)) {
       requestType = Messages.get("InformationType.TELEWORK_INFORMATION");
+    } else if (informationRequest.getInformationType()
+        .equals(InformationType.PARENTAL_LEAVE_INFORMATION)) {
+      requestType = Messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
     } else {
       requestType = Messages.get("InformationType.ILLNESS_INFORMATION");
     }
@@ -2018,6 +2093,19 @@ public class NotificationManager {
             DateUtility.fromIntToStringMonth(teleworkRequest.getMonth())));
         message.append(String.format("\r\ndell'anno %s", teleworkRequest.getYear()));
         break;
+      case PARENTAL_LEAVE_INFORMATION:
+        ParentalLeaveRequest parentalLeaveRequest = requestDao
+            .getParentalLeaveById(informationRequest.getId()).get();
+        if (parentalLeaveRequest.getBeginDate().isEqual(parentalLeaveRequest.getEndDate())) {
+          message.append(String.format("\r\n per il giorno: %s",
+              parentalLeaveRequest.getBeginDate().toString()));
+        } else {
+          message.append(String.format(" dal: %s",
+              parentalLeaveRequest.getBeginDate().toString()));
+          message.append(String.format(" al: %s",
+              parentalLeaveRequest.getEndDate().toString()));
+        }
+        break;
       default:
         break;
     }
@@ -2048,7 +2136,7 @@ public class NotificationManager {
 
     if (Strings.isNullOrEmpty(replayTo)) {
       person.getOffice().getUsersRolesOffices().stream()
-          .filter(uro -> uro.role.name.equals(Role.PERSONNEL_ADMIN))
+          .filter(uro -> uro.role.getName().equals(Role.PERSONNEL_ADMIN))
           .map(uro -> uro.getUser()).forEach(u -> {
             try {
               simpleEmail.addCc(u.getPerson().getEmail());
