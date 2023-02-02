@@ -18,18 +18,25 @@
 package it.cnr.iit.epas.dao;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.JPQLQuery;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.manager.services.mealtickets.MealTicketsServiceImpl.MealTicketOrder;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.MealTicket;
 import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.QContract;
 import it.cnr.iit.epas.models.QMealTicket;
 import it.cnr.iit.epas.models.QPerson;
+import it.cnr.iit.epas.models.QPersonDay;
+import it.cnr.iit.epas.models.enumerate.BlockType;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -166,6 +173,33 @@ public class MealTicketDao extends DaoBase<MealTicket> {
 
     return query.orderBy(mealTicket.block.asc()).orderBy(mealTicket.number.asc()).fetch();
 
+  }
+  
+  public List<MealTicket> getUnassignedElectronicMealTickets(Contract contract) {
+    QMealTicket mealTicket = QMealTicket.mealTicket;
+    
+    final JPQLQuery<MealTicket> query = getQueryFactory()
+        .selectFrom(mealTicket);
+    
+    query.where(mealTicket.blockType.eq(BlockType.electronic)
+        .and(mealTicket.mealTicketCard.isNull()).and(mealTicket.contract.eq(contract)));
+    return query.fetch();
+  }
+  
+  public Map<Person, Integer> getNumberOfMealTicketAccrued(
+      List<Person> persons, LocalDate from, LocalDate to) {
+    QPersonDay personDay = QPersonDay.personDay;
+    Map<Person, List<PersonDay>> result = getQueryFactory()
+        .from(personDay)
+        .where(personDay.person.in(persons), personDay.date.goe(from),
+            personDay.date.loe(to), personDay.isTicketAvailable.eq(true))
+        .transform(GroupBy.groupBy(personDay.person).as(GroupBy.list(personDay)));
+
+    Map<Person, Integer> ticketsCountMap = new HashMap<>();
+    result.keySet().forEach(person -> {
+      ticketsCountMap.put(person, result.get(person).size());
+    });
+    return ticketsCountMap;
   }
 
 }

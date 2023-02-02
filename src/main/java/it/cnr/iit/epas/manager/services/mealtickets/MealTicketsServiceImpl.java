@@ -172,11 +172,11 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
     for (int i = first; i <= last; i++) {
 
       MealTicket mealTicket = new MealTicket();
-      mealTicket.expireDate = expireDate;
-      mealTicket.block = codeBlock;
-      mealTicket.blockType = blockType;
-      mealTicket.office = office;
-      mealTicket.number = i;
+      mealTicket.setExpireDate(expireDate);
+      mealTicket.setBlock(codeBlock);
+      mealTicket.setBlockType(blockType);
+      mealTicket.setOffice(office);
+      mealTicket.setNumber(i); 
 
 
       if (i < 10) {
@@ -226,11 +226,11 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
     for (int i = 0; i < recap.get().remainingMealTickets; i++) {
 
       MealTicket ticketToChange = contractMealTicketsDesc.get(i);
-      if (ticketToChange.date.isBefore(pastDate)) {
-        pastDate = ticketToChange.date;
+      if (ticketToChange.getDate().isBefore(pastDate)) {
+        pastDate = ticketToChange.getDate();
       }
-      ticketToChange.contract = contract;
-      ticketToChange.date = contract.getBeginDate();
+      ticketToChange.setContract(contract);
+      ticketToChange.setDate(contract.getBeginDate());
       emp.get().merge(ticketToChange);
       //ticketToChange.save();
       mealTicketsTransfered++;

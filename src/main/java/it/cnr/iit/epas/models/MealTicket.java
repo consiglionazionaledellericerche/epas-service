@@ -20,6 +20,8 @@ package it.cnr.iit.epas.models;
 import com.google.common.base.MoreObjects;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.BlockType;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,6 +44,8 @@ import org.hibernate.envers.NotAudited;
 @Entity
 @Table(name = "meal_ticket", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"code", "office_id"})})
+@Getter
+@Setter
 public class MealTicket extends BaseEntity {
 
   private static final long serialVersionUID = -963204680918650598L;
@@ -50,20 +54,20 @@ public class MealTicket extends BaseEntity {
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "contract_id", nullable = false)
-  public Contract contract;
+  private Contract contract;
 
-  public Integer year;
-
-  @NotNull
-  public LocalDate date;
+  private Integer year;
 
   @NotNull
-  public String block; /*esempio 5941 3165 01 */
+  private LocalDate date;
+
+  @NotNull
+  private String block; /*esempio 5941 3165 01 */
   
   @Enumerated(EnumType.STRING)
-  public BlockType blockType;
+  private BlockType blockType;
 
-  public Integer number;
+  private Integer number;
 
   //@CheckWith(MealTicketInOffice.class)
   //@Unique(value = "code, office")
@@ -72,17 +76,22 @@ public class MealTicket extends BaseEntity {
   @NotNull
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "admin_id", nullable = false)
-  public Person admin;
+  private Person admin;
 
   @NotNull
   @Column(name = "expire_date")
-  public LocalDate expireDate;
+  private LocalDate expireDate;
   
-  public boolean returned = false;
+  private boolean returned = false;
   
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "office_id", nullable = false)
-  public Office office;
+  private Office office;
+  
+  
+  @ManyToOne
+  @JoinColumn(name = "meal_ticket_card_id")
+  private MealTicketCard mealTicketCard;
 
   @Transient
   public Boolean used = null;
