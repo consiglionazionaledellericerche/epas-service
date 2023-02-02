@@ -175,6 +175,9 @@ public class MealTicketDao extends DaoBase<MealTicket> {
 
   }
   
+  /**
+   * Lista dei MealTicket ancora non assegnati.
+   */
   public List<MealTicket> getUnassignedElectronicMealTickets(Contract contract) {
     QMealTicket mealTicket = QMealTicket.mealTicket;
     
@@ -186,6 +189,9 @@ public class MealTicketDao extends DaoBase<MealTicket> {
     return query.fetch();
   }
   
+  /**
+   * Mappa con il numero di buoni pasto maturati per ogni persona indicata.
+   */
   public Map<Person, Integer> getNumberOfMealTicketAccrued(
       List<Person> persons, LocalDate from, LocalDate to) {
     QPersonDay personDay = QPersonDay.personDay;

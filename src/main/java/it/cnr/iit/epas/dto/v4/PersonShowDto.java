@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * DTO per mostrare i dati principali di una persona.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PersonShowDto extends PeriodModelDto {

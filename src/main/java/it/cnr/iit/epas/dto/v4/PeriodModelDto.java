@@ -21,6 +21,9 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO per mostrare i dati di un Period (inizio e fine).
+ */
 @Getter
 @Setter
 public class PeriodModelDto extends BaseModelDto {

@@ -23,6 +23,8 @@ import it.cnr.iit.epas.dao.MealTicketDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
+import it.cnr.iit.epas.manager.ConsistencyManager;
+import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.models.Configuration;
 import it.cnr.iit.epas.models.Contract;
@@ -42,8 +44,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
-import it.cnr.iit.epas.manager.ConsistencyManager;
-import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 
 /**
  * Implementazione di produzione del servizio meal tickets.

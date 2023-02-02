@@ -33,8 +33,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -53,7 +53,8 @@ public class MealTicketCardManager {
    * Construttore predefinito per l'injection.
    */
   @Inject
-  public MealTicketCardManager(MealTicketCardDao mealTicketCardDao,MealTicketDao mealTicketDao, 
+  public MealTicketCardManager(
+      MealTicketCardDao mealTicketCardDao, MealTicketDao mealTicketDao,
       IWrapperFactory wrapperFactory, ContractDao contractDao) {
     this.mealTicketCardDao = mealTicketCardDao;
     this.mealTicketDao = mealTicketDao;
@@ -61,8 +62,11 @@ public class MealTicketCardManager {
     this.contractDao = contractDao;
   }
   
-  public void saveMealTicketCard(MealTicketCard mealTicketCard, Person person, Office office) {
-    
+  /**
+   * Salvataggio della mealTicketCard.
+   */
+  public void saveMealTicketCard(
+      MealTicketCard mealTicketCard, Person person, Office office) {
     MealTicketCard previous = person.actualMealTicketCard();
     if (previous != null) {
       log.info("Termino la validità della precedente tessera per {}", person.getFullname());
@@ -104,14 +108,19 @@ public class MealTicketCardManager {
     return true;    
   }
   
-  public void saveElectronicMealTicketBlock(MealTicketCard card, LocalDate deliveryDate, 
-      Integer tickets, User admin, Person person, LocalDate expireDate, Office office) {
+  /**
+   * Salvataggio del blocco di buoni pasto di tipo elettronico
+   * associandoli ad una carta elettronica dei buoni.
+   */
+  public void saveElectronicMealTicketBlock(
+      MealTicketCard card, LocalDate deliveryDate, 
+      Integer tickets, User admin, LocalDate expireDate, Office office) {
     String block = "" + card.getNumber() + deliveryDate.getYear() + deliveryDate.getMonthValue();
     for (Integer i = 1; i <= tickets; i++) {
       MealTicket mealTicket = new MealTicket();
       mealTicket.setBlock(block);
       mealTicket.setBlockType(BlockType.electronic);
-      mealTicket.setContract(contractDao.getContract(deliveryDate, person));
+      mealTicket.setContract(contractDao.getContract(deliveryDate, card.getPerson()));
       mealTicket.setMealTicketCard(card);
       mealTicket.setAdmin(admin.getPerson());
       mealTicket.setDate(deliveryDate);

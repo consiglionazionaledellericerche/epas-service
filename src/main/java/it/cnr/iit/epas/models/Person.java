@@ -448,6 +448,10 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
     return groupsPeople.stream().flatMap(g -> g.getPeople().stream()).collect(Collectors.toList());
   }
   
+  /**
+   * La mealTicketCard attualmente assegnata al dipendente, ovvero
+   * La prima che risulta attiva.
+   */
   @Transient
   public MealTicketCard actualMealTicketCard() {
     if (this.mealTicketCards.isEmpty()) {

@@ -26,6 +26,12 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
+/**
+ * DAO per i GroupAbsenceType.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Component
 public class GroupAbsenceTypeDao extends DaoBase<GroupAbsenceType> {
 

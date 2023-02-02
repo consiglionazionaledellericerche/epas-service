@@ -76,7 +76,8 @@ public class MealTicketStaticUtility {
       String actualCode = mealTicket.code.substring(actualBlockLength, mealTicket.code.length());
       BigDecimal previous = new BigDecimal(previousCode).add(BigDecimal.ONE);  
       BigDecimal actual = new BigDecimal(actualCode);
-      if (previousMealTicket.getBlock().equals(mealTicket.getBlock()) && previous.compareTo(actual) == 0 
+      if (previousMealTicket.getBlock().equals(mealTicket.getBlock()) 
+          && previous.compareTo(actual) == 0 
           && previousMealTicket.getContract().equals(mealTicket.getContract())
           && previousMealTicket.isReturned() == mealTicket.isReturned()) {
         currentBlock.getMealTickets().add(mealTicket);

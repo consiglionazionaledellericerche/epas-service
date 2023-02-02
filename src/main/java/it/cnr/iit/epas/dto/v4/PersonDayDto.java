@@ -23,6 +23,9 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * DTO per mostrare i dati di un PersonDay.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PersonDayDto extends BaseModelDto {

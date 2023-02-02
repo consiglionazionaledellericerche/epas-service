@@ -22,6 +22,10 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * DTO per mostrare i dati principali di un PersonDayInTrouble 
+ * (un giorno con problemi).
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PersonDayInTroubleDto extends BaseModelDto {
