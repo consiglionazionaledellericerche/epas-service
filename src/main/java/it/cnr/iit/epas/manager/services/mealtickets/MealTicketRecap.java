@@ -22,12 +22,12 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.MealTicket;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.utils.DateInterval;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDate;
 
 /**
  * Riepilogo buoni pasto di un contratto.

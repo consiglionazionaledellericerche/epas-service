@@ -23,6 +23,9 @@ import java.time.LocalDate;
 import java.util.Set;
 import lombok.Data;
 
+/**
+ * DTO per mostrare i dati principali di uno User.
+ */
 @Data
 public class UserShowDto {
 

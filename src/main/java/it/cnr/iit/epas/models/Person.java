@@ -208,7 +208,10 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   @ManyToOne
   @NotNull
-  private Office office;
+  private Office office;  
+  
+  @OneToMany(mappedBy = "person")
+  private Set<MealTicketCard> mealTicketCards = Sets.newHashSet();
 
   /**
    * TODO: da rimuovere quando si userà lo storico per intercettare il cambio di sede per adesso è
@@ -443,5 +446,31 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   public List<Person> getPersonsInCharge() {
     return groupsPeople.stream().flatMap(g -> g.getPeople().stream()).collect(Collectors.toList());
+  }
+  
+  /**
+   * La mealTicketCard attualmente assegnata al dipendente, ovvero
+   * La prima che risulta attiva.
+   */
+  @Transient
+  public MealTicketCard actualMealTicketCard() {
+    if (this.mealTicketCards.isEmpty()) {
+      return null;
+    }
+    return mealTicketCards.stream().filter(mtc -> mtc.isActive()).findFirst().orElse(null);
+  }
+
+  /**
+   * Metodo che ritorna la precedente card per buoni elettronici.
+   *
+   * @return la precedente card per buoni elettronici.
+   */
+  @Transient
+  public MealTicketCard previousMealTicketCard() {
+    if (!this.mealTicketCards.isEmpty() && actualMealTicketCard() == null) {
+      return mealTicketCards.stream().sorted((o1, o2) -> o2.getEndDate().compareTo(o1.getEndDate()))
+          .filter(mtc -> !mtc.isActive()).findFirst().get();
+    }
+    return null;
   }
 }

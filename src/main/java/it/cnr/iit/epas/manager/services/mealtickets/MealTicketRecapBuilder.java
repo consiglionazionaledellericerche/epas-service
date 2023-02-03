@@ -120,7 +120,7 @@ public class MealTicketRecapBuilder {
       
       //Mi salvo la data in cui ho iniziato a consumare buoni pasto scaduti 
       if (mealTicketRecap.getDateExpire() == null  
-          && personDay.getDate().isAfter(mealTicket.expireDate)) {
+          && personDay.getDate().isAfter(mealTicket.getExpireDate())) {
         mealTicketRecap.setDateExpire(personDay.getDate());
       }
       

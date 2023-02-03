@@ -17,12 +17,12 @@
 
 package it.cnr.iit.epas.models.absences.definitions;
 
-import java.util.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.AmountType;
 import it.cnr.iit.epas.models.absences.ComplationAbsenceBehaviour;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**

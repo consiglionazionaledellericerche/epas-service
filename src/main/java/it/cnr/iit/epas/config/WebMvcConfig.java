@@ -49,7 +49,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
   }
 
   @Bean
-  public RequestContextListener requestContextListener(){
+  public RequestContextListener requestContextListener() {
     return new RequestContextListener();
   }
 

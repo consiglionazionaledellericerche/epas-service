@@ -20,9 +20,9 @@ package it.cnr.iit.epas.dao.history;
 import com.google.common.base.Function;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.base.Revision;
-import org.hibernate.envers.RevisionType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.hibernate.envers.RevisionType;
 
 /**
  * Rappresenta il valore di un Entity ad una specifica revisione.
