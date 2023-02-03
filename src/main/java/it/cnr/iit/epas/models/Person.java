@@ -459,11 +459,17 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
     }
     return mealTicketCards.stream().filter(mtc -> mtc.isActive()).findFirst().orElse(null);
   }
-  
+
+  /**
+   * Metodo che ritorna la precedente card per buoni elettronici.
+   *
+   * @return la precedente card per buoni elettronici.
+   */
   @Transient
   public MealTicketCard previousMealTicketCard() {
     if (!this.mealTicketCards.isEmpty() && actualMealTicketCard() == null) {
-      return mealTicketCards.stream().filter(mtc -> !mtc.isActive()).findFirst().get();
+      return mealTicketCards.stream().sorted((o1, o2) -> o2.getEndDate().compareTo(o1.getEndDate()))
+          .filter(mtc -> !mtc.isActive()).findFirst().get();
     }
     return null;
   }
