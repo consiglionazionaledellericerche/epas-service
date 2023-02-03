@@ -105,6 +105,7 @@ public class CompetenceManager {
 
   private final PersonDao personDao;
   private final Provider<EntityManager> emp;
+  private final Messages messages;
 
   /**
    * Costruttore.
@@ -123,7 +124,8 @@ public class CompetenceManager {
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
       PersonDao personDao, Provider<EntityManager> emp, 
-      CompetenceManagerAsync competenceManagerAsync) {
+      CompetenceManagerAsync competenceManagerAsync,
+      Messages messages) {
 
     this.competenceCodeDao = competenceCodeDao;
     this.officeDao = officeDao;
@@ -137,6 +139,7 @@ public class CompetenceManager {
     this.personDao = personDao;
     this.emp = emp;
     this.competenceManagerAsync = competenceManagerAsync;
+    this.messages = messages;
   }
 
   public static Predicate<CompetenceCode> isReperibility() {
@@ -366,7 +369,7 @@ public class CompetenceManager {
 
     String result = "";
     if (!isCompetenceEnabled(comp)) {
-      result = Messages.get("CompManager.notEnabled");
+      result = messages.get("CompManager.notEnabled");
       return result;
     }
     List<CompetenceCode> group = Lists.newArrayList();
@@ -385,22 +388,22 @@ public class CompetenceManager {
         if (StringUtils.containsIgnoreCase(comp.competenceCode.competenceCodeGroup.label,
             "reperibili")) {
           if (!servicesActivated(comp.getPerson().getOffice())) {
-            result = Messages.get("CompManager.notConfigured");
+            result = messages.get("CompManager.notConfigured");
             return result;
           }
           group = competenceCodeDao.getCodeWithGroup(comp.competenceCode.competenceCodeGroup,
               Optional.<CompetenceCode>empty());
           if (!handlerReperibility(comp, value, group)) {
-            result = Messages.get("CompManager.overServiceLimit");
+            result = messages.get("CompManager.overServiceLimit");
             return result;
           }
         }
         if (sum - comp.valueApproved + value > comp.competenceCode.competenceCodeGroup.limitValue) {
-          result = Messages.get("CompManager.overGroupLimit");
+          result = messages.get("CompManager.overGroupLimit");
           return result;
         }
         if (value > comp.competenceCode.limitValue) {
-          result = Messages.get("CompManager.overMonthLimit");
+          result = messages.get("CompManager.overMonthLimit");
           return result;
         }
         break;
@@ -413,14 +416,14 @@ public class CompetenceManager {
                 Optional.<Integer>empty(), group);
         sum = compList.stream().mapToInt(i -> i.valueApproved).sum();
         if (sum + value > comp.competenceCode.competenceCodeGroup.limitValue) {
-          result = Messages.get("CompManager.overYearLimit");
+          result = messages.get("CompManager.overYearLimit");
         }
         break;
       case onMonthlyPresence:
         PersonStampingRecap psDto = 
             stampingsRecapFactory.create(comp.getPerson(), comp.year, comp.month, true);
         if (psDto.basedWorkingDays != value) {
-          result = Messages.get("CompManager.diffBasedWorkingDay");
+          result = messages.get("CompManager.diffBasedWorkingDay");
         }
         break;
       case entireMonth:
@@ -429,7 +432,7 @@ public class CompetenceManager {
          * assegnato come competenza (caso tipico: cod. 303 Ind.ta' Risc. Rad. Ion. Com.1)
          */
         if (value != comp.competenceCode.limitValue) {
-          result = Messages.get("CompManager.overEntireMonth");
+          result = messages.get("CompManager.overEntireMonth");
         }
         break;
       case noLimit:
@@ -732,7 +735,7 @@ public class CompetenceManager {
           }
         }
       } else {
-        throw new RuntimeException(Messages.get("errorCompetenceCodeException"));
+        throw new RuntimeException(messages.get("CompManager.errorCompetenceCodeException"));
       }
     });
   }

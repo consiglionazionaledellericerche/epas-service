@@ -24,7 +24,9 @@ import it.cnr.iit.epas.sync.dto.v3.StampingCreateDto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -32,23 +34,25 @@ import lombok.ToString;
  *
  * @author Cristian Lucchesi
  */
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class StampingFromClient {
 
-  public String numeroBadge;
-  public Integer inOut;
-  public StampTypes stampType;
-  public Person person;
-  public boolean markedByAdmin;
-  public boolean markedByEmployee;
-  public LocalDateTime dateTime;
-  public String zona;
-  public String note;
-  public String reason;
-  public String place;
+  private String numeroBadge;
+  private Integer inOut;
+  private StampTypes stampType;
+  private Person person;
+  private boolean markedByAdmin;
+  private boolean markedByEmployee;
+  private LocalDateTime dateTime;
+  private String zona;
+  private String note;
+  private String reason;
+  private String place;
   
   /**
    * Costruisce uno StampingFromClient a partire da

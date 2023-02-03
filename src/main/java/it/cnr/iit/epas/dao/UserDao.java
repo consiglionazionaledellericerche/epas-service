@@ -116,7 +116,7 @@ public class UserDao extends DaoBase<User> {
       condition.and(user.password.eq(password.get()));
     }
     return getQueryFactory().selectFrom(user)
-        .where(condition.and(user.username.eq(username))).fetchOne();
+        .where(condition.and(user.username.equalsIgnoreCase(username))).fetchOne();
   }
 
   public User byUsername(String username) {
@@ -134,7 +134,7 @@ public class UserDao extends DaoBase<User> {
     final QUser user = QUser.user;
 
     return getQueryFactory().select(user.username).from(user)
-        .where(user.username.contains(pattern)).fetch();
+        .where(user.username.containsIgnoreCase(pattern)).fetch();
   }
 
   /**

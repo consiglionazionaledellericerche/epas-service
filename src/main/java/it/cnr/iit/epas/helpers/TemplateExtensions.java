@@ -29,6 +29,7 @@ import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import javax.inject.Inject;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -38,13 +39,22 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.springframework.stereotype.Component;
 
 /**
  * Estensioni vari utilizzabili nei template, principamente formattatori di oggetti.
  *
  * @author Marco Andreini
  */
+@Component
 public class TemplateExtensions {
+
+  private final Messages messages;
+
+  @Inject
+  public TemplateExtensions(Messages messages) {
+    this.messages = messages;
+  }
 
   private static final Joiner COMMAJ = Joiner.on(", ").skipNulls();
 
@@ -167,12 +177,12 @@ public class TemplateExtensions {
    * @param fields la lista di campi
    * @return l'applicazione del message sull'oggetto.
    */
-  public static String i18nJoin(final Iterable<Enum<?>> fields) {
+  public String i18nJoin(final Iterable<Enum<?>> fields) {
     return COMMAJ.join(Iterables.transform(fields, new Function<Enum<?>, String>() {
 
       @Override
       public String apply(Enum<?> field) {
-        return Messages.get(field.toString());
+        return messages.get(field.toString());
       }
     }));
   }
@@ -183,8 +193,8 @@ public class TemplateExtensions {
    * @param item l'enumerato da tradurre
    * @return la traduzione dei valori di un enum è composta da NomeSempliceEnum.valore.
    */
-  public static String label(Enum<?> item) {
-    return Messages.get(item.getClass().getSimpleName() + "." + item.name());
+  public String label(Enum<?> item) {
+    return messages.get(item.getClass().getSimpleName() + "." + item.name());
   }
 
   /**
@@ -193,9 +203,9 @@ public class TemplateExtensions {
    * @param obj l'oggetto da considerare
    * @return la formattazione in stringa dell'oggetto passato.
    */
-  public static String label(Object obj) {
+  public String label(Object obj) {
     if (obj instanceof JustifiedType) {
-      return Messages.get(obj.toString());
+      return messages.get(obj.toString());
     }
     if (obj instanceof BaseEntity) {
       return ((BaseEntity) obj).getLabel();
@@ -211,9 +221,9 @@ public class TemplateExtensions {
     }
     if (obj instanceof Boolean) {
       if ((Boolean) obj) {
-        return Messages.get("views.common.yes_or_no.true");
+        return messages.get("views.common.yes_or_no.true");
       } else {
-        return Messages.get("views.common.yes_or_no.false");
+        return messages.get("views.common.yes_or_no.false");
       }
     }
     return obj.toString();
@@ -225,24 +235,24 @@ public class TemplateExtensions {
    * @param obj il range da tradurre
    * @return la traduzione in stringa del range passato come parametro.
    */
-  public static String label(Range<?> obj) {
+  public String label(Range<?> obj) {
     if (obj.isEmpty()) {
-      return Messages.get("range.empty");
+      return messages.get("range.empty");
     } else {
       if (obj.hasLowerBound() && obj.hasUpperBound()) {
-        return Messages.get("range.from_to", format(obj.lowerEndpoint()),
+        return messages.get("range.from_to", format(obj.lowerEndpoint()),
             format(obj.upperEndpoint()));
       } else if (obj.hasLowerBound()) {
-        return Messages.get("range.from", format(obj.lowerEndpoint()));
+        return messages.get("range.from", format(obj.lowerEndpoint()));
       } else if (obj.hasUpperBound()) {
-        return Messages.get("range.to", format(obj.upperEndpoint()));
+        return messages.get("range.to", format(obj.upperEndpoint()));
       } else {
-        return Messages.get("range.full");
+        return messages.get("range.full");
       }
     }
   }
 
-  public static Object label(String label) {
+  public Object label(String label) {
     return label(label, new Object[]{});
   }
 
@@ -253,11 +263,11 @@ public class TemplateExtensions {
    * @param args la lista di argomenti
    * @return l'oggetto tradotto
    */
-  public static Object label(String label, Object... args) {
+  public Object label(String label, Object... args) {
     if (label.contains("%")) {
       return label;
     }
-    return Messages.get(label, args) != null ? Messages.get(label, args) : "";
+    return messages.get(label, args) != null ? messages.get(label, args) : "";
     //return raw(Messages.get(label, args));
   }
 
