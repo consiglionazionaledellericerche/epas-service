@@ -1,5 +1,8 @@
 import it.cnr.iit.epas.security.PermissionCheck
 import it.cnr.iit.epas.models.enumerate.AccountRole
+import it.cnr.iit.epas.models.UsersRolesOffices;
+import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.Office;
 
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
@@ -24,6 +27,35 @@ when
     permission.startsWith("/rest/v4/userinfo") ||
     permission.startsWith("/rest/v4/personinfo"),
     toCheck())
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente con ruolo BADGE_READER
+ ******************************************************************************/
+
+rule Stampings_create
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.BADGE_READER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/stampingsfromclient/create") ||
+    permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
+    toCheck())
+ then
+ $c.grant();
+end
+
+rule Stampings_create_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office( usersRolesOffices contains $uro)
+ Role(name == Role.BADGE_READER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/stampingsfromclient/create") ||
+    permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
+    toCheck(), target == $o)
 then
  $c.grant();
 end

@@ -58,7 +58,7 @@ public class SecurityRules {
   private static final Pattern PATH_PARAMS_PATTERN = Pattern.compile(":.*?}");
 
   @Inject
-  public SecurityRules(KieBase kieBase, SecureUtils secureUtils, RequestScopeData requestScope) {
+  SecurityRules(KieBase kieBase, SecureUtils secureUtils, RequestScopeData requestScope) {
     this.kieBase = kieBase;
     this.secureUtils = secureUtils;
     this.requestScope = requestScope;
@@ -68,6 +68,10 @@ public class SecurityRules {
     checkifPermitted(null);
   }
 
+  /**
+   * Controllo sull'oggetto passato ed in funzione delle autorizzazioni contenute negli 
+   * header passati nella richiesta.
+   */
   public void checkifPermitted(Object target) {
     if (!check(target)) {
       throw new AccessDeniedException(SpringSecurityMessageSource.getAccessor().getMessage(
@@ -84,6 +88,9 @@ public class SecurityRules {
     return check.isPermitted();
   }
 
+  /**
+   * Controllo delle autorizzazioni in fuzione degli header passati nella richiesta.
+   */
   public boolean check(Object target) {
     final String permission = (String) requestScope.getData().get(RequestScopeData.REQUEST_PATH);
     final String method = (String) requestScope.getData().get(RequestScopeData.REQUEST_METHOD);
@@ -102,10 +109,12 @@ public class SecurityRules {
 
     final User user = secureUtils.getCurrentUser().get();
     final List<UsersRolesOffices> userRolesOffices = user.getUsersRolesOffices();
+    log.debug("current UserRolesOffices = {}", userRolesOffices);
     final Set<AccountRole> userRoles = user.getRoles();
 
     log.debug("hasPermission({}, {}, {}) called", user.getUsername(), check.getTarget(),
         check.getPermission());
+
 
     final List<Command<?>> commands = Lists.newArrayList();
 

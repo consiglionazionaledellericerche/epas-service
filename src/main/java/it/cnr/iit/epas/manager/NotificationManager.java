@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -95,6 +95,8 @@ public class NotificationManager {
   private final ConfigurationManager configurationManager;
   private final InformationRequestDao requestDao;
   private final SecureUtils secureUtils;
+  private final Messages messages;
+  private final TemplateExtensions templateExtensions;
 
   final String dateFormatter = "dd/MM/YYYY";
 
@@ -105,7 +107,8 @@ public class NotificationManager {
   public NotificationManager(SecureManager secureManager, RoleDao roleDao, AbsenceDao absenceDao,
       AbsenceComponentDao componentDao, GroupDao groupDao,
       ConfigurationManager configurationManager, 
-      InformationRequestDao requestDao, SecureUtils secureUtils) {
+      InformationRequestDao requestDao, SecureUtils secureUtils,
+      Messages messages, TemplateExtensions templateExtensions) {
     this.secureManager = secureManager;
     this.roleDao = roleDao;
     this.absenceDao = absenceDao;
@@ -114,6 +117,8 @@ public class NotificationManager {
     this.configurationManager = configurationManager;
     this.requestDao = requestDao;
     this.secureUtils = secureUtils;
+    this.messages = messages;
+    this.templateExtensions = templateExtensions;
   }
 
   private static final String WORKDAY_REPERIBILITY = "207";
@@ -509,7 +514,7 @@ public class NotificationManager {
 
     final String message = String.format(
         "La richiesta di assenza di tipo \"%s\" dal %s al %s " + "è stata rifiutata da %s",
-        TemplateExtensions.label(absenceRequest.getType()),
+        templateExtensions.label(absenceRequest.getType()),
         absenceRequest.getType().isAllDay() 
         ? TemplateExtensions.format(absenceRequest.startAtAsDate())
             : TemplateExtensions.format(absenceRequest.getStartAt()),
@@ -536,7 +541,7 @@ public class NotificationManager {
 
     final String message = String.format(
         "La richiesta di assenza di tipo \"%s\" dal %s al %s " + "è stata accettata da %s",
-        TemplateExtensions.label(absenceRequest.getType()),
+        templateExtensions.label(absenceRequest.getType()),
         absenceRequest.getType().isAllDay() 
         ? TemplateExtensions.format(absenceRequest.startAtAsDate())
             : TemplateExtensions.format(absenceRequest.getStartAt()),
@@ -1005,19 +1010,19 @@ public class NotificationManager {
     String requestType = "";
     switch (absenceRequest.getType()) {
       case COMPENSATORY_REST:
-        requestType = Messages.get("AbsenceRequestType.COMPENSATORY_REST");
+        requestType = messages.get("AbsenceRequestType.COMPENSATORY_REST");
         break;
       case VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST:
-        requestType = Messages.get("AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST");
+        requestType = messages.get("AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST");
         break;
       case VACATION_REQUEST:
-        requestType = Messages.get("AbsenceRequestType.VACATION_REQUEST");
+        requestType = messages.get("AbsenceRequestType.VACATION_REQUEST");
         break;
       case PERSONAL_PERMISSION:
-        requestType = Messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
+        requestType = messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
         break;
       case SHORT_TERM_PERMIT:
-        requestType = Messages.get("AbsenceRequestType.SHORT_TERM_PERMIT");
+        requestType = messages.get("AbsenceRequestType.SHORT_TERM_PERMIT");
         break;
       default:
         break;
@@ -1029,20 +1034,20 @@ public class NotificationManager {
     String requestType = "";
     switch (absenceRequest.getType()) {
       case COMPENSATORY_REST:
-        requestType = Messages.get("AbsenceRequestType.COMPENSATORY_REST_TOP_LEVEL");
+        requestType = messages.get("AbsenceRequestType.COMPENSATORY_REST_TOP_LEVEL");
         break;
       case VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST:
-        requestType = Messages
+        requestType = messages
         .get("AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST_TOP_LEVEL");
         break;
       case VACATION_REQUEST:
-        requestType = Messages.get("AbsenceRequestType.VACATION_REQUEST_TOP_LEVEL");
+        requestType = messages.get("AbsenceRequestType.VACATION_REQUEST_TOP_LEVEL");
         break;
       case PERSONAL_PERMISSION:
-        requestType = Messages.get("AbsenceRequestType.PERSONAL_PERMISSION_TOP_LEVEL");
+        requestType = messages.get("AbsenceRequestType.PERSONAL_PERMISSION_TOP_LEVEL");
         break;
       case SHORT_TERM_PERMIT:
-        requestType = Messages.get("AbsenceRequestType.SHORT_TERM_PERMIT_TOP_LEVEL");
+        requestType = messages.get("AbsenceRequestType.SHORT_TERM_PERMIT_TOP_LEVEL");
         break;
       default:
         break;
@@ -1132,7 +1137,7 @@ public class NotificationManager {
     final String message =
         String.format("La richiesta di tipo \"%s\" per il %s "
             + "è stata rifiutata da %s",
-            TemplateExtensions.label(competenceRequest.getType()),
+            templateExtensions.label(competenceRequest.getType()),
             TemplateExtensions.format(competenceRequest.getStartAt()),
             refuser.getFullname());
 
@@ -1156,7 +1161,7 @@ public class NotificationManager {
     final String message =
         String.format("La richiesta di tipo \"%s\" per il %s "
             + "è stata revocata da %s",
-            TemplateExtensions.label(competenceRequest.getType()),
+            templateExtensions.label(competenceRequest.getType()),
             TemplateExtensions.format(competenceRequest.getStartAt()),
             revoker.getFullname());
 
@@ -1240,7 +1245,7 @@ public class NotificationManager {
     }
     String requestType = "";
     if (competenceRequest.getType() == CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST) {
-      requestType = Messages.get("CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST");
+      requestType = messages.get("CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST");
     }
     simpleEmail.setSubject("ePas Approvazione flusso");
     final StringBuilder message = new StringBuilder()
@@ -1379,7 +1384,7 @@ public class NotificationManager {
     final String dateFormatter = "dd/MM/YYYY";
     String requestType = "";
     if (competenceRequest.getType() == CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST) {
-      requestType = Messages.get("CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST");
+      requestType = messages.get("CompetenceRequestType.CHANGE_REPERIBILITY_REQUEST");
     }
     final StringBuilder message = new StringBuilder()
         .append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
@@ -1614,14 +1619,14 @@ public class NotificationManager {
     }
     String requestType = "";
     if (absenceRequest.getType() == AbsenceRequestType.COMPENSATORY_REST) {
-      requestType = Messages.get("AbsenceRequestType.COMPENSATORY_REST");
+      requestType = messages.get("AbsenceRequestType.COMPENSATORY_REST");
     } else if (absenceRequest.getType() == AbsenceRequestType.PERSONAL_PERMISSION) {
-      requestType = Messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
+      requestType = messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
     } else if (absenceRequest.getType()
         == AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST) {
-      requestType = Messages.get("AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST");
+      requestType = messages.get("AbsenceRequestType.VACATION_PAST_YEAR_AFTER_DEADLINE_REQUEST");
     } else {
-      requestType = Messages.get("AbsenceRequestType.VACATION_REQUEST");
+      requestType = messages.get("AbsenceRequestType.VACATION_REQUEST");
     }
     simpleEmail.setSubject("ePas Approvazione flusso");
     final StringBuilder message =
@@ -1674,7 +1679,7 @@ public class NotificationManager {
     } catch (EmailException e) {
       e.printStackTrace();
     }
-    String requestType = Messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
+    String requestType = messages.get("AbsenceRequestType.PERSONAL_PERMISSION");
     String justifiedTime = "";
     if (absence.justifiedType.getName().equals(JustifiedType.JustifiedTypeName.all_day)) {
       justifiedTime = "tutto il giorno";
@@ -1956,13 +1961,13 @@ public class NotificationManager {
 
     String requestType = "";
     if (informationRequest.getInformationType() == InformationType.SERVICE_INFORMATION) {
-      requestType = Messages.get("InformationType.SERVICE_INFORMATION");
+      requestType = messages.get("InformationType.SERVICE_INFORMATION");
     } else if (informationRequest.getInformationType() == InformationType.TELEWORK_INFORMATION) {
-      requestType = Messages.get("InformationType.TELEWORK_INFORMATION");
+      requestType = messages.get("InformationType.TELEWORK_INFORMATION");
     } else if (informationRequest.getInformationType() == InformationType.ILLNESS_INFORMATION) {
-      requestType = Messages.get("InformationType.ILLNESS_INFORMATION");
+      requestType = messages.get("InformationType.ILLNESS_INFORMATION");
     } else {
-      requestType = Messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
+      requestType = messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
     }
     final StringBuilder message =
         new StringBuilder().append(String.format("Gentile %s,\r\n", user.getPerson().fullName()));
@@ -2041,15 +2046,15 @@ public class NotificationManager {
     }
     String requestType = "";
     if (informationRequest.getInformationType().equals(InformationType.SERVICE_INFORMATION)) {
-      requestType = Messages.get("InformationType.SERVICE_INFORMATION");
+      requestType = messages.get("InformationType.SERVICE_INFORMATION");
     } else if (informationRequest.getInformationType()
           .equals(InformationType.TELEWORK_INFORMATION)) {
-      requestType = Messages.get("InformationType.TELEWORK_INFORMATION");
+      requestType = messages.get("InformationType.TELEWORK_INFORMATION");
     } else if (informationRequest.getInformationType()
         .equals(InformationType.PARENTAL_LEAVE_INFORMATION)) {
-      requestType = Messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
+      requestType = messages.get("InformationType.PARENTAL_LEAVE_INFORMATION");
     } else {
-      requestType = Messages.get("InformationType.ILLNESS_INFORMATION");
+      requestType = messages.get("InformationType.ILLNESS_INFORMATION");
     }
     simpleEmail.setSubject("ePas Approvazione flusso");
     final StringBuilder message = new StringBuilder()

@@ -106,6 +106,7 @@ public class ShiftManager2 {
   private final GeneralSettingDao generalSettingDao;
   private final SecureUtils secureUtils;
   private final HistoricalDao historicalDao;
+  private final Messages messages;
 
   /**
    * Injector.
@@ -117,7 +118,8 @@ public class ShiftManager2 {
       ShiftDao shiftDao, ShiftTypeDao shiftTypeDao,
       CompetenceCodeDao competenceCodeDao, CompetenceDao competenceDao,
       PersonMonthRecapDao personMonthRecapDao, ShiftTypeMonthDao shiftTypeMonthDao,
-      GeneralSettingDao generalSettingDao, SecureUtils secureUtils, HistoricalDao historicalDao) {
+      GeneralSettingDao generalSettingDao, SecureUtils secureUtils, HistoricalDao historicalDao,
+      Messages messages) {
 
     this.personDayManager = personDayManager;
     this.personShiftDao = personShiftDao;
@@ -132,6 +134,7 @@ public class ShiftManager2 {
     this.generalSettingDao = generalSettingDao;
     this.secureUtils = secureUtils;
     this.historicalDao = historicalDao;
+    this.messages = messages;
   }
 
   /**
@@ -259,7 +262,7 @@ public class ShiftManager2 {
         .getPersonShift().equals(personShiftDay.getPersonShift())
         && personShiftShiftType.dateRange().contains(personShiftDay.getDate()));
     if (!isActive) {
-      return Optional.of(Messages.get("shift.personInactive"));
+      return Optional.of(messages.get("shift.personInactive"));
     }
 
     // Verifica che la persona non abbia altri turni nello stesso giorno (anche su altre attività)
@@ -270,7 +273,7 @@ public class ShiftManager2 {
           .byPersonAndDate(personShiftDay.getPersonShift().getPerson(), personShiftDay.getDate());
 
       if (personShift.isPresent()) {
-        return Optional.of(Messages.get("shift.alreadyInShift", personShift.get().getShiftType()));
+        return Optional.of(messages.get("shift.alreadyInShift", personShift.get().getShiftType()));
       }
     }
     
@@ -279,7 +282,7 @@ public class ShiftManager2 {
         .getPersonDay(personShiftDay.getPersonShift().getPerson(), personShiftDay.getDate());
 
     if (personDay.isPresent() && personDayManager.isAllDayAbsences(personDay.get())) {
-      return Optional.of(Messages.get("shift.absenceInDay"));
+      return Optional.of(messages.get("shift.absenceInDay"));
     }
 
     //Controllo che sia abilitato il turno festivo
@@ -295,7 +298,7 @@ public class ShiftManager2 {
       if (personDayManager.isHoliday(personShiftDay.getPersonShift().getPerson(), 
           personShiftDay.getDate(), 
           setting.isSaturdayHolidayShift()) && !isHolidayShiftEnabled) {          
-        return Optional.of(Messages.get("shift.holidayShiftNotEnabled"));
+        return Optional.of(messages.get("shift.holidayShiftNotEnabled"));
       } 
 
     } else {
@@ -315,13 +318,13 @@ public class ShiftManager2 {
           //controlla che il turno in quello slot sia già stato assegnato ad un'altra persona
           if (registeredDay.getOrganizationShiftSlot()
               .equals(personShiftDay.getOrganizationShiftSlot())) {
-            return Optional.of(Messages
+            return Optional.of(messages
                 .get("shift.slotAlreadyAssigned", registeredDay.getPersonShift()
                     .getPerson().fullName()));
           }
         } else {
           if (registeredDay.getShiftSlot().equals(personShiftDay.getShiftSlot())) {
-            return Optional.of(Messages
+            return Optional.of(messages
                 .get("shift.slotAlreadyAssigned", 
                     registeredDay.getPersonShift().getPerson().fullName()));
           }
@@ -341,12 +344,12 @@ public class ShiftManager2 {
       }
 
       if (sum + count > MAX_QUANTITY_IN_SLOT) {
-        return Optional.of(Messages.get("shift.maxQuantityInSlot", 
+        return Optional.of(messages.get("shift.maxQuantityInSlot", 
             personShiftDay.getShiftType().getType()));
       }
       long total = list.stream().count();
       if (total + count > MAX_QUANTITY) {
-        return Optional.of(Messages.get("shift.maxQuantity", 
+        return Optional.of(messages.get("shift.maxQuantity", 
             personShiftDay.getShiftType().getType()));
       }
     }
