@@ -17,9 +17,12 @@
 
 package it.cnr.iit.epas.config;
 
+import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,16 +37,31 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+
+  @Autowired
+  private CustomAuthenticationProvider authProvider;
+
+  @Autowired
+  public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    auth.authenticationProvider(authProvider);
+  }
+
+  @Autowired
+  MyBasicAuthenticationEntryPoint authenticationEntryPoint;
+
   /**
    * Configurazione della catena di filtri di autenticazione da applicare ai metodi REST.
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/rest/**")
-        .authenticated()
-        .anyRequest()
-        .authenticated())
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt());
+    http
+      .authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/rest/**")
+      .authenticated()
+      .anyRequest()
+      .authenticated())
+      .oauth2ResourceServer(oauth2 -> oauth2.jwt())
+      .httpBasic()
+          .authenticationEntryPoint(authenticationEntryPoint);
     return http.build();
   }
 
