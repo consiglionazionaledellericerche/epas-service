@@ -27,4 +27,4 @@ $ curl https://auth.iit.cnr.it/auth/realms/testing/protocol/openid-connect/useri
 Per utilizzare l'access token con httpie su epas-service è possibile utilizzare
 la sintassi tipo:
 
-$ http GET :8080/rest/v4/userinfo/ "Authorization: Bearer $ACCESS_TOKEN"
+$ http GET :8080/rest/v4/userinfo "Authorization: Bearer $ACCESS_TOKEN"

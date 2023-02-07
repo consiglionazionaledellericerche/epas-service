@@ -24,6 +24,13 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+/**
+ * Componente per effettuare i controlli su target e permessi tramite
+ * le drools.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Slf4j
 @Component
 public class DroolsPermissionEvaluator implements PermissionEvaluator {
