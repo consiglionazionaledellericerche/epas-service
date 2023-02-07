@@ -33,14 +33,11 @@ public class VacationSummaryTerseDto extends BaseModelDto {
 
   private TypeSummary type;
   private int year;
-  private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
-  //private ContractDto contract;
+  private LocalDate date;
   private long total;
   private long accrued;
   private long used;
   private long usableTotal;
   private long usable;
-
-  //public AbsencePeriod absencePeriod;
 
 }

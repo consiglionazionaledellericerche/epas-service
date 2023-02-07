@@ -46,14 +46,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonVacationMapper {
 
-  @Mapping(target = "personId", source = "person.id")
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonVacationDto convert(PersonVacationRecap personVacation);
 
-  @Mapping(target = "personId", source = "person.id")
-  InitializationGroupDto convert(InitializationGroup initialization);
-
-  @Mapping(target = "personId", source = "person.id")
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")

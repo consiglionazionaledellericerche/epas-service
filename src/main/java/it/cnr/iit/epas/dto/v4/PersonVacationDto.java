@@ -24,7 +24,6 @@ import lombok.Data;
 @Data
 public class PersonVacationDto {
 
-  private Long personId;
   private boolean topQualification;
   private int year;
   private int month;

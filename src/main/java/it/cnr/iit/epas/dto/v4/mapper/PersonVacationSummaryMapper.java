@@ -39,10 +39,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
 
-  @Mapping(target = "personId", source = "person.id")
   PersonVacationSummaryDto convert(PersonVacationSummary vacationSummary);
 
-  @Mapping(target = "personId", source = "person.id")
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")

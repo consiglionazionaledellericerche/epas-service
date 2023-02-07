@@ -30,6 +30,6 @@ public class PeriodChainDto {
   private LocalDate date;
   private LocalDate from = null;
   private LocalDate to = null;
-  private List<AbsencePeriodDto> periods = Lists.newArrayList();
+  private List<AbsencePeriodTerseDto> periods = Lists.newArrayList();
 
 }

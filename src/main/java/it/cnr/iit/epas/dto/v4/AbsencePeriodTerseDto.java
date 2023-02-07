@@ -25,9 +25,7 @@ import lombok.Data;
 @Data
 public class AbsencePeriodTerseDto {
 
-  private Long personId;
-
-  private InitializationGroup initialization;
+//  private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
   private String vacationCode;

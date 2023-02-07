@@ -23,7 +23,6 @@ import lombok.Data;
 @Data
 public class PersonVacationSummaryDto {
 
-  private Long personId;
   private int year;
   private Long contractId;
   private String typeSummary;

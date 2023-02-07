@@ -31,9 +31,6 @@ import lombok.Data;
 @Data
 public class AbsencePeriodDto {
 
-  private Long personId;
-
-  private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
   private VacationCodeDto vacationCode;
