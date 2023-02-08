@@ -14,22 +14,31 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.manager.recaps.personvacation;
 
-import java.time.LocalDate;
+import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
+import javax.inject.Inject;
+import org.springframework.stereotype.Component;
 
-import lombok.Data;
+/**
+ * Factory per PersonVacationRecap.
+ */
+@Component
+public class PersonVacationSummarySubperiodFactory {
 
-@Data
-public class AbsenceSubPeriodDto {
-  private long subAmount;
-  private boolean subFixedPostPartum;
-  private long subAmountBeforeFixedPostPartum;
-  private long subTotalAmount;
-  private long subDayProgression;
-  private long subDayPostPartum;
-  private long subDayToFixPostPartum;
-  private boolean subAccrued;
-  private LocalDate contractEndFirstYearInPeriod;
-  private long dayInInterval;
+  /**
+   * Costruttore per l'injection.
+   */
+  @Inject
+  PersonVacationSummarySubperiodFactory() {}
+
+  /**
+   * Costruisce il riepilogo mensile delle timbrature.
+   */
+  public PersonVacationSummarySubperiod create(VacationSummary vacationSummary, AbsencePeriod period) {
+
+    return new PersonVacationSummarySubperiod(vacationSummary, period);
+  }
+
 }

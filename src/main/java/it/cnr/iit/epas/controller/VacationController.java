@@ -17,18 +17,22 @@
 package it.cnr.iit.epas.controller;
 
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
-import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
+import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
-import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummarySubperiodMapper;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiodFactory;
+import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import java.time.YearMonth;
 import javax.inject.Inject;
@@ -51,6 +55,8 @@ public class VacationController {
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
+  private final PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory;
+  private final PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper;
 
   @Inject
   public VacationController(
@@ -58,13 +64,17 @@ public class VacationController {
       PersonVacationRecapFactory personvacationFactory,
       PersonVacationMapper personVacationMapper,
       PersonVacationSummaryFactory personVacationSummaryFactory,
-      PersonVacationSummaryMapper personVacationSummaryMapper) {
+      PersonVacationSummaryMapper personVacationSummaryMapper,
+      PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory,
+      PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper) {
     this.personDao = personDao;
     this.wrapperFactory = wrapperFactory;
     this.personvacationFactory = personvacationFactory;
     this.personVacationMapper = personVacationMapper;
     this.personVacationSummaryFactory = personVacationSummaryFactory;
     this.personVacationSummaryMapper = personVacationSummaryMapper;
+    this.personVacationSummarySubperiodFactory = personVacationSummarySubperiodFactory;
+    this.personVacationSummarySubperiodMapper = personVacationSummarySubperiodMapper;
   }
 
   @GetMapping(ApiRoutes.LIST)
@@ -109,6 +119,17 @@ public class VacationController {
     PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year, contractId, typeSummary);
     log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
+  }
+
+  @GetMapping("/summary/subperiod")
+  public ResponseEntity<AbsenceSubPeriodDto> subperiod(
+      @RequestParam("vacationSummary") VacationSummary vacationSummary,
+      @RequestParam("period") AbsencePeriod period) {
+    log.debug("REST method {} invoked with parameters period={}", "/rest/v4/vacations/summary/subperiod", period);
+
+    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(vacationSummary, period);
+    log.debug("psrDto  {} -------- total={}", psrDto);
+    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 
 }

@@ -42,8 +42,6 @@ public class AbsencePeriodDto {
   private long periodTakableAmount;
   private long remainingAmount;
 
-  private List<AbsenceSubPeriodDto> subPeriods = Lists.newArrayList();
-
-//  private SortedMap<LocalDate, DayInPeriod> daysInPeriod = Maps.newTreeMap();
+  private List<AbsencePeriodTerseDto> subPeriods = Lists.newArrayList();
 
 }

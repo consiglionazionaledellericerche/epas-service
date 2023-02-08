@@ -46,7 +46,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
   AbsencePeriodDto convert(AbsencePeriod period);
 
-  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
+//  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
 
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")

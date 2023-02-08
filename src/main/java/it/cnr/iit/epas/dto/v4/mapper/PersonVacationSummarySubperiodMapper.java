@@ -14,22 +14,22 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import java.time.LocalDate;
+import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
+import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
+import org.mapstruct.Mapper;
 
-import lombok.Data;
+/**
+ * Mapping delle informazioni per il riepilogo di un mese lavorativo
+ * in un DTO da esportare via REST.
+ *
+ * @author cristian
+ *
+ */
+@Mapper(componentModel = "spring")
+public interface PersonVacationSummarySubperiodMapper {
 
-@Data
-public class AbsenceSubPeriodDto {
-  private long subAmount;
-  private boolean subFixedPostPartum;
-  private long subAmountBeforeFixedPostPartum;
-  private long subTotalAmount;
-  private long subDayProgression;
-  private long subDayPostPartum;
-  private long subDayToFixPostPartum;
-  private boolean subAccrued;
-  private LocalDate contractEndFirstYearInPeriod;
-  private long dayInInterval;
+  AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
+
 }

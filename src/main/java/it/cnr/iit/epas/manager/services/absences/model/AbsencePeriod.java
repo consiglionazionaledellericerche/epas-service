@@ -104,19 +104,6 @@ public class AbsencePeriod {
   public AbsenceTypeDao absenceTypeDao;
   public PersonDayManager personDayManager;  
 
-  // FIXME: aggiunti per permettere il mapping dei metodi che prendono come input il period
-  public long subAmount;
-  public boolean subFixedPostPartum;
-  public long subAmountBeforeFixedPostPartum;
-  public long subTotalAmount;
-  public long subDayProgression;
-  public long subDayPostPartum;
-  public long subDayToFixPostPartum;
-  public boolean subAccrued;
-  public LocalDate contractEndFirstYearInPeriod;
-  public long dayInInterval;
-  //
-
   /**
    * Costruttore.
    */
