@@ -21,7 +21,6 @@ import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -55,13 +54,13 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      .authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/rest/**")
-      .authenticated()
-      .anyRequest()
-      .authenticated())
+      .authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated())
       .oauth2ResourceServer(oauth2 -> oauth2.jwt())
-      .httpBasic()
-          .authenticationEntryPoint(authenticationEntryPoint);
+      .httpBasic().authenticationEntryPoint(authenticationEntryPoint);
+
+    http.authorizeRequests()
+      .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
+
     return http.build();
   }
 

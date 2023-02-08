@@ -107,6 +107,10 @@ public class SecurityRules {
 
   private void fireRules(PermissionCheck check) {
 
+    if (!secureUtils.getCurrentUser().isPresent()) {
+      return;
+    }
+
     final User user = secureUtils.getCurrentUser().get();
     final List<UsersRolesOffices> userRolesOffices = user.getUsersRolesOffices();
     log.debug("current UserRolesOffices = {}", userRolesOffices);
