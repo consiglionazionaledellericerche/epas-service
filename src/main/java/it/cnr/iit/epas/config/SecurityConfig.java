@@ -18,10 +18,9 @@
 package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.inject.Inject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,16 +36,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-
-  @Autowired
+  @Inject
   private CustomAuthenticationProvider authProvider;
 
-  @Autowired
+  @Inject
   public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
     auth.authenticationProvider(authProvider);
   }
 
-  @Autowired
+  @Inject
   MyBasicAuthenticationEntryPoint authenticationEntryPoint;
 
   /**
@@ -54,14 +52,20 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-      .authorizeRequests(authz -> authz.antMatchers(HttpMethod.GET, "/rest/**")
-      .authenticated()
-      .anyRequest()
-      .authenticated())
-      .oauth2ResourceServer(oauth2 -> oauth2.jwt())
-      .httpBasic()
-          .authenticationEntryPoint(authenticationEntryPoint);
+    //Senza il csrf disabilitato le POST/PUT/DELETE non funzionerebbero con
+    //l'autenticazione Basic Auth.
+    //Con l'autenticazione con il Bearer token il csrf non sembra essere necessario.
+    http.csrf().disable();
+    http.cors();
+
+    http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
+    http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
+    http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);
+
+    //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
+    http.authorizeRequests()
+      .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
+
     return http.build();
   }
 

@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.models.exports.StampingFromClient;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +60,7 @@ public class StampingFromClientDto {
   /**
    * Conversione da DTO ricevuta dal client a oggetto per salvare la timbratura.
    */
-  public StampingFromClient convert() {
+  public Optional<StampingFromClient> convert() {
     StampingFromClient stamping = new StampingFromClient();
 
     stamping.setInOut(getOperazione());
@@ -92,7 +93,7 @@ public class StampingFromClientDto {
     } else {
       log.warn("Uno dei parametri relativi alla data è risultato nullo. "
           + "Impossibile crearla. StampingFromClientDto: {}", this);
-      return null;
+      return Optional.empty();
     }
 
     stamping.setNote(getNote());
@@ -102,6 +103,6 @@ public class StampingFromClientDto {
 
     log.debug("Effettuato il binding, stampingFromClient = {}", stamping);
 
-    return stamping;
+    return Optional.of(stamping);
   }
 }

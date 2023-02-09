@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -41,6 +41,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 public class DroolsHandler implements HandlerInterceptor {
 
+  private static final String PACKAGE_REST_TO_HANDLE = "it.cnr.iit.epas";
+
   @Inject
   private SecurityRules rules;
   @Inject
@@ -63,10 +65,13 @@ public class DroolsHandler implements HandlerInterceptor {
       HandlerMethod hm = (HandlerMethod) handler;
       Method method = hm.getMethod();
       Class<?> clazz = method.getDeclaringClass();
-
-      //  Chiamata delle drools su tutti i metodi dei RestController non annotati 
-      //con la Preauthorize o NoCheck
+;
+      //Chiamata delle drools su tutti i metodi dei RestController non annotati 
+      //con la Preauthorize o NoCheck e che non contenuti nel package principale
+      //di questo progetto. Si evitano così per esempio problemi con i controller
+      //Rest di springdoc
       if (clazz.isAnnotationPresent(RestController.class)
+          && clazz.getCanonicalName().startsWith(PACKAGE_REST_TO_HANDLE)
           && !clazz.isAnnotationPresent(NoCheck.class)
           && !method.isAnnotationPresent(PreAuthorize.class)
           && !method.isAnnotationPresent(NoCheck.class)) {

@@ -23,7 +23,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,10 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecureUtils {
 
-  public static final String CURRENT_USER = "CURRENT_USER";
-  
   private final UserDao userDao;
-
 
   @Inject
   SecureUtils(UserDao userDao) {
@@ -53,7 +50,6 @@ public class SecureUtils {
   /**
    * L'utente corrente prelevato tramite le informazioni presenti nel token Jwt.
    */
-  @Bean(name = CURRENT_USER)
   public Optional<User> getCurrentUser() {
     return getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
   }
@@ -72,12 +68,13 @@ public class SecureUtils {
         if (user != null) {
           log.info("Autenticato utente {} tramite JWT", user.getUsername());
         }
-      } else if (authentication != null 
-          && authentication instanceof UsernamePasswordAuthenticationToken) {
+      } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
         user = userDao.byUsername(authentication.getPrincipal().toString());
         if (user != null) {
           log.info("Autenticato utente {} tramite Basic Auth", user.getUsername());
         } 
+      } else if (authentication instanceof AnonymousAuthenticationToken) {
+        log.info("Nessun autenticazione, utente anononimo");
       } else {
         log.warn("Autenticazione avvenuta ma tipo di Authentication non supportato -> "
             + "authentication = {}", authentication);
