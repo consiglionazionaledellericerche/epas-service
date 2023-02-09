@@ -18,10 +18,14 @@
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.base.Strings;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.models.exports.StampingFromClient;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,29 +37,65 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
+@Schema(description = "I dati forniti dai client di ePAS per registrare le timbrature.")
 public class StampingFromClientDto {
 
+  @Schema(description = "Numero di badge della persona a cui si riferisce la timbratura",
+      example = "9802")
+  @NotNull
+  private String matricolaFirma;
+
+  @Schema(description = "Verso della timbratura. Entrata = 0, Uscita = 1", 
+      defaultValue = "0", allowableValues = { "0", "1" }, example = "0")
+  @NotNull @Min(0) @Max(1)
   private Integer operazione;
+
+  @Schema(description = "Anno della timbratura", example = "2023")
+  @NotNull @Min(2020) @Max(2120)
+  private Integer anno;
+  @Schema(description = "MEse della timbratura", example = "1")
+  @NotNull @Min(1) @Max(12)
+  private Integer mese;
+  @Schema(description = "Giorno della timbratura", example = "1")
+  @NotNull @Min(1) @Max(31)
+  private Integer giorno;
+  @Schema(description = "Ora della timbratura", example = "12")
+  @NotNull @Min(0) @Max(23)
+  private Integer ora;
+  @Schema(description = "Minuto della timbratura", example = "0")
+  @NotNull @Min(0) @Max(59)
+  private Integer minuti;
+
+  @Schema(description = "La causale della timbratura.",
+      allowableValues = { "", "motiviDiServizio", "lavoroFuoriSede", "pausaPranzo" },
+      defaultValue = "", example = "")
   private String causale;
+
   //Se impostato a true è una timbratura inserita da amministratore
-  private String admin;
+  @Schema(description = "Se impostato a true la timbratura viene contrassegnata "
+      + "come inserita dall'amministratore del personale", defaultValue = "false", 
+      example = "false")
+  private boolean admin = false;
 
   //Lettore e terminare modellano la stessa cosa ma ci sono due proprietà per
   //compatibililtà con i vari client
+  @Schema(description = "È utile solo in pochi casi, quando è presente tunnel "
+      + "di timbratura tra due lettori diversi. " 
+      + "Il campo terminale e lettore modellano la stessa cosa, il campo lettore ha "
+      + "priorità sul campo lettore.", defaultValue = "", example = "")
   private String terminale;
+  @Schema(description = "È utile solo in pochi casi, quando è presente tunnel "
+      + "di timbratura tra due lettori diversi. " 
+      + "Il campo terminale e lettore modellano la stessa cosa, il campo lettore ha "
+      + "priorità sul campo lettore.", defaultValue = "", example = "")
   private String lettore;
 
-  private Integer anno;
-  private Integer mese;
-  private Integer giorno;
-  private Integer ora;
-  private Integer minuti;
-
+  @Schema(description = "Note della timbratura", defaultValue = "", example = "")
   private String note;
+  @Schema(description = "Luogo della timbratura", defaultValue = "", example = "")
   private String luogo;
+  @Schema(description = "Motivazione della timbratura", defaultValue = "", example = "")
   private String motivazione;
-
-  private String matricolaFirma;
 
   /**
    * Conversione da DTO ricevuta dal client a oggetto per salvare la timbratura.
@@ -73,10 +113,7 @@ public class StampingFromClientDto {
       }
     }
 
-    if (!Strings.isNullOrEmpty(getAdmin()) 
-        && getAdmin().equalsIgnoreCase("true")) {
-      stamping.setMarkedByAdmin(true);
-    }
+    stamping.setMarkedByAdmin(admin);
 
     if (!Strings.isNullOrEmpty(getTerminale())) {
       stamping.setZona(getTerminale());
@@ -96,9 +133,9 @@ public class StampingFromClientDto {
       return Optional.empty();
     }
 
-    stamping.setNote(getNote());
-    stamping.setPlace(getLuogo());
-    stamping.setReason(getMotivazione());
+    stamping.setNote(getNote() != null ? getNote() : null);
+    stamping.setPlace(getLuogo() != null ? getLuogo() : null);
+    stamping.setReason(getMotivazione() != null ? getMotivazione() : null);
     stamping.setNumeroBadge(getMatricolaFirma());
 
     log.debug("Effettuato il binding, stampingFromClient = {}", stamping);
