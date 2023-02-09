@@ -17,6 +17,9 @@
 
 package it.cnr.iit.epas.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.StampingFromClientDto;
 import it.cnr.iit.epas.dto.v4.mapper.StampingDtoMapper;
@@ -47,6 +50,20 @@ class StampingsFromClient {
     this.stampingDtoMapper = stampingDtoMapper;
   }
 
+  @Operation(
+      summary = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "timbratura inserita correttamente"),
+      @ApiResponse(responseCode = "400", description = "dati timbratura non corretti oppure"
+          + " data troppo vecchia nel passato (limite definito da una configurazione generale"
+          + " del sistema"),
+      @ApiResponse(responseCode = "403", 
+        description = "autenticazione non presente o utente (sorgente timbratura) che ha effettuato"
+            + " la richiesta non autorizzato ad inserire timbrature per il dipendente indicato"
+            + " nel json"), 
+      @ApiResponse(responseCode = "404", description = "dipendente indicato nel json non trovato"),
+      @ApiResponse(responseCode = "409", description = "timbratura già presente")
+  })
   @PutMapping("/create")
   ResponseEntity<StampingDto> create(@NotNull StampingFromClientDto stampingFromClientDto) {
 
