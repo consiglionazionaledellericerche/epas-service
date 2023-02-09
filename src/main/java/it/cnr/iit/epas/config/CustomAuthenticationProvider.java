@@ -54,7 +54,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-    log.info("CustomAuthenticationProvider::authenticate -> authentication = {}", authentication);
+    log.debug("CustomAuthenticationProvider::authenticate -> authentication = {}", authentication);
     String username = authentication.getName();
     String password = authentication.getCredentials().toString();
 
@@ -64,7 +64,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     User user = 
         userDao.getUserByUsernameAndPassword(
             username, Optional.of(hashing(password)));
-    log.info("username = {}, password = {}", username, password);
     if (user == null) {
       throw new BadCredentialsException("invalid username and password for " + username);
     }

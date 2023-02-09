@@ -50,7 +50,7 @@ end
 rule Stampings_create_InOffice
 when
  $uro: UsersRolesOffices() from userRolesOffices
- $o: Office( usersRolesOffices contains $uro)
+ $o: Office(usersRolesOffices contains $uro)
  Role(name == Role.BADGE_READER) from $uro.role
  $c: PermissionCheck(
     permission.startsWith("/rest/v4/stampingsfromclient/create") ||

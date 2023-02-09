@@ -23,7 +23,6 @@ import java.util.Optional;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,10 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecureUtils {
 
-  public static final String CURRENT_USER = "CURRENT_USER";
-  
   private final UserDao userDao;
-
 
   @Inject
   SecureUtils(UserDao userDao) {
@@ -54,7 +50,6 @@ public class SecureUtils {
   /**
    * L'utente corrente prelevato tramite le informazioni presenti nel token Jwt.
    */
-  @Bean(name = CURRENT_USER)
   public Optional<User> getCurrentUser() {
     return getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
   }

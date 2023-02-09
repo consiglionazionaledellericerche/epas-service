@@ -27,6 +27,7 @@ import it.cnr.iit.epas.dto.v4.StampingFromClientDto;
 import it.cnr.iit.epas.dto.v4.mapper.StampingDtoMapper;
 import it.cnr.iit.epas.manager.StampingManager;
 import it.cnr.iit.epas.models.exports.StampingFromClient;
+import it.cnr.iit.epas.security.SecurityRules;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @Slf4j
 @RequestMapping("/rest/v4/stampingsfromclient")
 @RestController
@@ -46,11 +46,14 @@ class StampingsFromClient {
 
   private final StampingManager stampingManager;
   private final StampingDtoMapper stampingDtoMapper;
+  private final SecurityRules rules;
 
   @Inject
-  StampingsFromClient(StampingManager stampingManager, StampingDtoMapper stampingDtoMapper) {
+  StampingsFromClient(StampingManager stampingManager, StampingDtoMapper stampingDtoMapper,
+      SecurityRules rules) {
     this.stampingManager = stampingManager;
     this.stampingDtoMapper = stampingDtoMapper;
+    this.rules = rules;
   }
 
   @Operation(
@@ -69,7 +72,7 @@ class StampingsFromClient {
       @ApiResponse(responseCode = "409", description = "timbratura già presente")
   })
   @PutMapping("/create")
-  ResponseEntity<StampingDto> create(
+  public ResponseEntity<StampingDto> create(
       @NotNull @RequestBody StampingFromClientDto stampingFromClientDto) {
 
     log.debug("Ricevuta richiesta creazione timbratura -> {}", stampingFromClientDto);
@@ -89,6 +92,10 @@ class StampingsFromClient {
     // Badge number not present (404)
     if (!stampingManager.linkToPerson(stampingFromClient.get()).isPresent()) {
       return ResponseEntity.notFound().build();
+    }
+
+    if (!rules.check(stampingFromClient.get().getPerson().getOffice())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     // Controllo timbratura con data troppo vecchia
@@ -136,4 +143,5 @@ class StampingsFromClient {
     // Success (200)
     return ResponseEntity.ok().body(stampingDtoMapper.convert(stamping.get()));
   }
+
 }
