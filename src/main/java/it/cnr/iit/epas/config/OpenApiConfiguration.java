@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
     info = @Info(title = "ePAS Service", 
     version = "4.0", 
     description = "ePAS Service contains all the business logic and related REST endpoints"
-        + " to manage all the personnel information,")
+        + " to manage all the personnel information.")
     )
 @SecuritySchemes(value = {
     @SecurityScheme(

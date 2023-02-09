@@ -26,9 +26,9 @@ import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.StampingFromClientDto;
 import it.cnr.iit.epas.dto.v4.mapper.StampingDtoMapper;
 import it.cnr.iit.epas.manager.StampingManager;
-import it.cnr.iit.epas.models.exports.StampingFromClient;
 import it.cnr.iit.epas.security.SecurityRules;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -57,7 +57,10 @@ class StampingsFromClient {
   }
 
   @Operation(
-      summary = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS")
+      summary = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS.",
+      description = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS. "
+          + "L'inserimento della timbratura scatena il calcolo degli orari dal giorno della"
+          + " timbratura fino al giorno corrente.")
   @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "timbratura inserita correttamente"),
@@ -73,8 +76,44 @@ class StampingsFromClient {
   })
   @PutMapping("/create")
   public ResponseEntity<StampingDto> create(
-      @NotNull @RequestBody StampingFromClientDto stampingFromClientDto) {
+      @NotNull @RequestBody @Valid StampingFromClientDto stampingFromClientDto) {
+    return genericCreate(stampingFromClientDto, false);
+  }
 
+  /**
+   * Inserimento timbratura senza ricalcolo.
+   */
+  @Operation(
+      summary = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS, "
+          + "senza effettuare i ricalcoli giornalieri.",
+      description = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS. "
+          + "L'inserimento della timbratura NON scatena il calcolo degli orari di giorni uguali e "
+          + "successivi a quelli della timbratura")
+  @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "timbratura inserita correttamente"),
+      @ApiResponse(responseCode = "400", description = "dati timbratura non corretti oppure"
+          + " data troppo vecchia nel passato (limite definito da una configurazione generale"
+          + " del sistema"),
+      @ApiResponse(responseCode = "403", 
+        description = "autenticazione non presente o utente (sorgente timbratura) che ha effettuato"
+            + " la richiesta non autorizzato ad inserire timbrature per il dipendente indicato"
+            + " nel json"), 
+      @ApiResponse(responseCode = "404", description = "dipendente indicato nel json non trovato"),
+      @ApiResponse(responseCode = "409", description = "timbratura già presente")
+  })
+  @PutMapping("/createNotRecompute")
+  public ResponseEntity<StampingDto> createNotRecompute(
+      @NotNull @RequestBody @Valid StampingFromClientDto stampingFromClientDto) {
+    return genericCreate(stampingFromClientDto, true);
+  }
+
+  /**
+   * Effettua l'inserimento di una timbratura applicando i controlli
+   * sui parametri ed i permessi.
+   */
+  private ResponseEntity<StampingDto> genericCreate(
+      StampingFromClientDto stampingFromClientDto, boolean recompute) {
     log.debug("Ricevuta richiesta creazione timbratura -> {}", stampingFromClientDto);
 
     if (stampingFromClientDto == null) {
@@ -104,7 +143,7 @@ class StampingsFromClient {
       return ResponseEntity.badRequest().build();
     }
 
-    val stamping = stampingManager.createStampingFromClient(stampingFromClient.get(), true);
+    val stamping = stampingManager.createStampingFromClient(stampingFromClient.get(), recompute);
 
     // Stamping already present (409)
     if (!stamping.isPresent()) {
@@ -114,34 +153,4 @@ class StampingsFromClient {
     // Success (200)
     return ResponseEntity.ok().body(stampingDtoMapper.convert(stamping.get()));
   }
-
-  /**
-   * Inserimento timbratura senza ricalcolo.
-   */
-  @PutMapping("/createNotRecompute")
-  public ResponseEntity<StampingDto> createNotRecompute(
-      @NotNull StampingFromClient stampingFromClient) {
-
-    // Badge number not present (404)
-    if (!stampingManager.linkToPerson(stampingFromClient).isPresent()) {
-      return ResponseEntity.notFound().build();
-    }
-
-    // Controllo timbratura con data troppo vecchia
-    if (stampingManager.isTooFarInPast(stampingFromClient.getDateTime())) {
-      log.info("Ignorata timbratura con data troppo nel passato: {}", stampingFromClient);
-      return ResponseEntity.badRequest().build();
-    }
-
-    val stamping = stampingManager.createStampingFromClient(stampingFromClient, false);
-
-    // Stamping already present (409)
-    if (!stamping.isPresent()) {
-      return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    }
-
-    // Success (200)
-    return ResponseEntity.ok().body(stampingDtoMapper.convert(stamping.get()));
-  }
-
 }
