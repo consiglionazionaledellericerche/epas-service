@@ -1,0 +1,32 @@
+image: gitlab/dind
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+
+stages:
+  - build
+  - docker
+
+maven-build:
+  image: maven:latest
+  stage: build
+  script:
+    - echo "Compiling the code and running tests..."
+    - "mvn clean package -B"
+  artifacts:
+    paths:
+      - target/*.jar
+
+docker-build:
+  image: maven:latest
+  stage: docker
+  only:
+    - main
+  script:
+    - echo "Building and publishing Docker Image..."
+    - mvn compile com.google.cloud.tools:jib-maven-plugin:build \
+      -Djib.to.auth.username=${CI_REGISTRY_USER} \
+      -Djib.to.auth.password=${CI_REGISTRY_PASSWORD} \
+      -Djib.to.image=${CI_REGISTRY_IMAGE}:latest
