@@ -7,31 +7,23 @@ variables:
 
 stages:
   - build
-  - test
   - docker
 
 maven-build:
   image: maven:latest
   stage: build
   script:
-    - echo "Compiling the code..."
+    - echo "Compiling the code and running tests..."
     - "mvn clean package -B"
   artifacts:
     paths:
       - target/*.jar
 
-maven-test:
-  image: maven:latest
-  stage: test
-  script:
-    - echo "Running tests..." 
-    - mvn test
-  artifacts:
-    paths:
-      - target/*.jar
-
 docker-build:
+  image: maven:latest
   stage: docker
+  only:
+    - main
   script:
     - echo "Building and publishing Docker Image..."
     - mvn compile com.google.cloud.tools:jib-maven-plugin:build \
