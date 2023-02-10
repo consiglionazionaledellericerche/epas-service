@@ -140,7 +140,7 @@ public class SecurityRules {
 
     @Override
     public void afterMatchFired(AfterMatchFiredEvent event) {
-      log.info("RULE {} {}", event.getMatch().getRule().getName(), event.getMatch().getObjects());
+      log.debug("RULE {} {}", event.getMatch().getRule().getName(), event.getMatch().getObjects());
     }
   }
 }

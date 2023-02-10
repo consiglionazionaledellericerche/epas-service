@@ -22,6 +22,13 @@
 		<dbunit.version>2.7.3</dbunit.version>
 		<springdoc.openapi.version>1.6.14</springdoc.openapi.version>
 	</properties>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation><activeByDefault>true</activeByDefault></activation>
+		</profile>
+		<profile><id>prod</id></profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
