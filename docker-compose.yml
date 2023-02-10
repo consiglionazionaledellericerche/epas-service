@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  epas-service:
+    image: criluc/epas-service
+    container_name: epas-service
+    ports:
+      - 8080:8080
+    environment:
+      - spring_datasource_url=jdbc:postgresql://172.17.0.1:5432/epas-devel
