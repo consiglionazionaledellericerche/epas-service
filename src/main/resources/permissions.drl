@@ -42,7 +42,7 @@ when
  $c: PermissionCheck(
     permission.startsWith("/rest/v4/stampingsfromclient/create") ||
     permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
-    toCheck())
+    toCheck(), target == null)
  then
  $c.grant();
 end
@@ -55,6 +55,35 @@ when
  $c: PermissionCheck(
     permission.startsWith("/rest/v4/stampingsfromclient/create") ||
     permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati degli ufficio ruolo TECHNICAL_ADMIN
+ ******************************************************************************/
+
+rule Offices_show_and_update_technical_admin
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.TECHNICAL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/update") ||
+    permission.startsWith("/rest/v4/offices/show"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Offices_show_and_update_technical_admin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.TECHNICAL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/update") ||
+    permission.startsWith("/rest/v4/offices/show"),
     toCheck(), target == $o)
 then
  $c.grant();

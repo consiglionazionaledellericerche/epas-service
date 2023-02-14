@@ -17,20 +17,15 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * DTO per mostrare i dati principali di uno User.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+public class UserShowTerseDto {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  private String username;
+  private Long personId;
+  private boolean disabled;
 }

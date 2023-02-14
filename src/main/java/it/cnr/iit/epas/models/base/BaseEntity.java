@@ -51,11 +51,6 @@ public abstract class BaseEntity implements Serializable {
   private Integer version;
 
   @Transient
-  public Long getId() {
-    return id;
-  }
-
-  @Transient
   public String getLabel() {
     return toString();
   }

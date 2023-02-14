@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.UserShowDto;
+import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
 import it.cnr.iit.epas.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,4 +32,7 @@ public interface UserShowMapper {
   @Mapping(target = "personId", source = "person.id")
   @Mapping(target = "ownerId", source = "owner.id")
   UserShowDto convert(User user);
+  
+  @Mapping(target = "personId", source = "person.id")
+  UserShowTerseDto convertTerse(User user);
 }

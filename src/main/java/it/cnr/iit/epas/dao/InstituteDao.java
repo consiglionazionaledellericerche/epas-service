@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@ import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.Institute;
 import it.cnr.iit.epas.models.QInstitute;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
@@ -41,14 +42,21 @@ public class InstituteDao extends DaoBase<Institute> {
   }
 
   /**
+   * Preleva l'istituto per id.
+   */
+  public Optional<Institute> byId(Long id) {
+    final QInstitute institute = QInstitute.institute;
+    return Optional.ofNullable(
+        getQueryFactory().selectFrom(institute).where(institute.id.eq(id)).fetchOne());
+  }
+  
+  /**
    * Tutti gli istituti presenti.
    *
    * @return la lista di tutti gli uffici presenti sul database.
    */
   public List<Institute> getAllInstitutes() {
-
     final QInstitute institute = QInstitute.institute;
-
     return getQueryFactory().selectFrom(institute).orderBy(institute.name.asc()).fetch();
   }
 

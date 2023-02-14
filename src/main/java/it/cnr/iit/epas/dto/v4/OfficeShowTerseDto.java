@@ -18,19 +18,27 @@
 package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * Informazioni principali di un ufficio.
+ *
+ * @author Cristian Lucchesi
+ *
  */
+@Schema(description = "Informazioni principali di un ufficio")
+@ToString
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+public class OfficeShowTerseDto extends PeriodModelDto {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  @Schema(description = "Nome dell'ufficio", example = "IIT - Pisa")
+  private String name;
+  //Codice della sede, per esempio per la sede di Pisa è "044000"
+  @Schema(description = "Codice della sede", example = "044000")
+  private String code;
+  @Schema(description = "Id dell'istituto a cui appartiene questo ufficio")
+  private Long instituteId;
 }

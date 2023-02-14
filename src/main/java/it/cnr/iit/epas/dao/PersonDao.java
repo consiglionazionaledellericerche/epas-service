@@ -78,7 +78,7 @@ import org.springframework.stereotype.Component;
  * @author Marco Andreini
  */
 @Component
-public final class PersonDao extends DaoBase<Person> {
+public class PersonDao extends DaoBase<Person> {
 
   private PersonDayDao personDayDao;
   private final PersonRepository repo;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,16 +17,18 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * DTO con le info di base di tutte le entity.
  */
-@Getter
-@Setter
+@Data
 public class BaseModelDto {
 
+  @NotNull
+  @Schema(description = "Id univoco")
   private Long id;
 
 }

@@ -21,7 +21,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
+import it.cnr.iit.epas.controller.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.StampingFromClientDto;
 import it.cnr.iit.epas.dto.v4.mapper.StampingDtoMapper;
@@ -39,8 +42,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @Slf4j
-@RequestMapping("/rest/v4/stampingsfromclient")
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)})
+@Tag(
+    name = "Stampings from Client controller", 
+    description = "Ricezione delle timbrature dai client di ePAS")
+@RequestMapping(ApiRoutes.BASE_PATH + "/stampingsfromclient")
 @RestController
 class StampingsFromClient {
 
@@ -56,12 +67,15 @@ class StampingsFromClient {
     this.rules = rules;
   }
 
+  /**
+   * Inserimento timbratura con ricalcolo dei dati mensili dal giorno della timbratura
+   * ad oggi.
+   */
   @Operation(
       summary = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS.",
       description = "Inserisce una timbratura ricevuta nel formato utilizzato dai client di ePAS. "
           + "L'inserimento della timbratura scatena il calcolo degli orari dal giorno della"
           + " timbratura fino al giorno corrente.")
-  @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "timbratura inserita correttamente"),
       @ApiResponse(responseCode = "400", description = "dati timbratura non corretti oppure"

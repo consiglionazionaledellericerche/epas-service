@@ -24,7 +24,6 @@ import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.manager.ConsistencyManager;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.security.NoCheck;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.time.LocalDate;
 import java.util.List;
@@ -83,7 +82,6 @@ public class PersonController {
     return ResponseEntity.ok().body(personMapper.convert(entity.get()));
   }
 
-  @NoCheck
   @PatchMapping(ApiRoutes.PATCH)
   @Transactional
   ResponseEntity<PersonShowDto> update(@PathVariable("id") Long id) {

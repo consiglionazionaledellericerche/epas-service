@@ -15,22 +15,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+package it.cnr.iit.epas.controller.exceptions;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * Eccezione sollevata quando i parametri per cercare una entity non sono corretti.
+ *
+ * @author Cristian Lucchesi
+ *
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+public class InvalidSearchParameterException extends RuntimeException {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  private static final long serialVersionUID = 5877026092152696327L;
+
 }

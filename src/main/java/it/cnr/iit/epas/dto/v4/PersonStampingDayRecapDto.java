@@ -24,6 +24,12 @@ import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Dto per le informazioni giornaliere relative alle timbrature.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PersonStampingDayRecapDto extends BaseModelDto {

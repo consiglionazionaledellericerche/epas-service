@@ -15,22 +15,24 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.controller.exceptions;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * Ecccezione sollevata per indicare che l'operazione richiesta non
+ * è applicabile a causa dello stato della risorsa su cui si effettua
+ * la richiesta.
+ *
+ * @author Cristian Lucchesi
+ *
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+@NoArgsConstructor
+public class InvalidOperationOnCurrentStateException extends RuntimeException {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  private static final long serialVersionUID = -1984060455142355887L;
+
+  public InvalidOperationOnCurrentStateException(String message) {
+    super(message);
+  }
 }

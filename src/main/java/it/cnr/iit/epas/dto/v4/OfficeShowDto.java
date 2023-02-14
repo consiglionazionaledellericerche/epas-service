@@ -17,11 +17,10 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
@@ -30,17 +29,24 @@ import lombok.ToString;
  * @author Cristian Lucchesi
  *
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
 @Data
-public class OfficeShowDto {
+@EqualsAndHashCode(callSuper = true)
+public class OfficeShowDto extends OfficeShowTerseDto {
 
-  private Long id;
-  private String name;
-  private String code;
+  //sedeId, serve per l'invio degli attestati, per esempio per la sede di Pisa è "223400"
+  @Schema(description = "i della sede, al CNR serve per l'invio degli attestati", 
+      example = "223400")
   private String codeId;
+  @Schema(description = "Identificato univoco esterno ad ePAS")
+  private String externalId;
+  @Schema(description = "Indirizzo postal della sede")
+  private String address;
+  @Schema(description = "Id dell'istituto a cui appartiene questo ufficio")
+  private Long instituteId;
+  @Schema(description = "Indica se è la sede principale o meno", example = "true")
+  private boolean headQuarter;
+  @Schema(description = "Data e ora di ultimo aggiornamento della sede")
   private LocalDateTime updatedAt;
 
 }
