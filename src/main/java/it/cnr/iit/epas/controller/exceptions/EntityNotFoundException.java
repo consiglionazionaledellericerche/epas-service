@@ -15,22 +15,22 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.controller.exceptions;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * Eccezione per entity (su database) non trovata.
+ *
+ * @author Cristian Lucchesi
+ *
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+@NoArgsConstructor
+public class EntityNotFoundException extends RuntimeException {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  private static final long serialVersionUID = -5723058433193642892L;
+
+  public EntityNotFoundException(String message) {
+    super(message);
+  }
 }

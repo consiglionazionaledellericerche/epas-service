@@ -22,7 +22,6 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dto.v4.ContractDto;
 import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
 import it.cnr.iit.epas.manager.ContractManager;
-import it.cnr.iit.epas.security.NoCheck;
 import java.time.LocalDate;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -55,7 +54,6 @@ public class ContractController {
     this.contractManager = contractManager;
   }
 
-  @NoCheck
   @PutMapping("/endContract/" + ApiRoutes.ID_REGEX)
   ResponseEntity<ContractDto> endContract(
       @PathVariable("id") Long id) {

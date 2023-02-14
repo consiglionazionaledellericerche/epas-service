@@ -23,6 +23,7 @@ import it.cnr.iit.epas.models.base.BaseEntity;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 /**
  * Base dao which provides the JPQLQueryFactory and the EntityManager.
@@ -40,10 +41,12 @@ public abstract class DaoBase<T extends BaseEntity> {
     this.queryFactory = new JPAQueryFactory(emp.get());
   }
 
+  @Transactional
   public void persist(T object) {
     emp.get().persist(object);
   }
 
+  @Transactional
   public T merge(T object) {
     return emp.get().<T>merge(object);
   }
@@ -51,6 +54,7 @@ public abstract class DaoBase<T extends BaseEntity> {
   /**
    * Se l'oggetto è già persistent effettua la merge, altrimenti la persist.
    */
+  @Transactional
   public T save(T object) {
     if (isPersistent(object)) {
       return emp.get().<T>merge(object);
@@ -59,14 +63,17 @@ public abstract class DaoBase<T extends BaseEntity> {
     return object;
   }
 
+  @Transactional
   public void delete(T object) {
     emp.get().remove(object);
   }
 
+  @Transactional
   public void refresh(T object) {
     emp.get().refresh(object);
   }
 
+  @Transactional
   public boolean isPersistent(T object) {
     return emp.get().contains(object);
   }

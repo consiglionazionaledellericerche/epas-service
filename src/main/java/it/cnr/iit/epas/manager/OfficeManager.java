@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,7 @@ public class OfficeManager {
 
   private final UsersRolesOfficesDao usersRolesOfficesDao;
   private final ConfigurationManager configurationManager;
+  private final PeriodManager periodManager;
   private final OfficeDao officeDao;
   private final Provider<EntityManager> emp;
 
@@ -60,10 +62,11 @@ public class OfficeManager {
   public OfficeManager(
       UsersRolesOfficesDao usersRolesOfficesDao,
       ConfigurationManager configurationManager,
-      OfficeDao officeDao,
+      OfficeDao officeDao, PeriodManager periodManager,
       Provider<EntityManager> emp) {
     this.usersRolesOfficesDao = usersRolesOfficesDao;
     this.configurationManager = configurationManager;
+    this.periodManager = periodManager;
     this.officeDao = officeDao;
     this.emp = emp;
   }
@@ -131,4 +134,17 @@ public class OfficeManager {
     return offices;
   }
 
+  /**
+   * Inserisce o aggiorna l'ufficio, creando o aggiornando le configurazioni
+   * associate necessarie.
+   */
+  @Transactional
+  public void save(Office office) {
+    officeDao.save(office);
+
+    // Configurazione iniziale di default ...
+    configurationManager.updateConfigurations(office);
+
+    periodManager.updatePropertiesInPeriodOwner(office);
+  }
 }

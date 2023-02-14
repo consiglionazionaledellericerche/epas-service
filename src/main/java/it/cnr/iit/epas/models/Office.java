@@ -59,7 +59,6 @@ public class Office extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private Long perseoId;
 
-  //@Required
   @NotNull
   @Column(nullable = false)
   private String name;
@@ -69,7 +68,6 @@ public class Office extends PeriodModel implements IPropertiesInPeriodOwner {
   private String code;
 
   //sedeId, serve per l'invio degli attestati, per esempio per la sede di Pisa è "223400"
-  //@Required
   //@Unique
   @NotNull
   private String codeId;
@@ -131,12 +129,19 @@ public class Office extends PeriodModel implements IPropertiesInPeriodOwner {
   @OneToMany(mappedBy = "office")
   private List<MealTicket> tickets = Lists.newArrayList();
 
-  //@NotAudited
+  @NotAudited
   private LocalDateTime updatedAt;
 
+  @PrePersist 
+  private void onPersist() {
+    this.updatedAt = LocalDateTime.now();
+    if (getBeginDate() == null) {
+      setBeginDate(LocalDate.of(LocalDate.now().getYear() - 1, 12, 31));
+    }
+  }
+
   @PreUpdate
-  @PrePersist
-  private void onUpdate() {
+  private void onUpdateAndPersist() {
     this.updatedAt = LocalDateTime.now();
   }
 

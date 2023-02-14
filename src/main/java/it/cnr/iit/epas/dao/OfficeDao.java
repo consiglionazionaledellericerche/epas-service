@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +49,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  * @author Cristian Lucchesi
  */
+@Transactional
 @Component
 public class OfficeDao extends DaoBase<Office> {
 
@@ -89,9 +92,14 @@ public class OfficeDao extends DaoBase<Office> {
 
   /**
    * Tutti gli Uffici presenti.
+   * <p>Questo metodo restitutisce tutti gli ufficio con il campo endDate null.
+   * Se si vuole tutti gli uffici abilitati è necessario utilizzare il metodo
+   * allEnabledOffices(). Il nome di questo metodo è confondente.
+   * </p>
    *
    * @return la lista di tutti gli uffici presenti sul database.
    */
+  @Deprecated
   public List<Office> getAllOffices() {
 
     final QOffice office = QOffice.office;
@@ -115,6 +123,21 @@ public class OfficeDao extends DaoBase<Office> {
         .distinct().fetch();
   }
 
+  /**
+   * L'ufficio con l'id passato.
+   *
+   * @param id l'id della sede
+   * @return l'ufficio associato all'id passato come parametro.
+   */
+  public Optional<Office> byId(Long id) {
+
+    final QOffice office = QOffice.office;
+    final Office result = getQueryFactory().selectFrom(office)
+        .where(office.id.eq(id)).fetchOne();
+    return Optional.ofNullable(result);
+
+  }
+ 
   /**
    * L'ufficio con il codice code.
    *
@@ -223,16 +246,35 @@ public class OfficeDao extends DaoBase<Office> {
    * ordinamento sugli istituti.
    */
   public SimpleResults<Office> allOffices() {
-
     final QOffice office = QOffice.office;
-
     final JPQLQuery<Office> query = getQueryFactory()
         .selectFrom(office)
         .distinct()
         .orderBy(office.name.asc());
-
     return ModelQuery.wrap(query, office);
+  }
 
+  /**
+   * Tutti gli ufficio presenti, con la possibilità di avere
+   * solo quelli abilitati, solo quelli disabilitati o indipendentemente
+   * dall'abilitazione.
+   */
+  public List<Office> allOffices(Optional<Boolean> enabled) {
+    final QOffice office = QOffice.office;
+    
+    val conditions = new BooleanBuilder();
+    if (enabled.isPresent() && enabled.get().equals(Boolean.TRUE)) {
+      conditions.and(
+          office.endDate.isNull()
+            .or(office.endDate.after(LocalDate.now())));
+    } else if (enabled.isPresent() && enabled.get().equals(Boolean.FALSE)) {
+      conditions.and(
+          office.endDate.isNotNull()
+            .and(office.endDate.before(LocalDate.now())));
+    }
+    return getQueryFactory()
+        .selectFrom(office).where(conditions)
+        .distinct().orderBy(office.name.asc()).fetch();
   }
 
   /**
@@ -318,4 +360,13 @@ public class OfficeDao extends DaoBase<Office> {
             .or(office.endDate.after(LocalDate.now()))).fetch();
   }
 
+  /**
+   * Lista di tutte le sedi attualmente non abilitate o chiuse.
+   */
+  public List<Office> allDisabledOffices() {
+    final QOffice office = QOffice.office;
+    return queryFactory.selectFrom(office)
+        .where(office.endDate.isNotNull()
+            .and(office.endDate.before(LocalDate.now()))).fetch();
+  }
 }

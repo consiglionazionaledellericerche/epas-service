@@ -21,6 +21,12 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Tipologia di orario di lavoro.
+ *
+ * @author Cristian Lucchesi
+ * @author Dario Tagliaferri
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class WorkingTimeTypeDto extends BaseModelDto {

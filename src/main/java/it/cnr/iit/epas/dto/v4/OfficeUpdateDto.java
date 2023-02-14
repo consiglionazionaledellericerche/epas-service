@@ -18,19 +18,22 @@
 package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per mostrare i dati di un Period (inizio e fine).
+ * Dto per contenere le informazioni di aggiornamento di un ufficio.
+ *
+ * @author Cristian Lucchesi
+ *
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class PeriodModelDto extends BaseModelDto {
+public class OfficeUpdateDto extends OfficeCreateDto {
 
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
+  @NotNull
+  @Schema(description = "Id univoco")
+  private Long id;
+
 }

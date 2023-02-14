@@ -26,6 +26,12 @@ import java.util.Map;
 import java.util.Set;
 import lombok.Data;
 
+/**
+ * Dto per le informazioni riepilogative mensili di un dipendente.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 public class PersonStampingRecapDto {
 

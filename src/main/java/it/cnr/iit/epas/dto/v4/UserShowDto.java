@@ -22,19 +22,18 @@ import it.cnr.iit.epas.models.enumerate.AccountRole;
 import java.time.LocalDate;
 import java.util.Set;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * DTO per mostrare i dati principali di uno User.
  */
 @Data
-public class UserShowDto {
+@EqualsAndHashCode(callSuper = true)
+public class UserShowDto extends UserShowTerseDto {
 
-  private String username;
-  private Long personId;
-  private Set<AccountRole> roles = Sets.newHashSet();
-  private boolean disabled;
-  private LocalDate expireDate;
   private Long ownerId;
+  private Set<AccountRole> roles = Sets.newHashSet();
+  private LocalDate expireDate;
   private String keycloakId;
 
 }
