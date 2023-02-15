@@ -18,6 +18,8 @@ maven-build:
   artifacts:
     paths:
       - target/*.jar
+  tags:
+    - epas
 
 docker-build:
   image: maven:latest
@@ -30,3 +32,6 @@ docker-build:
       -Djib.to.auth.username=${CI_REGISTRY_USER}
       -Djib.to.auth.password=${CI_REGISTRY_PASSWORD}
       -Djib.to.image=${CI_REGISTRY_IMAGE}:latest
+  tags:
+    - epas
+
