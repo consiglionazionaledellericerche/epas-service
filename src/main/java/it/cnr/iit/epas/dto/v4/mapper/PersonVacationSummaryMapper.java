@@ -23,11 +23,16 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
+import java.util.List;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
 
 /**
  * Mapping delle informazioni per il riepilogo di un mese lavorativo
@@ -36,6 +41,8 @@ import org.mapstruct.MappingTarget;
  * @author cristian
  *
  */
+
+
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
 
@@ -44,9 +51,13 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
+  @Mapping(target = "vacationCode", expression = "java(period.vacationCode.name)")
   AbsencePeriodDto convert(AbsencePeriod period);
 
-//  AbsenceSubPeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto absencePeriod);
+  VacationCodeDto convert(VacationCode vacationCode);
+
+  //  @Mapping(target = "vacationCode", expression = "java(period.vacationCode.toString())")
+  AbsencePeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto period);
 
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")

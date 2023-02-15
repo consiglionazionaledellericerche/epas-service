@@ -16,6 +16,7 @@ package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
+import it.cnr.iit.epas.models.Person;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class PersonVacationSummarySubperiod {
+
+  public Person person;
+  public AbsencePeriod period;
   public long subAmount;
   public boolean subFixedPostPartum;
   public long subAmountBeforeFixedPostPartum;
@@ -42,14 +46,11 @@ public class PersonVacationSummarySubperiod {
    * Costruisce l'oggetto contenente tutte le informazioni da renderizzare nella pagina riepilogo
    * ferie e permessi.
    *
-   * @param vacationSummary VacationSummary
-   * @param period AbsencePeriod
-   * */
-  public PersonVacationSummarySubperiod(VacationSummary vacationSummary, AbsencePeriod period) {
+   * @param period              AbsencePeriod
+   */
 
+  public PersonVacationSummarySubperiod(VacationSummary vacationSummary, AbsencePeriod period) {
     final long start = System.currentTimeMillis();
-    log.trace("inizio creazione nuovo PersonVacationSummarySubperiod. vacationSummary = {}, period = {}",
-        vacationSummary, period);
 
     subAmount = vacationSummary.subAmount(period);
     subFixedPostPartum = vacationSummary.subFixedPostPartum(period);
@@ -62,7 +63,8 @@ public class PersonVacationSummarySubperiod {
     contractEndFirstYearInPeriod = vacationSummary.contractEndFirstYearInPeriod(period);
     dayInInterval = period.periodInterval().dayInInterval();
 
-    log.debug("fine creazione nuovo PersonVacationSummarySubperiod. vacationSummary = {}, period = {}",
+    log.debug(
+        "fine creazione nuovo PersonVacationSummarySubperiod. vacationSummary = {}, period = {}",
         System.currentTimeMillis() - start, vacationSummary, period);
   }
 }

@@ -16,9 +16,13 @@
  */
 package it.cnr.iit.epas.controller;
 
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 import it.cnr.iit.epas.controller.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
@@ -40,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,7 +84,7 @@ public class VacationController {
 
   @GetMapping(ApiRoutes.LIST)
   public ResponseEntity<PersonVacationDto> show(
-      @RequestParam("personId") Long personId, 
+      @RequestParam("personId") Long personId,
       @RequestParam("year") Integer year,
       @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
@@ -116,20 +121,28 @@ public class VacationController {
       return ResponseEntity.notFound().build();
     }
 
-    PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year, contractId, typeSummary);
+    PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year,
+        contractId, typeSummary);
     log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
   }
 
-  @GetMapping("/summary/subperiod")
+  //  @GetMapping("/summary/subperiod")
+  @RequestMapping(value = "/summary/subperiod", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<AbsenceSubPeriodDto> subperiod(
-      @RequestParam("vacationSummary") VacationSummary vacationSummary,
-      @RequestParam("period") AbsencePeriod period) {
-    log.debug("REST method {} invoked with parameters period={}", "/rest/v4/vacations/summary/subperiod", period);
+      @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
+//    log.debug("REST method {} invoked with parameters period={}",
+//        "/rest/v4/vacations/summary/subperiod", periodSummaryDto);
+    return ResponseEntity.notFound().build();
 
-    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(vacationSummary, period);
-    log.debug("psrDto  {} -------- total={}", psrDto);
-    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
+//    AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
+//        periodSummaryDto);
+//    VacationSummary summary = personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
+//    log.debug("summary={}", summary.absencePeriod.subPeriods);
+//    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
+//        period);
+//    log.debug("psrDto  {}", psrDto);
+//    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 
 }

@@ -22,6 +22,7 @@ import it.cnr.iit.epas.dto.v4.ContractDto;
 import it.cnr.iit.epas.dto.v4.InitializationGroupDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
+import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryTerseDto;
@@ -33,6 +34,7 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.InitializationGroup;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -49,10 +51,13 @@ public interface PersonVacationMapper {
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonVacationDto convert(PersonVacationRecap personVacation);
 
+  VacationCodeDto convert(VacationCode vacationCode);
+
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-  AbsencePeriodTerseDto convert(AbsencePeriod period);
+
+  AbsencePeriodDto convert(AbsencePeriod period);
 
   PeriodChainDto convert(PeriodChain periodChain);
 

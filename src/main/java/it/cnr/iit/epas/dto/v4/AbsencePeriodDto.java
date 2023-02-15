@@ -33,7 +33,7 @@ public class AbsencePeriodDto {
 
   private LocalDate from;
   private LocalDate to;
-  private VacationCodeDto vacationCode;
+  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
