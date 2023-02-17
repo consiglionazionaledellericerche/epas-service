@@ -18,9 +18,7 @@
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
-import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
-import it.cnr.iit.epas.models.Contract;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;

@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi
+ * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi.
  *
  * @author Andrea Generosi
  */

@@ -14,11 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import it.cnr.iit.epas.models.Person;
@@ -50,7 +50,8 @@ public class PersonVacationSummaryFactory {
   /**
    * Costruisce il riepilogo mensile delle timbrature.
    */
-  public PersonVacationSummary create(Person person, int year, Long contractId, TypeSummary typeSummary) {
+  public PersonVacationSummary create(
+      Person person, int year, Long contractId, TypeSummary typeSummary) {
 
     return new PersonVacationSummary(contractDao, absenceComponentDao, absenceService,
         year, person, contractId, typeSummary);

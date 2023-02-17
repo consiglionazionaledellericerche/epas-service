@@ -14,20 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
-
-import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.util.Arrays;
 import org.mapstruct.Mapper;
-
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
@@ -42,7 +39,7 @@ import org.mapstruct.factory.Mappers;
 
 
 //@Mapper(componentModel = "spring")
-@Mapper(componentModel = "spring", uses= { VacationSummary.class, AbsencePeriod.class } )
+@Mapper(componentModel = "spring", uses = { VacationSummary.class, AbsencePeriod.class } )
 public interface PersonVacationSummarySubperiodMapper {
 
 //  VacationCode map(VacationCodeDto value);

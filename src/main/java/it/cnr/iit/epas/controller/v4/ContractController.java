@@ -45,8 +45,8 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -187,7 +187,7 @@ public class ContractController {
     contractManager.properContractUpdate(
         contract, Optional.ofNullable(recomputeRecap.recomputeFrom).orElse(LocalDate.now()), false);
 
-    log.info("Aggiornato ufficio, i nuovi dati sono {}", contract);
+    log.info("Aggiornato contratto, i nuovi dati sono {}", contract);
     return ResponseEntity.ok().body(mapper.convert(contract));
   }
 
@@ -225,7 +225,7 @@ public class ContractController {
       @RequestParam("endContract") LocalDate endContract) {
     log.debug("ContractController::endContract id = {}", id);
     val entity = contractDao.byId(id)
-        .orElseThrow(() -> new EntityNotFoundException("Contratto non trovato con id passato"));
+        .orElseThrow(() -> new EntityNotFoundException("Contratto not found with requested id"));
     entity.setEndContract(endContract);
     contractManager.properContractUpdate(entity, LocalDate.now().minusDays(1), false);
     return ResponseEntity.ok().body(mapper.convert(entity));
