@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
@@ -37,8 +38,8 @@ public class PersonVacationSummarySubperiodFactory {
   /**
    * Costruisce il riepilogo mensile delle timbrature.
    */
-  public PersonVacationSummarySubperiod create(VacationSummary vacationSummary, AbsencePeriod period) {
-
+  public PersonVacationSummarySubperiod create(
+      VacationSummary vacationSummary, AbsencePeriod period) {
     return new PersonVacationSummarySubperiod(vacationSummary, period);
   }
 

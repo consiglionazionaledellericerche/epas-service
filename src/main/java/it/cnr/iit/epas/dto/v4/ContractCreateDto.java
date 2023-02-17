@@ -46,6 +46,4 @@ public class ContractCreateDto {
   private String externalId;
   @Schema(description = "Contratto con gestione delle busta paga (ex. true per i dipendenti CNR")
   private boolean onCertificate;
-  @Schema(description = "Eventuale contratto precedente continuativo rispetto a questo contratto")
-  private Long previousContractId;
 }

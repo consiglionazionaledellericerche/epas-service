@@ -14,14 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
-import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
-import it.cnr.iit.epas.manager.PersonDayManager;
-import it.cnr.iit.epas.manager.PersonManager;
-import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingDayRecapFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.models.Person;
 import javax.inject.Inject;

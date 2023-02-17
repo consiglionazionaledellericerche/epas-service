@@ -14,25 +14,23 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.*;
+import it.cnr.iit.epas.dto.v4.AbsenceDto;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.ContractDto;
+import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.VacationCodeDto;
+import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
-import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
-import java.time.LocalDate;
-import java.util.List;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
 
 /**
  * Mapping delle informazioni per il riepilogo di un mese lavorativo

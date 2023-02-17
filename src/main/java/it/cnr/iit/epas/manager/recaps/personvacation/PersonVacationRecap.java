@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import com.google.common.collect.Lists;
@@ -24,7 +25,6 @@ import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import java.time.LocalDate;
@@ -32,9 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
- * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi
+ * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi.
  *
  * @author Andrea Generosi
  */
@@ -86,10 +85,10 @@ public class PersonVacationRecap {
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
 
     for (Contract contract : contracts) {
-      log.debug("contract {}", contract );
+      log.debug("contract {}", contract);
       VacationSituation vacationSituation = absenceService.buildVacationSituation(contract, year,
           vacationGroup, Optional.empty(), false);
-      log.debug("vacationSituation {}>> {}", vacationSituation, vacationSituation.contract );
+      log.debug("vacationSituation {}>> {}", vacationSituation, vacationSituation.contract);
       vacationSituations.add(vacationSituation);
     }
 
@@ -104,7 +103,7 @@ public class PersonVacationRecap {
 
     showVacationPeriods = true;
 
-//    log.debug("periodChain {}>> {}", periodChain.periods.size(), periodChain.periods.get(0) );
+    //log.debug("periodChain {}>> {}", periodChain.periods.size(), periodChain.periods.get(0));
 
     log.debug("fine creazione nuovo PersonVacationRecap in {} ms. Person = {}, year = {}",
         System.currentTimeMillis() - start, person.getFullname(), year);

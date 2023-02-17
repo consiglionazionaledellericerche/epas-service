@@ -14,10 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,7 +30,7 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public class VacationSituationDto extends BaseModelDto {
 
   private Long personId;

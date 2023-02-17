@@ -17,8 +17,6 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
-import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +31,5 @@ public class VacationPeriodDto extends BaseModelDto {
   private String vacationCode;
   private LocalDate beginDate;
   private LocalDate endDate;
-
 
 }

@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.personvacation;
 
 import it.cnr.iit.epas.dao.ContractDao;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi
+ * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi.
  *
  * @author Andrea Generosi
  */
@@ -59,7 +60,8 @@ public class PersonVacationSummary {
       Long contractId, TypeSummary typeSummary) {
 
     final long start = System.currentTimeMillis();
-    log.trace("inizio creazione nuovo PersonVacationSummary. Person = {}, year = {}, contractId = {}, typeSummary = {}",
+    log.trace("inizio creazione nuovo PersonVacationSummary. "
+        + "Person = {}, year = {}, contractId = {}, typeSummary = {}",
         person.getFullname(), year, contractId, typeSummary);
     this.person = person;
     this.year = year;
@@ -67,19 +69,19 @@ public class PersonVacationSummary {
     this.typeSummary = typeSummary;
 
     Contract contract = contractDao.getContractById(contractId);
-//    com.google.common.base.Optional<User> currentUser = Security.getUser();
-//    if (contract == null || type == null
-//        || !currentUser.isPresent() || currentUser.get().getPerson() == null
-//        || !contract.getPerson().equals(currentUser.get().getPerson())) {
-//      forbidden();
-//    }
+    //    com.google.common.base.Optional<User> currentUser = Security.getUser();
+    //    if (contract == null || type == null
+    //        || !currentUser.isPresent() || currentUser.get().getPerson() == null
+    //        || !contract.getPerson().equals(currentUser.get().getPerson())) {
+    //      forbidden();
+    //    }
 
-    log.debug("contract>>>> {} this.typeSummary {}",contract, this.typeSummary);
+    log.debug("contract>>>> {} this.typeSummary {}", contract, this.typeSummary);
 
     GroupAbsenceType vacationGroup = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
 
-      if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
+    if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
       vacationSummary = absenceService.buildVacationSituation(contract, year,
           vacationGroup, java.util.Optional.empty(), false).permissions;
     } else {

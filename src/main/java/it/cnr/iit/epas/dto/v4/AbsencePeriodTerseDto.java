@@ -14,24 +14,27 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.absences.AmountType;
-import it.cnr.iit.epas.models.absences.InitializationGroup;
-import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 
+/**
+ * DTO per la versione coincisa dei periodi di assenza.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 public class AbsencePeriodTerseDto {
 
-//  private InitializationGroup initialization;
+  //  private InitializationGroup initialization;
   private LocalDate from;
   private LocalDate to;
-//  private VacationCodeDto vacationCode;
-private String vacationCode;
+  //  private VacationCodeDto vacationCode;
+  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
@@ -39,6 +42,6 @@ private String vacationCode;
   private boolean takableWithLimit;
   private long periodTakableAmount;
   private long remainingAmount;
-//  private List<AbsenceSubPeriodTerseDto> subPeriods = Lists.newArrayList();
+  //  private List<AbsenceSubPeriodTerseDto> subPeriods = Lists.newArrayList();
 
 }
