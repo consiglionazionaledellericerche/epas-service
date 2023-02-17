@@ -19,9 +19,13 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import com.google.common.base.Verify;
 import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.OfficeDao;
+import it.cnr.iit.epas.dto.v4.ContractCreateDto;
+import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeUpdateDto;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import javax.inject.Inject;
 import lombok.val;
@@ -37,11 +41,14 @@ import org.springframework.stereotype.Component;
 public class EntityToDtoConverter {
 
   private final OfficeDao officeDao;
+  private final ContractDao contractDao;
   private final DtoToEntityMapper mapper;
 
   @Inject
-  EntityToDtoConverter(OfficeDao officeDao, DtoToEntityMapper mapper) {
+  EntityToDtoConverter(OfficeDao officeDao, ContractDao contractDao,
+      DtoToEntityMapper mapper) {
     this.officeDao = officeDao;
+    this.contractDao = contractDao;
     this.mapper = mapper;
   }
 
@@ -53,9 +60,22 @@ public class EntityToDtoConverter {
     Verify.verifyNotNull(officeDto);
     val office = officeDao.byId(officeDto.getId())
         .orElseThrow(() -> new EntityNotFoundException(
-            "Ufficio con id = " + officeDto.getId() + "non trovato"));
+            "Ufficio with id = " + officeDto.getId() + "not found"));
     mapper.update(office, officeDto);
     return office;
+  }
+
+  /**
+   * Aggiorna l'entity riferita dal DTO con i dati passati e la
+   * restituite modificata.
+   */
+  public Contract updateEntity(ContractUpdateDto contractDto) {
+    Verify.verifyNotNull(contractDto);
+    val contract = contractDao.byId(contractDto.getId())
+        .orElseThrow(() -> new EntityNotFoundException(
+            "Contract with id = " + contractDto.getId() + "not found"));
+    mapper.update(contract, contractDto);
+    return contract;
   }
 
   /**
@@ -65,5 +85,14 @@ public class EntityToDtoConverter {
     Office office = new Office();
     mapper.update(office, officeDto);
     return office;
+  }
+
+  /**
+   * Crea una nuova Entity Contract a partire dai dati del DTO.
+   */
+  public Contract createEntity(ContractCreateDto contractDto) {
+    Contract contract = new Contract();
+    mapper.update(contract, contractDto);
+    return contract;
   }
 }

@@ -67,11 +67,11 @@ public class ContractDao extends DaoBase<Contract> {
    *
    * @return il contratto corrispondente all'id passato come parametro.
    */
-  public Contract byId(Long id) {
+  public Optional<Contract> byId(Long id) {
     QContract contract = QContract.contract;
-    return getQueryFactory().selectFrom(contract)
+    return Optional.ofNullable(getQueryFactory().selectFrom(contract)
         .join(contract.person).fetchJoin()
-        .where(contract.id.eq(id)).fetchOne();
+        .where(contract.id.eq(id)).fetchOne());
   }
 
   /**

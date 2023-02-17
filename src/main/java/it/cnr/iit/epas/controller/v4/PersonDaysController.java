@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.controller;
+package it.cnr.iit.epas.controller.v4;
 
-import it.cnr.iit.epas.controller.utils.ApiRoutes;
+import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;

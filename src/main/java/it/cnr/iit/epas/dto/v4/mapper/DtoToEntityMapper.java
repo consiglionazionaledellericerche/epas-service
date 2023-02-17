@@ -18,7 +18,10 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dao.InstituteDao;
+import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import javax.inject.Inject;
 import org.mapstruct.Mapper;
@@ -39,6 +42,8 @@ public abstract class DtoToEntityMapper {
 
   @Inject
   protected InstituteDao instituteDao;
+  @Inject
+  protected PersonDao personDao;
 
   @Mapping(target = "institute", 
       expression = "java(instituteDao.byId(officeDto.getInstituteId())"
@@ -47,4 +52,10 @@ public abstract class DtoToEntityMapper {
           + "EntityNotFoundException(\"Institute not found\")))")
   public abstract void update(@MappingTarget Office office, OfficeCreateDto officeDto);
 
+  @Mapping(target = "person", 
+      expression = "java(personDao.byId(contractDto.getPersonId())"
+          + ".orElseThrow(() -> "
+          + "new it.cnr.iit.epas.controller.exceptions."
+          + "EntityNotFoundException(\"Person not found\")))")
+  public abstract void update(@MappingTarget Contract contract, ContractCreateDto contractDto);
 }
