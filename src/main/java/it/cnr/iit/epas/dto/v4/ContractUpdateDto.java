@@ -15,29 +15,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.controller.utils;
+package it.cnr.iit.epas.dto.v4;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * Costanti utili per le definizioni delle rotte delle API.
+ * Dto per contenere le informazioni di aggiornamento di un contratto.
  *
  * @author Cristian Lucchesi
  *
  */
-public class ApiRoutes {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ContractUpdateDto extends ContractCreateDto {
 
-  private static final String ONLY_DIGITS_REGEX = "^\\d+$";
-  //private static final String ALPHANUMERIC_SPECIALS_REGEX = "^\\d*[a-zA-Z\\W].*$";
-
-  public static final String BASE_PATH = "/rest/v4";
-
-  public static final String ID_REGEX = "{id:" + ONLY_DIGITS_REGEX + "}";
-
-  public static final String LIST = "";
-  public static final String SHOW = "/" + ID_REGEX;
-  public static final String CREATE = "/create";
-  public static final String UPDATE = "/update";
-  public static final String PATCH = "/patch/" + ID_REGEX;
-  public static final String DELETE = "/delete/" + ID_REGEX;
-  public static final String ALL = "/all";                      // used for a ligthweight list
+  @NotNull
+  @Schema(description = "Id univoco")
+  private Long id;
 
 }

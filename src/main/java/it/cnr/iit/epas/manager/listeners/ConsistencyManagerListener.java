@@ -61,7 +61,7 @@ class ConsistencyManagerListener {
         contract.orElse(null));
     if (contract.isPresent()) {
       Verify.verifyNotNull(contract.get().getId());
-      Contract currentContract = contractDao.byId(contract.get().getId());
+      Contract currentContract = contractDao.byId(contract.get().getId()).get();
       Verify.verifyNotNull(currentContract, 
           String.format("currentcontract is null, contract.id = %s", contract.get().getId()));
       GroupAbsenceType vacationGroup = absenceComponentDao
