@@ -14,12 +14,18 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.absences.AbsenceType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * DTO per gli AbsenceType.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class AbsenceTypeDto extends BaseModelDto {

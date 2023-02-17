@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,14 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import it.cnr.iit.epas.models.absences.AmountType;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 
+/**
+ * DTO per il resoconto dei periodi di assenza.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 public class AbsencePeriodSummaryDto {
 

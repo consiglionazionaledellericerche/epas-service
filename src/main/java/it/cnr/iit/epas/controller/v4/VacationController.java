@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller.v4;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;

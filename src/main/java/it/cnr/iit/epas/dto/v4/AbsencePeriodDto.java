@@ -14,20 +14,21 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.models.absences.AmountType;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
-import it.cnr.iit.epas.models.absences.InitializationGroup;
-import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.SortedMap;
 import lombok.Data;
 
+/**
+ * DTO per i periodi di Assenza.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @Data
 public class AbsencePeriodDto {
 
