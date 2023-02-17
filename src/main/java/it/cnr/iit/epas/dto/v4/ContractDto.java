@@ -17,7 +17,10 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
+import it.cnr.iit.epas.models.VacationPeriod;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -61,5 +64,8 @@ public class ContractDto extends BaseModelDto {
 
   //data di termine contratto in casi di licenziamento, pensione, morte, ecc ecc...
   private LocalDate endContract;
+
+  private List<VacationPeriodDto> vacationPeriods = Lists.newArrayList();
+
 
 }

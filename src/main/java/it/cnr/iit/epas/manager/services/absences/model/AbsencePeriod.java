@@ -105,11 +105,10 @@ public class AbsencePeriod {
   public AbsenceTypeDao absenceTypeDao;
   public PersonDayManager personDayManager;  
 
-  
   /**
    * Costruttore.
    */
-  AbsencePeriod(Person person, GroupAbsenceType groupAbsenceType, PersonDayManager personDayManager,
+  public AbsencePeriod(Person person, GroupAbsenceType groupAbsenceType, PersonDayManager personDayManager,
       AbsenceTypeDao absenceTypeDao) {
     this.person = person;
     this.groupAbsenceType = groupAbsenceType;

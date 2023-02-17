@@ -69,8 +69,10 @@ public class MonthRecapController {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
         "/rest/v4/monthrecaps" + ApiRoutes.LIST, personId, year, month);
     val person = personDao.byId(personId);
+
+    log.debug("Person {}", person.isEmpty());
     if (person.isEmpty()) {
-      ResponseEntity.notFound();
+      return ResponseEntity.notFound().build();
     }
     val wrPerson = wrapperFactory.create(person.get());
     if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
