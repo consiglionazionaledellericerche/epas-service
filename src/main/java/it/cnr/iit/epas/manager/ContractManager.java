@@ -23,7 +23,6 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.WorkingTimeTypeDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
-import it.cnr.iit.epas.dao.wrapper.WrapperContract;
 import it.cnr.iit.epas.manager.recaps.recomputation.RecomputeRecap;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMandatoryTimeSlot;
@@ -47,20 +46,20 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Manager per Contract.
  *
  * @author alessandro
  */
+@Transactional
 @Slf4j
-@Component
+@Service
 public class ContractManager {
 
   private final ConsistencyManager consistencyManager;
   private final Provider<IWrapperFactory> wrapperFactory;
-  private final WrapperContract wrapperContract;
   private final PeriodManager periodManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
   private final WorkingTimeTypeDao workingTimeTypeDao;
@@ -80,16 +79,15 @@ public class ContractManager {
       final ConsistencyManager consistencyManager,
       final PeriodManager periodManager, final PersonDayInTroubleManager personDayInTroubleManager, 
       final WorkingTimeTypeDao workingTimeTypeDao,
-      final Provider<IWrapperFactory> wrapperFactory, final WrapperContract wrapperContract,
+      final Provider<IWrapperFactory> wrapperFactory, 
       final ContractDao contractDao,
-      Provider<EntityManager> emp) {
+      final Provider<EntityManager> emp) {
 
     this.consistencyManager = consistencyManager;
     this.periodManager = periodManager;
     this.personDayInTroubleManager = personDayInTroubleManager;
     this.workingTimeTypeDao = workingTimeTypeDao;
     this.wrapperFactory = wrapperFactory;
-    this.wrapperContract = wrapperContract;
     this.contractDao = contractDao;
     this.emp = emp;
   }
@@ -100,9 +98,9 @@ public class ContractManager {
    * @param contract contract
    * @return esito
    */
-  public boolean isContractNotOverlapping(final Contract contract) {
-    wrapperContract.setValue(contract);
-    DateInterval contractInterval = wrapperContract.getContractDateInterval();
+  public final boolean isContractNotOverlapping(final Contract contract) {
+
+    DateInterval contractInterval = wrapperFactory.get().create(contract).getContractDateInterval();
     for (Contract c : contract.person.getContracts()) {
 
       if (contract.getId() != null && c.getId().equals(contract.getId())) {
@@ -124,7 +122,7 @@ public class ContractManager {
    * @param contract contract
    * @return esito
    */
-  public final boolean isContractCrossFieldValidationPassed(final Contract contract) {
+  public boolean isContractCrossFieldValidationPassed(final Contract contract) {
 
     if (contract.getEndDate() != null
         && contract.getEndDate().isBefore(contract.getBeginDate())) {
@@ -156,7 +154,7 @@ public class ContractManager {
    * @param recomputation      se effettuare subito il ricalcolo della persona.
    * @return esito costruzione
    */
-  public final boolean properContractCreate(final Contract contract, 
+  public boolean properContractCreate(final Contract contract, 
       Optional<WorkingTimeType> wtt, 
       boolean recomputation) {
 
@@ -231,8 +229,7 @@ public class ContractManager {
    * @param from       da quando effettuare il ricalcolo.
    * @param onlyRecaps ricalcolare solo i riepiloghi mensili.
    */
-  @Transactional
-  public final boolean properContractUpdate(final Contract contract, final LocalDate from,
+  public boolean properContractUpdate(final Contract contract, final LocalDate from,
       final boolean onlyRecaps) {
 
     if (!isContractCrossFieldValidationPassed(contract)) {
@@ -242,7 +239,7 @@ public class ContractManager {
     if (!isContractNotOverlapping(contract)) {
       return false;
     }
-    contractDao.save(contract);
+    emp.get().merge(contract);
     periodManager.updatePropertiesInPeriodOwner(contract);
     personDayInTroubleManager.cleanPersonDayInTrouble(contract.person);
 
@@ -259,7 +256,7 @@ public class ContractManager {
    * @param newContract se il contratto è nuovo (non ho strutture da ripulire)
    * @param onlyRecaps  ricalcolare solo i riepiloghi mensili.
    */
-  public final void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
+  public void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
       final boolean newContract, final boolean onlyRecaps) {
 
     IWrapperContract wrContract = wrapperFactory.get().create(contract);
@@ -356,7 +353,7 @@ public class ContractManager {
    *
    * @param contract contract
    */
-  public final void setSourceContractProperly(final Contract contract) {
+  public void setSourceContractProperly(final Contract contract) {
 
     if (contract.sourceVacationLastYearUsed == null) {
       contract.sourceVacationLastYearUsed = 0;
