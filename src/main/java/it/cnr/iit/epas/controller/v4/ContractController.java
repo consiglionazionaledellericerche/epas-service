@@ -21,6 +21,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.exceptions.ValidationException;
@@ -29,7 +33,7 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
-import it.cnr.iit.epas.dto.v4.ContractDto;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
@@ -62,6 +66,12 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Metodi REST per la gestione delle informazioni sui contratti.
  */
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+    })
+@Tag(name = "Contracts Controller", description = "Gestione delle informazioni dei contratti")
 @Transactional
 @Slf4j
 @RestController
@@ -109,14 +119,14 @@ public class ContractController {
           content = @Content)
   })
   @GetMapping(ApiRoutes.SHOW)
-  ResponseEntity<ContractDto> show(@NotNull @PathVariable("id") Long id) {
+  ResponseEntity<ContractShowDto> show(@NotNull @PathVariable("id") Long id) {
     log.debug("ContractController::show id = {}", id);
-    val office = contractDao.byId(id)
+    val contract = contractDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
-    if (!rules.check(office)) {
+    if (!rules.check(contract.getPerson().getOffice())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
-    return ResponseEntity.ok().body(mapper.convert(office));
+    return ResponseEntity.ok().body(mapper.convert(contract));
   }
 
   @Operation(
@@ -139,7 +149,8 @@ public class ContractController {
   })
   @Transactional
   @PutMapping(ApiRoutes.CREATE)
-  ResponseEntity<ContractDto> create(@NotNull @Valid @RequestBody ContractCreateDto contractDto) {
+  ResponseEntity<ContractShowDto> create(
+      @NotNull @Valid @RequestBody ContractCreateDto contractDto) {
     log.debug("ContractController::create contractDto = {}", contractDto);
     val contract = entityToDtoConverter.createEntity(contractDto);
     if (!contractManager.properContractCreate(contract, Optional.empty(), true)) {
@@ -169,7 +180,7 @@ public class ContractController {
   })
   @Transactional
   @PostMapping(ApiRoutes.UPDATE)
-  ResponseEntity<ContractDto> update(
+  ResponseEntity<ContractShowDto> update(
       @NotNull @Valid @RequestBody ContractUpdateDto contractDto) {
     log.debug("OfficeController::update officeDto = {}", contractDto);
     
@@ -177,7 +188,7 @@ public class ContractController {
     IWrapperContract wrappedContract = wrapperFactory.create(contract);
     final DateInterval previousInterval = wrappedContract.getContractDatabaseInterval();
 
-    if (!rules.check(contract)) {
+    if (!rules.check(contract.getPerson().getOffice())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
     DateInterval newInterval = wrappedContract.getContractDatabaseInterval();
@@ -219,8 +230,96 @@ public class ContractController {
     return ResponseEntity.ok().build();
   }
 
+  @Operation(
+      summary = "Se è presente un contratto precedente che termina il giorno prima dell'inizio del "
+          + "contratto attuale allora importa il contratto come continuativo del precedente.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede a cui appartiene la persona di cui modificare"
+          + "il contratto e dagli utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Contratto aggiornato correttamente"),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+          content = @Content), 
+      @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
+          + "non autorizzato a modificare il contratto", 
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona associata al contratto non trovata con i parametri forniti", 
+          content = @Content),
+      @ApiResponse(responseCode = "422", description = "Contratto precedente non trovato o non"
+          + " immediatamente precedente all'attuale.", content = @Content),
+  })
+  @Transactional
+  @PutMapping(ApiRoutes.ID_REGEX + "/linkPreviousContract")
+  ResponseEntity<ContractShowDto> linkPreviousContract(@NotNull @PathVariable("id") Long id) {
+    log.debug("ContractController::linkPreviousContract id = {}", id);
+    val contract = contractDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
+    if (!rules.check(contract.getPerson().getOffice())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    if (!contractManager.applyPreviousContractLink(contract, true)) {
+      throw new InvalidOperationOnCurrentStateException(
+          "No suitable previous contract found to link.");
+    }
+    return ResponseEntity.ok().body(mapper.convert(contract));
+  }
+
+  @Operation(
+      summary = "Se è presente un contratto precedente collegato al contratto indicato per id "
+          + "allora toglie il collagamento con il predente contratto.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede a cui appartiene la persona di cui modificare"
+          + "il contratto e dagli utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Contratto aggiornato correttamente"),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+          content = @Content), 
+      @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
+          + "non autorizzato a modificare il contratto", 
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona associata al contratto non trovata con i parametri forniti", 
+          content = @Content),
+      @ApiResponse(responseCode = "422", description = "Nessun contratto precedente collegato al "
+          + "contratto indicato per id", content = @Content),
+  })
+  @Transactional
+  @PutMapping(ApiRoutes.ID_REGEX + "/unlinkPreviousContract")
+  ResponseEntity<ContractShowDto> unlinkPreviousContract(@NotNull @PathVariable("id") Long id) {
+    log.debug("ContractController::unlinkPreviousContract id = {}", id);
+    val contract = contractDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
+    if (!rules.check(contract.getPerson().getOffice())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+    if (!contractManager.applyPreviousContractLink(contract, true)) {
+      throw new InvalidOperationOnCurrentStateException("Linked previous contract not found.");
+    }
+    contractManager.applyPreviousContractLink(contract, true);
+    return ResponseEntity.ok().body(mapper.convert(contract));
+  }
+
+  @Operation(
+      summary = "Imposta la data di fine contratto.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede a cui appartiene la persona di cui modificare"
+          + "il contratto e dagli utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Data fine contratto aggiornata correttamente"),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+          content = @Content), 
+      @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
+          + "non autorizzato a modificare il contratto", 
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona associata al contratto non trovata con i parametri forniti", 
+          content = @Content)
+  })
+  @Transactional
   @PutMapping(ApiRoutes.ID_REGEX + "/endContract")
-  ResponseEntity<ContractDto> endContract(
+  ResponseEntity<ContractShowDto> endContract(
       @PathVariable("id") Long id,
       @RequestParam("endContract") LocalDate endContract) {
     log.debug("ContractController::endContract id = {}", id);

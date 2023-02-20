@@ -45,7 +45,7 @@ public class PersonInfo {
 
   private PersonRepository repo;
   private PersonShowMapper mapper;
-  private SecureUtils securityUtils;
+  private SecureUtils secureUtils;
   
   /**
    * Costruttore di default per l'injection.
@@ -55,12 +55,12 @@ public class PersonInfo {
       SecureUtils securityUtils) {
     this.repo = repo;
     this.mapper = mapper;
-    this.securityUtils = securityUtils;
+    this.secureUtils = securityUtils;
   }
 
   @GetMapping("/")
   ResponseEntity<PersonShowDto> show() {
-    Optional<User> user = securityUtils.getCurrentUser();
+    Optional<User> user = secureUtils.getCurrentUser();
     log.debug("UserInfo::show user = {}", user.orElse(null));
     if (!user.isPresent()) {
       return ResponseEntity.badRequest().build();

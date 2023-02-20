@@ -19,7 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsenceDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
-import it.cnr.iit.epas.dto.v4.ContractDto;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
@@ -66,7 +66,8 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "sourced", expression = "java(vacationSummary.sourced())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
-  @Mapping(target = "postPartumisEmpty", expression = "java(vacationSummary.postPartum().isEmpty())")
+  @Mapping(target = "postPartumisEmpty", 
+      expression = "java(vacationSummary.postPartum().isEmpty())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
   @Mapping(target = "justifiedType", source = "justifiedType.name")
@@ -74,6 +75,6 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceDto convert(Absence absence);
 
-  ContractDto convert(Contract contract);
+  ContractShowDto convert(Contract contract);
 
 }

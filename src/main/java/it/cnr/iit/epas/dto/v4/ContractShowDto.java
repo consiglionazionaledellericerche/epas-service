@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ContractDto extends BaseModelDto {
+public class ContractShowDto extends BaseModelDto {
 
   private String perseoId;
 

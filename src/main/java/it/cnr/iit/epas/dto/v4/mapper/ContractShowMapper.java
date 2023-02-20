@@ -17,7 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.ContractDto;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.models.Contract;
 import org.mapstruct.Mapper;
 
@@ -27,6 +27,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface ContractShowMapper {
 
-  ContractDto convert(Contract contract);
+  ContractShowDto convert(Contract contract);
 
 }
