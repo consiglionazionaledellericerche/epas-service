@@ -175,22 +175,27 @@ public class ContractController {
           + "non autorizzato a modificare il contratto", 
           content = @Content), 
       @ApiResponse(responseCode = "404", 
-          description = "Persona associata al contratto non trovata con i parametri forniti", 
+          description = "Contratto non trovato con i parametri forniti", 
           content = @Content)
   })
   @Transactional
   @PostMapping(ApiRoutes.UPDATE)
   ResponseEntity<ContractShowDto> update(
       @NotNull @Valid @RequestBody ContractUpdateDto contractDto) {
-    log.debug("OfficeController::update officeDto = {}", contractDto);
-    
-    val contract = entityToDtoConverter.updateEntity(contractDto);
-    IWrapperContract wrappedContract = wrapperFactory.create(contract);
-    final DateInterval previousInterval = wrappedContract.getContractDatabaseInterval();
-
+    log.debug("ContractController::update contractDto = {}", contractDto);
+    val contract = 
+        contractDao.byId(contractDto.getId())
+          .orElseThrow(() -> 
+            new EntityNotFoundException("Contract non found with id = " + contractDto.getId()));
     if (!rules.check(contract.getPerson().getOffice())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    IWrapperContract wrappedContract = wrapperFactory.create(contract);
+    final DateInterval previousInterval = wrappedContract.getContractDatabaseInterval();
+
+    entityToDtoConverter.updateEntity(contractDto);
+
     DateInterval newInterval = wrappedContract.getContractDatabaseInterval();
     RecomputeRecap recomputeRecap = periodManager.buildTargetRecap(previousInterval, newInterval,
         wrappedContract.initializationMissing());
@@ -221,12 +226,13 @@ public class ContractController {
   @Transactional
   @DeleteMapping(ApiRoutes.DELETE)
   ResponseEntity<Void> delete(@NotNull @PathVariable("id") Long id) {
-    log.debug("OfficeController::delete id = {}", id);
-    val office = contractDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
-    checkIfIsPossibileToDelete(office);
+    log.debug("ContractController::delete id = {}", id);
+    val contract = contractDao.byId(id)
+          .orElseThrow(() -> new EntityNotFoundException("Contract not found with id = " + id));
+    checkIfIsPossibileToDelete(contract);
 
-    contractDao.delete(office);
-    log.info("Eliminato contratto {}", office);
+    contractDao.delete(contract);
+    log.info("Eliminato contratto {}", contract);
     return ResponseEntity.ok().build();
   }
 
