@@ -28,3 +28,11 @@ Per utilizzare l'access token con httpie su epas-service è possibile utilizzare
 la sintassi tipo:
 
 $ http GET :8080/rest/v4/userinfo "Authorization: Bearer $ACCESS_TOKEN"
+
+
+## OpenAPI e Swagger
+
+I metodi REST sono documentati tramite Swagger e la descrizione openapi è generata automatica
+al build del progetto.
+L'interfaccia Swagger è disponibile in locale all'indirizzo :8080/swagger-ui/index.html
+

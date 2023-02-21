@@ -17,25 +17,29 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
- * DTO per la situazione ferie di una persona.
+ * DTO con i dati per la creazione di un nuovo contratto.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-public class PersonVacationDto {
+public class ContractUpdateBaseDto {
 
-  private boolean topQualification;
-  private int year;
-  private int month;
-  private List<ContractShowDto> contracts;
-
-  private List<VacationSituationDto> vacationSituations = Lists.newArrayList();
-  private PeriodChainDto periodChain;
-
+  @Schema(description = "Data di inizio del contratto")
+  private LocalDate beginDate;
+  @Schema(description = "Data di scadenza del contratto")
+  private LocalDate endDate;
+  @Schema(description = "Data in cui è terminato il contratto, può essere diversa dalla scadenza")
+  private LocalDate endContract;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con l'anagrafica CNR")
+  private String perseoId;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con altre anagrafiche")
+  private String externalId;
+  @Schema(description = "Contratto con gestione delle busta paga (ex. true per i dipendenti CNR")
+  private boolean onCertificate;
 }

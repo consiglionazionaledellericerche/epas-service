@@ -14,11 +14,13 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.dto;
+
 import java.time.LocalDate;
 
 /**
- * DTO AbsencePeriod
+ * DTO AbsencePeriod.
  */
 public class AbsenceSubPeriodDto {
 
@@ -35,18 +37,7 @@ public class AbsenceSubPeriodDto {
 
   /**
    * Costruttore.
-   *
-   * @param subAmount
-   * @param subFixedPostPartum
-   * @param subAmountBeforeFixedPostPartum
-   * @param subTotalAmount
-   * @param subDayProgression
-   * @param subDayPostPartum
-   * @param subDayToFixPostPartum
-   * @param subAccrued
-   * @param contractEndFirstYearInPeriod
-   * @param dayInInterval
-   * */
+   */
   public AbsenceSubPeriodDto(long subAmount, boolean subFixedPostPartum,
       long subAmountBeforeFixedPostPartum, long subTotalAmount, long subDayProgression,
       long subDayPostPartum, long subDayToFixPostPartum, boolean subAccrued,

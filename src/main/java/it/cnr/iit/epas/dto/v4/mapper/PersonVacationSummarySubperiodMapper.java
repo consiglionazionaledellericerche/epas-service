@@ -39,19 +39,24 @@ import org.mapstruct.factory.Mappers;
 
 
 //@Mapper(componentModel = "spring")
-@Mapper(componentModel = "spring", uses = { VacationSummary.class, AbsencePeriod.class } )
+@Mapper(componentModel = "spring", uses = { VacationSummary.class, AbsencePeriod.class })
 public interface PersonVacationSummarySubperiodMapper {
 
-//  VacationCode map(VacationCodeDto value);
-//
-  PersonVacationSummarySubperiodMapper INSTANCE = Mappers.getMapper( PersonVacationSummarySubperiodMapper.class );
+  //  VacationCode map(VacationCodeDto value);
+
+  PersonVacationSummarySubperiodMapper INSTANCE = 
+      Mappers.getMapper(PersonVacationSummarySubperiodMapper.class);
+
   @Mapping(target = ".", source = "periodSummaryDto.period")
-  @Mapping(target = "vacationCode", source = "period.vacationCode", qualifiedByName="mapVacationCode")
+  @Mapping(target = "vacationCode", source = "period.vacationCode", 
+      qualifiedByName = "mapVacationCode")
   AbsencePeriod createPeriodFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
   @Mapping(target = "absencePeriod", source = "summary.absencePeriod")
   @Mapping(target = "absencePeriod.subPeriods", source = "summary.absencePeriod.subPeriods")
-  @Mapping(target = "absencePeriod.vacationCode", source = "periodSummaryDto.summary.absencePeriod.vacationCode", qualifiedByName="mapVacationCode")
+  @Mapping(target = "absencePeriod.vacationCode", 
+      source = "periodSummaryDto.summary.absencePeriod.vacationCode",
+      qualifiedByName="mapVacationCode")
   @Mapping(target = "year", source = "summary.year")
   VacationSummary createSummaryFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 

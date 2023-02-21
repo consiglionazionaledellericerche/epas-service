@@ -92,7 +92,7 @@ public class EntityToDtoConverter {
    */
   public Contract createEntity(ContractCreateDto contractDto) {
     Contract contract = new Contract();
-    mapper.update(contract, contractDto);
+    mapper.create(contract, contractDto);
     return contract;
   }
 }
