@@ -210,7 +210,7 @@ public class ContractController {
   @Operation(
       summary = "Eliminazione di un contratto.", 
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
-          + "'Amministratore tecnico' della sede da modificare e dagli utenti con il ruolo "
+          + "'Gestore anagrafica' della sede da modificare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Contratto eliminato correttamente"),

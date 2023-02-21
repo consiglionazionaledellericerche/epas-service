@@ -18,8 +18,8 @@
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Sets;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
-import java.time.LocalDate;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,9 +31,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class UserShowDto extends UserShowTerseDto {
 
+  @Schema(description = "Id dell'ufficio a cui appartiene questo utente (se non è una persona)")
   private Long ownerId;
+  @Schema(description = "id della persona collegata all'utente")
+  private Long personId;
+  @Schema(description = "Ruoli di sistema attribuiti all'utente")
   private Set<AccountRole> roles = Sets.newHashSet();
-  private LocalDate expireDate;
-  private String keycloakId;
+  @Schema(description = "abilitato si/no")
+  private boolean disabled;
 
 }

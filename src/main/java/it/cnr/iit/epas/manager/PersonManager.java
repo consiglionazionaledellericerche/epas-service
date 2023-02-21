@@ -408,6 +408,7 @@ public class PersonManager {
    * @param person l'oggetto Person da configurare con
    *     gli attributi ed oggetti correlati opportuni.
    */
+  @Transactional
   public void properPersonCreate(Person person) {
     userManager.createUser(person);
     // Se il campo eppn è vuoto viene calcolato euristicamente...

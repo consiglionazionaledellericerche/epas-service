@@ -18,12 +18,17 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dao.InstituteDao;
+import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
+import it.cnr.iit.epas.dto.v4.PersonCreateDto;
+import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
 import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -45,6 +50,10 @@ public abstract class DtoToEntityMapper {
   protected InstituteDao instituteDao;
   @Inject
   protected PersonDao personDao;
+  @Inject
+  protected OfficeDao officeDao;
+  @Inject
+  protected QualificationDao qualificationDao;
 
   @Mapping(target = "institute", 
       expression = "java(instituteDao.byId(officeDto.getInstituteId())"
@@ -53,7 +62,31 @@ public abstract class DtoToEntityMapper {
           + "EntityNotFoundException(\"Institute not found\")))")
   public abstract void update(@MappingTarget Office office, OfficeCreateDto officeDto);
 
+  @Mapping(target = "qualification", 
+      expression = "java(qualificationDao.byId(personDto.getQualification())"
+          + ".orElseThrow(() -> "
+          + "new it.cnr.iit.epas.controller.exceptions."
+          + "EntityNotFoundException(\"Qualification not found\")))")
+  public abstract void update(@MappingTarget Person person, PersonUpdateDto personDto);
+
   public abstract void update(@MappingTarget Contract contract, ContractUpdateDto contractDto);
 
+  @Mapping(target = "office", 
+      expression = "java(officeDao.byId(personDto.getOfficeId())"
+          + ".orElseThrow(() -> "
+          + "new it.cnr.iit.epas.controller.exceptions."
+          + "EntityNotFoundException(\"Office not found\")))")
+  @Mapping(target = "qualification", 
+      expression = "java(qualificationDao.byId(personDto.getQualification())"
+      + ".orElseThrow(() -> "
+      + "new it.cnr.iit.epas.controller.exceptions."
+      + "EntityNotFoundException(\"Qualification not found\")))")
+  public abstract void create(@MappingTarget Person person, PersonCreateDto personDto);
+
+  @Mapping(target = "person", 
+      expression = "java(personDao.byId(contractDto.getPersonId())"
+          + ".orElseThrow(() -> "
+          + "new it.cnr.iit.epas.controller.exceptions."
+          + "EntityNotFoundException(\"Person not found\")))")
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
 }

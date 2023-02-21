@@ -128,7 +128,7 @@ public class H2Examples {
     person.setBeginDate(LocalDate.now());
     person.setUser(user);
     person.setOffice(office);
-    person.setQualification(qualificationDao.findById(DEFAULT_PERSON_QUALIFICATION).get());
+    person.setQualification(qualificationDao.byId(DEFAULT_PERSON_QUALIFICATION).get());
     personDao.persist(person);
     configurationManager.updateConfigurations(person);
     return person;

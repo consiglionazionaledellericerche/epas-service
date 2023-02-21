@@ -19,8 +19,8 @@ package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Dto con i dati per la creazione di un nuovo ufficio.
@@ -29,19 +29,9 @@ import lombok.Data;
  *
  */
 @Data
-public class OfficeCreateDto {
+@EqualsAndHashCode(callSuper = true)
+public class OfficeCreateDto extends OfficeBaseDto {
 
-  @NotNull
-  @Schema(description = "Nome dell'ufficio", example = "IIT - Pisa")
-  private String name;
-  //Codice della sede, per esempio per la sede di Pisa è "044000"
-  @Schema(description = "Codice della sede", example = "044000")
-  private String code;
-  @NotNull
-  //sedeId, serve per l'invio degli attestati, per esempio per la sede di Pisa è "223400"
-  @Schema(description = "i della sede, al CNR serve per l'invio degli attestati", 
-      example = "223400")
-  private String codeId;
   @Schema(description = "Identificato univoco esterno ad ePAS")
   private String externalId;
   @Schema(description = "Indirizzo postal della sede")
@@ -50,6 +40,7 @@ public class OfficeCreateDto {
   private Long instituteId;
   @Schema(description = "Indica se è la sede principale o meno", example = "true")
   private boolean headQuarter;
+
   @Schema(description = "Data inizio validità")
   private LocalDate beginDate;
   @Schema(description = "Data fine validità")

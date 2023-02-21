@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,23 +15,23 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4.mapper;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.dto.v4.UserShowDto;
-import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
-import it.cnr.iit.epas.models.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * Mapper per User al corrispondente DTO per la visualizzazione via REST.
+ * DTO con le informazioni per aggiornare una persona.
+ *
+ * @author Cristian Lucchesi
+ *
  */
-@Mapper(componentModel = "spring")
-public interface UserShowMapper {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class PersonUpdateDto extends PersonMutableDto {
 
-  @Mapping(target = "personId", source = "person.id")
-  @Mapping(target = "ownerId", source = "owner.id")
-  UserShowDto convert(User user);
-  
-  UserShowTerseDto convertTerse(User user);
+  @Schema(description = "Id della persona da aggiornare")
+  private Long id;
+
 }

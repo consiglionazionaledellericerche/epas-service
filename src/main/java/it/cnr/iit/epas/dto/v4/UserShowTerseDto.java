@@ -17,15 +17,20 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * DTO per mostrare i dati principali di uno User.
+ *
+ * @author Cristian Lucchesi
  */
 @Data
-public class UserShowTerseDto {
+@EqualsAndHashCode(callSuper = true)
+public class UserShowTerseDto extends BaseModelDto {
 
+  @Schema(description = "username")
   private String username;
-  private Long personId;
-  private boolean disabled;
+
 }

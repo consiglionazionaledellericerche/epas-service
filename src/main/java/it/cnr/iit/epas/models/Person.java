@@ -27,6 +27,7 @@ import it.cnr.iit.epas.models.base.PeriodModel;
 import it.cnr.iit.epas.models.enumerate.CertificationType;
 import it.cnr.iit.epas.models.flows.Affiliation;
 import it.cnr.iit.epas.models.flows.Group;
+import it.cnr.iit.epas.models.listeners.PersonListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -39,13 +40,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
@@ -60,6 +60,7 @@ import org.hibernate.envers.NotAudited;
  *
  * @author Cristian Lucchesi
  */
+@EntityListeners(PersonListener.class)
 @Getter
 @Setter
 @Entity
@@ -91,7 +92,6 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
   private LocalDate birthday;
 
   //  @Unique
-  //  @As(binder = NullStringBinder.class)
   @Email
   @NotNull
   private String email;
@@ -308,7 +308,7 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
   @Transient
   public List<Group> getGroups(java.time.LocalDate date) {
     return affiliations.stream()
-        .filter(a -> a.getBeginDate().isBefore(date) 
+        .filter(a -> !a.getBeginDate().isAfter(date) 
             && (a.getEndDate() == null || a.getEndDate().isAfter(date)))
         .map(a -> a.getGroup()).collect(Collectors.toList());
   }
@@ -338,29 +338,6 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
         .filter(conf -> conf.getEpasParam() == epasPersonParam).collect(Collectors.toSet());
   }
 
-  @PreUpdate
-  private void onUpdate() {
-    this.updatedAt = LocalDateTime.now();
-  }
-
-  @PrePersist
-  private void onCreation() {
-    // TODO meglio rendere non necessario questo barbatrucco...
-    //this.beginDate = LocalDate.now().minusYears(1).withMonthOfYear(12).withDayOfMonth(31);
-    this.updatedAt = LocalDateTime.now();
-  }
-
-  //FIXME: da correggere prima del passaggio a spring boot
-  //  @PreRemove
-  //  private void onDelete() {
-  //    this.getGroups().stream().forEach(g -> { 
-  //      g.getAffiliations().stream().filter(a -> a.getPerson().equals(this)).forEach(a -> {
-  //        a.delete();
-  //        log.info("Rimossa associazione {} a gruppo {}", getFullname(), g.name);
-  //      });
-  //    });
-  //  }
-  
   /**
    * Comparatore di persone per fullname e poi id.
    *
