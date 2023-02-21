@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Component;
@@ -130,6 +131,7 @@ public class UserManager {
    * @param person la persona per cui creare l'utente
    * @return l'utente creato.
    */
+  @Transactional
   public User createUser(final Person person) {
 
     User user = new User();
@@ -139,9 +141,7 @@ public class UserManager {
     SecureRandom random = new SecureRandom();
     user.setPassword(hexMD5(new BigInteger(130, random).toString(32)));
 
-    emp.get().persist(user);
-    //user.save();
-
+    userDao.save(user);
     person.setUser(user);
 
     log.info("Creato nuovo user per {}: username = {}", person.fullName(), user.getUsername());
@@ -163,8 +163,7 @@ public class UserManager {
       user.setDisabled(false);
       user.setExpireDate(null);
     }
-    emp.get().merge(user);
-    //user.save();
+    userDao.merge(user);
     for (Role role : roles) {
       for (Office office : offices) {
         UsersRolesOffices uro = new UsersRolesOffices();
