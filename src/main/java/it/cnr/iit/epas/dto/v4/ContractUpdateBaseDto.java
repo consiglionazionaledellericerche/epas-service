@@ -18,22 +18,28 @@
 package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * Dto per contenere le informazioni di aggiornamento di un contratto.
+ * DTO con i dati per la creazione di un nuovo contratto.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractUpdateDto extends ContractUpdateBaseDto {
+public class ContractUpdateBaseDto {
 
-  @NotNull
-  @Schema(description = "Id univoco")
-  private Long id;
-
+  @Schema(description = "Data di inizio del contratto")
+  private LocalDate beginDate;
+  @Schema(description = "Data di scadenza del contratto")
+  private LocalDate endDate;
+  @Schema(description = "Data in cui è terminato il contratto, può essere diversa dalla scadenza")
+  private LocalDate endContract;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con l'anagrafica CNR")
+  private String perseoId;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con altre anagrafiche")
+  private String externalId;
+  @Schema(description = "Contratto con gestione delle busta paga (ex. true per i dipendenti CNR")
+  private boolean onCertificate;
 }
