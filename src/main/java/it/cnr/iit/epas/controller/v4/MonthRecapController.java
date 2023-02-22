@@ -17,6 +17,15 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
+import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
@@ -24,8 +33,14 @@ import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.security.SecureUtils;
+import it.cnr.iit.epas.security.SecurityRules;
 import java.time.YearMonth;
+import java.util.Optional;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +55,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Cristian Lucchesi
  *
  */
+@SecurityRequirements(
+    value = {
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION),
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)})
+@Tag(
+    name = "MonthRecap controller",
+    description = "Visualizzazione dei riepiloghi mensili dei dipendenti.")
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/monthrecaps")
@@ -49,36 +71,83 @@ public class MonthRecapController {
   private final IWrapperFactory wrapperFactory;
   private final PersonStampingRecapFactory stampingRecapFactory;
   private final PersonStampingRecapMapper personStampingRecapMapper;
+  private final SecurityRules rules;
+  private SecureUtils securityUtils;
+
 
   @Inject
   MonthRecapController(
       PersonDao personDao, IWrapperFactory wrapperFactory,
       PersonStampingRecapFactory stampingRecapFactory,
-      PersonStampingRecapMapper personStampingRecapFactory) {
+      PersonStampingRecapMapper personStampingRecapFactory,
+      SecurityRules rules, SecureUtils securityUtils
+  ) {
     this.personDao = personDao;
     this.wrapperFactory = wrapperFactory;
     this.stampingRecapFactory = stampingRecapFactory;
     this.personStampingRecapMapper = personStampingRecapFactory;
+    this.rules = rules;
+    this.securityUtils = securityUtils;
+
   }
 
+  @Operation(
+      summary = "Visualizzazione dei riepiloghi mensili dei dipendenti.",
+      description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
+          + "la propria situazione mensile, oppure dagli utenti con il ruolo "
+          + "'Amministratore del personale' della sede a cui appartiene la persona, oppure dagli "
+          + "utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti i dati dei riepiloghi mensili"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati delle ferie e dei permessi",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Ferie e permessi non trovati con l'id fornito",
+          content = @Content)
+  })
   @GetMapping(ApiRoutes.LIST)
   ResponseEntity<PersonStampingRecapDto> show(
-      @RequestParam("personId") Long personId, 
-      @RequestParam("year") Integer year, 
-      @RequestParam("month") Integer month) {
+      @RequestParam("personId") Optional<Long> personId,
+      @NotNull @RequestParam("year") Integer year,
+      @NotNull @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
         "/rest/v4/monthrecaps" + ApiRoutes.LIST, personId, year, month);
-    val person = personDao.byId(personId);
 
-    log.debug("Person {}", person.isEmpty());
-    if (person.isEmpty()) {
-      return ResponseEntity.notFound().build();
+    Person person = null;
+    if (personId.isPresent()) {
+      person = personDao.byId(personId.get()).orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
+    } else {
+      person = getPerson()
+          .orElseThrow(() -> new EntityNotFoundException("Person not found using authentication"));
     }
-    val wrPerson = wrapperFactory.create(person.get());
+
+    rules.checkifPermitted(person);
+
+    val wrPerson = wrapperFactory.create(person);
     if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
       return ResponseEntity.notFound().build();
     }
-    PersonStampingRecap psrDto = stampingRecapFactory.create(person.get(), year, month, true);
+
+    PersonStampingRecap psrDto = stampingRecapFactory.create(person, year, month, true);
     return ResponseEntity.ok().body(personStampingRecapMapper.convert(psrDto));
   }
+
+  /**
+   * Restituisce la Person associata all'utente autenticato.
+   */
+  private Optional<Person> getPerson() {
+    Optional<User> user = securityUtils.getCurrentUser();
+    log.debug("VacationController::getPerson user = {}", user.orElse(null));
+    if (!user.isPresent()) {
+      log.info("Non è presente nessun utente");
+      return Optional.empty();
+    }
+    return Optional.ofNullable(user.get().getPerson());
+  }
+
 }
