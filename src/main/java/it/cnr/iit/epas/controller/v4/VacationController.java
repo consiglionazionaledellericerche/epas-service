@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -21,12 +21,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
+import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
-import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummarySubperiodMapper;
@@ -41,12 +46,10 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
-import java.time.YearMonth;
+import it.cnr.iit.epas.security.SecurityRules;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -57,46 +60,54 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)})
+@Tag(
+    name = "Vacations controller", 
+    description = "Visualizzazione delle informazioni sulle ferie dei dipendenti.")
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/vacations")
-public class VacationController {
+class VacationController {
 
-  private UserRepository repo;
+  private final ContractDao contractDao;
   private final PersonVacationRecapFactory personvacationFactory;
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
   private final PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory;
   private final PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper;
+  private final SecurityRules rules;
   private SecureUtils securityUtils;
-  private final EntityToDtoConverter entityToDtoConverter;
 
   @Inject
-  public VacationController(UserRepository repo,
+  VacationController(ContractDao contractDao,
       PersonVacationRecapFactory personvacationFactory,
       PersonVacationMapper personVacationMapper,
       PersonVacationSummaryFactory personVacationSummaryFactory,
       PersonVacationSummaryMapper personVacationSummaryMapper,
       PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory,
       PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper,
-      SecureUtils securityUtils, EntityToDtoConverter entityToDtoConverter) {
-    this.repo = repo;
+      SecurityRules rules, SecureUtils securityUtils) {
+    this.contractDao = contractDao;
     this.personvacationFactory = personvacationFactory;
     this.personVacationMapper = personVacationMapper;
     this.personVacationSummaryFactory = personVacationSummaryFactory;
     this.personVacationSummaryMapper = personVacationSummaryMapper;
     this.personVacationSummarySubperiodFactory = personVacationSummarySubperiodFactory;
     this.personVacationSummarySubperiodMapper = personVacationSummarySubperiodMapper;
+    this.rules = rules;
     this.securityUtils = securityUtils;
-    this.entityToDtoConverter = entityToDtoConverter;
   }
 
   @Operation(
       summary = "Visualizzazione delle informazioni delle ferie e permessi.",
-      description = "Questo endpoint è utilizzabile dagli utenti autenticati"
-          + " e dagli utenti con il ruolo "
-          + "di sistema 'Developer' e/o 'Admin'.")
+      description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
+          + "la propria situazione ferie, oppure dagli utenti con il ruolo "
+          + "'Amministratore del personale' della sede a cui appartiene la persona, oppure dagli "
+          + "utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Restituiti i dati delle ferie e dei permessi"),
@@ -111,24 +122,31 @@ public class VacationController {
           content = @Content)
   })
   @GetMapping(ApiRoutes.LIST)
-  public ResponseEntity<PersonVacationDto> show(
-      @RequestParam("year") Integer year,
-      @RequestParam("month") Integer month) {
+  ResponseEntity<PersonVacationDto> show(
+      @RequestParam("personId") Optional<Long> personId,
+      @NotNull @RequestParam("year") Integer year,
+      @NotNull @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters year={}, month={}",
         "/rest/v4/vacations" + ApiRoutes.LIST, year, month);
 
-    Optional<Person> person = getPerson();
-
-   if (!person.isPresent()) {
-      return ResponseEntity.notFound().build();
+    Person person = null;
+    if (personId.isPresent()) {
+      person = getPerson()
+          .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
+    } else {
+      person = getPerson()
+          .orElseThrow(() -> new EntityNotFoundException("Person not found using authentication"));
     }
 
-    PersonVacationRecap psrDto = personvacationFactory.create(person.get(), year);
+    rules.checkifPermitted(person);
+
+    PersonVacationRecap psrDto = personvacationFactory.create(person, year);
     return ResponseEntity.ok().body(personVacationMapper.convert(psrDto));
   }
 
   @Operation(
-      summary = "Recupera il dettaglio di un summary/permesso per valorizzare il contenuto della modale",
+      summary = "Recupera il dettaglio di un summary/permesso per valorizzare il contenuto"
+          + " della modale",
       description = "Questo endpoint è utilizzabile dagli utenti autenticati"
           + " e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
@@ -146,34 +164,36 @@ public class VacationController {
           content = @Content)
   })
   @GetMapping("/summary")
-  public ResponseEntity<PersonVacationSummaryDto> summary(
-      @RequestParam("contractId") Long contractId,
-      @RequestParam("year") Integer year,
-      @RequestParam("month") Integer month,
-      @RequestParam("type") TypeSummary typeSummary) {
+  ResponseEntity<PersonVacationSummaryDto> summary(
+      @NotNull @RequestParam("contractId") Long contractId,
+      @NotNull @RequestParam("year") Integer year,
+      @NotNull @RequestParam("month") Integer month,
+      @NotNull @RequestParam("type") TypeSummary typeSummary) {
     log.debug("REST method {} invoked with parameters contractId={}, year={}, type={}",
         "/rest/v4/vacations/summary", contractId, year, typeSummary);
 
-    Optional<Person> person = getPerson();
+    val contract = contractDao.byId(contractId)
+        .orElseThrow(() -> new EntityNotFoundException(
+          "Contract not found with id = " + contractId)); 
+    Person person = contract.getPerson();
 
-    if (!person.isPresent()) {
-      return ResponseEntity.notFound().build();
-    }
+    rules.checkifPermitted(person);
 
-    PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year,
-        contractId, typeSummary);
+    PersonVacationSummary psrDto = 
+        personVacationSummaryFactory.create(person, year, contract.getId(), typeSummary);
     log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
   }
 
   @GetMapping("/summary/subperiod")
-  public ResponseEntity<AbsenceSubPeriodDto> subperiod(
+  ResponseEntity<AbsenceSubPeriodDto> subPeriod(
         @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
-    log.debug("REST method {} invoked ","/rest/v4//summary/subperiod");
+    log.debug("REST method {} invoked ", "/rest/v4//summary/subperiod");
 
     AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
         periodSummaryDto);
-    VacationSummary summary = personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
+    VacationSummary summary = 
+        personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
     log.debug("summary={}", summary.absencePeriod.subPeriods);
     PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
         period);
@@ -181,26 +201,16 @@ public class VacationController {
     return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 
-
   /**
    * Restituisce la Person associata all'utente autenticato.
-   * @return person
    */
-  private Optional<Person> getPerson(){
+  private Optional<Person> getPerson() {
     Optional<User> user = securityUtils.getCurrentUser();
-    log.debug("UserInfo::show user = {}", user.orElse(null));
+    log.debug("VacationController::getPerson user = {}", user.orElse(null));
     if (!user.isPresent()) {
+      log.info("Non è presente nessun utente");
       return Optional.empty();
     }
-    long personId = user.get().getId();
-    Optional<User> entity = repo.findById(personId);
-
-    log.debug("personId::show user = {} {}", personId, entity);
-
-    if (entity.isEmpty()) {
-      return Optional.empty();
-    }
-
-    return Optional.ofNullable(entity.get().getPerson());
+    return Optional.ofNullable(user.get().getPerson());
   }
 }
