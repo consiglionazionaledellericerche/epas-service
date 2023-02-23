@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@ public class AbsenceSubPeriodDto {
 
   /**
    * Costruttore.
-   */
+   * */
   public AbsenceSubPeriodDto(long subAmount, boolean subFixedPostPartum,
       long subAmountBeforeFixedPostPartum, long subTotalAmount, long subDayProgression,
       long subDayPostPartum, long subDayToFixPostPartum, boolean subAccrued,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,12 +17,18 @@
 
 package it.cnr.iit.epas.controller.v4;
 
-import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
+import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
-import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
@@ -39,8 +45,13 @@ import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubper
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
-import java.time.YearMonth;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.security.SecureUtils;
+import it.cnr.iit.epas.security.SecurityRules;
+import java.util.Optional;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -50,100 +61,163 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)})
+@Tag(
+    name = "Vacations controller", 
+    description = "Visualizzazione delle informazioni sulle ferie dei dipendenti.")
 @Slf4j
 @RestController
 @RequestMapping("/rest/v4/vacations")
-public class VacationController {
+class VacationController {
 
+  private final ContractDao contractDao;
   private final PersonDao personDao;
-  private final IWrapperFactory wrapperFactory;
   private final PersonVacationRecapFactory personvacationFactory;
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
   private final PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory;
   private final PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper;
+  private final SecurityRules rules;
+  private SecureUtils securityUtils;
 
   @Inject
-  public VacationController(
-      PersonDao personDao, IWrapperFactory wrapperFactory,
+  VacationController(ContractDao contractDao,
+      PersonDao personDao,
       PersonVacationRecapFactory personvacationFactory,
       PersonVacationMapper personVacationMapper,
       PersonVacationSummaryFactory personVacationSummaryFactory,
       PersonVacationSummaryMapper personVacationSummaryMapper,
       PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory,
-      PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper) {
+      PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper,
+      SecurityRules rules, SecureUtils securityUtils) {
+    this.contractDao = contractDao;
     this.personDao = personDao;
-    this.wrapperFactory = wrapperFactory;
     this.personvacationFactory = personvacationFactory;
     this.personVacationMapper = personVacationMapper;
     this.personVacationSummaryFactory = personVacationSummaryFactory;
     this.personVacationSummaryMapper = personVacationSummaryMapper;
     this.personVacationSummarySubperiodFactory = personVacationSummarySubperiodFactory;
     this.personVacationSummarySubperiodMapper = personVacationSummarySubperiodMapper;
+    this.rules = rules;
+    this.securityUtils = securityUtils;
   }
 
+  @Operation(
+      summary = "Visualizzazione delle informazioni delle ferie e permessi.",
+      description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
+          + "la propria situazione ferie, oppure dagli utenti con il ruolo "
+          + "'Amministratore del personale' della sede a cui appartiene la persona, oppure dagli "
+          + "utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti i dati delle ferie e dei permessi"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati delle ferie e dei permessi",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Ferie e permessi non trovati con l'id fornito",
+          content = @Content)
+  })
   @GetMapping(ApiRoutes.LIST)
-  public ResponseEntity<PersonVacationDto> show(
-      @RequestParam("personId") Long personId,
-      @RequestParam("year") Integer year,
-      @RequestParam("month") Integer month) {
-    log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
-        "/rest/v4/vacations" + ApiRoutes.LIST, personId, year, month);
-    val person = personDao.byId(personId);
+  ResponseEntity<PersonVacationDto> show(
+      @RequestParam("personId") Optional<Long> personId,
+      @NotNull @RequestParam("year") Integer year,
+      @NotNull @RequestParam("month") Integer month) {
+    log.debug("REST method {} invoked with parameters year={}, month={}, personId ={}",
+        "/rest/v4/vacations" + ApiRoutes.LIST, year, month, personId);
 
-    log.debug("Person {}", person.isEmpty());
-    if (person.isEmpty()) {
-      return ResponseEntity.notFound().build();
-    }
-    val wrPerson = wrapperFactory.create(person.get());
-    if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
-      return ResponseEntity.notFound().build();
+    Person person = null;
+    if (personId.isPresent()) {
+      person = personDao.byId(personId.get())
+          .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
+    } else {
+      person = getPerson()
+          .orElseThrow(() -> new EntityNotFoundException("Person not found using authentication"));
     }
 
-    PersonVacationRecap psrDto = personvacationFactory.create(person.get(), year);
+    rules.checkifPermitted(person);
+
+    PersonVacationRecap psrDto = personvacationFactory.create(person, year);
     return ResponseEntity.ok().body(personVacationMapper.convert(psrDto));
   }
 
+  @Operation(
+      summary = "Recupera il dettaglio di un summary/permesso per valorizzare il contenuto"
+          + " della modale",
+      description = "Questo endpoint è utilizzabile dagli utenti autenticati"
+          + " e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti i dati delle ferie e dei permessi"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati delle ferie e dei permessi",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Ferie e permessi non trovati con l'id fornito",
+          content = @Content)
+  })
   @GetMapping("/summary")
-  public ResponseEntity<PersonVacationSummaryDto> summary(
-      @RequestParam("personId") Long personId,
-      @RequestParam("contractId") Long contractId,
-      @RequestParam("year") Integer year,
-      @RequestParam("month") Integer month,
-      @RequestParam("type") TypeSummary typeSummary) {
-    log.debug("REST method {} invoked with parameters personId={}, contractId={}, year={}, type={}",
-        "/rest/v4/vacations/summary", personId, contractId, year, typeSummary);
+  ResponseEntity<PersonVacationSummaryDto> summary(
+      @NotNull @RequestParam("contractId") Long contractId,
+      @NotNull @RequestParam("year") Integer year,
+      @NotNull @RequestParam("month") Integer month,
+      @NotNull @RequestParam("type") TypeSummary typeSummary) {
+    log.debug("REST method {} invoked with parameters contractId={}, year={}, type={}",
+        "/rest/v4/vacations/summary", contractId, year, typeSummary);
 
-    val person = personDao.byId(personId);
+    val contract = contractDao.byId(contractId)
+        .orElseThrow(() -> new EntityNotFoundException(
+          "Contract not found with id = " + contractId)); 
+    Person person = contract.getPerson();
 
-    val wrPerson = wrapperFactory.create(person.get());
-    if (!wrPerson.isActiveInMonth(YearMonth.of(year, month))) {
-      return ResponseEntity.notFound().build();
-    }
+    rules.checkifPermitted(person);
 
-    PersonVacationSummary psrDto = personVacationSummaryFactory.create(person.get(), year,
-        contractId, typeSummary);
+    PersonVacationSummary psrDto = 
+        personVacationSummaryFactory.create(person, year, contract.getId(), typeSummary);
     log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
   }
 
-  //  @GetMapping("/summary/subperiod")
-  @RequestMapping(value = "/summary/subperiod", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<AbsenceSubPeriodDto> subperiod(
-      @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
-//    log.debug("REST method {} invoked with parameters period={}",
-//        "/rest/v4/vacations/summary/subperiod", periodSummaryDto);
-    return ResponseEntity.notFound().build();
+  @GetMapping("/summary/subperiod")
+  ResponseEntity<AbsenceSubPeriodDto> subPeriod(
+        @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
+    log.debug("REST method {} invoked ", "/rest/v4//summary/subperiod");
 
-//    AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
-//        periodSummaryDto);
-//    VacationSummary summary = personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
-//    log.debug("summary={}", summary.absencePeriod.subPeriods);
-//    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
-//        period);
-//    log.debug("psrDto  {}", psrDto);
-//    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
+    AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
+        periodSummaryDto);
+
+    rules.checkifPermitted(period.person);
+
+    VacationSummary summary = 
+        personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
+    log.debug("summary={}", summary.absencePeriod.subPeriods);
+    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
+        period);
+    log.debug("psrDto  {}", psrDto);
+    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 
+  /**
+   * Restituisce la Person associata all'utente autenticato.
+   */
+  private Optional<Person> getPerson() {
+    Optional<User> user = securityUtils.getCurrentUser();
+    log.debug("VacationController::getPerson user = {}", user.orElse(null));
+    if (!user.isPresent()) {
+      log.info("Non è presente nessun utente");
+      return Optional.empty();
+    }
+    return Optional.ofNullable(user.get().getPerson());
+  }
 }
