@@ -33,7 +33,7 @@ public class PersonVacationDto {
   private boolean topQualification;
   private int year;
   private int month;
-  private List<ContractDto> contracts;
+  private List<ContractShowDto> contracts;
 
   private List<VacationSituationDto> vacationSituations = Lists.newArrayList();
   private PeriodChainDto periodChain;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -36,14 +36,10 @@ import org.mapstruct.factory.Mappers;
  * @author cristian
  *
  */
-
-
-//@Mapper(componentModel = "spring")
 @Mapper(componentModel = "spring", uses = { VacationSummary.class, AbsencePeriod.class })
 public interface PersonVacationSummarySubperiodMapper {
 
   //  VacationCode map(VacationCodeDto value);
-  //
 
   PersonVacationSummarySubperiodMapper INSTANCE = 
       Mappers.getMapper(PersonVacationSummarySubperiodMapper.class);
@@ -56,7 +52,7 @@ public interface PersonVacationSummarySubperiodMapper {
   @Mapping(target = "absencePeriod", source = "summary.absencePeriod")
   @Mapping(target = "absencePeriod.subPeriods", source = "summary.absencePeriod.subPeriods")
   @Mapping(target = "absencePeriod.vacationCode", 
-      source = "periodSummaryDto.summary.absencePeriod.vacationCode", 
+      source = "periodSummaryDto.summary.absencePeriod.vacationCode",
       qualifiedByName = "mapVacationCode")
   @Mapping(target = "year", source = "summary.year")
   VacationSummary createSummaryFromDto(AbsencePeriodSummaryDto periodSummaryDto);

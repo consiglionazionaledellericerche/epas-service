@@ -32,7 +32,7 @@ import lombok.EqualsAndHashCode;
 public class VacationSummaryDto extends BaseModelDto {
 
   private TypeSummary type;
-  private ContractDto contract;
+  private ContractShowDto contract;
   private int year;
   private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
   private long total;

@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -28,12 +29,9 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PersonShowTerseDto extends BaseModelDto {
+public class PersonShowTerseDto extends PersonBaseDto {
 
-  private String fullname;
-  private String fiscalCode;
-  private String email;
-  private String number; //Matricola
-  private String eppn;
+  @Schema(description = "Id della persona")
+  private Long id;
 
 }

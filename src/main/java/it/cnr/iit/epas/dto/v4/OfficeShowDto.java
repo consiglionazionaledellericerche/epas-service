@@ -34,10 +34,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class OfficeShowDto extends OfficeShowTerseDto {
 
-  //sedeId, serve per l'invio degli attestati, per esempio per la sede di Pisa è "223400"
-  @Schema(description = "i della sede, al CNR serve per l'invio degli attestati", 
-      example = "223400")
-  private String codeId;
   @Schema(description = "Identificato univoco esterno ad ePAS")
   private String externalId;
   @Schema(description = "Indirizzo postal della sede")

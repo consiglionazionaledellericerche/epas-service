@@ -29,7 +29,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface OfficeShowMapper {
 
-  @Mapping(source = "institute.id", target = "instituteId")
   OfficeShowTerseDto convertTerse(Office office);
 
   @Mapping(source = "institute.id", target = "instituteId")

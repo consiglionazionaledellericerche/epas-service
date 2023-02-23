@@ -44,16 +44,18 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Manager per Contract.
  *
  * @author alessandro
  */
+@Transactional
 @Slf4j
-@Component
+@Service
 public class ContractManager {
 
   private final ConsistencyManager consistencyManager;
@@ -77,8 +79,9 @@ public class ContractManager {
       final ConsistencyManager consistencyManager,
       final PeriodManager periodManager, final PersonDayInTroubleManager personDayInTroubleManager, 
       final WorkingTimeTypeDao workingTimeTypeDao,
-      final Provider<IWrapperFactory> wrapperFactory, final ContractDao contractDao,
-      Provider<EntityManager> emp) {
+      final Provider<IWrapperFactory> wrapperFactory, 
+      final ContractDao contractDao,
+      final Provider<EntityManager> emp) {
 
     this.consistencyManager = consistencyManager;
     this.periodManager = periodManager;
@@ -119,7 +122,7 @@ public class ContractManager {
    * @param contract contract
    * @return esito
    */
-  public final boolean isContractCrossFieldValidationPassed(final Contract contract) {
+  public boolean isContractCrossFieldValidationPassed(final Contract contract) {
 
     if (contract.getEndDate() != null
         && contract.getEndDate().isBefore(contract.getBeginDate())) {
@@ -151,7 +154,7 @@ public class ContractManager {
    * @param recomputation      se effettuare subito il ricalcolo della persona.
    * @return esito costruzione
    */
-  public final boolean properContractCreate(final Contract contract, 
+  public boolean properContractCreate(final Contract contract, 
       Optional<WorkingTimeType> wtt, 
       boolean recomputation) {
 
@@ -226,7 +229,7 @@ public class ContractManager {
    * @param from       da quando effettuare il ricalcolo.
    * @param onlyRecaps ricalcolare solo i riepiloghi mensili.
    */
-  public final boolean properContractUpdate(final Contract contract, final LocalDate from,
+  public boolean properContractUpdate(final Contract contract, final LocalDate from,
       final boolean onlyRecaps) {
 
     if (!isContractCrossFieldValidationPassed(contract)) {
@@ -237,7 +240,6 @@ public class ContractManager {
       return false;
     }
     emp.get().merge(contract);
-    //contract.save();
     periodManager.updatePropertiesInPeriodOwner(contract);
     personDayInTroubleManager.cleanPersonDayInTrouble(contract.person);
 
@@ -254,7 +256,7 @@ public class ContractManager {
    * @param newContract se il contratto è nuovo (non ho strutture da ripulire)
    * @param onlyRecaps  ricalcolare solo i riepiloghi mensili.
    */
-  public final void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
+  public void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
       final boolean newContract, final boolean onlyRecaps) {
 
     IWrapperContract wrContract = wrapperFactory.get().create(contract);
@@ -351,7 +353,7 @@ public class ContractManager {
    *
    * @param contract contract
    */
-  public final void setSourceContractProperly(final Contract contract) {
+  public void setSourceContractProperly(final Contract contract) {
 
     if (contract.sourceVacationLastYearUsed == null) {
       contract.sourceVacationLastYearUsed = 0;
@@ -552,12 +554,13 @@ public class ContractManager {
       }
     } else {
       Contract temp = contract.getPreviousContract();
-      if (temp != null) {
-        contract.setPreviousContract(null);
-        if (temp.getEndDate() != null 
-              && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
-          splitVacationPeriods(contract);
-        }
+      if (temp == null) {
+        return false;
+      }
+      contract.setPreviousContract(null);
+      if (temp.getEndDate() != null 
+          && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
+        splitVacationPeriods(contract);
       }
     }
     return true;

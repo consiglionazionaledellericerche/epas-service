@@ -105,21 +105,22 @@ public class OfficeController {
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", 
-          description = "Restituiti i dati dell'ufficio"),
+          description = "Restituiti i dati dell'ufficio."),
       @ApiResponse(responseCode = "401", 
-          description = "Autenticazione non presente", content = @Content), 
+          description = "Autenticazione non presente.", content = @Content), 
       @ApiResponse(responseCode = "403", 
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
-              + " i dati dell'ufficio",
+              + " i dati dell'ufficio.",
             content = @Content), 
       @ApiResponse(responseCode = "404", 
-          description = "Ufficio non trovato con l'id fornito",
+          description = "Ufficio non trovato con l'id fornito.",
           content = @Content)
   })
   @GetMapping(ApiRoutes.SHOW)
   ResponseEntity<OfficeShowDto> show(@NotNull @PathVariable("id") Long id) {
     log.debug("OfficeController::show id = {}", id);
-    val office = officeDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
+    val office = officeDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Office not found with id = " + id));
     if (!rules.check(office)) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -132,14 +133,14 @@ public class OfficeController {
           + "'Amministratore tecnico' della sede cercata e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ufficio trovato e visualizzato"),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+      @ApiResponse(responseCode = "200", description = "Ufficio trovato e visualizzato."),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
           content = @Content), 
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato a visualizzare i dati dell'ufficio", 
+          + "non autorizzato a visualizzare i dati dell'ufficio.", 
           content = @Content), 
       @ApiResponse(responseCode = "404", 
-          description = "Ufficio non trovato con i parametri forniti", content = @Content)
+          description = "Ufficio non trovato con i parametri forniti.", content = @Content)
   })
   @GetMapping("/search")
   ResponseEntity<OfficeShowDto> search(
@@ -167,11 +168,11 @@ public class OfficeController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", 
           description = "Restitutita la lista degli ufficio presenti."),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
           content = @Content), 
       @ApiResponse(responseCode = "403", 
           description = "Autenticazione non presente o utente che ha effettuato la richiesta "
-            + "non autorizzato a visualizzare i dati degli uffici", content = @Content), 
+            + "non autorizzato a visualizzare i dati degli uffici.", content = @Content), 
   })
   @GetMapping(ApiRoutes.ALL)
   ResponseEntity<List<OfficeShowTerseDto>> all(
@@ -189,14 +190,14 @@ public class OfficeController {
       description = "Questo endpoint è utilizzabile solo dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ufficio creato correttamente"),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+      @ApiResponse(responseCode = "200", description = "Ufficio creato correttamente."),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
           content = @Content), 
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato a creare nuovi uffici", 
+          + "non autorizzato a creare nuovi uffici.", 
           content = @Content), 
       @ApiResponse(responseCode = "404", 
-          description = "Istituto associato all'ufficio non trovato con i parametri forniti", 
+          description = "Istituto associato all'ufficio non trovato con i parametri forniti.", 
           content = @Content)
   })
   @Transactional
@@ -215,14 +216,14 @@ public class OfficeController {
           + "'Amministratore tecnico' della sede da modificare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ufficio aggiornato correttamente"),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+      @ApiResponse(responseCode = "200", description = "Ufficio aggiornato correttamente."),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
           content = @Content), 
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato a modificare i dati dell'ufficio", 
+          + "non autorizzato a modificare i dati dell'ufficio.", 
           content = @Content), 
       @ApiResponse(responseCode = "404", 
-          description = "Istituto associato all'ufficio non trovato con i parametri forniti", 
+          description = "Istituto associato all'ufficio non trovato con i parametri forniti.", 
           content = @Content)
   })
   @Transactional
@@ -243,14 +244,14 @@ public class OfficeController {
       description = "Questo endpoint è utilizzabile solo dagli utenti con il ruolo "
           + "di sistema Developer e/o Admin.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ufficio eliminato correttamente"),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+      @ApiResponse(responseCode = "200", description = "Ufficio eliminato correttamente."),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
           content = @Content), 
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato ad eliminatre l'ufficio", 
+          + "non autorizzato ad eliminare l'ufficio.", 
           content = @Content), 
       @ApiResponse(responseCode = "422", 
-          description = "Informazioni importanti associate all'ufficio, impossibile eliminarlo", 
+          description = "Informazioni importanti associate all'ufficio, impossibile eliminarlo.", 
           content = @Content)
   })
   @Transactional

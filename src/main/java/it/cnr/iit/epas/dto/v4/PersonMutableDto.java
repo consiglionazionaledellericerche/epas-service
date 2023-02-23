@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,31 +19,33 @@ package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per mostrare i dati principali di una persona.
+ * DTO con i dati comuni per la creazione e l'aggiornamento di una persona.
+ *
+ * @author Cristian Lucchesi
+ *
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PersonShowDto extends PersonMutableDto {
+public class PersonMutableDto extends PersonBaseDto {
 
-  @Schema(description = "Id della persona")
-  private Long id;
-
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
-
-  @Schema(description = "Utente collegato alla persona")
-  private UserShowTerseDto user;
-  @Schema(description = "Ufficio collegato alla persona")
-  private OfficeShowTerseDto office;
-
-  @Schema(description = "Data ultimo aggiornamento")
-  private LocalDateTime updatedAt;
-
+  @NotNull
+  @Schema(description = "livello")
+  private Long qualification;
+  @Schema(description = "Id di collegamento con l'anagrafica CNR")
+  private Long perseoId;
+  @Schema(description = "Data di nascita")
+  private LocalDate birthday;
+  @Schema(description = "Numero del telefono ufficio")
+  private String telephone;
+  @Schema(description = "Numero di fax")
+  private String fax;
+  @Schema(description = "Numero di cellulare")
+  private String mobile;
+  @Schema(description = "Abilitato invio delle email si/no")
+  private boolean wantEmail;
 }

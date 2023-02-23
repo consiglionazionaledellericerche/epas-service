@@ -49,7 +49,7 @@ public class QualificationDao extends DaoBase<Qualification> {
   /**
    * Preveleva il Qualification tramite il suo id.
    */
-  public Optional<Qualification> findById(Long id) {
+  public Optional<Qualification> byId(Long id) {
     val qualification = QQualification.qualification1;
     return Optional.ofNullable(
         getQueryFactory().selectFrom(qualification)

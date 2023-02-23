@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,31 +19,27 @@ package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per mostrare i dati principali di una persona.
+ * DTO con i dati per la creazione di un nuovo contratto.
+ *
+ * @author Cristian Lucchesi
+ *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class PersonShowDto extends PersonMutableDto {
+public class ContractUpdateBaseDto {
 
-  @Schema(description = "Id della persona")
-  private Long id;
-
-  @Schema(description = "Data inizio validità")
+  @Schema(description = "Data di inizio del contratto")
   private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
+  @Schema(description = "Data di scadenza del contratto")
   private LocalDate endDate;
-
-  @Schema(description = "Utente collegato alla persona")
-  private UserShowTerseDto user;
-  @Schema(description = "Ufficio collegato alla persona")
-  private OfficeShowTerseDto office;
-
-  @Schema(description = "Data ultimo aggiornamento")
-  private LocalDateTime updatedAt;
-
+  @Schema(description = "Data in cui è terminato il contratto, può essere diversa dalla scadenza")
+  private LocalDate endContract;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con l'anagrafica CNR")
+  private String perseoId;
+  @Schema(description = "Id esterno utilizzato per la sincronizzazione con altre anagrafiche")
+  private String externalId;
+  @Schema(description = "Contratto con gestione delle busta paga (ex. true per i dipendenti CNR")
+  private boolean onCertificate;
 }

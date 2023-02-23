@@ -19,7 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsenceDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
-import it.cnr.iit.epas.dto.v4.ContractDto;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
@@ -75,6 +75,6 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceDto convert(Absence absence);
 
-  ContractDto convert(Contract contract);
+  ContractShowDto convert(Contract contract);
 
 }

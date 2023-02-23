@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,7 @@ public class AbsencePeriodDto {
    * Costruttore.
    */
   public AbsencePeriodDto(VacationCode vacationCode, LocalDate from,
-      LocalDate to, AmountType takeAmountType, GroupAbsenceType groupAbsenceType, 
+      LocalDate to, AmountType takeAmountType, GroupAbsenceType groupAbsenceType,
       boolean takableWithLimit, long periodTakableAmount, long remainingAmount) {
 
     this.from = from;
@@ -52,5 +52,4 @@ public class AbsencePeriodDto {
     this.periodTakableAmount = periodTakableAmount;
     this.remainingAmount = remainingAmount;
   }
-
 }

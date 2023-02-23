@@ -122,8 +122,11 @@ when
  $uro: UsersRolesOffices() from userRolesOffices
  Role(name == Role.TECHNICAL_ADMIN) from $uro.role
  $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/create") ||
+    permission.startsWith("/rest/v4/offices/show") ||
     permission.startsWith("/rest/v4/offices/update") ||
-    permission.startsWith("/rest/v4/offices/show"),
+    permission.startsWith("/rest/v4/offices/delete") ||
+    permission.startsWith("/rest/v4/offices/users"),
     toCheck(), target == null)
  then
  $c.grant();
@@ -135,8 +138,81 @@ when
  $o: Office(usersRolesOffices contains $uro)
  Role(name == Role.TECHNICAL_ADMIN) from $uro.role
  $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/create") ||
+    permission.startsWith("/rest/v4/offices/show") ||
     permission.startsWith("/rest/v4/offices/update") ||
-    permission.startsWith("/rest/v4/offices/show"),
+    permission.startsWith("/rest/v4/offices/delete") ||
+    permission.startsWith("/rest/v4/offices/users"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati degli contratti tramite il ruolo REGISTRY_MANAGER
+ ******************************************************************************/
+
+rule Contracts_show_and_update_contract_manager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/contracts/create") ||
+    (permission.startsWith("/rest/v4/contracts/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/contracts/update") ||
+    permission.startsWith("/rest/v4/contracts/delete") ||
+    permission.startsWith("/rest/v4/contracts/linkPreviousContract") ||
+    permission.startsWith("/rest/v4/contracts/unlinkPreviousContract"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Contracts_show_and_update_contract_manager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/contracts/create") ||
+    (permission.startsWith("/rest/v4/contracts/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/contracts/update") ||
+    permission.startsWith("/rest/v4/contracts/delete") ||
+    permission.startsWith("/rest/v4/contracts/linkPreviousContract") ||
+    permission.startsWith("/rest/v4/contracts/unlinkPreviousContract"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati delle persone tramite il ruolo REGISTRY_MANAGER
+ ******************************************************************************/
+
+rule Persons_show_and_update_registry_manager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Persons_show_and_update_registry_manager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
     toCheck(), target == $o)
 then
  $c.grant();

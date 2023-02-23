@@ -21,12 +21,16 @@ import com.google.common.base.Verify;
 import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.OfficeDao;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeUpdateDto;
+import it.cnr.iit.epas.dto.v4.PersonCreateDto;
+import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
 import javax.inject.Inject;
 import lombok.val;
 import org.springframework.stereotype.Component;
@@ -41,13 +45,15 @@ import org.springframework.stereotype.Component;
 public class EntityToDtoConverter {
 
   private final OfficeDao officeDao;
+  private final PersonDao personDao;
   private final ContractDao contractDao;
   private final DtoToEntityMapper mapper;
 
   @Inject
-  EntityToDtoConverter(OfficeDao officeDao, ContractDao contractDao,
-      DtoToEntityMapper mapper) {
+  EntityToDtoConverter(OfficeDao officeDao, PersonDao personDao, 
+      ContractDao contractDao, DtoToEntityMapper mapper) {
     this.officeDao = officeDao;
+    this.personDao = personDao;
     this.contractDao = contractDao;
     this.mapper = mapper;
   }
@@ -63,6 +69,19 @@ public class EntityToDtoConverter {
             "Ufficio with id = " + officeDto.getId() + "not found"));
     mapper.update(office, officeDto);
     return office;
+  }
+
+  /**
+   * Aggiorna l'entity riferita dal DTO con i dati passati e la
+   * restituite modificata.
+   */
+  public Person updateEntity(PersonUpdateDto personDto) {
+    Verify.verifyNotNull(personDto);
+    val person = personDao.byId(personDto.getId())
+        .orElseThrow(() -> new EntityNotFoundException(
+            "Person with id = " + personDto.getId() + "not found"));
+    mapper.update(person, personDto);
+    return person;
   }
 
   /**
@@ -90,9 +109,18 @@ public class EntityToDtoConverter {
   /**
    * Crea una nuova Entity Contract a partire dai dati del DTO.
    */
+  public Person createEntity(PersonCreateDto contractDto) {
+    Person person = new Person();
+    mapper.create(person, contractDto);
+    return person;
+  }
+
+  /**
+   * Crea una nuova Entity Contract a partire dai dati del DTO.
+   */
   public Contract createEntity(ContractCreateDto contractDto) {
     Contract contract = new Contract();
-    mapper.update(contract, contractDto);
+    mapper.create(contract, contractDto);
     return contract;
   }
 }

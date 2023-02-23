@@ -32,13 +32,9 @@ import lombok.ToString;
 @ToString
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class OfficeShowTerseDto extends PeriodModelDto {
+public class OfficeShowTerseDto extends OfficeBaseDto {
 
-  @Schema(description = "Nome dell'ufficio", example = "IIT - Pisa")
-  private String name;
-  //Codice della sede, per esempio per la sede di Pisa è "044000"
-  @Schema(description = "Codice della sede", example = "044000")
-  private String code;
-  @Schema(description = "Id dell'istituto a cui appartiene questo ufficio")
-  private Long instituteId;
+  @Schema(description = "Id dell'ufficio")
+  private Long id;
+
 }

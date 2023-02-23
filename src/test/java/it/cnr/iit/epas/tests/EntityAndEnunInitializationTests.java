@@ -96,7 +96,7 @@ class EntityAndEnunInitializationTests {
     person.setUser(user);
     person.setOffice(officeDao.allEnabledOffices().get(0));
     person.setQualification(
-        qualificationDao.findById(H2Examples.DEFAULT_PERSON_QUALIFICATION).get());
+        qualificationDao.byId(H2Examples.DEFAULT_PERSON_QUALIFICATION).get());
     personDao.persist(person);
     assertNotNull(person.getId());
   }
