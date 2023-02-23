@@ -1,8 +1,10 @@
 import it.cnr.iit.epas.security.PermissionCheck
 import it.cnr.iit.epas.models.enumerate.AccountRole
 import it.cnr.iit.epas.models.UsersRolesOffices;
-import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Role;
+
 
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
@@ -35,11 +37,21 @@ end
  * Azioni utente IsEmployee
  ******************************************************************************/
 
-rule IsEmployee
+rule Employee_personal_data
 when
  $c: PermissionCheck(
-    permission.startsWith("/rest/v4/vacations"),
-    toCheck())
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule IsEmployee_personal_data_usingTarget
+when
+ $p: Person(user == currentUser)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
 then
  $c.grant();
 end

@@ -28,6 +28,7 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
@@ -73,6 +74,7 @@ import org.springframework.web.bind.annotation.RestController;
 class VacationController {
 
   private final ContractDao contractDao;
+  private final PersonDao personDao;
   private final PersonVacationRecapFactory personvacationFactory;
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
@@ -84,6 +86,7 @@ class VacationController {
 
   @Inject
   VacationController(ContractDao contractDao,
+      PersonDao personDao,
       PersonVacationRecapFactory personvacationFactory,
       PersonVacationMapper personVacationMapper,
       PersonVacationSummaryFactory personVacationSummaryFactory,
@@ -92,6 +95,7 @@ class VacationController {
       PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper,
       SecurityRules rules, SecureUtils securityUtils) {
     this.contractDao = contractDao;
+    this.personDao = personDao;
     this.personvacationFactory = personvacationFactory;
     this.personVacationMapper = personVacationMapper;
     this.personVacationSummaryFactory = personVacationSummaryFactory;
@@ -126,12 +130,12 @@ class VacationController {
       @RequestParam("personId") Optional<Long> personId,
       @NotNull @RequestParam("year") Integer year,
       @NotNull @RequestParam("month") Integer month) {
-    log.debug("REST method {} invoked with parameters year={}, month={}",
-        "/rest/v4/vacations" + ApiRoutes.LIST, year, month);
+    log.debug("REST method {} invoked with parameters year={}, month={}, personId ={}",
+        "/rest/v4/vacations" + ApiRoutes.LIST, year, month, personId);
 
     Person person = null;
     if (personId.isPresent()) {
-      person = getPerson()
+      person = personDao.byId(personId.get())
           .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
     } else {
       person = getPerson()
