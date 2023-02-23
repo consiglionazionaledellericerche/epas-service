@@ -57,6 +57,34 @@ then
 end
 
 /*******************************************************************************
+ * Visualizzazione situazione ferie utente con ruolo PERSONNEL_ADMIN
+ ******************************************************************************/
+
+rule Vacation_show_personnel_admin
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(user != currentUser)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule Vacation_show_personnel_admin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(user != currentUser, getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
  * Azioni utente con ruolo BADGE_READER
  ******************************************************************************/
 

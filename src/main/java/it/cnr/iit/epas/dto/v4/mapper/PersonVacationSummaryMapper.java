@@ -66,7 +66,8 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "sourced", expression = "java(vacationSummary.sourced())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
-  @Mapping(target = "postPartumisEmpty", expression = "java(vacationSummary.postPartum().isEmpty())")
+  @Mapping(target = "postPartumisEmpty", 
+      expression = "java(vacationSummary.postPartum().isEmpty())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
   @Mapping(target = "justifiedType", source = "justifiedType.name")

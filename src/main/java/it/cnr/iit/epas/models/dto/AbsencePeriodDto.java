@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.dto;
 
 import it.cnr.iit.epas.models.absences.AmountType;
@@ -22,7 +23,7 @@ import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 
 /**
- * DTO AbsencePeriod
+ * DTO AbsencePeriod.
  */
 public class AbsencePeriodDto {
 
@@ -37,19 +38,10 @@ public class AbsencePeriodDto {
 
   /**
    * Costruttore.
-   *
-   * @param vacationCode
-   * @param from from
-   * @param to to
-   * @param takeAmountType
-   * @param groupAbsenceType
-   * @param takableWithLimit
-   * @param periodTakableAmount
-   * @param remainingAmount
    */
   public AbsencePeriodDto(VacationCode vacationCode, LocalDate from,
-      LocalDate to, AmountType takeAmountType, GroupAbsenceType groupAbsenceType, boolean takableWithLimit,
-      long periodTakableAmount, long remainingAmount) {
+      LocalDate to, AmountType takeAmountType, GroupAbsenceType groupAbsenceType, 
+      boolean takableWithLimit, long periodTakableAmount, long remainingAmount) {
 
     this.from = from;
     this.to = to;
