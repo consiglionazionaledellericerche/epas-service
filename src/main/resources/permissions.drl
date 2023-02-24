@@ -34,13 +34,14 @@ then
 end
 
 /*******************************************************************************
- * Azioni utente IsEmployee
+ * Azioni utente dipendente sui propri dati
  ******************************************************************************/
 
 rule Employee_personal_data
 when
  $c: PermissionCheck(
-    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
 then
  $c.grant();
@@ -50,7 +51,8 @@ rule IsEmployee_personal_data_usingTarget
 when
  $p: Person(user == currentUser)
  $c: PermissionCheck(
-    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET'))  ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $p)
 then
  $c.grant();
@@ -66,7 +68,8 @@ when
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
  $p: Person(user != currentUser)
  $c: PermissionCheck(
-    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
 then
  $c.grant();
@@ -78,7 +81,8 @@ when
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
  $p: Person(user != currentUser, getOffice() == $uro.getOffice())
  $c: PermissionCheck(
-    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $p)
 then
  $c.grant();
