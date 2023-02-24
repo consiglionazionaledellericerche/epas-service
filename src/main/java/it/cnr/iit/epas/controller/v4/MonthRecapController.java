@@ -120,7 +120,10 @@ public class MonthRecapController {
 
     Person person = null;
     if (personId.isPresent()) {
-      person = personDao.byId(personId.get()).orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
+      person = 
+          personDao.byId(personId.get())
+            .orElseThrow(() -> 
+                new EntityNotFoundException("Person not found with id = " + personId));
     } else {
       person = getPerson()
           .orElseThrow(() -> new EntityNotFoundException("Person not found using authentication"));
