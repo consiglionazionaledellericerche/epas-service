@@ -26,6 +26,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -68,12 +69,10 @@ public class PersonDaysController {
       @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
         ApiRoutes.LIST, personId, year, month);
-    val person = personDao.byId(personId);
-    if (person.isEmpty()) {
-      return ResponseEntity.notFound().build();
-    }
+    val person = personDao.byId(personId)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
     val personDays = 
-        personDayDao.getPersonDayInMonth(person.get(), YearMonth.of(year, month));
+        personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
     val personDaysDto = 
         personDays.stream().map(personDayMapper::convert).collect(Collectors.toList());
     return ResponseEntity.ok().body(personDaysDto);

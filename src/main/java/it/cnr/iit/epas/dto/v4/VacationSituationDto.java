@@ -19,7 +19,6 @@ package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO per l'esportazione via REST delle informazioni 
@@ -30,8 +29,7 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class VacationSituationDto extends BaseModelDto {
+public class VacationSituationDto {
 
   private Long personId;
   private int year;

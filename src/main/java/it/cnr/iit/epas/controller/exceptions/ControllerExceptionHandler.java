@@ -17,8 +17,10 @@
 
 package it.cnr.iit.epas.controller.exceptions;
 
+import javax.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,14 +41,21 @@ public class ControllerExceptionHandler {
   }
 
   @ExceptionHandler(InvalidOperationOnCurrentStateException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<String> handleInvalidOperationOnCurrentState(RuntimeException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   @ExceptionHandler(ValidationException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<String> handleValidationException(RuntimeException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ResponseEntity<String> handleAccessDeniedException(RuntimeException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+  }
+
 }

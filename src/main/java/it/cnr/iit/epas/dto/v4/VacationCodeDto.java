@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,8 +17,8 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO per rappresentare i VacationCode.
@@ -27,8 +27,8 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class VacationCodeDto extends BaseModelDto {
+@AllArgsConstructor
+public class VacationCodeDto {
 
   private String name;
   private int vacations;

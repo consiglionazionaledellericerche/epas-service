@@ -34,7 +34,7 @@ public class AbsencePeriodDto {
 
   private LocalDate from;
   private LocalDate to;
-  private String vacationCode;
+  private VacationCodeDto vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;

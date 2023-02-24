@@ -15,22 +15,26 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.controller.exceptions;
+package it.cnr.iit.epas.dto.v4;
 
-import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * Eccezione per entity (su database) non trovata.
+ * DTO per le informazioni di base di un contratto.
  *
  * @author Cristian Lucchesi
  *
  */
-@NoArgsConstructor
-public class EntityNotFoundException extends RuntimeException {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ContractShowTerseDto extends ContractBaseDto {
+  
+  @Schema(description = "Id del contratto")
+  private Long id;
 
-  private static final long serialVersionUID = -5723058433193642892L;
+  @Schema(description = "Id della persona associata al contratto")
+  private Long personId;
 
-  public EntityNotFoundException(String message) {
-    super(message);
-  }
 }

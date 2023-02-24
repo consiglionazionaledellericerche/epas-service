@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
-import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.OfficeDao;
@@ -44,6 +43,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -121,9 +121,9 @@ public class OfficeController {
     log.debug("OfficeController::show id = {}", id);
     val office = officeDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Office not found with id = " + id));
-    if (!rules.check(office)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+
+    rules.checkifPermitted(office);
+
     return ResponseEntity.ok().body(officeMapper.convert(office));
   }
 
@@ -148,16 +148,18 @@ public class OfficeController {
       @RequestParam("codeId") Optional<String> codeId) {
     log.debug("OfficeController::search id = {}, code = {}, codeId = {}",
         id.or(null), code.or(null), codeId.or(null));
+
     if ((id == null || id.isEmpty()) && (code == null || code.isEmpty()) 
         && (codeId == null || codeId.isEmpty())) {
       return ResponseEntity.badRequest().build();
     }
+
     val office = officeDao
         .byIdOrCodeOrCodeId(id.orElse(null), code.orElse(null), codeId.orElse(null))
-        .orElseThrow(() -> new EntityNotFoundException());
-    if (!rules.check(office)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+        .orElseThrow(() -> new EntityNotFoundException("Office not found"));
+
+    rules.checkifPermitted(office);
+
     return ResponseEntity.ok().body(officeMapper.convert(office));
   }
 
@@ -231,9 +233,7 @@ public class OfficeController {
   ResponseEntity<OfficeShowDto> update(@NotNull @Valid @RequestBody OfficeUpdateDto officeDto) {
     log.debug("OfficeController::update officeDto = {}", officeDto);
     val office = entityToDtoConverter.updateEntity(officeDto);
-    if (!rules.check(office)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(office);
     officeManager.save(office);
     log.info("Aggiornato ufficio, i nuovi dati sono {}", office);
     return ResponseEntity.ok().body(officeMapper.convert(office));
@@ -286,9 +286,7 @@ public class OfficeController {
       @RequestParam(name = "enabled") Optional<Boolean> enabled) {
     log.debug("OfficeController::users id = {}", id);
     val office = officeDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
-    if (!rules.check(office)) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(office);
     var users = office.getUsers();
     if (enabled.isPresent() && enabled.get().equals(Boolean.TRUE)) {
       users = users.stream().filter(user -> !user.isDisabled()).collect(Collectors.toList());

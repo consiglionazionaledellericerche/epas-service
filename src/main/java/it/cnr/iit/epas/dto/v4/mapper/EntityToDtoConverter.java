@@ -18,7 +18,6 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import com.google.common.base.Verify;
-import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
@@ -32,6 +31,7 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import lombok.val;
 import org.springframework.stereotype.Component;
 

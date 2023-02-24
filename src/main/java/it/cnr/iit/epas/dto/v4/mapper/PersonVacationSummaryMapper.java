@@ -36,11 +36,9 @@ import org.mapstruct.Mapping;
  * Mapping delle informazioni per il riepilogo di un mese lavorativo
  * in un DTO da esportare via REST.
  *
- * @author cristian
+ * @author Cristian Lucchesi
  *
  */
-
-
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
 
@@ -49,13 +47,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-  @Mapping(target = "vacationCode", expression = "java(period.vacationCode.name)")
   AbsencePeriodDto convert(AbsencePeriod period);
-
-  VacationCodeDto convert(VacationCode vacationCode);
-
-  //  @Mapping(target = "vacationCode", expression = "java(period.vacationCode.toString())")
-  AbsencePeriodDto convert(it.cnr.iit.epas.models.dto.AbsencePeriodDto period);
 
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")
@@ -77,4 +69,8 @@ public interface PersonVacationSummaryMapper {
 
   ContractShowDto convert(Contract contract);
 
+  default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {
+    return new VacationCodeDto(
+        vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
+  }
 }
