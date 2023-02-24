@@ -64,7 +64,7 @@ public class PersonListener {
 
   @PreRemove
   void preRemove(Person person) {
-    log.info("Invocato personListener::preRemove. Person = {}, groups = {}",
+    log.debug("Invocato personListener::preRemove. Person = {}, groups = {}",
         person, person.getGroups());
     person.getAffiliations().stream().forEach(affiliation -> {
       emp.get().remove(affiliation);

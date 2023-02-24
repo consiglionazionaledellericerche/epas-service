@@ -111,7 +111,7 @@ public class PersonController {
     log.debug("PersonController::show id = {}", id);
     val person = personDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
-    if (!rules.check(person)) {
+    if (!rules.check(person.getOffice())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
     return ResponseEntity.ok().body(personMapper.convert(person));
@@ -171,7 +171,7 @@ public class PersonController {
   ResponseEntity<PersonShowDto> update(@NotNull @Valid @RequestBody PersonUpdateDto personDto) {
     log.debug("PersonController::update personDto = {}", personDto);
     val person = entityToDtoConverter.updateEntity(personDto);
-    if (!rules.check(person)) {
+    if (!rules.check(person.getOffice())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
     personDao.save(person);
@@ -200,6 +200,11 @@ public class PersonController {
   ResponseEntity<Void> delete(@NotNull @PathVariable("id") Long id) {
     log.debug("PersonController::delete id = {}", id);
     val person = personDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
+
+    if (!rules.check(person.getOffice())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
     checkIfIsPossibileToDelete(person);
 
     personDao.delete(person);

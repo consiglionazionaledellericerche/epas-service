@@ -1,8 +1,10 @@
 import it.cnr.iit.epas.security.PermissionCheck
 import it.cnr.iit.epas.models.enumerate.AccountRole
 import it.cnr.iit.epas.models.UsersRolesOffices;
-import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Role;
+
 
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
@@ -27,6 +29,57 @@ when
     permission.startsWith("/rest/v4/userinfo") ||
     permission.startsWith("/rest/v4/personinfo"),
     toCheck())
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente IsEmployee
+ ******************************************************************************/
+
+rule Employee_personal_data
+when
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule IsEmployee_personal_data_usingTarget
+when
+ $p: Person(user == currentUser)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Visualizzazione situazione ferie utente con ruolo PERSONNEL_ADMIN
+ ******************************************************************************/
+
+rule Vacation_show_personnel_admin
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(user != currentUser)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule Vacation_show_personnel_admin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(user != currentUser, getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
 then
  $c.grant();
 end
@@ -96,7 +149,7 @@ then
 end
 
 /*******************************************************************************
- * Gestione dei dati degli contratti con ruolo REGISTRY_MANAGER
+ * Gestione dei dati degli contratti tramite il ruolo REGISTRY_MANAGER
  ******************************************************************************/
 
 rule Contracts_show_and_update_contract_manager
@@ -127,6 +180,39 @@ when
     permission.startsWith("/rest/v4/contracts/delete") ||
     permission.startsWith("/rest/v4/contracts/linkPreviousContract") ||
     permission.startsWith("/rest/v4/contracts/unlinkPreviousContract"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati delle persone tramite il ruolo REGISTRY_MANAGER
+ ******************************************************************************/
+
+rule Persons_show_and_update_registry_manager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Persons_show_and_update_registry_manager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
     toCheck(), target == $o)
 then
  $c.grant();
