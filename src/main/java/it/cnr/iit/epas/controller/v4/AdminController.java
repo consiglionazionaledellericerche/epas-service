@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -65,20 +66,18 @@ class AdminController {
     log.debug("REST method {} invoked with parameters personId={}",
         CLEAN_PERSON_DAYS_IN_TROUBLE_API, personId);
 
-    val person = personDao.byId(personId);
-    if (person.isEmpty()) {
-      return ResponseEntity.notFound().build();
-    }
+    val person = personDao.byId(personId)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
 
     val currentPersonDaysInTrouble = 
         personDayInTroubleDao.getPersonDayInTroubleInPeriod(
-            person.get(), Optional.empty(), Optional.empty(), Optional.empty());
+            person, Optional.empty(), Optional.empty(), Optional.empty());
     log.debug("{} current personDays in trouble found for {}", 
-        currentPersonDaysInTrouble.size(), person.get());
+        currentPersonDaysInTrouble.size(), person);
 
     log.debug("Current Thread REST API = {}", Thread.currentThread());
     CompletableFuture<List<PersonDayInTrouble>> deleted = 
-        personDayInTroubleManager.cleanPersonDayInTrouble(person.get());
+        personDayInTroubleManager.cleanPersonDayInTrouble(person);
     try {
       return ResponseEntity.ok().body(
           deleted.get().stream()

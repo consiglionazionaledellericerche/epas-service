@@ -41,7 +41,8 @@ rule Employee_personal_data
 when
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
 then
  $c.grant();
@@ -52,7 +53,8 @@ when
  $p: Person(user == currentUser)
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET'))  ||
-    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $p)
 then
  $c.grant();

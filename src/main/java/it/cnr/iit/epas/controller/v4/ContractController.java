@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
-import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.exceptions.ValidationException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
@@ -46,6 +45,7 @@ import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -123,9 +123,9 @@ public class ContractController {
     log.debug("ContractController::show id = {}", id);
     val contract = contractDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
-    if (!rules.check(contract.getPerson().getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+
+    rules.checkifPermitted(contract.getPerson().getOffice());
+
     return ResponseEntity.ok().body(mapper.convert(contract));
   }
 
@@ -187,9 +187,8 @@ public class ContractController {
         contractDao.byId(contractDto.getId())
           .orElseThrow(() -> 
             new EntityNotFoundException("Contract non found with id = " + contractDto.getId()));
-    if (!rules.check(contract.getPerson().getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+
+    rules.checkifPermitted(contract.getPerson().getOffice());
 
     IWrapperContract wrappedContract = wrapperFactory.create(contract);
     final DateInterval previousInterval = wrappedContract.getContractDatabaseInterval();
@@ -261,9 +260,9 @@ public class ContractController {
     log.debug("ContractController::linkPreviousContract id = {}", id);
     val contract = contractDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
-    if (!rules.check(contract.getPerson().getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    
+    rules.checkifPermitted(contract.getPerson().getOffice());
+
     if (!contractManager.applyPreviousContractLink(contract, true)) {
       throw new InvalidOperationOnCurrentStateException(
           "No suitable previous contract found to link.");
@@ -296,9 +295,9 @@ public class ContractController {
     log.debug("ContractController::unlinkPreviousContract id = {}", id);
     val contract = contractDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Contract not found"));
-    if (!rules.check(contract.getPerson().getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    
+    rules.checkifPermitted(contract.getPerson().getOffice());
+
     if (!contractManager.applyPreviousContractLink(contract, true)) {
       throw new InvalidOperationOnCurrentStateException("Linked previous contract not found.");
     }

@@ -19,13 +19,14 @@ package it.cnr.iit.epas.controller.v4;
 
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
-import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,11 +67,10 @@ public class PersonInfo {
       return ResponseEntity.badRequest().build();
     }
     long personId = user.get().getId();
-    Optional<Person> entity = repo.findById(personId);
-    if (entity.isEmpty()) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok().body(mapper.convert(entity.get()));
+    val entity = repo.findById(personId)
+        .orElseThrow(() -> 
+        new EntityNotFoundException("Person not found for user with id = "  + user.get().getId()));
+    return ResponseEntity.ok().body(mapper.convert(entity));
   }
 
 }

@@ -24,7 +24,9 @@ import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.util.Optional;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,10 +67,8 @@ public class UserInfo {
       return ResponseEntity.badRequest().build();
     }
     long personId = user.get().getId();
-    Optional<User> entity = repo.findById(personId);
-    if (entity.isEmpty()) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok().body(mapper.convert(entity.get()));
+    val entity = repo.findById(personId)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    return ResponseEntity.ok().body(mapper.convert(entity));
   }
 }

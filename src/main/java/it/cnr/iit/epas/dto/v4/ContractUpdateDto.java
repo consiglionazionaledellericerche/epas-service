@@ -30,7 +30,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ContractUpdateDto extends ContractUpdateBaseDto {
+public class ContractUpdateDto extends ContractBaseDto {
 
   @NotNull
   @Schema(description = "Id univoco")

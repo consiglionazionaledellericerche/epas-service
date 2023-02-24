@@ -18,8 +18,10 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
+import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
 import it.cnr.iit.epas.models.Contract;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * Mapper da Contratto al suo DTO per la visualizzazione via REST.
@@ -28,5 +30,8 @@ import org.mapstruct.Mapper;
 public interface ContractShowMapper {
 
   ContractShowDto convert(Contract contract);
+
+  @Mapping(target = "personId", source = "person.id")
+  ContractShowTerseDto convertTerse(Contract contract);
 
 }

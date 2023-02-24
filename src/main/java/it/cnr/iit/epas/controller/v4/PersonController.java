@@ -25,19 +25,27 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
-import it.cnr.iit.epas.controller.exceptions.EntityNotFoundException;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
+import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
+import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
+import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.manager.PersonManager;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecurityRules;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -52,6 +60,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -73,18 +82,23 @@ public class PersonController {
 
   private final PersonDao personDao;
   private final PersonShowMapper personMapper;
+  private final ContractShowMapper contractMapper;
   private final PersonManager personManager;
+  private final ContractDao contractDao;
   private final EntityToDtoConverter entityToDtoConverter;
   private final SecurityRules rules;
 
   @Inject
   PersonController(PersonDao personRepository, PersonShowMapper personMapper,
+      ContractShowMapper contractMapper, ContractDao contractDao,
       EntityToDtoConverter entityToDtoConverter,
       PersonManager personManager, SecurityRules rules) {
     this.personDao = personRepository;
     this.personMapper = personMapper;
+    this.contractMapper = contractMapper;
     this.entityToDtoConverter = entityToDtoConverter;
     this.personManager = personManager;
+    this.contractDao = contractDao;
     this.rules = rules;
   }
 
@@ -111,9 +125,7 @@ public class PersonController {
     log.debug("PersonController::show id = {}", id);
     val person = personDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
-    if (!rules.check(person.getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(person.getOffice());
     return ResponseEntity.ok().body(personMapper.convert(person));
   }
 
@@ -139,9 +151,7 @@ public class PersonController {
     log.debug("PersonController::create personDto = {}", personDto);
     val person = entityToDtoConverter.createEntity(personDto);
 
-    if (!rules.check(person.getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(person.getOffice());
 
     personManager.properPersonCreate(person);
     personDao.save(person);
@@ -171,9 +181,7 @@ public class PersonController {
   ResponseEntity<PersonShowDto> update(@NotNull @Valid @RequestBody PersonUpdateDto personDto) {
     log.debug("PersonController::update personDto = {}", personDto);
     val person = entityToDtoConverter.updateEntity(personDto);
-    if (!rules.check(person.getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(person.getOffice());
     personDao.save(person);
     log.info("Aggiornato ufficio, i nuovi dati sono {}", person);
     return ResponseEntity.ok().body(personMapper.convert(person));
@@ -201,9 +209,7 @@ public class PersonController {
     log.debug("PersonController::delete id = {}", id);
     val person = personDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
 
-    if (!rules.check(person.getOffice())) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+    rules.checkifPermitted(person.getOffice());
 
     checkIfIsPossibileToDelete(person);
 
@@ -211,7 +217,69 @@ public class PersonController {
     log.info("Eliminata persona {}", person);
     return ResponseEntity.ok().build();
   }
-  
+
+  @Operation(
+      summary = "Lista di tutti i contratti associati ad persona.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituiti i contratti associati alla persona."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente.", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+            content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona non trovata con l'id fornito.",
+          content = @Content)
+  })
+  @GetMapping(ApiRoutes.SHOW + "/contracts")
+  ResponseEntity<List<ContractShowTerseDto>> contracts(@NotNull @PathVariable("id") Long id) {
+    log.debug("PersonController::contracts person id = {}", id);
+    val person = personDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
+    rules.checkifPermitted(person.getOffice());
+    return ResponseEntity.ok().body(person.getContracts()
+        .stream().map(contract -> contractMapper.convertTerse(contract))
+        .collect(Collectors.toList()));
+  }
+
+  @Operation(
+      summary = "Contratto attivo di una persona ad una certa data, di default oggi",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituiti i contratti associati alla persona."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente.", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+            content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona non trovata con l'id fornito oppure nessun contratto attivo alla "
+              + "data indicata", content = @Content)
+  })
+  @GetMapping(ApiRoutes.SHOW + "/contract")
+  ResponseEntity<ContractShowDto> contract(@NotNull @PathVariable("id") Long id,
+      @RequestParam("data") Optional<LocalDate> date) {
+    log.debug("PersonController::contract person id = {}", id);
+    val person = personDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
+    rules.checkifPermitted(person.getOffice());
+    val contractAtDate = date.orElse(LocalDate.now());
+    val contract = Optional.ofNullable(contractDao.getContract(contractAtDate, person))
+        .orElseThrow(() -> 
+            new EntityNotFoundException(
+                "Contract not found for person id = " + id + " at date " + contractAtDate));
+    return ResponseEntity.ok().body(contractMapper.convert(contract));
+  }
+
   /**
    * Verifica le condizioni per cui non è possibile cancellare una persona.
    * Solleva un eccezzione InvalidOperationOnCurrentStateException se non è 

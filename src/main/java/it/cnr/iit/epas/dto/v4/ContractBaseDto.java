@@ -28,7 +28,7 @@ import lombok.Data;
  *
  */
 @Data
-public class ContractUpdateBaseDto {
+public class ContractBaseDto {
 
   @Schema(description = "Data di inizio del contratto")
   private LocalDate beginDate;

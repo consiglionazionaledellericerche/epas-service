@@ -19,52 +19,37 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
+import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
-import java.util.Arrays;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 /**
  * Mapping delle informazioni per il riepilogo di un mese lavorativo
  * in un DTO da esportare via REST.
  *
- * @author cristian
+ * @author Cristian Lucchesi
  *
  */
-@Mapper(componentModel = "spring", uses = { VacationSummary.class, AbsencePeriod.class })
+@Mapper(componentModel = "spring")
 public interface PersonVacationSummarySubperiodMapper {
 
-  //  VacationCode map(VacationCodeDto value);
-
-  PersonVacationSummarySubperiodMapper INSTANCE = 
-      Mappers.getMapper(PersonVacationSummarySubperiodMapper.class);
+  AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
 
   @Mapping(target = ".", source = "periodSummaryDto.period")
-  @Mapping(target = "vacationCode", source = "period.vacationCode", 
-      qualifiedByName = "mapVacationCode")
   AbsencePeriod createPeriodFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
   @Mapping(target = "absencePeriod", source = "summary.absencePeriod")
   @Mapping(target = "absencePeriod.subPeriods", source = "summary.absencePeriod.subPeriods")
-  @Mapping(target = "absencePeriod.vacationCode", 
-      source = "periodSummaryDto.summary.absencePeriod.vacationCode",
-      qualifiedByName = "mapVacationCode")
   @Mapping(target = "year", source = "summary.year")
   VacationSummary createSummaryFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
-  AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
-
-  @Named("mapVacationCode")
-  default VacationCode mapVacationCode(String vacationCode) {
-    System.out.println("vacationCode {}" + vacationCode);
-    VacationCode vc = Arrays.stream(VacationCode.values())
-        .filter(value -> value.name.equals(vacationCode)).findFirst().orElse(null);
-    return vc;
+  default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {
+    return new VacationCodeDto(
+        vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
   }
 
 }

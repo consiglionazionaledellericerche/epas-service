@@ -17,10 +17,13 @@
 
 package it.cnr.iit.epas.models.enumerate;
 
+import lombok.Getter;
+
 /**
  * Tutte le possibili tipologie ferie e permessi legge, compreso
  * il piano di maturazione.
  */
+@Getter
 public enum VacationCode {
 
   CODE_28_4("28+4", 28, 4),
