@@ -38,7 +38,10 @@ public class SecurityConfig {
 
   @Inject
   private CustomAuthenticationProvider authProvider;
-
+  
+  @Inject
+  private SecurityProperties securityConfig;
+  
   @Inject
   public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
     auth.authenticationProvider(authProvider);
@@ -59,7 +62,9 @@ public class SecurityConfig {
     http.cors();
 
     http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
-    http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
+    if (securityConfig.isOauth2ResourceserverEnabled()) {
+      http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
+    }
     http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);
 
     //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
