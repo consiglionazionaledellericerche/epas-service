@@ -4,7 +4,7 @@
 
 Installare il flyway in caso di manutenzioni non ordinare alle versioni del db.
 
-Per inizializzare il flyway su un db di ePAS esiste utilizzare la funzione di _baseline_
+Per inizializzare il flyway su un db di ePAS esistente utilizzare la funzione di _baseline_
 
 Esempio:
 ```

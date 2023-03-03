@@ -15,51 +15,28 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.config;
+package it.cnr.iit.epas.dto.v4;
 
-import java.io.Serializable;
+import it.cnr.iit.epas.config.SecurityProperties.UserAuthIdentifier;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
- * Contenitore dei parametri di configurazione del servizio.
- *
- * @author Cristian Lucchesi
- *
+ * DTO con le proprietà relative alla sicurezza esportabili via REST.
  */
 @Data
-@EqualsAndHashCode
-@Configuration
-@ConfigurationProperties(prefix = "epas.security")
-public class SecurityProperties implements Serializable {
+public class SecurityPropertiesDto {
 
-  private static final long serialVersionUID = -1250232668456383929L;
-
-  private Oauth2 oauth2 = new Oauth2();
+  private Oauth2Dto oauth2;
 
   /**
-   * Bean per le info relative all'oauth2.
+   * DTO per le configurazioni OAuth2.
    */
   @Data
-  public static class Oauth2 {
+  public static class Oauth2Dto {
     boolean resourceserverEnabled = false;
     
     String jwtField = "preferred_username";
 
     UserAuthIdentifier userAuthIdentifier = UserAuthIdentifier.subjectId;
   }
-
-  /**
-   * Identificatore interno ad ePAS da utilizzare per 
-   * fare il match del claim oauth2 (oauth2TokenClaim)
-   * con l'utente interno ad ePAS.
-   */
-  public enum UserAuthIdentifier {
-    username,
-    eppn,
-    subjectId
-  } 
-
 }

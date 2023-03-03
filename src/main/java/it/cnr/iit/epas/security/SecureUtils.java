@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.security;
 
+import it.cnr.iit.epas.config.SecurityProperties;
 import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.models.User;
 import java.util.Optional;
@@ -41,10 +42,12 @@ import org.springframework.stereotype.Component;
 public class SecureUtils {
 
   private final UserDao userDao;
+  private final SecurityProperties securityProperties;
 
   @Inject
-  SecureUtils(UserDao userDao) {
+  SecureUtils(UserDao userDao, SecurityProperties securityProperties) {
     this.userDao = userDao;
+    this.securityProperties = securityProperties;
   }
 
   /**
@@ -63,8 +66,24 @@ public class SecureUtils {
     if (authentication != null) {
       if (authentication.getPrincipal() instanceof Jwt) {
         val principal = (Jwt) authentication.getPrincipal();
-        val username = principal.getClaimAsString("preferred_username");
-        user = userDao.byUsername(username);
+        //per esempio getOauth2().getJwtField() = "preferred_username"
+        val userJwtIdentifier = 
+            principal.getClaimAsString(securityProperties.getOauth2().getJwtField());
+        switch (securityProperties.getOauth2().getUserAuthIdentifier()) {
+          case eppn:
+            user = userDao.byEppn(userJwtIdentifier).orElse(null);
+            break;
+          case username:
+            user = userDao.byUsername(userJwtIdentifier);
+            break;
+          case subjectId:
+            //FIXME: da aggiungere quando aggiungiamo al modello subjectId per gli User.
+            throw new IllegalArgumentException(
+                "Unexpected value: " + securityProperties.getOauth2().getUserAuthIdentifier());
+          default:
+            throw new IllegalArgumentException(
+                "Unexpected value: " + securityProperties.getOauth2().getUserAuthIdentifier());
+        }
         if (user != null) {
           log.info("Autenticato utente {} tramite JWT", user.getUsername());
         }
