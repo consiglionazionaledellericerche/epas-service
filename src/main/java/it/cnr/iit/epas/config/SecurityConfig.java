@@ -62,7 +62,7 @@ public class SecurityConfig {
     http.cors();
 
     http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
-    if (securityConfig.isOauth2ResourceserverEnabled()) {
+    if (securityConfig.getOauth2().isResourceserverEnabled()) {
       http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
     }
     http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);

@@ -124,6 +124,19 @@ public class UserDao extends DaoBase<User> {
   }
 
   /**
+   * Cerca un utente tramite il campo eppn della
+   * persona associata all'utente (se presente).
+   */
+  public Optional<User> byEppn(String eppn) {
+    final QUser user = QUser.user;
+    return Optional.ofNullable(
+        getQueryFactory()
+          .selectFrom(user)
+          .where(user.person.isNotNull(), user.person.eppn.equalsIgnoreCase(eppn))
+          .fetchOne());
+  }
+
+  /**
    * Tutti gli username già presenti che contengono il pattern all'interno del proprio username.
    *
    * @param pattern pattern
