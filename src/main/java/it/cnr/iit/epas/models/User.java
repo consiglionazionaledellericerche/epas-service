@@ -66,8 +66,19 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private String username;
 
+  @Deprecated
   @Size(min = 5)
   private String password;
+  
+  private String passwordSha512;
+  
+  /**
+   * Corrisponde ad un identificato univoco nella propria 
+   * organizzazione per questo utente.
+   * Se l'utente è una persona deve corrispondere con il campo
+   * eppn.
+   */
+  private String subjectId;
 
   @NotAudited
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)

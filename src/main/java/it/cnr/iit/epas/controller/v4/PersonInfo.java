@@ -59,7 +59,7 @@ public class PersonInfo {
     this.secureUtils = securityUtils;
   }
 
-  @GetMapping("/")
+  @GetMapping
   ResponseEntity<PersonShowDto> show() {
     Optional<User> user = secureUtils.getCurrentUser();
     log.debug("UserInfo::show user = {}", user.orElse(null));
