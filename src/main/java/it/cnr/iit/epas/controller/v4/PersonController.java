@@ -77,7 +77,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Persons Controller", description = "Gestione delle informazioni delle persone")
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/people")
+@RequestMapping(ApiRoutes.BASE_PATH + "/people")
 public class PersonController {
 
   private final PersonDao personDao;

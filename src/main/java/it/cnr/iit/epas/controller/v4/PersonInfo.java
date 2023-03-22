@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.models.User;
@@ -41,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/personinfo")
+@RequestMapping(ApiRoutes.BASE_PATH + "/personinfo")
 public class PersonInfo {
 
   private PersonRepository repo;
@@ -59,7 +60,7 @@ public class PersonInfo {
     this.secureUtils = securityUtils;
   }
 
-  @GetMapping("/")
+  @GetMapping
   ResponseEntity<PersonShowDto> show() {
     Optional<User> user = secureUtils.getCurrentUser();
     log.debug("UserInfo::show user = {}", user.orElse(null));

@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.UserShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.UserShowMapper;
 import it.cnr.iit.epas.models.User;
@@ -41,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/userinfo")
+@RequestMapping(ApiRoutes.BASE_PATH + "/userinfo")
 public class UserInfo {
 
   private UserRepository repo;

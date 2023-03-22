@@ -70,7 +70,7 @@ import org.springframework.web.bind.annotation.RestController;
     description = "Visualizzazione delle informazioni sulle ferie dei dipendenti.")
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/vacations")
+@RequestMapping(ApiRoutes.BASE_PATH + "/vacations")
 class VacationController {
 
   private final ContractDao contractDao;
