@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import it.cnr.iit.epas.config.SecurityProperties;
+import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayInTroubleDao;
 import it.cnr.iit.epas.dto.v4.PersonDayInTroubleDto;
@@ -48,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/admin")
+@RequestMapping(ApiRoutes.BASE_PATH + "/admin")
 class AdminController {
 
   private static final String CLEAN_PERSON_DAYS_IN_TROUBLE_API = "/cleanPersonDaysInTrouble";

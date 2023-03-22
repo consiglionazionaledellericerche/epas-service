@@ -64,7 +64,7 @@ import org.springframework.web.bind.annotation.RestController;
     description = "Visualizzazione dei riepiloghi mensili dei dipendenti.")
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/monthrecaps")
+@RequestMapping(ApiRoutes.BASE_PATH + "/monthrecaps")
 public class MonthRecapController {
 
   private final PersonDao personDao;

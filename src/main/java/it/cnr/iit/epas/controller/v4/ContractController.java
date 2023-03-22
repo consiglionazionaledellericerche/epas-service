@@ -75,7 +75,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/contracts")
+@RequestMapping(ApiRoutes.BASE_PATH + "/contracts")
 public class ContractController {
 
   private final ContractDao contractDao;

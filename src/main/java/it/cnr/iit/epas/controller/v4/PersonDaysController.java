@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/rest/v4/persondays")
+@RequestMapping(ApiRoutes.BASE_PATH + "/persondays")
 public class PersonDaysController {
 
   private final PersonDayDao personDayDao;
