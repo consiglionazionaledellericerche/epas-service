@@ -26,21 +26,19 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
-import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.YearMonth;
 import java.util.Optional;
-import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -63,33 +61,16 @@ import org.springframework.web.bind.annotation.RestController;
     name = "MonthRecap controller",
     description = "Visualizzazione dei riepiloghi mensili dei dipendenti.")
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/monthrecaps")
 public class MonthRecapController {
 
-  private final PersonDao personDao;
   private final IWrapperFactory wrapperFactory;
   private final PersonStampingRecapFactory stampingRecapFactory;
   private final PersonStampingRecapMapper personStampingRecapMapper;
   private final SecurityRules rules;
-  private SecureUtils securityUtils;
-
-
-  @Inject
-  MonthRecapController(
-      PersonDao personDao, IWrapperFactory wrapperFactory,
-      PersonStampingRecapFactory stampingRecapFactory,
-      PersonStampingRecapMapper personStampingRecapFactory,
-      SecurityRules rules, SecureUtils securityUtils
-  ) {
-    this.personDao = personDao;
-    this.wrapperFactory = wrapperFactory;
-    this.stampingRecapFactory = stampingRecapFactory;
-    this.personStampingRecapMapper = personStampingRecapFactory;
-    this.rules = rules;
-    this.securityUtils = securityUtils;
-
-  }
+  private final PersonFinder personFinder;
 
   @Operation(
       summary = "Visualizzazione dei riepiloghi mensili dei dipendenti.",
@@ -113,21 +94,15 @@ public class MonthRecapController {
   @GetMapping(ApiRoutes.LIST)
   ResponseEntity<PersonStampingRecapDto> show(
       @RequestParam("personId") Optional<Long> personId,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @NotNull @RequestParam("year") Integer year,
       @NotNull @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
         "/rest/v4/monthrecaps" + ApiRoutes.LIST, personId, year, month);
 
-    Person person = null;
-    if (personId.isPresent()) {
-      person = 
-          personDao.byId(personId.get())
-            .orElseThrow(() -> 
-                new EntityNotFoundException("Person not found with id = " + personId));
-    } else {
-      person = getPerson()
-          .orElseThrow(() -> new EntityNotFoundException("Person not found using authentication"));
-    }
+    Person person = 
+        personFinder.getPerson(personId, fiscalCode)
+          .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
     rules.checkifPermitted(person);
 
@@ -138,19 +113,6 @@ public class MonthRecapController {
 
     PersonStampingRecap psrDto = stampingRecapFactory.create(person, year, month, true);
     return ResponseEntity.ok().body(personStampingRecapMapper.convert(psrDto));
-  }
-
-  /**
-   * Restituisce la Person associata all'utente autenticato.
-   */
-  private Optional<Person> getPerson() {
-    Optional<User> user = securityUtils.getCurrentUser();
-    log.debug("VacationController::getPerson user = {}", user.orElse(null));
-    if (!user.isPresent()) {
-      log.info("Non è presente nessun utente");
-      return Optional.empty();
-    }
-    return Optional.ofNullable(user.get().getPerson());
   }
 
 }

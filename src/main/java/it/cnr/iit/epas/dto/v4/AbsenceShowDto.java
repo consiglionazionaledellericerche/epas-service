@@ -30,9 +30,9 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AbsenceDto extends AbsenceShowTerseDto {
+public class AbsenceShowDto extends AbsenceShowTerseDto {
 
-  private PersonDayDto personDay;
+  private PersonDayTerseDto personDay;
   private AbsenceTypeDto absenceType;
 
 }

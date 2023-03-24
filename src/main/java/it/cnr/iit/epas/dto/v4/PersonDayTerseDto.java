@@ -17,24 +17,39 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import java.time.LocalDate;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * DTO per la situazione ferie di una persona.
- *
- * @author Cristian Lucchesi
- *
+ * DTO per mostrare i dati principali di un PersonDay.
  */
 @Data
-public class PersonVacationDto {
+@EqualsAndHashCode(callSuper = true)
+public class PersonDayTerseDto extends BaseModelDto {
 
-  private boolean topQualification;
-  private int year;
-  private List<ContractShowDto> contracts;
+  private Long personId;
 
-  private List<VacationSituationDto> vacationSituations = Lists.newArrayList();
-  private PeriodChainDto periodChain;
+  private LocalDate date;
+  private Integer timeAtWork = 0;
+
+  /**
+   * Tempo all'interno di timbrature valide.
+   */
+  private Integer stampingsTime = 0;
+
+  private Integer justifiedTimeNoMeal = 0;
+  private Integer justifiedTimeMeal = 0;
+
+  private Integer difference = 0;
+  private Integer progressive = 0;
+
+  /**
+   * Minuti tolti per pausa pranzo breve.
+   */
+  private Integer decurtedMeal = 0;
+
+  private boolean isTicketAvailable;
+  private boolean isHoliday;
 
 }
