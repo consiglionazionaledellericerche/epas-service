@@ -44,11 +44,11 @@ import it.cnr.iit.epas.security.SecurityRules;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.HttpStatus;
@@ -74,6 +74,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Contracts Controller", description = "Gestione delle informazioni dei contratti")
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/contracts")
 public class ContractController {
@@ -85,20 +86,6 @@ public class ContractController {
   private final PeriodManager periodManager;
   private final WrapperFactory wrapperFactory;
   private final SecurityRules rules;
-
-  @Inject
-  ContractController(ContractDao contractDao, ContractShowMapper mapper,
-      ContractManager contractManager, EntityToDtoConverter entityToDtoConverter,
-      PeriodManager periodManager, WrapperFactory wrapperFactory,
-      SecurityRules rules) {
-    this.contractDao = contractDao;
-    this.mapper = mapper;
-    this.contractManager = contractManager;
-    this.entityToDtoConverter = entityToDtoConverter;
-    this.periodManager = periodManager;
-    this.wrapperFactory = wrapperFactory;
-    this.rules = rules;
-  }
 
   @Operation(
       summary = "Visualizzazione delle informazioni di un contratto.",

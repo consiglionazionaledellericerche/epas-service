@@ -18,15 +18,16 @@
 package it.cnr.iit.epas.controller.v4;
 
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
-import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonDayMapper;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
@@ -43,34 +44,25 @@ import org.springframework.web.bind.annotation.RestController;
  *
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/persondays")
 public class PersonDaysController {
 
   private final PersonDayDao personDayDao;
-  private final PersonDao personDao;
   private final PersonDayMapper personDayMapper;
-
-  /**
-   * Costruttore di default per l'injection.
-   */
-  @Inject
-  public PersonDaysController(PersonDayDao personDayDao,
-      PersonDao personDao, PersonDayMapper personDayMapper) {
-    this.personDayDao = personDayDao;
-    this.personDao = personDao;
-    this.personDayMapper = personDayMapper;
-  }
+  private final PersonFinder personFinder;
 
   @GetMapping(ApiRoutes.LIST)
   ResponseEntity<List<PersonDayDto>> list(
-      @RequestParam("personId") Long personId, 
+      @RequestParam("personId") Optional<Long> personId,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam("year") Integer year, 
       @RequestParam("month") Integer month) {
-    log.debug("REST method {} invoked with parameters personId={}, year={}, month={}",
-        ApiRoutes.LIST, personId, year, month);
-    val person = personDao.byId(personId)
-        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + personId));
+    log.debug("REST method {} invoked with parameters personId={}, fiscalCode = {}, year={}, "
+        + "month={}", ApiRoutes.LIST, personId, fiscalCode, year, month);
+    val person = personFinder.getPerson(personId, fiscalCode)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found"));
     val personDays = 
         personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
     val personDaysDto = 

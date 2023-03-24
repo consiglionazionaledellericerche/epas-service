@@ -28,11 +28,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ContractShowDto extends BaseModelDto {
-
-  private String perseoId;
-
-  private String externalId;
+public class ContractShowDto extends ContractShowTerseDto {
 
   /**
    * Patch per gestire i contratti con dati mancanti da dcp. E' true unicamente per segnalare tempo
@@ -65,6 +61,5 @@ public class ContractShowDto extends BaseModelDto {
   private LocalDate endContract;
 
   private List<VacationPeriodDto> vacationPeriods = Lists.newArrayList();
-
 
 }
