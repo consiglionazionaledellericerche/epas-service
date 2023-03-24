@@ -19,10 +19,13 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
+import it.cnr.iit.epas.dto.v4.ContractBaseDto;
+import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,6 +41,8 @@ import org.mapstruct.Mapping;
 public interface PersonVacationSummarySubperiodMapper {
 
   AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
+  ContractBaseDto convert(Contract contract);
+
 
   @Mapping(target = ".", source = "periodSummaryDto.period")
   AbsencePeriod createPeriodFromDto(AbsencePeriodSummaryDto periodSummaryDto);
@@ -45,6 +50,8 @@ public interface PersonVacationSummarySubperiodMapper {
   @Mapping(target = "absencePeriod", source = "summary.absencePeriod")
   @Mapping(target = "absencePeriod.subPeriods", source = "summary.absencePeriod.subPeriods")
   @Mapping(target = "year", source = "summary.year")
+  @Mapping(target = "date", source = "summary.date")
+  @Mapping(target = "contract", source = "summary.contract")
   VacationSummary createSummaryFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
   default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {

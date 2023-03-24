@@ -56,6 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -189,13 +190,14 @@ class VacationController {
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
   }
 
-  @GetMapping("/summary/subperiod")
+  @PostMapping("/summary/subperiod")
   ResponseEntity<AbsenceSubPeriodDto> subPeriod(
         @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
     log.debug("REST method {} invoked ", "/rest/v4//summary/subperiod");
 
     AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
         periodSummaryDto);
+    log.debug("period {} invoked ", period);
 
     rules.checkifPermitted(period.person);
 
@@ -204,7 +206,7 @@ class VacationController {
     log.debug("summary={}", summary.absencePeriod.subPeriods);
     PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
         period);
-    log.debug("psrDto  {}", psrDto);
+    log.debug("psrDto  {}", personVacationSummarySubperiodMapper.convert(psrDto));
     return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 

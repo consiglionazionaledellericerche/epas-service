@@ -31,9 +31,10 @@ import lombok.Data;
 public class AbsencePeriodTerseDto {
 
   //  private InitializationGroup initialization;
+  private PersonShowTerseDto person;
   private LocalDate from;
   private LocalDate to;
-  //  private VacationCodeDto vacationCode;
+//    private VacationCodeDto vacationCode;
   private String vacationCode;
 
   private AmountType takeAmountType;
