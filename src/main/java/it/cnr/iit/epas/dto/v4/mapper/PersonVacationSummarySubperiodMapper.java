@@ -19,7 +19,6 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
-import it.cnr.iit.epas.dto.v4.ContractBaseDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
@@ -40,10 +39,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummarySubperiodMapper {
 
-  AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
-  ContractBaseDto convert(Contract contract);
-
-
   @Mapping(target = ".", source = "periodSummaryDto.period")
   AbsencePeriod createPeriodFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
@@ -54,9 +49,26 @@ public interface PersonVacationSummarySubperiodMapper {
   @Mapping(target = "contract", source = "summary.contract")
   VacationSummary createSummaryFromDto(AbsencePeriodSummaryDto periodSummaryDto);
 
+  AbsenceSubPeriodDto convert(PersonVacationSummarySubperiod period);
+
+  ContractShowDto convert(Contract contract);
+
   default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {
     return new VacationCodeDto(
         vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
+  }
+
+  default VacationCode vacationCode(VacationCodeDto vacationCodeDto) {
+    if (vacationCodeDto == null){
+      return null;
+    }
+    for (VacationCode value : VacationCode.values()) {
+      if (value.getName().equals(vacationCodeDto.getName())) {
+        return value;
+      }
+    }
+    throw new IllegalArgumentException("Nessun elemento MyEnum ha il parametro code corrispondente: " + vacationCodeDto.getName());
+
   }
 
 }

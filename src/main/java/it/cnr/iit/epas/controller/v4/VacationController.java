@@ -201,7 +201,7 @@ class VacationController {
 
     rules.checkifPermitted(period.person);
 
-    VacationSummary summary = 
+    VacationSummary summary =
         personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
     log.debug("summary={}", summary.absencePeriod.subPeriods);
     PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,

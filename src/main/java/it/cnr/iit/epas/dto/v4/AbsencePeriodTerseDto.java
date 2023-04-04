@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4;
 
 import it.cnr.iit.epas.models.absences.AmountType;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -30,12 +31,11 @@ import lombok.Data;
 @Data
 public class AbsencePeriodTerseDto {
 
-  //  private InitializationGroup initialization;
   private PersonShowTerseDto person;
   private LocalDate from;
   private LocalDate to;
-//    private VacationCodeDto vacationCode;
-  private String vacationCode;
+  private VacationCodeDto vacationCode;
+//  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
@@ -43,6 +43,5 @@ public class AbsencePeriodTerseDto {
   private boolean takableWithLimit;
   private long periodTakableAmount;
   private long remainingAmount;
-  //  private List<AbsenceSubPeriodTerseDto> subPeriods = Lists.newArrayList();
 
 }

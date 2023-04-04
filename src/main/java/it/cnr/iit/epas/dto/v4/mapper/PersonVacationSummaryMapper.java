@@ -19,6 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsenceDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
@@ -39,6 +40,7 @@ import org.mapstruct.Mapping;
  * @author Cristian Lucchesi
  *
  */
+
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
 
@@ -70,7 +72,10 @@ public interface PersonVacationSummaryMapper {
   ContractShowDto convert(Contract contract);
 
   default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {
+    if ( vacationCode == null ) {
+      return null;
+    }
     return new VacationCodeDto(
-        vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
+          vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
   }
 }
