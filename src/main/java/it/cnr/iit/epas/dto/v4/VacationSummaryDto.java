@@ -42,6 +42,7 @@ public class VacationSummaryDto extends BaseModelDto {
   private long usable;
   private LocalDate upperLimit;
   private long sourced;
+  private String title;
 
   private List<AbsenceDto> absencesUsed = Lists.newArrayList();
   private List<AbsenceDto> postPartum = Lists.newArrayList();

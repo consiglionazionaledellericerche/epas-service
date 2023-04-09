@@ -62,6 +62,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
   @Mapping(target = "postPartumisEmpty", 
       expression = "java(vacationSummary.postPartum().isEmpty())")
+  @Mapping(target = "title", expression = "java(vacationSummary.title())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
   @Mapping(target = "justifiedType", source = "justifiedType.name")

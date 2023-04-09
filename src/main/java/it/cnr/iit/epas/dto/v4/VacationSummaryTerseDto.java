@@ -30,6 +30,7 @@ import lombok.EqualsAndHashCode;
 public class VacationSummaryTerseDto extends BaseModelDto {
 
   private TypeSummary type;
+  private String title;
   private int year;
   private LocalDate date;
   private long total;
