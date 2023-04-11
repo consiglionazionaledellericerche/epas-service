@@ -29,6 +29,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ContractShowMapper {
 
+  @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
   @Mapping(target = "personId", source = "person.id")
