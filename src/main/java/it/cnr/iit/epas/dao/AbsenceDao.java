@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  * @author Cristian Lucchesi
  */
+@Transactional
 @Component
 public class AbsenceDao extends DaoBase<Absence> {
 
@@ -68,16 +70,26 @@ public class AbsenceDao extends DaoBase<Absence> {
    * @param id id dell'Absence.
    * @return la Absence corrispondente all'id passato.
    */
+  @Deprecated
   public Absence getAbsenceById(Long id) {
+    return byId(id).orElse(null);
+  }
 
+  /**
+   * Preleva un'assenza tramite il suo id.
+   *
+   * @param id id dell'Absence.
+   * @return l'Optional contenente l'Absence corrispondente all'id passato.
+   */
+  public Optional<Absence> byId(Long id) {
     final QAbsence absence = QAbsence.absence;
     final QAbsenceType absenceType = QAbsenceType.absenceType;
     final QJustifiedType justifiedType = QJustifiedType.justifiedType;
-    final JPQLQuery<?> query = getQueryFactory().from(absence)
+    val query = getQueryFactory().selectFrom(absence)
         .join(absence.absenceType, absenceType).fetchJoin()
         .join(absence.justifiedType, justifiedType).fetchJoin()
         .where(absence.id.eq(id));
-    return (Absence) query.fetchOne();
+    return Optional.ofNullable(query.fetchOne()); 
   }
 
   /**

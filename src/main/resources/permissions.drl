@@ -42,7 +42,8 @@ when
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
 then
  $c.grant();
@@ -54,7 +55,8 @@ when
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET'))  ||
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $p)
 then
  $c.grant();
@@ -68,10 +70,10 @@ rule Vacation_show_personnel_admin
 when
  $uro: UsersRolesOffices() from userRolesOffices
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
- $p: Person(user != currentUser)
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences"),
     toCheck(), target == null)
 then
  $c.grant();
@@ -84,7 +86,8 @@ when
  $p: Person(user != currentUser, getOffice() == $uro.getOffice())
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences"),
     toCheck(), target == $p)
 then
  $c.grant();
@@ -220,6 +223,33 @@ when
     permission.startsWith("/rest/v4/people/update") ||
     permission.startsWith("/rest/v4/people/delete"),
     toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente con ruolo ABSENCE_MANAGER
+ ******************************************************************************/
+rule AbsenceManager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $r: Role(name == "absenceManager") from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/absences"),
+    toCheck(), target == null)
+then
+ System.out.println("uro = " + $uro);
+ $c.grant();
+end
+
+rule AbsenceManager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $r: Role(name == "absenceManager") from $uro.role
+ $p: Person(getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/absences"),
+    toCheck(), target == $p)
 then
  $c.grant();
 end

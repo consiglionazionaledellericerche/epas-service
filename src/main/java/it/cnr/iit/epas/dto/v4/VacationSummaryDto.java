@@ -22,14 +22,12 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO contenente il resoconto della situazione delle ferie.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class VacationSummaryDto extends BaseModelDto {
+public class VacationSummaryDto {
 
   private TypeSummary type;
   private ContractBaseDto contract;
@@ -44,8 +42,8 @@ public class VacationSummaryDto extends BaseModelDto {
   private long sourced;
   private String title;
 
-  private List<AbsenceDto> absencesUsed = Lists.newArrayList();
-  private List<AbsenceDto> postPartum = Lists.newArrayList();
+  private List<AbsenceShowDto> absencesUsed = Lists.newArrayList();
+  private List<AbsenceShowDto> postPartum = Lists.newArrayList();
   private AbsencePeriodDto absencePeriod;
   private long postPartumSize;
   private boolean postPartumisEmpty;

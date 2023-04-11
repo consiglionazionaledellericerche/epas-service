@@ -92,8 +92,24 @@ public class PersonDao extends DaoBase<Person> {
     this.repo = repo;
   }
 
+  /**
+   * Ricerca una persona per id.
+   */
   public Optional<Person> byId(Long id) {
     return repo.findById(id);
+  }
+
+  /**
+   * Ricerca una persona prima per id e poi per fiscalCode.
+   */
+  public Optional<Person> byIdOrFiscalCode(Optional<Long> id, Optional<String> fiscalCode) {
+    if (id.isPresent()) {
+      return byId(id.get());
+    }
+    if (fiscalCode.isPresent()) {
+      byFiscalCode(fiscalCode.get());
+    }
+    return Optional.empty();
   }
 
   /**
