@@ -63,10 +63,10 @@ then
 end
 
 /*******************************************************************************
- * Visualizzazione situazione ferie utente con ruolo PERSONNEL_ADMIN
+ * Visualizzazione e gestione ferie utente con ruolo PERSONNEL_ADMIN
  ******************************************************************************/
 
-rule Vacation_show_personnel_admin
+rule Vacation_show_and_manage_personnel_admin
 when
  $uro: UsersRolesOffices() from userRolesOffices
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
@@ -79,11 +79,25 @@ then
  $c.grant();
 end
 
-rule Vacation_show_personnel_admin_InOffice
+rule Vacation_show_and_manage_personnel_admin_InOffice
 when
  $uro: UsersRolesOffices() from userRolesOffices
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
  $p: Person(user != currentUser, getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences"),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+rule Vacation_show_and_manage_personnel_admin_InOffice_own_absences
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(qualification != null) from currentUser.getPerson()
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
