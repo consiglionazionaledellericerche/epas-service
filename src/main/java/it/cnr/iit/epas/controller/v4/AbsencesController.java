@@ -60,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -274,7 +275,7 @@ public class AbsencesController {
       description = "Persona non trovata con l'id e/o il codice fiscale fornito",
       content = @Content)
   })
-  @PutMapping("/insertAbsence")
+  @PutMapping(ApiRoutes.CREATE)
   public ResponseEntity<List<AbsenceShowDto>> insertAbsence(
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
@@ -403,4 +404,87 @@ public class AbsencesController {
         .map(ab -> absenceMapper.convert(ab)).collect(Collectors.toList()));
   }
 
+  /**
+   * Cancellazione di un'assenza.
+   */
+  @Operation(
+      summary = "Metodo per la cancellazione di un'assenza.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' della sede a "
+          + "appartiene la persona di cui inserire le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Assenza cancellata correttamente."),
+      @ApiResponse(responseCode = "401", 
+      description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+      description = "Utente che ha effettuato la richiesta non autorizzato ad eliminare questa "
+          + "assenza.",
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+      description = "Assenza non trovata con l'id fornito",
+      content = @Content)
+  })
+  @DeleteMapping(ApiRoutes.SHOW)
+  public ResponseEntity<Void> deleteAbsence(@NotNull @PathVariable("id") Long id) {
+    log.debug("AbsenceController::deleteAbsence id = {}", id);
+    val absence = absenceDao.byId(id
+        ).orElseThrow(() -> new EntityNotFoundException("Assenza non trovata con id = " + id));
+    absenceDao.delete(absence);
+    rules.checkifPermitted(absence.getPersonDay().getPerson());
+    log.info("Cancellata assenza {}", absence);
+    return ResponseEntity.ok().build();
+  }
+  
+  /**
+   * Cancellazione di un'assenza.
+   */
+  @Operation(
+      summary = "Metodo per la cancellazione di assenze dello stesso tipo all'interno "
+          + "di un intervallo temporale.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' della sede a "
+          + "appartiene la persona di cui inserire le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Assenze cancellata correttamente."),
+      @ApiResponse(responseCode = "401", 
+      description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+      description = "Utente che ha effettuato la richiesta non autorizzato ad eliminare questa "
+          + "assenza.",
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+      description = "Assenza non trovata con l'id fornito",
+      content = @Content)
+  })
+  @DeleteMapping("/deleteAbsencesInPeriod")
+  public ResponseEntity<Void> deleteAbsencesInPeriod(
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
+      @RequestParam @NotNull @NotEmpty String absenceCode,
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam("begin") @NotNull LocalDate begin,
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam("end") @NotNull LocalDate end) {
+    log.debug("AbsenceController::deleteAbsencesInPeriod id = {}, fiscalCode = {}, "
+        + "absenceCode = {}, begin = {}, end = {}", 
+        id, fiscalCode, absenceCode, begin, end);
+    val person = 
+        personFinder.getPerson(id, fiscalCode)
+          .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    rules.checkifPermitted(person);
+    val absenceType = absenceTypeDao.getAbsenceTypeByCode(absenceCode)
+        .orElseThrow(() -> 
+          new EntityNotFoundException("AbsenceCode non trovato con codice " + absenceCode));
+
+    val deletedAbsences = absenceManager.removeAbsencesInPeriod(
+        person, begin, end, absenceType);
+
+    log.info("Deleted {} absences via REST for {}, code = {}, from {} to {}", 
+        deletedAbsences, person.getFullname(), absenceCode, begin, end);
+    return ResponseEntity.ok().build();
+  }
 }
