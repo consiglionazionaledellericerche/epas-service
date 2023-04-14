@@ -30,6 +30,7 @@ import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
+import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.AbsenceAddedDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
@@ -37,9 +38,13 @@ import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceMapper;
 import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
+import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
+import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -82,6 +87,7 @@ public class AbsencesController {
 
   private final AbsenceDao absenceDao;
   private final AbsenceTypeDao absenceTypeDao;
+  private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceMapper absenceMapper;
   private final AbsenceManager absenceManager;
   private final AbsenceService absenceService;
@@ -314,6 +320,84 @@ public class AbsencesController {
 
     List<Absence> absences = 
         absenceManager.saveAbsences(report, person, begin, null, justifiedType, groupAbsenceType);
+
+    return ResponseEntity.ok().body(absences.stream()
+        .map(ab -> absenceMapper.convert(ab)).collect(Collectors.toList()));
+  }
+
+  /**
+   * Metodo REST per l'inserimento della assenze. 
+   */
+  @Operation(
+      summary = "Metodo per l'nserimento di assenze di tipo Ferie di una persona con il codice "
+          + "di ferie più vantaggioso per il dipendente.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' della sede a "
+          + "appartiene la persona di cui inserire le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Elenco con i dettagli delle assenze inserite"),
+      @ApiResponse(responseCode = "401", 
+      description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+      description = "Utente che ha effettuato la richiesta non autorizzato ad inserire queste "
+          + "assenze",
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+      description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+      content = @Content)
+  })
+  @PutMapping("/insertVacation")
+  public ResponseEntity<List<AbsenceShowDto>> insertVacation(
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam("begin") @NotNull LocalDate begin,
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam("end") @NotNull LocalDate end,
+      @RequestParam("hours") Optional<Integer> hours,
+      @RequestParam("minutes") Optional<Integer> minutes) {
+
+    log.debug("AbsenceController::insertVacation id = {}, fiscalCode = {}, "
+        + "begin = {}, end = {}", 
+        id, fiscalCode, begin, end);
+    val person = 
+        personFinder.getPerson(id, fiscalCode)
+          .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    rules.checkifPermitted(person);
+
+    if (begin.isAfter(end)) {
+      throw new ValidationException(
+          String.format("La data di inizio ( {} ) non può essere successiva"
+              + "a quella di fine ( {} )", begin, end));
+    }
+
+    val groupAbsenceType = 
+        absenceComponentDao.groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
+
+    AbsenceType absenceType = null;
+    LocalDate recoveryDate = null;
+    boolean forceInsert = false;
+
+    val justifiedType = absenceComponentDao.getOrBuildJustifiedType(JustifiedTypeName.all_day);
+
+    InsertReport insertReport = absenceService.insert(person, groupAbsenceType, begin, end,
+        absenceType, justifiedType, null, null, forceInsert, absenceManager);
+
+    log.debug("Richiesto inserimento assenze per {}. "
+        + "Codice/Tipo {}, dal {} al {}", 
+        person.getFullname(), absenceType != null ? absenceType.getCode() : groupAbsenceType,
+            begin, end);
+
+    val absences = 
+        absenceManager.saveAbsences(insertReport, person, begin, recoveryDate,
+            justifiedType, groupAbsenceType);
+
+    log.info("Effettuato inserimento assenze per {}. "
+        + "Codice/Tipo {}, dal {} al {}", 
+        person.getFullname(), absenceType != null ? absenceType.getCode() : groupAbsenceType, 
+        begin, end);
 
     return ResponseEntity.ok().body(absences.stream()
         .map(ab -> absenceMapper.convert(ab)).collect(Collectors.toList()));
