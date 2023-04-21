@@ -157,12 +157,11 @@ class VacationController {
 
     PersonVacationSummary pvSummary = 
         personVacationSummaryFactory.create(person, year, contract.getId(), typeSummary);
-    log.debug("pvSummary  {}, total={}", pvSummary, pvSummary.vacationSummary.total());
-    log.info("VacationSummary.absencesUsed = {}", pvSummary.vacationSummary.absencesUsed());
-    log.info("VacationSummary.used = {}", pvSummary.vacationSummary.used());
     return ResponseEntity.ok().body(personVacationSummaryMapper.convert(pvSummary));
   }
 
+  //FIXME: verificare se è conveniente inserire queste informazioni
+  //direttamente nell'oggetto VacationSummaryDTO
   @GetMapping("/summary/subperiods")
   public ResponseEntity<List<AbsenceSubPeriodDto>> subPeriods(
       @NotNull @RequestParam("contractId") Long contractId,
@@ -184,6 +183,7 @@ class VacationController {
           vacationGroup, Optional.empty(), false).currentYear;
     }
     
+    //FIXME: verificare se si può fare tramite mapstruct
     List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
     for (AbsencePeriod sp : vacationSummary.absencePeriod.subPeriods) {
       val aspDto = personVacationSummaryMapper.convertToSubPeriod(sp);
