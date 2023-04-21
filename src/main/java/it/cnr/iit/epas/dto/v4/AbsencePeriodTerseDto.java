@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@
 package it.cnr.iit.epas.dto.v4;
 
 import it.cnr.iit.epas.models.absences.AmountType;
-import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -35,7 +34,6 @@ public class AbsencePeriodTerseDto {
   private LocalDate from;
   private LocalDate to;
   private VacationCodeDto vacationCode;
-//  private String vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;

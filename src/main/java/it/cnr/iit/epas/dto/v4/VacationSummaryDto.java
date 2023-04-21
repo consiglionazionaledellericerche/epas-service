@@ -42,21 +42,12 @@ public class VacationSummaryDto {
   private long sourced;
   private String title;
 
-  private List<AbsenceShowDto> absencesUsed = Lists.newArrayList();
-  private List<AbsenceShowDto> postPartum = Lists.newArrayList();
+  private List<AbsenceShowTerseDto> absencesUsed = Lists.newArrayList();
+  private List<AbsenceShowTerseDto> postPartum = Lists.newArrayList();
   private AbsencePeriodDto absencePeriod;
   private long postPartumSize;
   private boolean postPartumisEmpty;
 
   private long accruedDayTotal;
-  private long subAmount;
-  private boolean subFixedPostPartum;
-  private long subAmountBeforeFixedPostPartum;
-  private long subTotalAmount;
-  private long subDayProgression;
-  private long subDayPostPartum;
-  private long subDayToFixPostPartum;
-  private boolean subAccrued;
-  private LocalDate contractEndFirstYearInPeriod;
 
 }

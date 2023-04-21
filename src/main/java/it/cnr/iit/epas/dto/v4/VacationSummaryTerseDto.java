@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,14 +20,12 @@ package it.cnr.iit.epas.dto.v4;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO contenente il resoconto della situazione delle ferie.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class VacationSummaryTerseDto extends BaseModelDto {
+public class VacationSummaryTerseDto {
 
   private TypeSummary type;
   private String title;

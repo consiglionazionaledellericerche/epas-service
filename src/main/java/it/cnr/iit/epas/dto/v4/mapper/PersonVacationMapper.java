@@ -61,6 +61,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "personId", source = "person.id")
   VacationSituationDto convert(VacationSituation vacationSituation);
 
+  @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
   @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
