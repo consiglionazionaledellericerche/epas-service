@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,22 +17,19 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
+import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per le tipologie di gruppi di assenze.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
-
-  private String code;
-  private String description;
-  private boolean hasGroups;
-
-
+public class ReplacingAbsencesGroupDto {
+  //private GroupAbsenceTypeDto groupAbsenceType;
+  private List<AbsenceShowTerseDto> replacingAbsences = Lists.newArrayList();
 }

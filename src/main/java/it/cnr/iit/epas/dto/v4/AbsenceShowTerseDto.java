@@ -41,5 +41,6 @@ public class AbsenceShowTerseDto extends BaseModelDto {
   private String note;
   private String externalId;
   private LocalDateTime updatedAt;
+  private boolean nothingJustified;
   
 }

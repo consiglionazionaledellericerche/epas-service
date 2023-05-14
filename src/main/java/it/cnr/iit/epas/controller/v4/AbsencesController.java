@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,21 +36,29 @@ import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.AbsenceAddedDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
+import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
+import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupMapper;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceMapper;
 import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
+import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
+import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -90,6 +99,7 @@ public class AbsencesController {
   private final AbsenceTypeDao absenceTypeDao;
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceMapper absenceMapper;
+  private final AbsenceGroupMapper absenceGroupMapper;
   private final AbsenceManager absenceManager;
   private final AbsenceService absenceService;
   private final WrapperFactory wrapperFactory;
@@ -127,7 +137,21 @@ public class AbsencesController {
 
     rules.checkifPermitted(absence.getPersonDay().getPerson());
 
-    return ResponseEntity.ok().body(absenceMapper.convert(absence));
+    Set<GroupAbsenceType> involvedGroups = absence.absenceType.involvedGroupAbsenceType(true);
+    log.debug("AbsenceController::involvedGroups>>> {}", involvedGroups);
+    List<Object> objectAll = Lists.newArrayList();
+
+    for (GroupAbsenceType group : involvedGroups) {
+      HashMap<String, Object> elem = new HashMap<>();
+      elem.put("replacingAbsences", absence.replacingAbsences(group));
+      elem.put("id", group.getId());
+      elem.put("name", group.name);
+      elem.put("description", group.description);
+      objectAll.add(elem);
+    }
+    log.debug("AbsenceController::replacingAbsences>>> {}", objectAll);
+
+    return ResponseEntity.ok().body(absenceGroupMapper.convert(absence, objectAll));
   }
 
   /**
@@ -170,9 +194,17 @@ public class AbsencesController {
 
     val absences = absenceDao.absenceInPeriod(person, beginDate, endDate);
 
+    log.debug("AbsenceController::absences {}", absences);
+
     return ResponseEntity.ok().body(
         absences.stream()
-        .map(ab -> absenceMapper.convertTerse(ab))
+        .map(ab ->
+            {
+              log.debug("AbsenceController::map absences ab>>> {}", ab.getAbsenceDate());
+              return absenceMapper.convertTerse(ab);
+            }
+
+        )
         .collect(Collectors.toList()));
   }
 
@@ -469,6 +501,7 @@ public class AbsencesController {
       @RequestParam("begin") @NotNull LocalDate begin,
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end) {
+
     log.debug("AbsenceController::deleteAbsencesInPeriod id = {}, fiscalCode = {}, "
         + "absenceCode = {}, begin = {}, end = {}", 
         id, fiscalCode, absenceCode, begin, end);
