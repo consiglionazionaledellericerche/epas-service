@@ -138,7 +138,6 @@ public class AbsencesController {
     rules.checkifPermitted(absence.getPersonDay().getPerson());
 
     Set<GroupAbsenceType> involvedGroups = absence.absenceType.involvedGroupAbsenceType(true);
-    log.debug("AbsenceController::involvedGroups>>> {}", involvedGroups);
     List<Object> objectAll = Lists.newArrayList();
 
     for (GroupAbsenceType group : involvedGroups) {
@@ -149,7 +148,6 @@ public class AbsencesController {
       elem.put("description", group.description);
       objectAll.add(elem);
     }
-    log.debug("AbsenceController::replacingAbsences>>> {}", objectAll);
 
     return ResponseEntity.ok().body(absenceGroupMapper.convert(absence, objectAll));
   }
@@ -194,17 +192,9 @@ public class AbsencesController {
 
     val absences = absenceDao.absenceInPeriod(person, beginDate, endDate);
 
-    log.debug("AbsenceController::absences {}", absences);
-
     return ResponseEntity.ok().body(
         absences.stream()
-        .map(ab ->
-            {
-              log.debug("AbsenceController::map absences ab>>> {}", ab.getAbsenceDate());
-              return absenceMapper.convertTerse(ab);
-            }
-
-        )
+        .map(ab -> absenceMapper.convertTerse(ab))
         .collect(Collectors.toList()));
   }
 
