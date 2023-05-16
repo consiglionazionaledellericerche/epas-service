@@ -30,7 +30,7 @@ import lombok.Data;
 public class VacationSummaryDto {
 
   private TypeSummary type;
-  private ContractShowDto contract;
+  private ContractBaseDto contract;
   private int year;
   private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
   private long total;
@@ -40,22 +40,16 @@ public class VacationSummaryDto {
   private long usable;
   private LocalDate upperLimit;
   private long sourced;
+  private String title;
 
-  private List<AbsenceShowDto> absencesUsed = Lists.newArrayList();
-  private List<AbsenceShowDto> postPartum = Lists.newArrayList();
+  private List<AbsenceShowTerseDto> absencesUsed = Lists.newArrayList();
+  private List<AbsenceShowTerseDto> postPartum = Lists.newArrayList();
   private AbsencePeriodDto absencePeriod;
   private long postPartumSize;
   private boolean postPartumisEmpty;
 
   private long accruedDayTotal;
-  private long subAmount;
-  private boolean subFixedPostPartum;
-  private long subAmountBeforeFixedPostPartum;
-  private long subTotalAmount;
-  private long subDayProgression;
-  private long subDayPostPartum;
-  private long subDayToFixPostPartum;
-  private boolean subAccrued;
-  private LocalDate contractEndFirstYearInPeriod;
+
+  private List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
 
 }

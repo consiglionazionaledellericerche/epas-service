@@ -27,6 +27,7 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.ToString;
 
 /**
  * Contiene lo stato ferie annuale di un contratto.
@@ -70,6 +71,7 @@ public class VacationSituation {
   /**
    * DTO contenente il resoconto della situazione delle ferie.
    */
+  @ToString
   public static class VacationSummary {
     
     public TypeSummary type;

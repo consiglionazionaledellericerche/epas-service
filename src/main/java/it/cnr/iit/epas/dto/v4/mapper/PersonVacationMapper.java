@@ -54,7 +54,6 @@ public interface PersonVacationMapper {
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-
   AbsencePeriodDto convert(AbsencePeriod period);
 
   PeriodChainDto convert(PeriodChain periodChain);
@@ -62,6 +61,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "personId", source = "person.id")
   VacationSituationDto convert(VacationSituation vacationSituation);
 
+  @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
   @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
@@ -72,6 +72,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "used", expression = "java(vacationSummary.used())")
   @Mapping(target = "usableTotal", expression = "java(vacationSummary.usableTotal())")
   @Mapping(target = "usable", expression = "java(vacationSummary.usable())")
+  @Mapping(target = "title", expression = "java(vacationSummary.title())")
   VacationSummaryTerseDto convert(VacationSummary vacationSummary);
 
 }

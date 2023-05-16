@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -43,6 +43,6 @@ public class AbsencePeriodDto {
   private long periodTakableAmount;
   private long remainingAmount;
 
-  private List<AbsencePeriodTerseDto> subPeriods = Lists.newArrayList();
+  private List<AbsenceSubPeriodDto> subPeriods = Lists.newArrayList();
 
 }

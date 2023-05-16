@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,24 +29,26 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.ContractDao;
-import it.cnr.iit.epas.dto.v4.AbsencePeriodSummaryDto;
+import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
-import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummarySubperiodMapper;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
-import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiod;
-import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummarySubperiodFactory;
+import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.security.SecurityRules;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -54,7 +57,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,8 +79,8 @@ class VacationController {
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
-  private final PersonVacationSummarySubperiodFactory personVacationSummarySubperiodFactory;
-  private final PersonVacationSummarySubperiodMapper personVacationSummarySubperiodMapper;
+  private final AbsenceComponentDao absenceComponentDao;
+  private final AbsenceService absenceService;
   private final SecurityRules rules;
   private final PersonFinder personFinder;
   
@@ -142,7 +144,6 @@ class VacationController {
   ResponseEntity<PersonVacationSummaryDto> summary(
       @NotNull @RequestParam("contractId") Long contractId,
       @NotNull @RequestParam("year") Integer year,
-      @NotNull @RequestParam("month") Integer month,
       @NotNull @RequestParam("type") TypeSummary typeSummary) {
     log.debug("REST method {} invoked with parameters contractId={}, year={}, type={}",
         "/rest/v4/vacations/summary", contractId, year, typeSummary);
@@ -154,29 +155,31 @@ class VacationController {
 
     rules.checkifPermitted(person);
 
-    PersonVacationSummary psrDto = 
+    PersonVacationSummary pvSummary = 
         personVacationSummaryFactory.create(person, year, contract.getId(), typeSummary);
-    log.debug("psrDto  {} -------- total={}", psrDto, psrDto.vacationSummary.total());
-    return ResponseEntity.ok().body(personVacationSummaryMapper.convert(psrDto));
-  }
 
-  @GetMapping("/summary/subperiod")
-  ResponseEntity<AbsenceSubPeriodDto> subPeriod(
-        @RequestBody AbsencePeriodSummaryDto periodSummaryDto) {
-    log.debug("REST method {} invoked ", "/rest/v4//summary/subperiod");
+    List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
+    for (AbsencePeriod sp : pvSummary.vacationSummary.absencePeriod.subPeriods) {
+      val aspDto = personVacationSummaryMapper.convertToSubPeriod(sp);
+      aspDto.setSubAmount(pvSummary.vacationSummary.subAmount(sp));
+      aspDto.setSubFixedPostPartum(pvSummary.vacationSummary.subFixedPostPartum(sp));
+      aspDto.setSubAmountBeforeFixedPostPartum(pvSummary.vacationSummary.subAmountBeforeFixedPostPartum(sp));
+      aspDto.setSubTotalAmount(pvSummary.vacationSummary.subTotalAmount(sp));
+      aspDto.setSubDayProgression(pvSummary.vacationSummary.subDayProgression(sp));
+      aspDto.setSubDayPostPartum(pvSummary.vacationSummary.subDayPostPartum(sp));
+      aspDto.setSubDayToFixPostPartum(pvSummary.vacationSummary.subDayToFixPostPartum(sp));
+      aspDto.setSubAccrued(pvSummary.vacationSummary.subAccrued(sp));
+      aspDto.setContractEndFirstYearInPeriod(pvSummary.vacationSummary.contractEndFirstYearInPeriod(sp));
+      aspDto.setDayInInterval(sp.periodInterval().dayInInterval());
+      absenceSubPeriods.add(aspDto);
+    }
 
-    AbsencePeriod period = personVacationSummarySubperiodMapper.createPeriodFromDto(
-        periodSummaryDto);
+    val personVacationDto = personVacationSummaryMapper.convert(pvSummary);
+    val summaryDto = personVacationDto.getVacationSummary();
+    summaryDto.setAbsenceSubPeriods(absenceSubPeriods);
 
-    rules.checkifPermitted(period.person);
+    return ResponseEntity.ok().body(personVacationDto);
 
-    VacationSummary summary = 
-        personVacationSummarySubperiodMapper.createSummaryFromDto(periodSummaryDto);
-    log.debug("summary={}", summary.absencePeriod.subPeriods);
-    PersonVacationSummarySubperiod psrDto = personVacationSummarySubperiodFactory.create(summary,
-        period);
-    log.debug("psrDto  {}", psrDto);
-    return ResponseEntity.ok().body(personVacationSummarySubperiodMapper.convert(psrDto));
   }
 
 }

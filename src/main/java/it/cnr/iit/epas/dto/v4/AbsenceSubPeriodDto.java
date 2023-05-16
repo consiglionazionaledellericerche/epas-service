@@ -19,6 +19,7 @@ package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * DTO per i sotto periodi di assenza (dipendono dai contratti).
@@ -27,7 +28,9 @@ import lombok.Data;
  *
  */
 @Data
-public class AbsenceSubPeriodDto {
+@EqualsAndHashCode(callSuper = true)
+public class AbsenceSubPeriodDto extends AbsencePeriodTerseDto {
+
   private long subAmount;
   private boolean subFixedPostPartum;
   private long subAmountBeforeFixedPostPartum;
@@ -38,4 +41,5 @@ public class AbsenceSubPeriodDto {
   private boolean subAccrued;
   private LocalDate contractEndFirstYearInPeriod;
   private long dayInInterval;
+
 }
