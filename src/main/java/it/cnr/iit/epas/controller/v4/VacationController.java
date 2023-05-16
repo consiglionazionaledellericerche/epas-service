@@ -182,49 +182,4 @@ class VacationController {
 
   }
 
-//  //FIXME: verificare se è conveniente inserire queste informazioni
-//  //direttamente nell'oggetto VacationSummaryDTO
-//  @GetMapping("/summary/subperiods")
-//  public ResponseEntity<List<AbsenceSubPeriodDto>> subPeriods(
-//      @NotNull @RequestParam("contractId") Long contractId,
-//      @NotNull @RequestParam("year") Integer year,
-//      @NotNull @RequestParam("type") TypeSummary typeSummary) {
-//
-//    log.debug("REST method {} invoked with parameters contractId={}, year={}, type={}",
-//        "/rest/v4/vacations/summary/subperiods", contractId, year, typeSummary);
-//
-//    Contract contract = contractDao.getContractById(contractId);
-//
-//    GroupAbsenceType vacationGroup = absenceComponentDao
-//        .groupAbsenceTypeByName(DefaultGroup.FERIE_CNR.name()).get();
-//
-//    VacationSummary vacationSummary = null;
-//
-//    if (typeSummary.equals(TypeSummary.PERMISSION)) {
-//      vacationSummary = absenceService.buildVacationSituation(contract, year,
-//          vacationGroup, Optional.empty(), false).permissions;
-//    } else {
-//      vacationSummary = absenceService.buildVacationSituation(contract, year,
-//          vacationGroup, Optional.empty(), false).currentYear;
-//    }
-//
-//    //FIXME: verificare se si può fare tramite mapstruct
-//    List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
-//    for (AbsencePeriod sp : vacationSummary.absencePeriod.subPeriods) {
-//      val aspDto = personVacationSummaryMapper.convertToSubPeriod(sp);
-//      aspDto.setSubAmount(vacationSummary.subAmount(sp));
-//      aspDto.setSubFixedPostPartum(vacationSummary.subFixedPostPartum(sp));
-//      aspDto.setSubAmountBeforeFixedPostPartum(vacationSummary.subAmountBeforeFixedPostPartum(sp));
-//      aspDto.setSubTotalAmount(vacationSummary.subTotalAmount(sp));
-//      aspDto.setSubDayProgression(vacationSummary.subDayProgression(sp));
-//      aspDto.setSubDayPostPartum(vacationSummary.subDayPostPartum(sp));
-//      aspDto.setSubDayToFixPostPartum(vacationSummary.subDayToFixPostPartum(sp));
-//      aspDto.setSubAccrued(vacationSummary.subAccrued(sp));
-//      aspDto.setContractEndFirstYearInPeriod(vacationSummary.contractEndFirstYearInPeriod(sp));
-//      absenceSubPeriods.add(aspDto);
-//    }
-//
-//    return ResponseEntity.ok().body(absenceSubPeriods);
-//  }
-
 }
