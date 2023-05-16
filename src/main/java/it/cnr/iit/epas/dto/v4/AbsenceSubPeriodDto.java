@@ -40,5 +40,6 @@ public class AbsenceSubPeriodDto extends AbsencePeriodTerseDto {
   private long subDayToFixPostPartum;
   private boolean subAccrued;
   private LocalDate contractEndFirstYearInPeriod;
+  private long dayInInterval;
 
 }

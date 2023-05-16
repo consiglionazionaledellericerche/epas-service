@@ -50,4 +50,6 @@ public class VacationSummaryDto {
 
   private long accruedDayTotal;
 
+  private List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
+
 }
