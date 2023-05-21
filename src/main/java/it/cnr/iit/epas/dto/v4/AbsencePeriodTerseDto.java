@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -30,11 +30,10 @@ import lombok.Data;
 @Data
 public class AbsencePeriodTerseDto {
 
-  //  private InitializationGroup initialization;
+  private PersonShowTerseDto person;
   private LocalDate from;
   private LocalDate to;
-  //  private VacationCodeDto vacationCode;
-  private String vacationCode;
+  private VacationCodeDto vacationCode;
 
   private AmountType takeAmountType;
   private GroupAbsenceTypeDto groupAbsenceType;
@@ -42,6 +41,5 @@ public class AbsencePeriodTerseDto {
   private boolean takableWithLimit;
   private long periodTakableAmount;
   private long remainingAmount;
-  //  private List<AbsenceSubPeriodTerseDto> subPeriods = Lists.newArrayList();
 
 }

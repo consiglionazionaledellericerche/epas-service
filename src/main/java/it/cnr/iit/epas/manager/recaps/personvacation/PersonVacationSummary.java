@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023 Consiglio Nazionale delle Ricerche
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -24,8 +24,8 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
-import java.util.List;
 import java.util.Optional;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Andrea Generosi
  */
+@ToString
 @Slf4j
 public class PersonVacationSummary {
 
@@ -42,7 +43,6 @@ public class PersonVacationSummary {
   public Long contractId;
   public TypeSummary typeSummary;
   public VacationSummary vacationSummary;
-  public List<Contract> contracts;
 
   /**
    * Costruisce l'oggetto contenente tutte le informazioni da renderizzare nella pagina riepilogo
@@ -69,12 +69,6 @@ public class PersonVacationSummary {
     this.typeSummary = typeSummary;
 
     Contract contract = contractDao.getContractById(contractId);
-    //    com.google.common.base.Optional<User> currentUser = Security.getUser();
-    //    if (contract == null || type == null
-    //        || !currentUser.isPresent() || currentUser.get().getPerson() == null
-    //        || !contract.getPerson().equals(currentUser.get().getPerson())) {
-    //      forbidden();
-    //    }
 
     log.debug("contract>>>> {} this.typeSummary {}", contract, this.typeSummary);
 
@@ -83,7 +77,7 @@ public class PersonVacationSummary {
 
     if (this.typeSummary.equals(TypeSummary.PERMISSION)) {
       vacationSummary = absenceService.buildVacationSituation(contract, year,
-          vacationGroup, java.util.Optional.empty(), false).permissions;
+          vacationGroup, Optional.empty(), false).permissions;
     } else {
       vacationSummary = absenceService.buildVacationSituation(contract, year,
           vacationGroup, Optional.empty(), false).currentYear;

@@ -18,9 +18,10 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
-import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
+import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
+import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
-import it.cnr.iit.epas.dto.v4.PersonDayDto;
+import it.cnr.iit.epas.dto.v4.PersonDayTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
@@ -31,6 +32,7 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -41,8 +43,11 @@ import org.mapstruct.Mapping;
  * @author Cristian Lucchesi
  *
  */
+
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
+
+  AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
 
   PersonVacationSummaryDto convert(PersonVacationSummary vacationSummary);
 
@@ -53,6 +58,8 @@ public interface PersonVacationSummaryMapper {
 
   @Mapping(target = "total", expression = "java(vacationSummary.total())")
   @Mapping(target = "accrued", expression = "java(vacationSummary.accrued())")
+  @Mapping(target = "absencesUsed", expression = "java(convert(vacationSummary.absencesUsed()))")
+  @Mapping(target = "postPartum", expression = "java(convert(vacationSummary.postPartum()))")
   @Mapping(target = "used", expression = "java(vacationSummary.used())")
   @Mapping(target = "usableTotal", expression = "java(vacationSummary.usableTotal())")
   @Mapping(target = "usable", expression = "java(vacationSummary.usable())")
@@ -62,19 +69,30 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
   @Mapping(target = "postPartumisEmpty", 
       expression = "java(vacationSummary.postPartum().isEmpty())")
+  @Mapping(target = "title", expression = "java(vacationSummary.title())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
 
   @Mapping(target = "personId", source = "person.id")
-  PersonDayDto convert(PersonDay personDay);
+  PersonDayTerseDto convert(PersonDay personDay);
 
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
-  AbsenceShowDto convert(Absence absence);
+  @Mapping(target = "date", source = "personDay.date")
+  AbsenceShowTerseDto convert(Absence absence);
 
+  @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
+  List<AbsenceShowTerseDto> convert(List<Absence> absences);
+
+  /**
+   * Trasformazione da Enum a DTO per i VacationCode.
+   */
   default VacationCodeDto vacationCodeDto(VacationCode vacationCode) {
+    if (vacationCode == null) {
+      return null;
+    }
     return new VacationCodeDto(
         vacationCode.getName(), vacationCode.getVacations(), vacationCode.getPermissions());
   }
