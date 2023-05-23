@@ -34,24 +34,25 @@ import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.AbsenceAddedDto;
+import it.cnr.iit.epas.dto.v4.AbsenceInMonthDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
-import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
+import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupMapper;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceMapper;
 import it.cnr.iit.epas.manager.AbsenceManager;
+import it.cnr.iit.epas.manager.AbsenceManager.AbsenceToDate;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
-import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
-import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.security.SecurityRules;
+import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -179,14 +181,16 @@ public class AbsencesController {
   public ResponseEntity<List<AbsenceShowTerseDto>> absencesInPeriod(
       @RequestParam("id") Optional<Long> id, 
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) 
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("beginDate") LocalDate beginDate,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) 
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("endDate") Optional<LocalDate> endDate) {
     log.debug("AbsenceController::absencesInPeriod id = {}", id);
     val person = 
         personFinder.getPerson(id, fiscalCode)
           .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+
+    log.debug("AbsenceController::absencesInPeriod person = {}", person);
 
     rules.checkifPermitted(person);
 
@@ -227,9 +231,9 @@ public class AbsencesController {
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam @NotNull @NotEmpty String absenceCode,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("begin") @NotNull LocalDate begin,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end,
       @RequestParam("hours") Optional<Integer> hours,
       @RequestParam("minutes") Optional<Integer> minutes) {
@@ -302,9 +306,9 @@ public class AbsencesController {
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam @NotNull @NotEmpty String absenceCode,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("begin") @NotNull LocalDate begin,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end,
       @RequestParam("hours") Optional<Integer> hours,
       @RequestParam("minutes") Optional<Integer> minutes) {
@@ -375,9 +379,9 @@ public class AbsencesController {
   public ResponseEntity<List<AbsenceShowDto>> insertVacation(
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("begin") @NotNull LocalDate begin,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end,
       @RequestParam("hours") Optional<Integer> hours,
       @RequestParam("minutes") Optional<Integer> minutes) {
@@ -487,9 +491,9 @@ public class AbsencesController {
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam @NotNull @NotEmpty String absenceCode,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("begin") @NotNull LocalDate begin,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end) {
 
     log.debug("AbsenceController::deleteAbsencesInPeriod id = {}, fiscalCode = {}, "
@@ -509,5 +513,105 @@ public class AbsencesController {
     log.info("Deleted {} absences via REST for {}, code = {}, from {} to {}", 
         deletedAbsences, person.getFullname(), absenceCode, begin, end);
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Elenco delle assenza in un periodo.
+   */
+  @Operation(
+      summary = "Visualizzazione della lista delle assenza di una persona.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituito l'elenco delle assenze"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " l'elenco delle assenze",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
+  @GetMapping("/absenceTypeInMonth")
+  public ResponseEntity<List<AbsenceTypeDto>> absenceTypeInMonth(
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
+      @RequestParam("year") Integer year,
+      @RequestParam("month") Integer month) {
+    log.debug("AbsenceController::absenceTypeInMonth year = {} month = {}", year, month);
+
+    val person =
+        personFinder.getPerson(id, fiscalCode)
+            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+
+    log.debug("AbsenceController::absenceTypeInMonth person = {}", person);
+
+    rules.checkifPermitted(person);
+
+    YearMonth yearMonth = YearMonth.of(year, month);
+    Map<AbsenceType, Long> absenceTypeInMonth =
+        absenceTypeDao.getAbsenceTypeInPeriod(person,
+            DateUtility.getMonthFirstDay(yearMonth), Optional.ofNullable(DateUtility.getMonthLastDay(yearMonth)));
+
+    log.debug("AbsenceController::absenceTypeInMonth absenceTypeInMonth = {}", absenceTypeInMonth);
+
+    List<AbsenceTypeDto> dtoList = Lists.newArrayList();
+
+    absenceTypeInMonth.entrySet().forEach((absenceType) ->
+    {
+      AbsenceTypeDto dto = new AbsenceTypeDto();
+      dto.setCode(absenceType.getKey().code);
+      dto.setDescription(absenceType.getKey().getDescription());
+      dto.setNumberOfDays(absenceType.getValue().intValue());
+      dtoList.add(dto);
+    });
+
+    return ResponseEntity.ok().body(dtoList);
+  }
+
+  @GetMapping("/absenceInMonth")
+  public ResponseEntity<AbsenceInMonthDto> absenceInMonth(
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
+      @RequestParam("code") String code,
+      @RequestParam("year") Integer year,
+      @RequestParam("month") Integer month) {
+    log.debug("AbsenceController::absenceInMonth code= {} year = {} month = {}", code, year, month);
+
+    val person =
+        personFinder.getPerson(id, fiscalCode)
+            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+
+    log.debug("AbsenceController::absenceTypeInMonth person = {}", person);
+
+    rules.checkifPermitted(person);
+
+    YearMonth yearMonth = YearMonth.of(year, month);
+    List<Absence> absences = absenceDao.getAbsenceByCodeInPeriod(
+        Optional.ofNullable(person),
+        Optional.ofNullable(code),
+        DateUtility.getMonthFirstDay(yearMonth),
+        DateUtility.getMonthLastDay(yearMonth),
+        Optional.empty(),
+        false,
+        true);
+
+    log.debug("AbsenceController::absenceInMonth absences = {}", absences);
+
+    List<LocalDate> dateAbsences = absences.stream().map(AbsenceToDate.INSTANCE).toList();
+
+    log.debug("AbsenceController::absenceInMonth dateAbsences = {}", dateAbsences);
+
+    AbsenceInMonthDto dto = new AbsenceInMonthDto();
+    dto.setCode(code);
+    dto.setDateAbsences(dateAbsences);
+
+    return ResponseEntity.ok().body(dto);
   }
 }

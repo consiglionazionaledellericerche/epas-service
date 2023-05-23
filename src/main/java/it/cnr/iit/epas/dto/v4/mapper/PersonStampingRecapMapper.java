@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
+import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceToRecoverDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeShowTerseDto;
@@ -36,6 +37,7 @@ import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import java.util.List;
 import java.util.Optional;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -86,10 +88,20 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "absenceId", source = "absence.id")
   AbsenceToRecoverDto convert(it.cnr.iit.epas.models.dto.AbsenceToRecoverDto absenceToRecover);
 
-  @Mapping(target = "justifiedType", source = "justifiedType.name")
-  @Mapping(target = "externalId", source = "externalIdentifier")
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "externalId", source = "absence.externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
-  AbsenceShowTerseDto convert(Absence absence);
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
+  @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
+  AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);
+
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "externalId", source = "absence.externalIdentifier")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
+  AbsenceShowTerseDto convertTerse(Absence absence);
+
 
   @Mapping(target = "id", source = "stamping.id")
   @Mapping(target = "showPopover", expression = "java(stamping.showPopover())")

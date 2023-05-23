@@ -17,23 +17,21 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per le date del metodo absencesInMonth.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
-
+public class AbsenceInMonthDto extends BaseModelDto {
   private String code;
-  private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
-
-
+  private List<LocalDate> dateAbsences = Lists.newArrayList();
 }
