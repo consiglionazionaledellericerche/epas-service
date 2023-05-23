@@ -516,10 +516,10 @@ public class AbsencesController {
   }
 
   /**
-   * Elenco delle assenza in un periodo.
+   * Elenco delle assenze in un mese.
    */
   @Operation(
-      summary = "Visualizzazione della lista delle assenza di una persona.",
+      summary = "Visualizzazione della lista delle assenza di una persona in un mese.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
@@ -527,7 +527,7 @@ public class AbsencesController {
           + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Restituito l'elenco delle assenze"),
+          description = "Restituito l'elenco delle assenze in un mese"),
       @ApiResponse(responseCode = "401",
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
@@ -575,6 +575,29 @@ public class AbsencesController {
     return ResponseEntity.ok().body(dtoList);
   }
 
+  /**
+   * Visualizzazione della data in cui si è effettuata l'assenza nel mese
+   */
+  @Operation(
+      summary = "Visualizzazione della data in cui si è effettuata l'assenza nel mese.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituita la data in cui si è effettuata l'assenza nel mese"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " l'elenco delle assenze",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
   @GetMapping("/absenceInMonth")
   public ResponseEntity<AbsenceInMonthDto> absenceInMonth(
       @RequestParam("id") Optional<Long> id,
