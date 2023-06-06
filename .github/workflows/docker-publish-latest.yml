@@ -1,15 +1,14 @@
-name: Docker Publish Release
+name: Docker Publish
 
 on:
   push:
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    branches: [ "main" ]
 
 env:
+  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  TAG_NAME: ${{ github.event.release.tag_name }}
 
 jobs:
   build:
@@ -26,8 +25,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build Release with Maven
+      - name: Build Latest Release with Maven
+        if: ${{ ! github.event.release }}
         run: mvn --batch-mode --update-snapshots compile jib:build
             -Djib.to.auth.username=${{ github.actor }}
             -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
-            -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+            -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
