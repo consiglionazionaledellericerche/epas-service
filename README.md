@@ -16,7 +16,7 @@ Al momento non sono ancora presenti le procedure ed i dati per utilizzare ePAS S
 database configurato di ePAS.
 
 Il progetto è attualmente in fase avanzata di sviluppo e fornirà tutte le funzionalità necessarie
-alla nuova interfaccia web di ePAS che sarà farà parte di un nuovo progetto e sarà rilasciata a
+alla nuova interfaccia web di ePAS che sarà parte di un nuovo progetto e sarà rilasciata a
 breve in versione preliminare.
 
 Per maggiori informazioni su ePAS è possibile consultare la documentazione completa all'indirizzo:

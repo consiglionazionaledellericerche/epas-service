@@ -223,7 +223,7 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.3.2</version>
 				<configuration>
-					<from><image>eclipse-temurin:17-jre</image></from>
+					<from><image>eclipse-temurin:17-jre@sha256:4d1030a58659e0fdd77bf0880f28095344f37785d020527340caf937c49e3098</image></from>
 					<container>
 						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
 						<mainClass>it.cnr.iit.epas.EpasApplication</mainClass>
