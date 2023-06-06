@@ -33,17 +33,18 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-        run: echo ${{ toJSON(github.event) }}
+
       - name: Build Release with Maven
         if: ${{ github.event.release }}
-        run: mvn --batch-mode --update-snapshots compile jib:build
+        run: echo ${{ toJSON(github.event) }} && 
+             mvn --batch-mode --update-snapshots compile jib:build
             -Djib.to.auth.username=${{ github.actor }}
             -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
             -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
       - name: Build Latest Release with Maven
         if: ${{ ! github.event.release }}
-        run: mvn --batch-mode --update-snapshots compile jib:build
+        run: echo ${{ toJSON(github.event) }} &&
+             mvn --batch-mode --update-snapshots compile jib:build
             -Djib.to.auth.username=${{ github.actor }}
             -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
             -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            
