@@ -495,7 +495,6 @@ public class AbsencesController {
       @RequestParam("begin") @NotNull LocalDate begin,
       @DateTimeFormat(iso = ISO.DATE)
       @RequestParam("end") @NotNull LocalDate end) {
-
     log.debug("AbsenceController::deleteAbsencesInPeriod id = {}, fiscalCode = {}, "
         + "absenceCode = {}, begin = {}, end = {}", 
         id, fiscalCode, absenceCode, begin, end);

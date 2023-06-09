@@ -17,33 +17,32 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
+import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
+import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.AmountType;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.SortedMap;
 import lombok.Data;
 
 /**
- * DTO per la versione coincisa dei periodi di assenza.
+ * DTO per una specifica giornata all'interno di un periodo di assenze.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-public class AbsencePeriodTerseDto {
+public class ComplationAbsenceDto {
 
-  private PersonShowTerseDto person;
-  private LocalDate from;
-  private LocalDate to;
-  private VacationCodeDto vacationCode;
-
-  private AmountType takeAmountType;
-  private GroupAbsenceTypeDto groupAbsenceType;
-
-  private boolean takableWithLimit;
-  private long periodTakableAmount;
-  private long remainingAmount;
-
-  public SortedMap<LocalDate, DayInPeriodDto> daysInPeriod = Maps.newTreeMap();
+  private AbsenceShowTerseDto absence;
+  private AmountType amountType;             // = 0;
+  private int residualComplationBefore;      // = 0;
+  private int consumedComplation;            // = 0;
+  private int residualComplationAfter;       // = 0;
 
 }

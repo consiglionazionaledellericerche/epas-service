@@ -18,20 +18,28 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
+import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
+import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
+import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryTerseDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
+import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
+import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -46,6 +54,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonVacationMapper {
 
+  @Mapping(target = "justifiedType", source = "justifiedType.name")
+  @Mapping(target = "externalId", source = "externalIdentifier")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "date", source = "personDay.date")
+  AbsenceShowTerseDto convert(Absence absence);
+
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonVacationDto convert(PersonVacationRecap personVacation);
 
@@ -55,6 +69,14 @@ public interface PersonVacationMapper {
   @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
   @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
   AbsencePeriodDto convert(AbsencePeriod period);
+
+  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
+  TakenAbsenceDto convert(TakenAbsence takenAbsences);
+  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
+  ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
+
+  //@Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
+  DayInPeriodDto convert(DayInPeriod daysInPeriod);
 
   PeriodChainDto convert(PeriodChain periodChain);
 
