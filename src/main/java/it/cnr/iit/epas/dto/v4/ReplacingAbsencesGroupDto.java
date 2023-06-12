@@ -17,30 +17,19 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.google.common.collect.Lists;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
+import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
+ * DTO per le tipologie di gruppi di assenze.
  *
- * @since versione 4 dell'API REST
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceShowTerseDto extends BaseModelDto {
-
-  private LocalDate date;
-  private String code;
-  private Integer justifiedTime;
-  private String justifiedType;
-  private String note;
-  private String externalId;
-  private LocalDateTime updatedAt;
-  private boolean nothingJustified;
-  
+public class ReplacingAbsencesGroupDto {
+  //private GroupAbsenceTypeDto groupAbsenceType;
+  private List<AbsenceShowTerseDto> replacingAbsences = Lists.newArrayList();
 }

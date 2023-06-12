@@ -20,13 +20,19 @@ package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
+import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
+import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonDayTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
+import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.PersonDay;
@@ -46,6 +52,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface PersonVacationSummaryMapper {
+
+  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
+  TakenAbsenceDto convert(TakenAbsence takenAbsences);
+  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
+  ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
+
+  DayInPeriodDto convert(DayInPeriod daysInPeriod);
 
   AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
 

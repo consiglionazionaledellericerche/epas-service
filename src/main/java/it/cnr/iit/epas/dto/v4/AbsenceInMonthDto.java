@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,30 +17,21 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
+ * DTO per le date del metodo absencesInMonth.
  *
- * @since versione 4 dell'API REST
  * @author Cristian Lucchesi
  *
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AbsenceShowTerseDto extends BaseModelDto {
-
-  private LocalDate date;
+public class AbsenceInMonthDto extends BaseModelDto {
   private String code;
-  private Integer justifiedTime;
-  private String justifiedType;
-  private String note;
-  private String externalId;
-  private LocalDateTime updatedAt;
-  private boolean nothingJustified;
-  
+  private List<LocalDate> dateAbsences = Lists.newArrayList();
 }

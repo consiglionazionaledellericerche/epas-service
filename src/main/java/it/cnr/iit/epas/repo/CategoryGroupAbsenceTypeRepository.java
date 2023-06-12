@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,32 +15,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.repo;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
- *
- * @since versione 4 dell'API REST
- * @author Cristian Lucchesi
- *
+ * Person repository for crud operations with paging and sorting.
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceShowTerseDto extends BaseModelDto {
-
-  private LocalDate date;
-  private String code;
-  private Integer justifiedTime;
-  private String justifiedType;
-  private String note;
-  private String externalId;
-  private LocalDateTime updatedAt;
-  private boolean nothingJustified;
-  
+@Repository
+public interface CategoryGroupAbsenceTypeRepository extends PagingAndSortingRepository<CategoryGroupAbsenceType, Long> {
+  //Empty
 }

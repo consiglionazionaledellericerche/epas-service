@@ -17,8 +17,10 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Maps;
 import it.cnr.iit.epas.models.absences.AmountType;
 import java.time.LocalDate;
+import java.util.SortedMap;
 import lombok.Data;
 
 /**
@@ -41,5 +43,7 @@ public class AbsencePeriodTerseDto {
   private boolean takableWithLimit;
   private long periodTakableAmount;
   private long remainingAmount;
+
+  public SortedMap<LocalDate, DayInPeriodDto> daysInPeriod = Maps.newTreeMap();
 
 }

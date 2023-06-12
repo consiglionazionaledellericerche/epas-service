@@ -17,30 +17,23 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import it.cnr.iit.epas.models.absences.AmountType;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
+ * DTO per una specifica giornata all'interno di un periodo di assenze.
  *
- * @since versione 4 dell'API REST
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceShowTerseDto extends BaseModelDto {
+public class TakenAbsenceDto {
 
-  private LocalDate date;
-  private String code;
-  private Integer justifiedTime;
-  private String justifiedType;
-  private String note;
-  private String externalId;
-  private LocalDateTime updatedAt;
-  private boolean nothingJustified;
-  
+  public AbsenceShowTerseDto absence;
+  public AmountType amountType;             // = 0;
+  public long periodTakableTotal;   //situazione prima della assenza
+  public long periodTakenBefore;
+  public int takenAmount;
+  public boolean beforeInitialization; // = false;
+  public boolean toInsert;          //segnala che è l'assenza da inserire nella chain
 }
