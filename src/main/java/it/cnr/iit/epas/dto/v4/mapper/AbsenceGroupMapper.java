@@ -21,16 +21,10 @@ import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonDayTerseDto;
-import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
-import it.cnr.iit.epas.dto.v4.ReplacingAbsencesGroupDto;
-import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -43,7 +37,8 @@ public interface AbsenceGroupMapper {
   @Mapping(target = "personId", source = "person.id")
   PersonDayTerseDto convert(PersonDay personDay);
 
-  @Mapping(target = "hasGroups", expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
+  @Mapping(target = "hasGroups", 
+      expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   AbsenceTypeDto convert(AbsenceType absenceType);
 
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
@@ -51,6 +46,7 @@ public interface AbsenceGroupMapper {
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);
   
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")

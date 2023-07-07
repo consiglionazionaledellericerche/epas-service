@@ -19,6 +19,15 @@ package it.cnr.iit.epas.utils;
 
 import org.apache.commons.mail.SimpleEmail;
 
+/**
+ * Classe Fake per l'invio dell'email.
+ *
+ * <p>Da sostituire con una implementazione utilizzabile sia in produzione
+ * che in sviluppo.</p>
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 public class Mail {
 
   public static void send(SimpleEmail simpleEmail) {

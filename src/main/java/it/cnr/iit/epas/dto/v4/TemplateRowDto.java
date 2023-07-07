@@ -17,10 +17,8 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.absences.Absence;
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO per una specifica giornata all'interno di un periodo di assenze.

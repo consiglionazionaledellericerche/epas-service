@@ -556,14 +556,14 @@ public class AbsencesController {
     YearMonth yearMonth = YearMonth.of(year, month);
     Map<AbsenceType, Long> absenceTypeInMonth =
         absenceTypeDao.getAbsenceTypeInPeriod(person,
-            DateUtility.getMonthFirstDay(yearMonth), Optional.ofNullable(DateUtility.getMonthLastDay(yearMonth)));
+            DateUtility.getMonthFirstDay(yearMonth), 
+            Optional.ofNullable(DateUtility.getMonthLastDay(yearMonth)));
 
     log.debug("AbsenceController::absenceTypeInMonth absenceTypeInMonth = {}", absenceTypeInMonth);
 
     List<AbsenceTypeDto> dtoList = Lists.newArrayList();
 
-    absenceTypeInMonth.entrySet().forEach((absenceType) ->
-    {
+    absenceTypeInMonth.entrySet().forEach((absenceType) -> {
       AbsenceTypeDto dto = new AbsenceTypeDto();
       dto.setCode(absenceType.getKey().code);
       dto.setDescription(absenceType.getKey().getDescription());
@@ -575,7 +575,7 @@ public class AbsencesController {
   }
 
   /**
-   * Visualizzazione della data in cui si è effettuata l'assenza nel mese
+   * Visualizzazione della data in cui si è effettuata l'assenza nel mese.
    */
   @Operation(
       summary = "Visualizzazione della data in cui si è effettuata l'assenza nel mese.",

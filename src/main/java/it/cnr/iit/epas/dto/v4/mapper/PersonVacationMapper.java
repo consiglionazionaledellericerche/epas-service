@@ -58,6 +58,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", source = "personDay.date")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 
   @Mapping(target = "topQualification", source = "person.topQualification")
@@ -72,6 +73,7 @@ public interface PersonVacationMapper {
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   TakenAbsenceDto convert(TakenAbsence takenAbsences);
+
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
 

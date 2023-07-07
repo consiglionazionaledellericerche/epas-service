@@ -35,5 +35,4 @@ public class AbsenceTypeDto extends BaseModelDto {
   private boolean hasGroups;
   private Integer numberOfDays = 0;
 
-
 }

@@ -18,10 +18,7 @@
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -39,5 +36,5 @@ public class AbsenceShowDto extends AbsenceShowTerseDto {
 
   private PersonDayTerseDto personDay;
   private AbsenceTypeDto absenceType;
-  private List replacingAbsencesGroup = Lists.newArrayList();
+  private List<?> replacingAbsencesGroup = Lists.newArrayList();
 }

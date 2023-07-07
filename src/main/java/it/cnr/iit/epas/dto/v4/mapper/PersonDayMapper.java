@@ -37,5 +37,6 @@ public interface PersonDayMapper {
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 }

@@ -30,6 +30,12 @@ import it.cnr.iit.epas.models.WorkingTimeType;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
+/**
+ * Classe di supporto per l'istanziazione dei vari factory.
+ *
+ * @author cristian Lucchesi
+ *
+ */
 @Component
 public class WrapperFactory implements IWrapperFactory {
 
@@ -43,6 +49,9 @@ public class WrapperFactory implements IWrapperFactory {
   private final IWrapperContractMonthRecap wrapperContractMonthRecap;
   private final IWrapperContractWorkingTimeType wrapperContractWorkingTimeType;
   
+  /**
+   * Costrutture di default per l'injection.
+   */
   @Inject
   public WrapperFactory(IWrapperPerson wrapperPerson, IWrapperContract wrapperContract,
       IWrapperWorkingTimeType wrapperWorkingTimeType, IWrapperTimeSlot wrapperTimeSlot,

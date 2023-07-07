@@ -47,12 +47,16 @@ public interface AbsenceGroupsMapper {
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", source = "personDay.date")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   TakenAbsenceDto convert(TakenAbsence takenAbsences);
+
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
+
+  AbsenceGroupsDto convert(AbsenceGroupsRecap absenceGroupsRecap);
 
   @Mapping(target = "absence", source = "rowRecap.absence")
   TemplateRowDto convertTemplateRow(DayInPeriod.TemplateRow rowRecap);
@@ -65,5 +69,5 @@ public interface AbsenceGroupsMapper {
 
   PeriodChainDto convertPeriodChain(PeriodChain periodChain);
 
-  AbsenceGroupsDto convert(AbsenceGroupsRecap absenceGroupsRecap);
+
 }
