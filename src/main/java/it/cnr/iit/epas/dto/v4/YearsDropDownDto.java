@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 /**
- * DTO contenente la lista degli anni in cui ha lavorato un utente
+ * DTO contenente la lista degli anni in cui ha lavorato un utente.
  */
 @Data
 public class YearsDropDownDto {

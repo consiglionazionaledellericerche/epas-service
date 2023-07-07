@@ -55,12 +55,11 @@ public interface PersonVacationSummaryMapper {
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   TakenAbsenceDto convert(TakenAbsence takenAbsences);
+
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
 
   DayInPeriodDto convert(DayInPeriod daysInPeriod);
-
-  AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
 
   PersonVacationSummaryDto convert(PersonVacationSummary vacationSummary);
 
@@ -92,12 +91,15 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", source = "personDay.date")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 
   @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
   List<AbsenceShowTerseDto> convert(List<Absence> absences);
+
+  AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
 
   /**
    * Trasformazione da Enum a DTO per i VacationCode.

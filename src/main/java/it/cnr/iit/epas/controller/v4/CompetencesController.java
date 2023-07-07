@@ -34,12 +34,10 @@ import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.CompetenceCodeDto;
 import it.cnr.iit.epas.dto.v4.CompetenceDto;
 import it.cnr.iit.epas.dto.v4.CompetencesDto;
-import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.dto.v4.mapper.CompetencesMapper;
 import it.cnr.iit.epas.manager.CompetenceManager;
 import it.cnr.iit.epas.manager.recaps.competences.PersonMonthCompetenceRecap;
 import it.cnr.iit.epas.manager.recaps.competences.PersonMonthCompetenceRecapFactory;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Contract;
@@ -47,7 +45,6 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonCompetenceCodes;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -116,7 +113,7 @@ class CompetencesController {
 
     rules.checkifPermitted(person);
 
-    log.debug("Person {}",person);
+    log.debug("Person {}", person);
 
     LocalDate today = LocalDate.now();
     if (year > today.getYear() || today.getYear() == year && month > today.getMonth().getValue()) {
@@ -130,7 +127,7 @@ class CompetencesController {
       return ResponseEntity.badRequest().build();
       //Stampings.stampings(year, month);
     }
-    log.debug("contract {}",contract);
+    log.debug("contract {}", contract);
 
     List<PersonCompetenceCodes> pccList = competenceCodeDao
         .listByPerson(person,
@@ -144,7 +141,8 @@ class CompetencesController {
         year, Optional.ofNullable(month), codeListIds);
     Map<CompetenceCode, String> map = competenceManager.createMapForCompetences(competenceList);
 
-    Optional<PersonMonthCompetenceRecap> personMonthCompetenceRecap = personMonthCompetenceRecapFactory.create(
+    Optional<PersonMonthCompetenceRecap> personMonthCompetenceRecap = 
+        personMonthCompetenceRecapFactory.create(
         contract.get(), month, year);
 
     List<CompetenceCodeDto> competenceCodeListDto = Lists.newArrayList();

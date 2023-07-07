@@ -36,16 +36,15 @@ import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupsMapper;
-import it.cnr.iit.epas.dto.v4.mapper.DayInPeriodMapper;
 import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecap;
 import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecapFactory;
-import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.SortedMap;
 import javax.persistence.EntityNotFoundException;
@@ -53,7 +52,6 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,8 +80,6 @@ public class AbsencesGroupsController {
   private final AbsenceGroupsMapper absenceGroupsMapper;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
-  private final DayInPeriodMapper dayInPeriodMapper;
-
 
   /**
    * Elenco delle assenze in un mese.
@@ -150,7 +146,7 @@ public class AbsencesGroupsController {
     absGroupDto.setPeriodChain(newPeriodChain);
 
     List<GroupAbsenceTypeDto> groupAbsenceTypeDto = Lists.newArrayList();
-    for (GroupAbsenceType gr: psrDto.categorySwitcher.groups()){
+    for (GroupAbsenceType gr : psrDto.categorySwitcher.groups()) {
       groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
     }
     absGroupDto.setGroups(groupAbsenceTypeDto);

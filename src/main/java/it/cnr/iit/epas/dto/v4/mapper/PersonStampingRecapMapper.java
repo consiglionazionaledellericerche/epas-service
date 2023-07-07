@@ -95,14 +95,6 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
   AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);
 
-  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
-  @Mapping(target = "externalId", source = "absence.externalIdentifier")
-  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
-  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
-  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
-  AbsenceShowTerseDto convertTerse(Absence absence);
-
-
   @Mapping(target = "id", source = "stamping.id")
   @Mapping(target = "showPopover", expression = "java(stamping.showPopover())")
   StampingTemplateDto convert(StampingTemplate stamping);
@@ -115,6 +107,13 @@ public interface PersonStampingRecapMapper {
 
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
+
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "externalId", source = "absence.externalIdentifier")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
+  AbsenceShowTerseDto convertTerse(Absence absence);
 
   default Optional<WorkingTimeTypeDayDto> convertOptional(
       Optional<WorkingTimeTypeDay> workingTimeTypeDay) {

@@ -8,7 +8,7 @@ version: "3.3"
 
 services:
   epas-service:
-    image: ghcr.io/criluc/epas-service:latest
+    image: ghcr.io/consiglionazionaledellericerche/epas-service:latest
     container_name: epas-service
     ports:
       - 8080:8080

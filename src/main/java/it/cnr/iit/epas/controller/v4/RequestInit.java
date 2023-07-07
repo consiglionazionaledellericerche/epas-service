@@ -19,12 +19,10 @@ package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
-import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.YearsDropDownDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
 import java.time.LocalDate;

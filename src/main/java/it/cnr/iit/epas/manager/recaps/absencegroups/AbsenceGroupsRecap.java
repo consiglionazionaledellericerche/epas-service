@@ -18,14 +18,11 @@ package it.cnr.iit.epas.manager.recaps.absencegroups;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
-import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 /**
  * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi.
@@ -65,22 +62,23 @@ public class AbsenceGroupsRecap {
     periodChain = absenceService.residual(person, groupAbsenceType, from);
 
     //se l'user è amministratore visualizzo lo switcher del gruppo
-//    Optional<User> user = secureUtils.getCurrentUser();
-//    if (currentUser.isSystemUser()
-//        || userDao.getUsersWithRoles(person.getOffice(),
-//            Role.PERSONNEL_ADMIN, Role.PERSONNEL_ADMIN_MINI)
-//        .contains(currentUser)) {
-//      this.isAdmin = true;
-//    }
+    //    Optional<User> user = secureUtils.getCurrentUser();
+    //    if (currentUser.isSystemUser()
+    //        || userDao.getUsersWithRoles(person.getOffice(),
+    //            Role.PERSONNEL_ADMIN, Role.PERSONNEL_ADMIN_MINI)
+    //        .contains(currentUser)) {
+    //      this.isAdmin = true;
+    //    }
 
     if (!groupAbsenceType.isAutomatic()) {
-
+      //XXX
     }
     categorySwitcher = absenceService
         .buildForCategorySwitch(person, from, groupAbsenceType);
 
     log.debug(
-        "fine creazione nuovo AbsenceGroupsRecap in {} ms. person = {} groupAbsenceType = {}, from = {}",
+        "fine creazione nuovo AbsenceGroupsRecap in {} ms. "
+        + "Person = {} groupAbsenceType = {}, from = {}",
         System.currentTimeMillis() - start, person, groupAbsenceType, from);
   }
 }

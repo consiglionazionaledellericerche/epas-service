@@ -4,9 +4,9 @@
 [![license](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu&style=for-the-badge)](https://github.com/consiglionazionaledellericerche/epas-service/blob/master/LICENSE)
 [![Supported JVM Versions](https://img.shields.io/badge/JVM-11-brightgreen.svg?style=for-the-badge&logo=Java)](https://openjdk.java.net/install/)
 [![contributors](https://img.shields.io/github/contributors/consiglionazionaledellericerche/epas-service.svg?logo=github&style=for-the-badge)](https://github.com/consiglionazionaledellericerche/epas-service/contributors/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/consiglionazionalericerche/epas-service.svg?logo=docker&style=for-the-badge)](https://hub.docker.com/r/consiglionazionalericerche/epas-service/)
+[![Downloads](https://img.shields.io/github/downloads/consiglionazionaledellericerche/epas-service/total?logo=github&style=for-the-badge)](https://github.com/consiglionazionaledellericerche/epas-service/pkgs/container/epas-service)
 [![ePAS on developers.italia.it](https://img.shields.io/badge/Italia-blue.svg?label=ePAS&style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABd1BMVEUAZM0AYswAYcwAYs0Ea88Fa88Das8GbNACaM4Gac/B3/Xg8Pra7fnn9fx8suYAXMoHaM/u9fz///+YwOsAWcoFaM7m8fqTvuoAXMsAWsoAW8oAX8sAX8yOu+kAU8gAXssAYMwAY81Cj9t5seZUmt4EaM4LbNAhetQcd9Mdd9MgedShx+0VctIjetQle9V3sea01PFoqeP8/v/9//88jdoAXcv9/v/e7PkJa8/u9vw/jNprq+Tj7/oCZs4ed9NlouFpquM7jNrl8Prs9fxCjttpquT6/f7v9/3y+f36/v/S5vcFZ85anN/1+v2fx+2QvuoAZs4Nb9EOcNEOb9ERcNE8jNolfdWHt+gAVciKuegBZs7g7fmSv+rR5ffl8vs5i9kScdEfeNQZdNK00/H3+/7D2/RopuLR5vdwruVAj9sMbtDn8/vl8fsAZc1HlN251/Ku0PCv0PAogNYoftWexu3h7vn2/P7t9fzW5/eXwusBZc0PcNESc9L054SXAAABXklEQVQ4y72TZ1/CMBDG29SFqxpBu6SJigMXKlUcuLfinrj33nt8eC/Q8qssX8m9epL8c8lzl3DcvwSPEBLSrAtZ2Tm5eXzq/Y78gsKiYjElgEpKMcZlztSAqxyAihjAS7KCIkJVNU2wgEq3rhPKeFpVXeMhsF5bV9/g9Qgm0NjU3OKlQCitMPKBK6UNt3dgv2ECuBPjLhdYCXSzUY/Byb1M+EULgOgLAtAfkQMy5xxkYkiyAcNBuJJjhMlRiZPHfgHjE5NT0zOQQZoNYTxHeQuwjphfWFxaZvWmxsrqmgo+4zKsbxCCooUghs78xgGbCZWMOyIRMF2If2WQMgHw4S0Q225VI8kBinZA7O7tHxyipAAnHkU6cYxPNGq3GQPkU7NZZ8QOyOds7gIAcnkVBa5v7E/buL27f/A9qkw+Pb+EXt/ePz7tGSiRFMWIXktXwl/fAWTwaT4X9JJymYkfJHxA0uanFlQAAAAASUVORK5CYII=)](https://developers.italia.it/it/software/cnr-consiglionazionaledellericerche-epas)
-[![Version](https://img.shields.io/docker/v/consiglionazionalericerche/epas-service)](https://github.com/consiglionazionaledellericerche/epas-service/blob/main/VERSION)
+[![Version](https://img.shields.io/github/v/release/consiglionazionaledellericerche/epas-service.svg)](https://github.com/consiglionazionaledellericerche/epas-service/blob/main/VERSION)
 
 ePAS Service è la nuova versione della parte di backend di ePAS, fornirà solo endopoint REST ed è
 pensato per essere compatibile al 100% con il database di ePAS.
@@ -29,7 +29,7 @@ ePAS Service fornisce già alcuni servizi REST utilizzabili in produzione per:
 
  - la ricezione delle timbrature
  - la gestione degli uffici
- - la gestine dei dipendenti
+ - la gestione dei dipendenti
  - la gestione dei contratti
  - l'esportazione della situazione mensile di un dipendente
 

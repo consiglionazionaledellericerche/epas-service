@@ -1,10 +1,10 @@
 package it.cnr.iit.epas.manager.recaps.competences;
 
-import java.util.Optional;
 import it.cnr.iit.epas.dao.CompetenceCodeDao;
 import it.cnr.iit.epas.dao.CompetenceDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.models.Contract;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +36,10 @@ public class PersonMonthCompetenceRecapFactory {
    */
   public Optional<PersonMonthCompetenceRecap> create(Contract contract, int month, int year) {
 
-    return Optional.ofNullable(new PersonMonthCompetenceRecap(competenceCodeDao, competenceDao, wrapperFactory,
-        contract, month, year));
+    return Optional.ofNullable(
+        new PersonMonthCompetenceRecap(
+            competenceCodeDao, competenceDao, wrapperFactory,
+            contract, month, year));
 
   }
 

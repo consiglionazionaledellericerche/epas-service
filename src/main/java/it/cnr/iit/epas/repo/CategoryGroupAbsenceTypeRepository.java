@@ -17,7 +17,6 @@
 
 package it.cnr.iit.epas.repo;
 
-import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Repository;
  * Person repository for crud operations with paging and sorting.
  */
 @Repository
-public interface CategoryGroupAbsenceTypeRepository extends PagingAndSortingRepository<CategoryGroupAbsenceType, Long> {
+public interface CategoryGroupAbsenceTypeRepository 
+    extends PagingAndSortingRepository<CategoryGroupAbsenceType, Long> {
   //Empty
 }

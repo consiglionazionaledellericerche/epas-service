@@ -29,7 +29,6 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.ContractDao;
-import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
@@ -39,7 +38,6 @@ import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
-import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import it.cnr.iit.epas.models.Person;
@@ -75,8 +73,6 @@ class VacationController {
   private final PersonVacationMapper personVacationMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
-  private final AbsenceComponentDao absenceComponentDao;
-  private final AbsenceService absenceService;
   private final SecurityRules rules;
   private final PersonFinder personFinder;
   
@@ -159,13 +155,15 @@ class VacationController {
       val aspDto = personVacationSummaryMapper.convertToSubPeriod(sp);
       aspDto.setSubAmount(pvSummary.vacationSummary.subAmount(sp));
       aspDto.setSubFixedPostPartum(pvSummary.vacationSummary.subFixedPostPartum(sp));
-      aspDto.setSubAmountBeforeFixedPostPartum(pvSummary.vacationSummary.subAmountBeforeFixedPostPartum(sp));
+      aspDto.setSubAmountBeforeFixedPostPartum(
+          pvSummary.vacationSummary.subAmountBeforeFixedPostPartum(sp));
       aspDto.setSubTotalAmount(pvSummary.vacationSummary.subTotalAmount(sp));
       aspDto.setSubDayProgression(pvSummary.vacationSummary.subDayProgression(sp));
       aspDto.setSubDayPostPartum(pvSummary.vacationSummary.subDayPostPartum(sp));
       aspDto.setSubDayToFixPostPartum(pvSummary.vacationSummary.subDayToFixPostPartum(sp));
       aspDto.setSubAccrued(pvSummary.vacationSummary.subAccrued(sp));
-      aspDto.setContractEndFirstYearInPeriod(pvSummary.vacationSummary.contractEndFirstYearInPeriod(sp));
+      aspDto.setContractEndFirstYearInPeriod(
+          pvSummary.vacationSummary.contractEndFirstYearInPeriod(sp));
       aspDto.setDayInInterval(sp.periodInterval().dayInInterval());
       absenceSubPeriods.add(aspDto);
     }
