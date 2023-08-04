@@ -21,38 +21,46 @@ import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonDayTerseDto;
+import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper da Absence al suo DTO per la visualizzazione via REST.
  */
+@Component
 @Mapper(componentModel = "spring")
-public interface AbsenceMapper {
+public abstract class AbsenceMapper {
+
+  @Inject
+  protected AbsenceManager absenceManager;
 
   @Mapping(target = "personId", source = "person.id")
-  PersonDayTerseDto convert(PersonDay personDay);
+  public abstract PersonDayTerseDto convert(PersonDay personDay);
 
   @Mapping(target = "hasGroups", 
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
-  AbsenceTypeDto convert(AbsenceType absenceType);
+  public abstract AbsenceTypeDto convert(AbsenceType absenceType);
 
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "externalId", source = "absence.externalIdentifier")
-  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "justifiedTime", 
+      expression = "java(absenceManager.getJustifiedMinutes(absence))")
   @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
-  AbsenceShowDto convert(Absence absence);
-  
+  public abstract AbsenceShowDto convert(Absence absence);
+
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "externalId", source = "absence.externalIdentifier")
-  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "justifiedTime", 
+      expression = "java(absenceManager.getJustifiedMinutes(absence))")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
-  AbsenceShowTerseDto convertTerse(Absence absence);
-
+  public abstract AbsenceShowTerseDto convertTerse(Absence absence);
 
 }
