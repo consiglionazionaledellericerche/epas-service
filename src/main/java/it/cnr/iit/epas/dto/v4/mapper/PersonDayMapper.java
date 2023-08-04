@@ -19,24 +19,32 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
+import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
+import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper da PersonDay al suo DTO per la visualizzazione via REST.
  * Contiene anche il mapping delle assenze associate al PersonDay.
  */
+@Component
 @Mapper(componentModel = "spring")
-public interface PersonDayMapper {
+public abstract class PersonDayMapper {
 
-  @Mapping(target = "personId", source = "person.id")
-  PersonDayDto convert(PersonDay personDay);
+  @Inject
+  protected AbsenceManager absenceManager;
   
+  @Mapping(target = "personId", source = "person.id")
+  public abstract PersonDayDto convert(PersonDay personDay);
+
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
-  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "justifiedTime", 
+      expression = "java(absenceManager.getJustifiedMinutes(absence))")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
-  AbsenceShowTerseDto convert(Absence absence);
+  public abstract AbsenceShowTerseDto convert(Absence absence);
 }
