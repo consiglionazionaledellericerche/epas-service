@@ -115,7 +115,22 @@ public enum YearProgression {
       new YearPortion(289, 319, 1),
       new YearPortion(320, 349, 2),
       new YearPortion(350, 366, 2))),
-  
+
+  vacation20(20, ImmutableList.of(
+      new YearPortion(1, 15, 0),
+      new YearPortion(16, 45, 2),
+      new YearPortion(46, 75, 1),
+      new YearPortion(76, 106, 2),
+      new YearPortion(107, 136, 1),
+      new YearPortion(137, 167, 2),
+      new YearPortion(168, 197, 2),
+      new YearPortion(198, 227, 2),
+      new YearPortion(228, 258, 2),
+      new YearPortion(259, 288, 1),
+      new YearPortion(289, 319, 2),
+      new YearPortion(320, 349, 1),
+      new YearPortion(350, 366, 2))),
+
   vacation21(21, ImmutableList.of(
       new YearPortion(1, 15, 0),
       new YearPortion(16, 45, 2),
