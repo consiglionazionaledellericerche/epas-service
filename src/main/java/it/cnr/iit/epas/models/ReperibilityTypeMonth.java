@@ -17,9 +17,11 @@
 
 package it.cnr.iit.epas.models;
 
+import it.cnr.iit.epas.helpers.converter.YearMonthDateAttributeConverter;
 import it.cnr.iit.epas.models.base.MutableModel;
 import java.time.YearMonth;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -29,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+
 
 /**
  * Mantiene l'informazione sull'approvazione delle reperibilità
@@ -45,7 +48,8 @@ public class ReperibilityTypeMonth extends MutableModel {
   private static final long serialVersionUID = 4745667554574561506L;
 
   @NotNull
-  @Column(name = "year_month", nullable = false)
+  @Column(name = "year_month", nullable = false, columnDefinition = "text")
+  @Convert(converter = YearMonthDateAttributeConverter.class)
   private YearMonth yearMonth;
 
   @NotNull

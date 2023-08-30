@@ -67,7 +67,17 @@ public class MonthlyCompetenceType extends BaseEntity {
     list.add(holidaysCode);
     return list;
   }
-  
+
+  @Transient
+  public CompetenceCode getWorkdaysCode() {
+    return workdaysCode;
+  }
+
+  @Transient
+  public CompetenceCode getHolidaysCode() {
+    return holidaysCode;
+  }
+
   @Override
   public String toString() {
     return name;

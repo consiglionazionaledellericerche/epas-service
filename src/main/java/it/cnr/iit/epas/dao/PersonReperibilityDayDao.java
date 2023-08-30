@@ -33,6 +33,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Component;
  * @author Dario Tagliaferri
  */
 @Component
+@Slf4j
 public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
 
   @Inject
@@ -65,6 +67,9 @@ public class PersonReperibilityDayDao extends DaoBase<PersonReperibilityDay> {
     final PersonReperibilityDay result = getQueryFactory().selectFrom(prd)
         .where(prd.personReperibility.person.eq(person).and(prd.date.eq(date)))
         .fetchOne();
+
+    log.debug("getPersonReperibilityDay person {} date {}", person, date);
+    log.debug("getPersonReperibilityDay result {}", result);
 
     return Optional.ofNullable(result);
 

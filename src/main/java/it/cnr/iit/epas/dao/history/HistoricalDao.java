@@ -50,7 +50,7 @@ public class HistoricalDao {
     this.emp = emp;
     this.auditReader = auditReader;
     this.queryFactory = new JPAQueryFactory(emp.get());
-    
+
   }
 
   /**
