@@ -21,6 +21,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.config.SecurityProperties;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
@@ -47,6 +50,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+    })
 @Slf4j
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/admin")
@@ -111,7 +119,7 @@ class AdminController {
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", 
-          description = "Restituiti le informazioni relative alla configurazione di "
+          description = "Restituite le informazioni relative alla configurazione di "
               + "autenticazione."),
       @ApiResponse(responseCode = "401", 
           description = "Autenticazione non presente", content = @Content), 
