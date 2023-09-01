@@ -18,6 +18,14 @@
 package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.YearsDropDownDto;
 import it.cnr.iit.epas.models.Contract;
@@ -43,6 +51,14 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author
  */
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+    })
+@Tag(
+    name = "Request Init Controller", 
+    description = "Informazioni utili per la nuova UI di ePAS")
 @Slf4j
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/init")
@@ -61,6 +77,19 @@ public class RequestInit {
     this.securityUtils = securityUtils;
   }
 
+  @Operation(
+      summary = "Lista degli anni di utilizzo di ePAS da parte dell'utente corrente.",
+      description = "Questo endpoint è utilizzabile da tutti gli utenti autenticati.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituite le informazioni relative agli anni in cui la persona "
+              + "autenticata ha usato il sistema."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Utente che ha effettuato la richiesta non ha associato nessuna persona.",
+            content = @Content)
+  })
   @GetMapping("/yearsdropdown")
   ResponseEntity<YearsDropDownDto> yearsDropDown() {
     Optional<User> user = securityUtils.getCurrentUser();

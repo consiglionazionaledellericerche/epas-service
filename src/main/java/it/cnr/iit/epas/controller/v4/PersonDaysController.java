@@ -17,6 +17,14 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.PersonDayDao;
@@ -43,6 +51,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Cristian Lucchesi
  *
  */
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+    })
+@Tag(
+    name = "PersonDays Controller", 
+    description = "Gestione e visualizzazione delle informazioni giornaliere dei dipendenti")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -53,6 +69,26 @@ public class PersonDaysController {
   private final PersonDayMapper personDayMapper;
   private final PersonFinder personFinder;
 
+  @Operation(
+      summary = "Visualizzazione delle informazioni giornaliere di un mese di un dipendente.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona associata all'assenza e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituita la lista dei riepiloghi giornalieri del mese richiesto."),
+      @ApiResponse(responseCode = "401", 
+      description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+      description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+          + " i dati giornalieri della persona richiesta",
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+      description = "Persona non trovata con il personId o fil fiscalCode forniti",
+      content = @Content)
+  })
   @GetMapping(ApiRoutes.LIST)
   ResponseEntity<List<PersonDayDto>> list(
       @RequestParam("personId") Optional<Long> personId,
