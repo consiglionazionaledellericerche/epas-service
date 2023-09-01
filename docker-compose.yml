@@ -13,6 +13,10 @@ services:
     ports:
       - 8080:8080
     environment:
-      - spring_datasource_url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - spring_datasource_username=${DB_USER}
-      - spring_datasource_password=${DB_PASS}
+      - spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT:-5432}/${DB_NAME}
+      - spring.datasource.username=${DB_USER}
+      - spring.datasource.password=${DB_PASS}
+      - spring.security.oauth2.resourceserver.jwt.issuer-uri=${OAUTH2_JWT_ISSUER_URI}
+      - epas.security.oauth2.jwtfield=${OAUTH2_JWT_FIELD}
+      - epas.security.oauth2.userAuthIdentifier=${OAUTH2_USER_AUTH_IDENTIFIER}
+
