@@ -65,5 +65,5 @@ public class PersonDayDto extends PersonDayTerseDto {
   private boolean future;
   private boolean consideredExitingNow;
 
-
+  private boolean ignoreShortLeave;
 }
