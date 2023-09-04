@@ -13,6 +13,8 @@ services:
     ports:
       - 8080:8080
     environment:
+      - spring.profiles.active=prod
+
       - spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT:-5432}/${DB_NAME}
       - spring.datasource.username=${DB_USER}
       - spring.datasource.password=${DB_PASS}

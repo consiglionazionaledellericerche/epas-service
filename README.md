@@ -15,7 +15,7 @@ ePAS Service deve essere affiancato ad un'istanza funzionante di ePAS, condivide
 Al momento non sono ancora presenti le procedure ed i dati per utilizzare ePAS Service senza un 
 database configurato di ePAS.
 
-Il progetto è attualmente in fase avanzata di sviluppo e fornirà tutte le funzionalità necessarie
+Il progetto è attualmente in fase avanzata di sviluppo e fornirà molte delle funzionalità necessarie
 alla nuova interfaccia web di ePAS che sarà parte di un nuovo progetto e sarà rilasciata a
 breve in versione preliminare.
 
@@ -33,16 +33,19 @@ ePAS Service fornisce già alcuni servizi REST utilizzabili in produzione per:
  - la gestione dei contratti
  - l'esportazione della situazione mensile di un dipendente
 
-I servizi saranno estesi per coprire tutte le attuali funzionalità di ePAS lato server.
+I servizi saranno estesi per coprire la maggior parte delle attuali funzionalità di ePAS lato server.
 
-Al momento è possibil utilizzare l'autenticazione tramite Bearer Token OAUTH2 oppure Basic Auth.
+Altri servizi saranno sviluppati per coprire alcune delle funzionalità di ePAS lato server non presenti
+in questo progetto come per esempio [https://github.com/consiglionazionaledellericerche/epas-helpdesk-service](https://github.com/consiglionazionaledellericerche/epas-helpdesk-service)
+
+Al momento è possibile utilizzare l'autenticazione tramite Bearer Token OAUTH2 oppure Basic Auth.
 
 ePAS Service fornisce la documentazione di utilizzo degli endpoint REST in formato *openapi* ed
 integrare lo *Swagger* per la visualizzazione della documentazione e l'interfaccia di prova dei 
 servizi.
 
 L'interfaccia *Swagger* è disponibile nella url relativa alla propria installazione di ePAS Service
-con il path /swagger-ui/index.html. Es.: https://epas-service.amministrazione.cnr.it/swagger-ui/index.html.
+con il path /swagger-ui/index.html. Es.: [https://epas-service.amministrazione.cnr.it/swagger-ui/index.html](https://epas-service.amministrazione.cnr.it/swagger-ui/).
 
 
 ## 👏 Come Contribuire 
