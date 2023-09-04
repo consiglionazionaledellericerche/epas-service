@@ -40,6 +40,8 @@ public class PersonMutableDto extends PersonBaseDto {
   private Long perseoId;
   @Schema(description = "Data di nascita")
   private LocalDate birthday;
+  @Schema(description = "Residenza")
+  private String residence;
   @Schema(description = "Numero del telefono ufficio")
   private String telephone;
   @Schema(description = "Numero di fax")
