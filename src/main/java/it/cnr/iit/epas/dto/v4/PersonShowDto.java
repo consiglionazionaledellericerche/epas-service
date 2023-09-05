@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -45,5 +45,11 @@ public class PersonShowDto extends PersonMutableDto {
 
   @Schema(description = "Data ultimo aggiornamento")
   private LocalDateTime updatedAt;
+
+  @Schema(description = "Data di nascita")
+  private LocalDate birthDate;
+
+  @Schema(description = "Residenza")
+  private String residence;
 
 }
