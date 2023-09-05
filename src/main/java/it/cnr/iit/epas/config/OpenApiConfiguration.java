@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -35,9 +36,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
     info = @Info(title = "ePAS Service", 
-    version = "4.0", 
+    version = "4.0.0-beta.1", 
     description = "ePAS Service contains all the business logic and related REST endpoints"
-        + " to manage all the personnel information.")
+        + " to manage all the personnel information."),
+    servers = {@Server(url = "/", description = "ePAS Service URL")}
     )
 @SecuritySchemes(value = {
     @SecurityScheme(

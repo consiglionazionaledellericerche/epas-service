@@ -17,6 +17,14 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
@@ -40,6 +48,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Cristian Lucchesi
  *
  */
+@SecurityRequirements(
+    value = { 
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+        @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
+    })
+@Tag(
+    name = "Person Info Controller", 
+    description = "Visualizzazione delle informazioni della persona correntemente autenticata")
 @Slf4j
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/personinfo")
@@ -60,6 +76,18 @@ public class PersonInfo {
     this.secureUtils = securityUtils;
   }
 
+  @Operation(
+      summary = "Mostra le informazioni della persona collegata all'utente autenticato.",
+      description = "Questo endpoint è utilizzabile da tutti gli utenti autenticati.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituite le informazioni relative alla persona autenticata."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente", content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Utente che ha effettuato la richiesta non ha associato nessuna persona.",
+            content = @Content)
+  })
   @GetMapping
   ResponseEntity<PersonShowDto> show() {
     Optional<User> user = secureUtils.getCurrentUser();

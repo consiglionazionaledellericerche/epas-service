@@ -91,6 +91,8 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
 
   private LocalDate birthday;
 
+  private String residence;
+
   //  @Unique
   @Email
   @NotNull

@@ -52,7 +52,6 @@ public class TimeSlotManager {
     this.personDayManager = personDayManager;
   }
 
-  
   /**
    * Questo metodo non fa niente ma viene utilizzato per attivare un listener
    * alla fine della transazione (@AfterRequest), in modo che venga gestito con un processo 
@@ -74,7 +73,13 @@ public class TimeSlotManager {
     Verify.verifyNotNull(personDay);
     Verify.verifyNotNull(personDay.getPerson());
 
-    //FIXME da correggere per il passaggio allo spring boot
+    if (personDay.isIgnoreShortLeave()) {
+      log.info("Calcolo del permesso per breve per il giorno {} di {} ignorato come "
+          + "da configurazione del person day id={}", 
+          personDay.getDate(), personDay.getPerson().getFullname(), personDay.getId());
+      return;
+    }
+
     val mandatoryTimeSlot = contractDao
         .getContractMandatoryTimeSlot(personDay.getDate(), personDay.getPerson().getId());
     if (!mandatoryTimeSlot.isPresent()) {
