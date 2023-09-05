@@ -29,7 +29,8 @@ import org.mapstruct.Mapping;
 public interface ReperibilityEventMapper {
 
   @Mapping(target = "style", source = "event.style")
-  @Mapping(target = "id", source = "event.personId")
+  @Mapping(target = "groupId", source = "event.personId")
+  @Mapping(target = "id", source = "event.personReperibilityDayId")
   @Mapping(target = "personId", source = "event.personId")
   ReperibilityEventDto convert(ReperibilityEvent event);
 }

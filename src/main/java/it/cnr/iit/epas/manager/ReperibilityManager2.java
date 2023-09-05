@@ -193,7 +193,8 @@ public class ReperibilityManager2 {
    * @param personReperibilityDay il personReperibilityDay da salvare
    */
   public void save(PersonReperibilityDay personReperibilityDay) {
-    reperibilityDayDao.persist(personReperibilityDay);
+    log.debug("Richiesta cambio esistente save prd {}", personReperibilityDay.getDate());
+    reperibilityDayDao.save(personReperibilityDay);
     recalculate(personReperibilityDay);
   }
 
@@ -271,6 +272,8 @@ public class ReperibilityManager2 {
      * 3. La reperibilità non sia già presente
      * 4. Controllare anche il quantitativo di giorni di reperibilità feriale e festiva massimi?
      */
+
+    log.debug("reperibilityPermitted personReperibilityDay.getPersonReperibility().getPerson() {}", personReperibilityDay.getPersonReperibility().getPerson());
 
     //Verifica se la persona è attiva in quell'attività in quel giorno
     Optional<PersonReperibility> rep = reperibilityDao

@@ -33,7 +33,9 @@ public class ReperibilityEventDto {
 
   // CAMPI CUSTOM
   private Long id;
+  private Long groupId;
   private Long personId;
+  private Long personReperibilityDayId;
   private EventColor eventColor;
   private String email;
   private String mobile;

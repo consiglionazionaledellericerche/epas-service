@@ -266,7 +266,7 @@ class ReperibilityCalendarController {
       @NotNull @RequestParam("end") @DateTimeFormat(iso = ISO.DATE) LocalDate end) {
     log.debug(
         "REST method {} invoked with parameters start={}, end={}, reperibility={}, personId ={}",
-        "/rest/v4/reperibilitycalendar/events", start, end, reperibilityId, personId);
+        "/rest/v4/reperibilitycalendar/reperibilityPeople", start, end, reperibilityId, personId);
 
     PersonReperibilityType reperibility =
         reperibilityDao.getPersonReperibilityTypeById(reperibilityId);
@@ -381,7 +381,7 @@ class ReperibilityCalendarController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
           } else {
             reperibilityManager2.save(personReperibilityDay);
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().build();
           }
         }
       } else {  // Le Drools non danno il grant
@@ -418,7 +418,7 @@ class ReperibilityCalendarController {
   @GetMapping("/changeReperibility")
   ResponseEntity<List<ReperibilityEventDto>> changeReperibility(
       @RequestParam("personId") Optional<Long> personId,
-      @NotNull @RequestParam("reperibility") Long personReperibilityDayId,
+      @NotNull @RequestParam("personReperibilityDayId") Long personReperibilityDayId,
       @NotNull @RequestParam("newDate") @DateTimeFormat(iso = ISO.DATE) LocalDate newDate) {
     log.debug(
         "REST method {} invoked with parameters newDate={}, reperibility={}, personId ={}",
@@ -435,14 +435,17 @@ class ReperibilityCalendarController {
       if (rules.check(prd.get().getReperibilityType()) && rules.check(reperibilityTypeMonth)) {
         prd.get().setDate(newDate);
 
+        log.debug("Richiesta cambio esistente reperibilità prd {}", prd.get().getPersonReperibility());
+
         Optional<String> error = reperibilityManager2.reperibilityPermitted(prd.get());
+        log.debug("Richiesta cambio esistente reperibilità error {}", error);
         if (error.isPresent()) {
           return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } else {
           //salva il turno modificato
+          log.debug("Richiesta cambio esistente reperibilità prd {}", prd.get().getDate());
           reperibilityManager2.save(prd.get());
-
-          return ResponseEntity.ok().body(null);
+          return ResponseEntity.ok().build();
         }
       } else {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

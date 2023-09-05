@@ -30,7 +30,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.envers.AuditReader;
+import lombok.val;
+import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.stereotype.Component;
 
@@ -43,12 +44,10 @@ public class HistoricalDao {
 
   private final Provider<EntityManager> emp;
   private final JPQLQueryFactory queryFactory;
-  private final Provider<AuditReader> auditReader;
 
   @Inject
-  HistoricalDao(Provider<EntityManager> emp, Provider<AuditReader> auditReader) {
+  HistoricalDao(Provider<EntityManager> emp) {
     this.emp = emp;
-    this.auditReader = auditReader;
     this.queryFactory = new JPAQueryFactory(emp.get());
 
   }
@@ -78,9 +77,10 @@ public class HistoricalDao {
    */
   @Deprecated
   public <T extends BaseEntity> T valueAtRevision(Class<T> cls, long id, int revisionId) {
+    val auditReader = AuditReaderFactory.get(emp.get());
 
     final T current = Verify.verifyNotNull(emp.get().find(cls, id));
-    final T history = cls.cast(auditReader.get().createQuery()
+    final T history = cls.cast(auditReader.createQuery()
         .forEntitiesAtRevision(cls, revisionId)
         .add(AuditEntity.id().eq(current.getId()))
         .getSingleResult());
@@ -118,7 +118,8 @@ public class HistoricalDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<?>> lastRevisionsOf(Class<? extends BaseEntity> cls, long id) {
-    return FluentIterable.from(auditReader.get().createQuery()
+    val auditReader = AuditReaderFactory.get(emp.get());
+    return FluentIterable.from(auditReader.createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .add(AuditEntity.id().eq(id))
         .addOrder(AuditEntity.revisionNumber().desc())
@@ -135,12 +136,13 @@ public class HistoricalDao {
    * @return la versione precedente del istanza individuata da cls e id.
    */
   public <T extends BaseEntity> T previousRevisionOf(Class<T> cls, long id) {
-    final Integer currentRevision = (Integer) auditReader.get().createQuery()
+    val auditReader = AuditReaderFactory.get(emp.get());
+    final Integer currentRevision = (Integer) auditReader.createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .add(AuditEntity.id().eq(id))
         .addProjection(AuditEntity.revisionNumber().max())
         .getSingleResult();
-    final Integer previousRevision = (Integer) auditReader.get().createQuery()
+    final Integer previousRevision = (Integer) auditReader.createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .addProjection(AuditEntity.revisionNumber().max())
         .add(AuditEntity.id().eq(id))
