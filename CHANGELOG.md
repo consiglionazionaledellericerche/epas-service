@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - Aggiunta gestione e visualizzazione data di nascita e residenza delle persone
  - Inserita la possibilità di disattiva il calcolo automatica del permesso breve in un giorno
+ - Introdotta gestione missioni nel comune di residenza già presente su ePAS
+  
+### Changed
+ - Corretta gestione ricevute via REST con date sovrapposte
+
 
 ## [0.2.0] - 2023-09-04
 ### Added
