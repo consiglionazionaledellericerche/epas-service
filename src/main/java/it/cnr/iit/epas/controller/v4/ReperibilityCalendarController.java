@@ -33,9 +33,12 @@ import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonReperibilityDayDao;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
+import it.cnr.iit.epas.dto.v4.PersonReperibilityDayDto;
 import it.cnr.iit.epas.dto.v4.RecapReperibilityDto;
+import it.cnr.iit.epas.dto.v4.ReperibilityCalendarCreateDto;
 import it.cnr.iit.epas.dto.v4.ReperibilityEventDto;
 import it.cnr.iit.epas.dto.v4.ReperibilityTypeDropDownDto;
+import it.cnr.iit.epas.dto.v4.mapper.PersonReperibilityDayMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonReperibilityTypeMapper;
 import it.cnr.iit.epas.dto.v4.mapper.ReperibilityEventMapper;
 import it.cnr.iit.epas.dto.v4.mapper.ReperibilityRecapMapper;
@@ -64,9 +67,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -75,7 +80,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -109,6 +119,7 @@ class ReperibilityCalendarController {
   private final ReperibilityEventMapper reperibilityEventMapper;
   private final ReperibilityCalendarRecapFactory reperibilityCalendarRecapFactory;
   private final ReperibilityRecapMapper reperibilityRecapMapper;
+  private final PersonReperibilityDayMapper personReperibilityDayMapper;
   @Autowired
   private final Validator validator;
   ;
@@ -134,13 +145,11 @@ class ReperibilityCalendarController {
   ResponseEntity<ReperibilityTypeDropDownDto> show(
       @RequestParam("personId") Optional<Long> personId,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
-      @NotNull @RequestParam("reperibility") Long reperibilityId,
+      @RequestParam("reperibility") Optional<Long> reperibilityId,
       @RequestParam("date") @DateTimeFormat(iso = ISO.DATE) Optional<LocalDate> date) {
     log.debug("REST method {} invoked with parameters date={}, reperibility={}, personId ={}",
         "/rest/v4/reperibilitycalendar/show", date, reperibilityId, personId);
 
-    PersonReperibilityType reperibilityType = personReperibilityTypeRepository.findById(
-        reperibilityId).get();
     Person person = personFinder.getPerson(personId, fiscalCode)
         .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
@@ -151,10 +160,11 @@ class ReperibilityCalendarController {
     LocalDate today = LocalDate.now();
     final LocalDate currentDate = date.orElse(LocalDate.now());
 
-    log.debug("Richiesta visualizzazione reperibilità {}", reperibilityType);
-
     final List<PersonReperibilityType> reperibilities = reperibilityManager2.getUserActivities();
 
+    reperibilities.forEach(personReperibilityType -> {
+      log.debug("Richiesta visualizzazione reperibilità getMonthlyCompetenceType {}", personReperibilityType.getMonthlyCompetenceType().toString());
+    });
     log.debug("PersonReperibilityType reperibilities {}", reperibilities);
 
     if (reperibilities.isEmpty()) {
@@ -164,9 +174,10 @@ class ReperibilityCalendarController {
     }
 
     final PersonReperibilityType reperibilitySelected =
-        reperibilityType.getId() != null ? reperibilityType : reperibilities.get(0);
+        reperibilityId.isPresent()? personReperibilityTypeRepository.findById(
+            reperibilityId.get()).get(): reperibilities.get(0);
 
-    log.debug("PersonReperibilityType reperibilitySelected {}", reperibilitySelected);
+    log.debug("PersonReperibilityType reperibilitySelected {}", reperibilitySelected.getMonthlyCompetenceType().name);
     log.debug("PersonReperibilityType currentDate {}", currentDate);
 
     ReperibilityTypeDropDownDto dto = new ReperibilityTypeDropDownDto();
@@ -176,7 +187,7 @@ class ReperibilityCalendarController {
         .map(ab -> personReperibilityTypeMapper.convert(ab))
         .collect(Collectors.toList()));
     dto.setCurrentDate(currentDate);
-    boolean editable = isEditable(reperibilityId, currentDate);
+    boolean editable = isEditable(reperibilitySelected.getId(), currentDate);
     dto.setEditable(editable);
     return ResponseEntity.ok().body(dto);
   }
@@ -331,42 +342,39 @@ class ReperibilityCalendarController {
           description = "Reperibilità già esistente in quel giorno",
           content = @Content)
   })
-  @GetMapping("/newReperibility")
-  ResponseEntity<List<ReperibilityEventDto>> newReperibility(
-      @NotNull @RequestParam("personId") Long personId,
-      @NotNull @RequestParam("reperibility") Long reperibilityId,
-      @NotNull @RequestParam("date") @DateTimeFormat(iso = ISO.DATE) LocalDate date) {
+  @PutMapping(ApiRoutes.CREATE)
+  ResponseEntity<PersonReperibilityDayDto> newReperibility(
+      @NotNull @Valid @RequestBody ReperibilityCalendarCreateDto reperibilityDto) {
     log.debug(
-        "REST method {} invoked with parameters date={}, reperibility={}, personId ={}",
-        "/rest/v4/reperibilitycalendar/newReperibility", date, reperibilityId, personId);
+        "REST method PUT /rest/v4/reperibilitycalendar invoked with dto={}",
+        reperibilityDto);
 
-    PersonReperibilityType reperibilityType = reperibilityDao.getPersonReperibilityTypeById(reperibilityId);
+    val reperibilityId = reperibilityDto.getReperibilityId();
+    val personId = reperibilityDto.getPersonId();
+    val date = reperibilityDto.getDate();
+
+    PersonReperibilityType reperibilityType = reperibilityDao.getPersonReperibilityTypeById(
+        reperibilityId);
 
     final ReperibilityTypeMonth reperibilityTypeMonth =
         reperibilityTypeMonthDao.byReperibilityTypeAndDate(reperibilityType, date).orElse(null);
-
-
-    log.debug("reperibilityType>> {}",reperibilityType);
-    log.debug("reperibilityTypeMonth>> {}",reperibilityTypeMonth);
 
     if (reperibilityType != null) {
       if (rules.check(reperibilityType) && rules.check(reperibilityTypeMonth)) {
         Person person = personDao.getPersonById(personId);
         if (person == null) {
-          log.debug("Richiesta inserimento nuova reperibilità ma nessun utente presente");
           return ResponseEntity.notFound().build();
         } else {
-          log.debug("Richiesta inserimento nuova reperibilità");
           PersonReperibilityDay personReperibilityDay = new PersonReperibilityDay();
           personReperibilityDay.setDate(date);
           personReperibilityDay.setReperibilityType(reperibilityType);
           personReperibilityDay.setPersonReperibility(reperibilityDao
               .getPersonReperibilityByPersonAndType(person, reperibilityType));
 
-          Errors errors = new BeanPropertyBindingResult(personReperibilityDay, "personReperibilityDay");
+          Errors errors = new BeanPropertyBindingResult(personReperibilityDay,
+              "personReperibilityDay");
           validator.validate(personReperibilityDay, errors);
 
-          log.debug("Richiesta inserimento nuova reperibilità personReperibilityDay {}", personReperibilityDay);
           Optional<String> error;
 
           if (errors.hasErrors()) {
@@ -375,13 +383,11 @@ class ReperibilityCalendarController {
             // Validation successful, save the entity
             error = reperibilityManager2.reperibilityPermitted(personReperibilityDay);
           }
-
-          log.debug("Richiesta inserimento nuova reperibilità error {}", error);
           if (error.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
           } else {
             reperibilityManager2.save(personReperibilityDay);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(personReperibilityDayMapper.convert(personReperibilityDay));
           }
         }
       } else {  // Le Drools non danno il grant
@@ -415,15 +421,13 @@ class ReperibilityCalendarController {
           description = "Reperibilità già esistente in quel giorno",
           content = @Content)
   })
-  @GetMapping("/changeReperibility")
+  @PatchMapping(ApiRoutes.PATCH)
   ResponseEntity<List<ReperibilityEventDto>> changeReperibility(
-      @RequestParam("personId") Optional<Long> personId,
-      @NotNull @RequestParam("personReperibilityDayId") Long personReperibilityDayId,
+      @NotNull @PathVariable("id") Long personReperibilityDayId,
       @NotNull @RequestParam("newDate") @DateTimeFormat(iso = ISO.DATE) LocalDate newDate) {
     log.debug(
-        "REST method {} invoked with parameters newDate={}, reperibility={}, personId ={}",
-        "/rest/v4/reperibilitycalendar/changeReperibility", newDate, personReperibilityDayId,
-        personId);
+        "REST method PATCH /rest/v4/reperibilitycalendar/patch/{}?newDate={} invoked with parameters",
+        personReperibilityDayId, newDate);
 
     final Optional<PersonReperibilityDay> prd =
         reperibilityDao.getPersonReperibilityDayById(personReperibilityDayId);
@@ -435,7 +439,8 @@ class ReperibilityCalendarController {
       if (rules.check(prd.get().getReperibilityType()) && rules.check(reperibilityTypeMonth)) {
         prd.get().setDate(newDate);
 
-        log.debug("Richiesta cambio esistente reperibilità prd {}", prd.get().getPersonReperibility());
+        log.debug("Richiesta cambio esistente reperibilità prd {}",
+            prd.get().getPersonReperibility());
 
         Optional<String> error = reperibilityManager2.reperibilityPermitted(prd.get());
         log.debug("Richiesta cambio esistente reperibilità error {}", error);
@@ -474,16 +479,14 @@ class ReperibilityCalendarController {
           description = "Reperibilità non trovate con l'id",
           content = @Content)
   })
-  @GetMapping("/deleteReperibility")
+  @DeleteMapping(ApiRoutes.DELETE)
   ResponseEntity<List<ReperibilityEventDto>> deleteReperibility(
-      @RequestParam("personId") Optional<Long> personId,
-      @NotNull @RequestParam("reperibility") Long personReperibilityDayId) {
-    log.debug(
-        "REST method {} invoked with parameters reperibility={}, personId ={}",
-        "/rest/v4/reperibilitycalendar/deleteReperibility", personReperibilityDayId, personId);
+      @NotNull @PathVariable("id") Long reperibilityId) {
+    log.debug("REST method DELETE /rest/v4/reperibilitycalendar/{} invoked with parameters ",
+        reperibilityId);
 
     final Optional<PersonReperibilityDay> prd =
-        reperibilityDao.getPersonReperibilityDayById(personReperibilityDayId);
+        reperibilityDao.getPersonReperibilityDayById(reperibilityId);
     if (!prd.isPresent()) {
       return ResponseEntity.notFound().build();
     }
@@ -521,13 +524,12 @@ class ReperibilityCalendarController {
   })
   @GetMapping("/recap")
   ResponseEntity<RecapReperibilityDto> recap(
-      @RequestParam("personId") Optional<Long> personId,
       @NotNull @RequestParam("reperibility") Long reperibilityId,
       @NotNull @RequestParam("start") @DateTimeFormat(iso = ISO.DATE) LocalDate start,
       @NotNull @RequestParam("end") @DateTimeFormat(iso = ISO.DATE) LocalDate end) {
     log.debug(
-        "REST method {} invoked with parameters start={}, end={}, reperibility={}, personId ={}",
-        "/rest/v4/reperibilitycalendar/recap", start, end, reperibilityId, personId);
+        "REST method {} invoked with parameters start={}, end={}, reperibility={}",
+        "/rest/v4/reperibilitycalendar/recap", start, end, reperibilityId);
 
     PersonReperibilityType reperibility =
         reperibilityDao.getPersonReperibilityTypeById(reperibilityId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,26 +17,43 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.MonthlyCompetenceType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
+ * DTO per l'esportazione via REST delle informazioni
+ * principali di PersonReperibilityDto.
  *
  * @since versione 4 dell'API REST
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class PersonReperibilityTypeTerseDto extends BaseModelDto {
+public class PersonReperibilityDto {
 
-  private String description;
-  private MonthlyCompetenceTypeDto monthlyCompetenceType;
+  @Schema(description = "Persona")
+  private
+  PersonShowDto person;
 
-  
+  @Schema(description = "Data di inizio reperibilità")
+  private
+  LocalDate startDate;
+
+  @Schema(description = "Data di fine reperibilità")
+  private
+  LocalDate endDate;
+
+  @Schema(description = "Tipologia di reperibilità")
+  private
+  PersonReperibilityTypeDto personReperibilityType;
+
+  @Schema(description = "Note")
+  private
+  String note;
+
+  @Schema(description = "Note")
+  private
+  List<PersonReperibilityDto> personReperibilityDays;
 }

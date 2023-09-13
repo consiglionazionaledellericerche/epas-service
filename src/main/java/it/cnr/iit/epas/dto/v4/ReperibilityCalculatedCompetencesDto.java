@@ -16,19 +16,14 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.LocalDate;
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-/**
- * DTO contenente la lista degli anni in cui ha lavorato un utente.
- */
 @Data
-public class RecapReperibilityDto {
+public class ReperibilityCalculatedCompetencesDto {
 
-  LocalDate start;
-  PersonReperibilityTypeTerseDto reperibility;
-  ReperibilityTypeMonthDto reperibilityTypeMonth;
-  List<ReperibilityCalculatedCompetencesDto> workDaysReperibilityCalculatedCompetences;
-  List<ReperibilityCalculatedCompetencesDto> holidaysReperibilityCalculatedCompetences;
+  @Schema(description = "Nome della persona")
+  private String fullname;
+  @Schema(description = "Conteggio delle reperibilità")
+  private Integer count;
 }

@@ -452,7 +452,7 @@ public class AbsencesController {
       description = "Assenza non trovata con l'id fornito",
       content = @Content)
   })
-  @DeleteMapping(ApiRoutes.SHOW)
+  @DeleteMapping(ApiRoutes.DELETE)
   public ResponseEntity<Void> deleteAbsence(@NotNull @PathVariable("id") Long id) {
     log.debug("AbsenceController::deleteAbsence id = {}", id);
     val absence = absenceDao.byId(id

@@ -17,7 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import it.cnr.iit.epas.dto.v4.MonthlyCompetenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeTerseDto;
+import it.cnr.iit.epas.models.MonthlyCompetenceType;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,6 +29,9 @@ import org.mapstruct.Mapping;
  */
 @Mapper(componentModel = "spring")
 public interface PersonReperibilityTypeMapper {
+
+  @Mapping(target = "name", expression = "java(monthlyCompetenceType.toString())")
+  MonthlyCompetenceTypeDto convert(MonthlyCompetenceType monthlyCompetenceType);
 
   @Mapping(target = "id", source = "personReperibilityType.id")
   @Mapping(target = "description", source = "personReperibilityType.description")

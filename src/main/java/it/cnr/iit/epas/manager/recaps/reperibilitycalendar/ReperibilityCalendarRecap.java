@@ -15,6 +15,8 @@
 
 package it.cnr.iit.epas.manager.recaps.reperibilitycalendar;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
 import it.cnr.iit.epas.manager.ReperibilityManager2;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
@@ -22,8 +24,10 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 /**
  * Oggetto che modella il contenuto della vista contenente il riepilogo delle ferie e permessi.
@@ -35,8 +39,8 @@ public class ReperibilityCalendarRecap {
 
   public PersonReperibilityType reperibility;
   public ReperibilityTypeMonth reperibilityTypeMonth;
-  public Map<Person, Integer> workDaysReperibilityCalculatedCompetences;
-  public Map<Person, Integer> holidaysReperibilityCalculatedCompetences;
+  public List<ReperibilityCalculatedCompetences> workDaysReperibilityCalculatedCompetences = Lists.newArrayList();
+  public List<ReperibilityCalculatedCompetences> holidaysReperibilityCalculatedCompetences = Lists.newArrayList();
 
 
   /**
@@ -55,17 +59,26 @@ public class ReperibilityCalendarRecap {
     log.debug("ReperibilityCalendarRecap = start{}", start);
     log.debug("ReperibilityCalendarRecap = end{}", end);
 
-    workDaysReperibilityCalculatedCompetences = reperibilityManager2
+    val workDaysRepCompetences = reperibilityManager2
         .calculateReperibilityWorkDaysCompetences(reperibility, start, end);
-    holidaysReperibilityCalculatedCompetences =
+
+    workDaysRepCompetences.forEach((person, count) -> {
+      val personCompRecap = new ReperibilityCalculatedCompetences();
+      personCompRecap.setFullname(person.getFullname());
+      personCompRecap.setCount(count);
+      workDaysReperibilityCalculatedCompetences.add(personCompRecap);
+    });
+    val holidaysRepCompetences =
         reperibilityManager2.calculateReperibilityHolidaysCompetences(reperibility, start, end);
+
+    holidaysRepCompetences.forEach((person, count) -> {
+      val personCompRecap = new ReperibilityCalculatedCompetences();
+      personCompRecap.setFullname(person.getFullname());
+      personCompRecap.setCount(count);
+      holidaysReperibilityCalculatedCompetences.add(personCompRecap);
+    });
 
     reperibilityTypeMonth = reperibilityTypeMonthDao
         .byReperibilityTypeAndDate(reperibility, start).orElse(null);
-
-    log.debug("ReperibilityCalendarRecap = workDaysReperibilityCalculatedCompetences  {}", workDaysReperibilityCalculatedCompetences);
-    log.debug("ReperibilityCalendarRecap = holidaysReperibilityCalculatedCompetences  {}", holidaysReperibilityCalculatedCompetences);
-    log.debug("ReperibilityCalendarRecap = reperibilityTypeMonth  {}", reperibilityTypeMonth);
-
   }
 }

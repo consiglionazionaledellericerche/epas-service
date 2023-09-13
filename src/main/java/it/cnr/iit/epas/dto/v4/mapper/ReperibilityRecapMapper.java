@@ -17,16 +17,16 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.AbsenceTypeShowTerseDto;
+import it.cnr.iit.epas.dto.v4.MonthlyCompetenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeTerseDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.RecapReperibilityDto;
+import it.cnr.iit.epas.dto.v4.ReperibilityCalculatedCompetencesDto;
 import it.cnr.iit.epas.dto.v4.ReperibilityTypeMonthDto;
+import it.cnr.iit.epas.manager.recaps.reperibilitycalendar.ReperibilityCalculatedCompetences;
 import it.cnr.iit.epas.manager.recaps.reperibilitycalendar.ReperibilityCalendarRecap;
-import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.MonthlyCompetenceType;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
-import it.cnr.iit.epas.models.absences.AbsenceType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -36,11 +36,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReperibilityRecapMapper {
 
+  @Mapping(target = "name", expression = "java(monthlyCompetenceType.toString())")
+  MonthlyCompetenceTypeDto convert(MonthlyCompetenceType monthlyCompetenceType);
+
   PersonReperibilityTypeTerseDto convert(PersonReperibilityType reperibility);
   ReperibilityTypeMonthDto convert(ReperibilityTypeMonth reperibilityTypeMonth);
-
-  @Mapping(target = "qualification", source = "qualification.id")
-  PersonShowDto convert(Person person);
+  ReperibilityCalculatedCompetencesDto convert(
+      ReperibilityCalculatedCompetences reperibilityCompetences);
 
   RecapReperibilityDto convert(ReperibilityCalendarRecap reperibilityCalendarRecap);
 }

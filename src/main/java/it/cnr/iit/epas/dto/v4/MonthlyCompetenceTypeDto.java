@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,21 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.LocalDate;
+import com.google.common.collect.Lists;
 import java.util.List;
 import lombok.Data;
 
-/**
- * DTO contenente la lista degli anni in cui ha lavorato un utente.
- */
 @Data
-public class RecapReperibilityDto {
-
-  LocalDate start;
-  PersonReperibilityTypeTerseDto reperibility;
-  ReperibilityTypeMonthDto reperibilityTypeMonth;
-  List<ReperibilityCalculatedCompetencesDto> workDaysReperibilityCalculatedCompetences;
-  List<ReperibilityCalculatedCompetencesDto> holidaysReperibilityCalculatedCompetences;
+public class MonthlyCompetenceTypeDto {
+  private String name;
+  private List<PersonReperibilityTypeTerseDto> personReperibilityTypes = Lists.newArrayList();
+  private CompetenceCodeDto workdaysCode;
+  private CompetenceCodeDto holidaysCode;
 }

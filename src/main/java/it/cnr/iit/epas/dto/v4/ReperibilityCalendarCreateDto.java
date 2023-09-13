@@ -17,26 +17,27 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.MonthlyCompetenceType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
+ * DTO con i dati per la creazione della reperibilità.
  *
- * @since versione 4 dell'API REST
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class PersonReperibilityTypeTerseDto extends BaseModelDto {
+public class ReperibilityCalendarCreateDto{
 
-  private String description;
-  private MonthlyCompetenceTypeDto monthlyCompetenceType;
+  @Schema(description = "Id della persona")
+  private Long personId;
 
-  
+  @Schema(description = "Id della tipologia di reperibilità")
+  private Long reperibilityId;
+
+  @Schema(description = "data in cui inserire la reperibilità")
+  private LocalDate date;
+
 }

@@ -15,28 +15,23 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.models.MonthlyCompetenceType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import it.cnr.iit.epas.dto.v4.PersonReperibilityDayDto;
+import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonReperibilityDay;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
- * DTO per l'esportazione via REST delle informazioni 
- * principali di un'assenza.
- *
- * @since versione 4 dell'API REST
- * @author Cristian Lucchesi
- *
+ * Mapper da PersonReperibilityDay al suo DTO per la visualizzazione via REST.
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class PersonReperibilityTypeTerseDto extends BaseModelDto {
+@Mapper(componentModel = "spring")
+public interface PersonReperibilityDayMapper {
 
-  private String description;
-  private MonthlyCompetenceTypeDto monthlyCompetenceType;
+  @Mapping(target = "qualification", source = "person.qualification.id")
+  PersonShowDto convert(Person person);
 
-  
+  PersonReperibilityDayDto convert(PersonReperibilityDay personReperibility);
 }
