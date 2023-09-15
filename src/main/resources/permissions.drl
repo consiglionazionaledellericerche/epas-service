@@ -4,7 +4,10 @@ import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
-
+import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.Configuration;
+import it.cnr.iit.epas.models.ReperibilityTypeMonth;
+import it.cnr.iit.epas.manager.configurations.EpasParam;
 
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
@@ -44,7 +47,8 @@ when
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
 then
  $c.grant();
@@ -58,7 +62,8 @@ when
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $p)
 then
  $c.grant();
@@ -272,3 +277,106 @@ when
 then
  $c.grant();
 end
+
+
+/*******************************************************************************
+ * Questa parte per il nuovo ruolo supervisore della reperibilità
+ ******************************************************************************/
+rule isReperibilitySupervisor_generic
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $c: PermissionCheck((permission.startsWith("/rest/v4/reperibilitycalendar")),
+      toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule reperibilitySupervisorCanManagePersonReperibilityType
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $prt)
+then
+ $c.grant();
+end
+
+rule canManageReperibilityMonth
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $target: ReperibilityTypeMonth((!approved && personReperibilityType == $prt) || this == null)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+rule canEditReperibilityTypeMonth
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $target: ReperibilityTypeMonth(personReperibilityType == $prt)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/*Fine parte di ruolo supervisore delle reperibilità*/
+
+
+/*Inizio parte gestori delle reperibilità*/
+
+rule isReperibilityManager_generic
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == null)
+then
+ $c.grant();
+end
+
+
+rule reperibilityManagerCanManagePersonReperibilityType
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilities
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $prt)
+then
+ $c.grant();
+end
+
+rule reperibilityManagercanManageReperibilityMonth
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilities
+  $target: ReperibilityTypeMonth((!approved && personReperibilityType == $prt) || this == null)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/*Fine parte dei gestori delle reperibilità*/

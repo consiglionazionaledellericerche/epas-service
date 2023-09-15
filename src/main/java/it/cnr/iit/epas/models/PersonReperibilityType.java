@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
+import it.cnr.iit.epas.helpers.converter.YearMonthDateAttributeConverter;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
