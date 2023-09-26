@@ -4,6 +4,7 @@ import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.Configuration;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
@@ -45,6 +46,7 @@ when
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/init/yearsdropdown") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')) ||
@@ -67,6 +69,36 @@ when
     toCheck(), target == $p)
 then
  $c.grant();
+end
+
+/*Ruolo per vedere il calendario per i reperibili e le richieste di cambio reperibilità*/
+
+rule isAvailable_general
+when 
+  $uro: UsersRolesOffices()
+  Role(name == Role.EMPLOYEE) from $uro.role
+  $p: Person (reperibility != null) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations	
+  $c: PermissionCheck(
+  	permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET'),
+   	target == null, granted == false)
+then
+ $c.grant();
+end
+
+rule isAvailable_personReperibilityType
+when
+	$p: Person (reperibility != null) from currentUser.getPerson()
+	$o: Office() from $p.office
+  	Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations	
+	$pr: PersonReperibility() from $p.reperibility
+	$prt: PersonReperibilityType() from $pr.personReperibilityType
+	$c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET'), 
+      target == $prt, granted == false)
+then
+$c.grant();
 end
 
 /*******************************************************************************

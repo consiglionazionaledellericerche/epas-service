@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,47 +20,43 @@ package it.cnr.iit.epas.manager;
 import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import it.cnr.iit.epas.dao.CompetenceDao;
+import it.cnr.iit.epas.dao.PersonDayDao;
+import it.cnr.iit.epas.dao.PersonReperibilityDayDao;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
 import it.cnr.iit.epas.dao.history.HistoricalDao;
+import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.messages.Messages;
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
-import it.cnr.iit.epas.models.MonthlyCompetenceType;
-import it.cnr.iit.epas.models.PersonDay;
-import it.cnr.iit.epas.models.PersonReperibilityDay;
-import it.cnr.iit.epas.models.ReperibilityTypeMonth;
-import it.cnr.iit.epas.models.dto.HolidaysReperibilityDto;
-import it.cnr.iit.epas.models.dto.WorkDaysReperibilityDto;
-import it.cnr.iit.epas.utils.DateUtility;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import it.cnr.iit.epas.dao.CompetenceDao;
-import it.cnr.iit.epas.dao.PersonDayDao;
-import it.cnr.iit.epas.dao.PersonReperibilityDayDao;
-import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.PersonReperibility;
+import it.cnr.iit.epas.models.PersonReperibilityDay;
 import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.models.dto.HolidaysReperibilityDto;
+import it.cnr.iit.epas.models.dto.WorkDaysReperibilityDto;
 import it.cnr.iit.epas.repo.PersonReperibilityTypeRepository;
 import it.cnr.iit.epas.security.SecureUtils;
+import it.cnr.iit.epas.utils.DateUtility;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,7 +167,7 @@ public class ReperibilityManager2 {
    * @param start            data di inizio del periodo
    * @param end              data di fine del periodo
    * @return La lista di tutte le persone abilitate su quell'attività nell'intervallo di tempo
-   * specificato.
+   *     specificato.
    */
   public List<PersonReperibility> reperibilityWorkers(
       PersonReperibilityType reperibilityType, LocalDate start,
@@ -273,7 +269,8 @@ public class ReperibilityManager2 {
      * 4. Controllare anche il quantitativo di giorni di reperibilità feriale e festiva massimi?
      */
 
-    log.debug("reperibilityPermitted personReperibilityDay.getPersonReperibility().getPerson() {}", personReperibilityDay.getPersonReperibility().getPerson());
+    log.debug("reperibilityPermitted personReperibilityDay.getPersonReperibility().getPerson() {}",
+        personReperibilityDay.getPersonReperibility().getPerson());
 
     //Verifica se la persona è attiva in quell'attività in quel giorno
     Optional<PersonReperibility> rep = reperibilityDao
@@ -288,10 +285,13 @@ public class ReperibilityManager2 {
         .getPersonReperibilityDay(
             personReperibilityDay.getPersonReperibility().getPerson(),
             personReperibilityDay.getDate());
-    log.debug("Richiesta inserimento nuova reperibilità getPersonReperibility {}", personReperibilityDay.getPersonReperibility().getPerson());
-    log.debug("Richiesta inserimento nuova reperibilità personReperibilityDay.getDate() {}", personReperibilityDay.getDate());
+    log.debug("Richiesta inserimento nuova reperibilità getPersonReperibility {}", 
+        personReperibilityDay.getPersonReperibility().getPerson());
+    log.debug("Richiesta inserimento nuova reperibilità personReperibilityDay.getDate() {}", 
+        personReperibilityDay.getDate());
 
-    log.debug("Richiesta inserimento nuova reperibilità personReperibility.isPresent() {}", personReperibility.isPresent());
+    log.debug("Richiesta inserimento nuova reperibilità personReperibility.isPresent() {}", 
+        personReperibility.isPresent());
     if (personReperibility.isPresent()) {
       return Optional.of(messages.get("reperibility.alreadyInReperibility",
           personReperibility.get().getReperibilityType()));
@@ -354,14 +354,10 @@ public class ReperibilityManager2 {
 
     final LocalDate lastDay;
     LocalDate lastDay1;
-    log.debug("reperibility = {}",reperibility);
-    log.debug("from = {}",from);
-    log.debug("to = {}",to);
-
-    log.debug("reperibility.getOffice() = {}", reperibility.getOffice());
-    log.debug("EpasParam = {}", EpasParam.ENABLE_REPERIBILITY_APPROVAL_BEFORE_END_MONTH);
-
-    log.debug("EpasParam = {}", configurationManager.configValue(reperibility.getOffice(),
+    log.trace("reperibility = {}, from={}, to={}", reperibility, from, to);
+    log.trace("reperibility.getOffice() = {}", reperibility.getOffice());
+    log.trace("EpasParam = {}", EpasParam.ENABLE_REPERIBILITY_APPROVAL_BEFORE_END_MONTH);
+    log.trace("EpasParam = {}", configurationManager.configValue(reperibility.getOffice(),
         EpasParam.ENABLE_REPERIBILITY_APPROVAL_BEFORE_END_MONTH));
 
     try {
@@ -381,8 +377,10 @@ public class ReperibilityManager2 {
     }
     lastDay = lastDay1;
 
-    log.debug("reperibility.getMonthlyCompetenceType = {}", reperibility.getMonthlyCompetenceType());
-    log.debug("reperibility.getMonthlyCompetenceType = {}", reperibility.getMonthlyCompetenceType().getWorkdaysCode());
+    log.trace("reperibility.getMonthlyCompetenceType = {}", 
+        reperibility.getMonthlyCompetenceType());
+    log.trace("reperibility.getMonthlyCompetenceType = {}", 
+        reperibility.getMonthlyCompetenceType().getWorkdaysCode());
 
     CompetenceCode code = reperibility.getMonthlyCompetenceType().getWorkdaysCode();
     involvedReperibilityWorkers(reperibility, from, to).forEach(person -> {
@@ -402,7 +400,7 @@ public class ReperibilityManager2 {
    * @param from         data di inizio
    * @param to           data di fine
    * @return Una lista di persone che sono effettivamente coinvolte in reperibilità in un
-   * determinato periodo (Dipendenti con le reperibilità attive in quel periodo).
+   *     determinato periodo (Dipendenti con le reperibilità attive in quel periodo).
    */
   public List<Person> involvedReperibilityWorkers(PersonReperibilityType reperibility,
       LocalDate from, LocalDate to) {
@@ -419,7 +417,7 @@ public class ReperibilityManager2 {
    * @param from         data iniziale
    * @param to           data finale
    * @return il numero di giorni di competenza maturati in base alle reperibilità effettuate nel
-   * periodo selezionato (di norma serve calcolarli su un intero mese al massimo).
+   *     periodo selezionato (di norma serve calcolarli su un intero mese al massimo).
    */
   public int calculatePersonReperibilityCompetencesInPeriod(
       PersonReperibilityType reperibility, Person person,
@@ -553,7 +551,6 @@ public class ReperibilityManager2 {
       holidayCompetence.setValueApproved(dto2.holidaysReperibility);
       holidayCompetence.setReason(getReperibilityDates(dto2.holidaysPeriods));
       competenceDao.merge(holidayCompetence);
-//      holidayCompetence.save();
 
       log.info("Salvata {}", holidayCompetence);
 
