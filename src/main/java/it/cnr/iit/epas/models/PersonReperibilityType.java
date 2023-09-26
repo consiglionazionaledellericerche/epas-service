@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,6 @@
 package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Lists;
-import it.cnr.iit.epas.helpers.converter.YearMonthDateAttributeConverter;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;

@@ -32,7 +32,6 @@ import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonReperibilityDayDao;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
-import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityDayDto;
 import it.cnr.iit.epas.dto.v4.RecapReperibilityDto;
 import it.cnr.iit.epas.dto.v4.ReperibilityCalendarCreateDto;
@@ -43,11 +42,8 @@ import it.cnr.iit.epas.dto.v4.mapper.PersonReperibilityTypeMapper;
 import it.cnr.iit.epas.dto.v4.mapper.ReperibilityEventMapper;
 import it.cnr.iit.epas.dto.v4.mapper.ReperibilityRecapMapper;
 import it.cnr.iit.epas.manager.ReperibilityManager2;
-import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
-import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
 import it.cnr.iit.epas.manager.recaps.reperibilitycalendar.ReperibilityCalendarRecap;
 import it.cnr.iit.epas.manager.recaps.reperibilitycalendar.ReperibilityCalendarRecapFactory;
-import it.cnr.iit.epas.messages.Messages;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityDay;
@@ -63,7 +59,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
@@ -72,7 +67,6 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
@@ -103,12 +97,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ApiRoutes.BASE_PATH + "/reperibilitycalendar")
 class ReperibilityCalendarController {
 
-  private final WrapperFactory wrapperFactory;
   private final SecurityRules rules;
   private final PersonFinder personFinder;
 
   private final ReperibilityManager2 reperibilityManager2;
-  @Autowired
   private final PersonReperibilityDayDao reperibilityDao;
   private final AbsenceDao absenceDao;
   private final PersonDao personDao;
@@ -120,9 +112,7 @@ class ReperibilityCalendarController {
   private final ReperibilityCalendarRecapFactory reperibilityCalendarRecapFactory;
   private final ReperibilityRecapMapper reperibilityRecapMapper;
   private final PersonReperibilityDayMapper personReperibilityDayMapper;
-  @Autowired
   private final Validator validator;
-  ;
 
   @Operation(
       summary = "Visualizzazione delle informazioni del calendario di reperibilità.",
@@ -157,13 +147,13 @@ class ReperibilityCalendarController {
 
     log.debug("Person {}", person);
 
-    LocalDate today = LocalDate.now();
     final LocalDate currentDate = date.orElse(LocalDate.now());
 
     final List<PersonReperibilityType> reperibilities = reperibilityManager2.getUserActivities();
 
     reperibilities.forEach(personReperibilityType -> {
-      log.debug("Richiesta visualizzazione reperibilità getMonthlyCompetenceType {}", personReperibilityType.getMonthlyCompetenceType().toString());
+      log.debug("Richiesta visualizzazione reperibilità getMonthlyCompetenceType {}", 
+          personReperibilityType.getMonthlyCompetenceType().toString());
     });
     log.debug("PersonReperibilityType reperibilities {}", reperibilities);
 
@@ -174,10 +164,12 @@ class ReperibilityCalendarController {
     }
 
     final PersonReperibilityType reperibilitySelected =
-        reperibilityId.isPresent()? personReperibilityTypeRepository.findById(
-            reperibilityId.get()).get(): reperibilities.get(0);
+        reperibilityId.isPresent()
+            ? personReperibilityTypeRepository.findById(
+            reperibilityId.get()).get() : reperibilities.get(0);
 
-    log.debug("PersonReperibilityType reperibilitySelected {}", reperibilitySelected.getMonthlyCompetenceType().name);
+    log.debug("PersonReperibilityType reperibilitySelected {}", 
+        reperibilitySelected.getMonthlyCompetenceType().name);
     log.debug("PersonReperibilityType currentDate {}", currentDate);
 
     ReperibilityTypeDropDownDto dto = new ReperibilityTypeDropDownDto();
@@ -281,39 +273,41 @@ class ReperibilityCalendarController {
 
     PersonReperibilityType reperibility =
         reperibilityDao.getPersonReperibilityTypeById(reperibilityId);
-
+    if (reperibility == null) {
+      return ResponseEntity.notFound().build();
+    }
     log.debug("PersonReperibilityType reperibility {}   rules.check(reperibility)>> {}",
         reperibility, rules.check(reperibility));
+
+    rules.checkifPermitted(reperibility);
+
     final List<ReperibilityEvent> reperibilityWorkers = new ArrayList<>();
+    final List<PersonReperibility> people =
+        reperibilityManager2.reperibilityWorkers(reperibility, start, end);
+    int index = 0;
 
-    if (reperibility != null) {
-      rules.checkifPermitted(reperibility);
-      final List<PersonReperibility> people =
-          reperibilityManager2.reperibilityWorkers(reperibility, start, end);
-      int index = 0;
-
-      for (PersonReperibility personReperibility : people) {
-        final EventColor eventColor = EventColor.values()[index % (EventColor.values().length - 1)];
-        final Person person = personReperibility.getPerson();
-        final ReperibilityEvent event = ReperibilityEvent.builder()
-            .allDay(true)
-            .title(person.fullName())
-            .personId(person.getId())
-            .eventColor(eventColor)
-            .color(eventColor.backgroundColor)
-            .textColor(eventColor.textColor)
-            .borderColor(eventColor.borderColor)
-            .className("list-group-item fc-event removable")
-            .style("color: " + eventColor.textColor + "; background-color:"
-                + eventColor.backgroundColor + "; border-color: " + eventColor.borderColor)
-            .mobile(person.getMobile())
-            .email(person.getEmail())
-            .build();
-        reperibilityWorkers.add(event);
-        index++;
-      }
-      reperibilityWorkers.sort(Comparator.comparing(ReperibilityEvent::getTitle));
+    for (PersonReperibility personReperibility : people) {
+      final EventColor eventColor = EventColor.values()[index % (EventColor.values().length - 1)];
+      final Person person = personReperibility.getPerson();
+      final ReperibilityEvent event = ReperibilityEvent.builder()
+          .allDay(true)
+          .title(person.fullName())
+          .personId(person.getId())
+          .eventColor(eventColor)
+          .color(eventColor.backgroundColor)
+          .textColor(eventColor.textColor)
+          .borderColor(eventColor.borderColor)
+          .className("list-group-item fc-event removable")
+          .style("color: " + eventColor.textColor + "; background-color:"
+              + eventColor.backgroundColor + "; border-color: " + eventColor.borderColor)
+          .mobile(person.getMobile())
+          .email(person.getEmail())
+          .build();
+      reperibilityWorkers.add(event);
+      index++;
     }
+    reperibilityWorkers.sort(Comparator.comparing(ReperibilityEvent::getTitle));
+
 
     log.debug("reperibilityWorkers {}", reperibilityWorkers);
     return ResponseEntity.ok().body(reperibilityWorkers.stream()
@@ -322,7 +316,8 @@ class ReperibilityCalendarController {
   }
 
   @Operation(
-      summary = "Inserisce un nuovo slot di turno per l'attività al turnista passati come parametro.",
+      summary = 
+        "Inserisce un nuovo slot di turno per l'attività al turnista passati come parametro.",
       description =
           "Questo endpoint è utilizzabile dalle persone autenticate per inserire un nuovo "
               + "slot di turno per l'attività al turnista passati come parametro.")
@@ -387,7 +382,8 @@ class ReperibilityCalendarController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
           } else {
             reperibilityManager2.save(personReperibilityDay);
-            return ResponseEntity.status(HttpStatus.CREATED).body(personReperibilityDayMapper.convert(personReperibilityDay));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(personReperibilityDayMapper.convert(personReperibilityDay));
           }
         }
       } else {  // Le Drools non danno il grant
@@ -403,8 +399,9 @@ class ReperibilityCalendarController {
       summary = "Cambio di reperibilità.",
       description =
           "Questo endpoint è utilizzabile dalle persone autenticate per cambiare i turni nel"
-              + " calendariodi reperibilità.Controlla se il turno passato come parametro può essere "
-              + "salvato in un dato giorno ed eventualmente lo salva, altrimenti restituisce un errore")
+              + " calendariodi reperibilità.Controlla se il turno passato come parametro può "
+              + "essere salvato in un dato giorno ed eventualmente lo salva, altrimenti "
+              + "restituisce un errore")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Salvato nel calendario di reperibilità il cambio turno"),
@@ -426,7 +423,8 @@ class ReperibilityCalendarController {
       @NotNull @PathVariable("id") Long personReperibilityDayId,
       @NotNull @RequestParam("newDate") @DateTimeFormat(iso = ISO.DATE) LocalDate newDate) {
     log.debug(
-        "REST method PATCH /rest/v4/reperibilitycalendar/patch/{}?newDate={} invoked with parameters",
+        "REST method PATCH /rest/v4/reperibilitycalendar/patch/{}?newDate={} "
+        + "invoked with parameters",
         personReperibilityDayId, newDate);
 
     final Optional<PersonReperibilityDay> prd =
@@ -508,7 +506,8 @@ class ReperibilityCalendarController {
   @Operation(
       summary = "Calcola le ore di turno effettuate in quel periodo per ciascuna persona "
           + "dell'attività.",
-      description = "Questo endpoint è utilizzabile dalle persone autenticate per cCalcolare le ore di turno effettuate in quel periodo per ciascuna persona dell'attività")
+      description = "Questo endpoint è utilizzabile dalle persone autenticate per calcolare "
+          + "le ore di turno effettuate in quel periodo per ciascuna persona dell'attività")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Ore di turno calcolate con successo."),
@@ -533,18 +532,17 @@ class ReperibilityCalendarController {
 
     PersonReperibilityType reperibility =
         reperibilityDao.getPersonReperibilityTypeById(reperibilityId);
-
-    log.debug("getPersonReperibilityTypeById reperibilityId {} reperibility>> {}", reperibilityId,
-        reperibility);
-
-    if (reperibility != null) {
-      rules.checkifPermitted(reperibility);
-      ReperibilityCalendarRecap reperibilityCalendarRecap =
-          reperibilityCalendarRecapFactory.create(reperibility, start, end);
-      return ResponseEntity.ok().body(reperibilityRecapMapper.convert(reperibilityCalendarRecap));
-    } else {
+    
+    if (reperibility == null) {
       return ResponseEntity.notFound().build();
     }
+    log.debug("getPersonReperibilityTypeById reperibilityId {} reperibility>> {}", 
+        reperibilityId, reperibility);
+
+    rules.checkifPermitted(reperibility);
+    ReperibilityCalendarRecap reperibilityCalendarRecap =
+        reperibilityCalendarRecapFactory.create(reperibility, start, end);
+    return ResponseEntity.ok().body(reperibilityRecapMapper.convert(reperibilityCalendarRecap));
   }
 
   /**
@@ -575,7 +573,7 @@ class ReperibilityCalendarController {
    * @param start  data iniziale del periodo
    * @param end    data finale del periodo
    * @return Una lista di DTO che modellano le assenze di quella persona nell'intervallo specificato
-   * da renderizzare nel fullcalendar.
+   *     da renderizzare nel fullcalendar.
    */
   private List<ReperibilityEvent> absenceEvents(Person person,
       LocalDate start, LocalDate end) {
