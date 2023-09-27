@@ -215,6 +215,14 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Person.class),
+  
+  PARENTAL_LEAVE_FOR_FATHERS("parental_leave_for_fathers",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Person.class),  
 
   
   //#######################################################################################
@@ -318,24 +326,24 @@ public enum EpasParam {
       Lists.<RecomputationType>newArrayList(),
       Office.class),
 
-  /**
+  /*
    * Tecnici e Ricercatori possono inserirsi le ferie e riposi. 
    * Con notifica al direttore / responsabile.
    */
-  TR_VACATIONS("researchers_technologists_vacations",
-      EpasParamCategory.AUTOCERTIFICATION,
-      EpasParamTimeType.GENERAL,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-  TR_COMPENSATORY("researchers_technologists_compensatory",
-      EpasParamCategory.AUTOCERTIFICATION,
-      EpasParamTimeType.GENERAL,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
+  //  TR_VACATIONS("researchers_technologists_vacations",
+  //      EpasParamCategory.AUTOCERTIFICATION,
+  //      EpasParamTimeType.GENERAL,
+  //      EpasParamValueType.BOOLEAN,
+  //      EpasParamValueType.formatValue(false),
+  //      Lists.<RecomputationType>newArrayList(),
+  //      Office.class),
+  //  TR_COMPENSATORY("researchers_technologists_compensatory",
+  //      EpasParamCategory.AUTOCERTIFICATION,
+  //      EpasParamTimeType.GENERAL,
+  //      EpasParamValueType.BOOLEAN,
+  //      EpasParamValueType.formatValue(false),
+  //      Lists.<RecomputationType>newArrayList(),
+  //      Office.class),
 
   /**
    * Permette di abilitare/disabilitare la funzione di autocertificazione per i livelli 1-3 del
@@ -351,7 +359,7 @@ public enum EpasParam {
 
   //#######################################
   // YEARLY PARAMS
-  
+
   EXPIRY_VACATION_PAST_YEAR("expiry_vacation_past_year",
       EpasParamCategory.YEARLY,
       EpasParamTimeType.YEARLY,
@@ -445,7 +453,7 @@ public enum EpasParam {
       Office.class),
 
   //#######################################
-  // FLOWS PARAMS
+  // FLOWS PARAMS ABSENCES
 
   /**
    * Attivazione o meno della richieste di assenza generico.
@@ -612,6 +620,137 @@ public enum EpasParam {
       Lists.<RecomputationType>newArrayList(),
       Office.class),
 
+  //#####################################################################
+  //FLOWS PARAMS COMPETENCES
+
+  /**
+   * Attivazione della possibilità per il dipendente di richiedere le ore di straordinario.
+   */
+  ENABLE_EMPLOYEE_REQUEST_OVERTIME_QUANTITY(
+      "enable_employee_request_overtime_quantity",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+   
+  /**
+   * Per i livelli IV-VIII è necessaria l'approvazione degli straordinari da parte del 
+   * responsabile di sede.
+   */
+  OVERTIME_REQUEST_OFFICE_HEAD_APPROVAL_REQUIRED(
+      "overtime_request_office_head_approval_required",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(true),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  /**
+   * Per i livelli IV-VIII è necessaria l'approvazione degli straordinari da parte dell'eventuale
+   * responsabile del gruppo di lavoro.
+   */
+  OVERTIME_REQUEST_MANAGER_APPROVAL_REQUIRED(
+      "overtime_request_manager_approval_required",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  OVERTIME_ADVANCE_REQUEST_AND_CONFIRMATION(
+      "overtime_advance_request_and_confirmation", 
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  /**
+   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni
+   * di ferie deli livelli I-III.
+   */
+  ABSENCE_TOP_LEVEL_OFFICE_HEAD_NOTIFICATION(
+      "absence_top_level_office_head_notification",
+      EpasParamCategory.FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(true),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  /**
+   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni
+   * di ferie deli livelli I-III.
+   */
+  ABSENCE_TOP_LEVEL_OF_GROUP_MANAGER_OFFICE_HEAD_NOTIFICATION(
+      "absence_top_level_of_group_manager_office_head_notification",
+      EpasParamCategory.FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(true),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  /**
+   * Il responsabile di gruppo deve ricevere le notifiche delle comunicazioni
+   * di ferie dei livelli I-III.
+   */
+  ABSENCE_TOP_LEVEL_GROUP_MANAGER_NOTIFICATION(
+      "absence_top_level_group_manager_notification",
+      EpasParamCategory.FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  //#####################################################################
+  //FLOWS PARAMS COMPETENCES
+  
+  /**
+   * Attivazione o meno delle richieste di competenza.
+   */
+  ENABLE_COMPETENCE_FLOWS(
+      "enable_competence_flows",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  /**
+   * Attivazione o meno delle richieste di straordinario.
+   */
+  ENABLE_OVERTIME_FLOWS(
+      "enable_overtime_flows",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  
+  /**
+   * Per i livelli IV-VIII è necessaria l'approvazione del cambio di reperibilità da parte 
+   * dell'eventuale responsabile del servizio di reperibilità.
+   */
+  CHANGE_REPERIBILITY_REQUEST_REPERIBILITY_MANAGER_APPROVAL_REQUIRED(
+      "change_reperibility_request_reperibility_manager_approval_required",
+      EpasParamCategory.COMPETENCE_FLOWS,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+
+
   /**
    * Per i livelli I-III è necessaria l'approvazione dei permessi personali da parte del 
    * responsabile di sede.
@@ -637,7 +776,7 @@ public enum EpasParam {
       EpasParamValueType.formatValue(true),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-
+  
   /**
    * Per i livelli I-III è necessaria l'approvazione dei permessi personali da parte 
    * dell'eventuale responsabile di gruppo.
@@ -663,7 +802,7 @@ public enum EpasParam {
       EpasParamValueType.formatValue(true),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-
+  
   /**
    * Per i responsabili di gruppo è necessaria l'approvazione dei permessi personali da parte del 
    * responsabile di sede.
@@ -674,74 +813,6 @@ public enum EpasParam {
       EpasParamTimeType.PERIODIC,
       EpasParamValueType.BOOLEAN,
       EpasParamValueType.formatValue(true),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-
-  /**
-   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie
-   * dei livelli I-III.
-   */
-  ABSENCE_TOP_LEVEL_OFFICE_HEAD_NOTIFICATION(
-      "absence_top_level_office_head_notification",
-      EpasParamCategory.FLOWS,
-      EpasParamTimeType.PERIODIC,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(true),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-
-  /**
-   * Il responsabile di sede deve ricevere le notifiche delle comunicazioni di ferie
-   * deli livelli I-III.
-   */
-  ABSENCE_TOP_LEVEL_OF_GROUP_MANAGER_OFFICE_HEAD_NOTIFICATION(
-      "absence_top_level_of_group_manager_office_head_notification",
-      EpasParamCategory.FLOWS,
-      EpasParamTimeType.PERIODIC,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(true),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-
-  /**
-   * Il responsabile di gruppo deve ricevere le notifiche delle comunicazioni 
-   * di ferie deli livelli I-III.
-   */
-  ABSENCE_TOP_LEVEL_GROUP_MANAGER_NOTIFICATION(
-      "absence_top_level_group_manager_notification",
-      EpasParamCategory.FLOWS,
-      EpasParamTimeType.PERIODIC,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-  
-  //#####################################################################
-  //FLOWS PARAMS COMPETENCES
-  
-  /**
-   * Attivazione o meno delle richieste di straordinario.
-   */
-  ENABLE_COMPETENCE_FLOWS(
-      "enable_competence_flows",
-      EpasParamCategory.COMPETENCE_FLOWS,
-      EpasParamTimeType.GENERAL,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
-  
-  
-  /**
-   * Per i livelli IV-VIII è necessaria l'approvazione del cambio di reperibilità da parte 
-   * dell'eventuale responsabile del servizio di reperibilità.
-   */
-  CHANGE_REPERIBILITY_REQUEST_REPERIBILITY_MANAGER_APPROVAL_REQUIRED(
-      "change_reperibility_request_reperibility_manager_approval_required",
-      EpasParamCategory.COMPETENCE_FLOWS,
-      EpasParamTimeType.PERIODIC,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
   
@@ -917,7 +988,7 @@ public enum EpasParam {
       EpasParamValueType.formatValue(true),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-
+  
   FATHER_PARENTAL_LEAVE_I_III_ADMINISTRATIVE_APPROVAL_REQUIRED(
       "father_parental_leave_administrative_approval_required",
       EpasParamCategory.INFORMATION_FLOWS,
