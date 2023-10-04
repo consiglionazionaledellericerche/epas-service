@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
  - Corretta gestione ricevute via REST con date sovrapposte
-
+ - Evitati di caricare tutti i contratti presenti nel sistema nel dao che fa la fetch
+   dei contratti
 
 ## [0.2.0] - 2023-09-04
 ### Added
