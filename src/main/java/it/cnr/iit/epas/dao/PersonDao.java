@@ -971,10 +971,8 @@ public class PersonDao extends DaoBase<Person> {
     QContractWorkingTimeType cwtt = QContractWorkingTimeType.contractWorkingTimeType;
     QWorkingTimeType wtt = QWorkingTimeType.workingTimeType;
 
-    final BooleanBuilder condition = new BooleanBuilder();
-    if (!person.isEmpty()) {
-      condition.and(contract.person.in(person));
-    }
+    final BooleanBuilder condition = new BooleanBuilder(contract.person.in(person));
+
     filterContract(condition, start, end);
 
     List<Contract> contracts = getQueryFactory()
