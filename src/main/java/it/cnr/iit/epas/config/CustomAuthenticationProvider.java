@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -36,6 +37,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * AuthenticationProvider per l'autenticazione di tipo Basic Auth.
@@ -67,6 +70,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     if (user == null) {
       throw new BadCredentialsException("invalid username and password for " + username);
     }
+
+    String overridedUserName = 
+        RequestContextHolder.getRequestAttributes().getAttribute(
+          AuthenticationHeaderFilter.REQUEST_CURRENT_USER_ATTRIBUTE, 
+          RequestAttributes.SCOPE_REQUEST).toString();
+
+    log.info("overridedUserName = {}", overridedUserName);
+
+    val overridedUser = userDao.byUsername(overridedUserName);
 
     List<GrantedAuthority> authorities = Lists.newArrayList();
     authorities.addAll(

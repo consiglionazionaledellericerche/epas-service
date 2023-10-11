@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.stereotype.Component;
 
 /**
- * Componente per restituire il 401 alle richeiste http con Basic Auth ma non autenticate.
+ * Componente per restituire il 401 alle richieste http con Basic Auth ma non autenticate.
  *
  * @author Cristian Lucchesi
  *

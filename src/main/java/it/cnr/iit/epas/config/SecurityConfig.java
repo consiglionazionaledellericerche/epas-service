@@ -25,6 +25,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
  * Configurazione della catena di filtri necessaria per la security dell'applicazione.
@@ -65,12 +66,14 @@ public class SecurityConfig {
     if (securityConfig.getOauth2().isResourceserverEnabled()) {
       http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
     }
+
     http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);
+    http.addFilterBefore(new AuthenticationHeaderFilter(), BasicAuthenticationFilter.class);
 
     //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
     http.authorizeRequests()
       .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
-
+    
     return http.build();
   }
 
