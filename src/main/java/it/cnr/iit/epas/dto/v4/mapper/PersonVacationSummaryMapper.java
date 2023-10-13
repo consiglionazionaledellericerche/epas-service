@@ -77,6 +77,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "usable", expression = "java(vacationSummary.usable())")
   @Mapping(target = "upperLimit", expression = "java(vacationSummary.upperLimit())")
   @Mapping(target = "sourced", expression = "java(vacationSummary.sourced())")
+  @Mapping(target = "accruedDay", expression = "java(vacationSummary.accruedDay())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
   @Mapping(target = "postPartumisEmpty", 
