@@ -17,8 +17,6 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

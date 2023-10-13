@@ -161,7 +161,8 @@ class VacationController {
       aspDto.setSubDayProgression(pvSummary.vacationSummary.subDayProgression(sp));
       aspDto.setSubDayPostPartum(pvSummary.vacationSummary.subDayPostPartum(sp));
       aspDto.setSubDayToFixPostPartum(pvSummary.vacationSummary.subDayToFixPostPartum(sp));
-      aspDto.setSubDayPostPartumProgression(pvSummary.vacationSummary.subDayPostPartumProgression(sp));
+      aspDto.setSubDayPostPartumProgression(
+          pvSummary.vacationSummary.subDayPostPartumProgression(sp));
       aspDto.setSubAccrued(pvSummary.vacationSummary.subAccrued(sp));
       aspDto.setContractEndFirstYearInPeriod(
           pvSummary.vacationSummary.contractEndFirstYearInPeriod(sp));

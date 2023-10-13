@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
@@ -37,6 +38,7 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.util.List;
 import org.mapstruct.Mapper;
@@ -98,7 +100,10 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
 
-  List<AbsenceShowTerseDto> convert(List<Absence> absences);
+  @Mapping(target = ".", source = "name")
+  String convert(JustifiedType justifiedType);
+
+  List<AbsenceShowDto> convert(List<Absence> absences);
 
   AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
 

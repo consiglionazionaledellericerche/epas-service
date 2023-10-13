@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,17 +17,14 @@
 
 package it.cnr.iit.epas.dao;
 
-import com.querydsl.jpa.JPQLQuery;
+import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.QPersonReperibilityDay;
 import it.cnr.iit.epas.models.QPersonReperibilityType;
-import it.cnr.iit.epas.dao.common.DaoBase;
-import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.QReperibilityTypeMonth;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
-
-import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -70,7 +67,7 @@ public class ReperibilityTypeMonthDao extends DaoBase<ReperibilityTypeMonth> {
         .selectFrom(rtm).where(rtm.personReperibilityType.id.eq(reperibilityType.getId())
             .and(rtm.yearMonth.eq(yearMonth))).fetchOne());
 
-    log.debug("Richiesta recap reperibility rm {}",rm);
+    log.debug("Richiesta recap reperibility rm {}", rm);
     return rm;
   }
 
@@ -93,7 +90,7 @@ public class ReperibilityTypeMonthDao extends DaoBase<ReperibilityTypeMonth> {
    * @param office la sede di riferimento
    * @param month  l'anno/mese da controllare
    * @return la lista dei reperibilityTypeMonth appartenenti alla sede e all'anno/mese passati come
-   * parametro.
+   *        parametro.
    */
   public List<ReperibilityTypeMonth> byOfficeInMonth(Office office, YearMonth month) {
     final QReperibilityTypeMonth rtm = QReperibilityTypeMonth.reperibilityTypeMonth;

@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
       - name: Build Latest Release with Maven
         if: ${{ ! github.event.release }}
-        run: mvn --batch-mode --update-snapshots compile jib:build
+        run: mvn --batch-mode --update-snapshots clean compile jib:build
             -Djib.to.auth.username=${{ github.actor }}
             -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
             -Djib.to.image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

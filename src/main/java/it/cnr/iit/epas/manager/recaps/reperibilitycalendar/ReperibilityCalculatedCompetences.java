@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023 Consiglio Nazionale delle Ricerche
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -12,13 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager.recaps.reperibilitycalendar;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Getter
 @Setter
 public class ReperibilityCalculatedCompetences {

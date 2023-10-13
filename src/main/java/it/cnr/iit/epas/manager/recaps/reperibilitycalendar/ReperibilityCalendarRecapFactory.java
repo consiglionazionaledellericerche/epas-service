@@ -47,7 +47,8 @@ public class ReperibilityCalendarRecapFactory {
   /**
    * Costruisce il riepilogo mensile delle timbrature.
    */
-  public ReperibilityCalendarRecap create(PersonReperibilityType reperibility, LocalDate start, LocalDate end) {
+  public ReperibilityCalendarRecap create(
+      PersonReperibilityType reperibility, LocalDate start, LocalDate end) {
 
     return new ReperibilityCalendarRecap(reperibilityTypeMonthDao, reperibilityManager2,
         reperibility, start, end);

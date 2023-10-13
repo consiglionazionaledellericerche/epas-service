@@ -20,7 +20,6 @@ package it.cnr.iit.epas.dto.v4;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO con i dati per la creazione della reperibilità.
@@ -29,7 +28,7 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-public class ReperibilityCalendarCreateDto{
+public class ReperibilityCalendarCreateDto {
 
   @Schema(description = "Id della persona")
   private Long personId;

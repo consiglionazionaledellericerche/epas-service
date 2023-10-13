@@ -34,26 +34,20 @@ import lombok.Data;
 public class PersonReperibilityDto {
 
   @Schema(description = "Persona")
-  private
-  PersonShowDto person;
+  private PersonShowDto person;
 
   @Schema(description = "Data di inizio reperibilità")
-  private
-  LocalDate startDate;
+  private LocalDate startDate;
 
   @Schema(description = "Data di fine reperibilità")
-  private
-  LocalDate endDate;
+  private LocalDate endDate;
 
   @Schema(description = "Tipologia di reperibilità")
-  private
-  PersonReperibilityTypeDto personReperibilityType;
+  private PersonReperibilityTypeDto personReperibilityType;
 
   @Schema(description = "Note")
-  private
-  String note;
+  private String note;
 
   @Schema(description = "Note")
-  private
-  List<PersonReperibilityDto> personReperibilityDays;
+  private List<PersonReperibilityDto> personReperibilityDays;
 }
