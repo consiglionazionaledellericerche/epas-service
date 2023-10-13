@@ -40,7 +40,9 @@ public interface ReperibilityRecapMapper {
   MonthlyCompetenceTypeDto convert(MonthlyCompetenceType monthlyCompetenceType);
 
   PersonReperibilityTypeTerseDto convert(PersonReperibilityType reperibility);
+
   ReperibilityTypeMonthDto convert(ReperibilityTypeMonth reperibilityTypeMonth);
+  
   ReperibilityCalculatedCompetencesDto convert(
       ReperibilityCalculatedCompetences reperibilityCompetences);
 

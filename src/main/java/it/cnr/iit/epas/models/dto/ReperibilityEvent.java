@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,9 +20,9 @@ package it.cnr.iit.epas.models.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import it.cnr.iit.epas.models.enumerate.EventColor;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDate;
 
 /**
  * Rappresentazione di un evento nel calendario delle reperibilità.

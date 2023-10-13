@@ -17,9 +17,6 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.MonthlyCompetenceType;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,11 +19,8 @@ package it.cnr.iit.epas.helpers.converter;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import javax.persistence.AttributeConverter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class YearMonthDateAttributeConverter
     implements AttributeConverter<YearMonth, String> {
 

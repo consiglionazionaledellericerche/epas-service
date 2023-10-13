@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023 Consiglio Nazionale delle Ricerche
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -16,16 +16,12 @@
 package it.cnr.iit.epas.manager.recaps.reperibilitycalendar;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
 import it.cnr.iit.epas.manager.ReperibilityManager2;
-import it.cnr.iit.epas.manager.configurations.EpasParam;
-import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -39,8 +35,10 @@ public class ReperibilityCalendarRecap {
 
   public PersonReperibilityType reperibility;
   public ReperibilityTypeMonth reperibilityTypeMonth;
-  public List<ReperibilityCalculatedCompetences> workDaysReperibilityCalculatedCompetences = Lists.newArrayList();
-  public List<ReperibilityCalculatedCompetences> holidaysReperibilityCalculatedCompetences = Lists.newArrayList();
+  public List<ReperibilityCalculatedCompetences> workDaysReperibilityCalculatedCompetences = 
+      Lists.newArrayList();
+  public List<ReperibilityCalculatedCompetences> holidaysReperibilityCalculatedCompetences = 
+      Lists.newArrayList();
 
 
   /**
