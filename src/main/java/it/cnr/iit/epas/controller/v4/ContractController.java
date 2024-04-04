@@ -117,7 +117,7 @@ public class ContractController {
   }
 
   @Operation(
-      summary = "Creazione di un ufficio.",
+      summary = "Creazione di un contratto.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore anagrafica' della sede associata alla persona del contratto e dagli "
           + "utenti con il ruolo di sistema 'Developer' e/o 'Admin'.")
