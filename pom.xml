@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>it.cnr.iit</groupId>
 	<artifactId>epas-service</artifactId>
-	<version>0.1</version>
+	<version>0.3.0</version>
 	<name>epas-service</name>
 	<description>Personnel Attendance System</description>
 	<properties>
