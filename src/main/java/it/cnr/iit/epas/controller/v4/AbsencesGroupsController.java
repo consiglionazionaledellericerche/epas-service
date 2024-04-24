@@ -19,6 +19,7 @@ package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,6 +39,7 @@ import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
+import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
@@ -65,6 +67,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -237,7 +240,7 @@ public class AbsencesGroupsController {
         categoryTabFind, null, null, null, true, null,
         null, null, null, false, false);
 
-   log.debug("absenceForm::absenceForm.groupSelected.category = {}",
+    log.debug("absenceForm::absenceForm.groupSelected.category = {}",
         absenceForm.groupSelected.category);
 
     AbsenceFormDto absFormDto = absenceFormMapper.convert(absenceForm);
@@ -302,7 +305,7 @@ public class AbsencesGroupsController {
     LocalDate dateFrom = LocalDate.parse(simulationDto.getFrom());
     LocalDate dateTo = LocalDate.parse(simulationDto.getTo());
     LocalDate recoveryDate = null;
-    if (!simulationDto.getRecoveryDate().isEmpty()){
+    if (!simulationDto.getRecoveryDate().isEmpty()) {
       recoveryDate = LocalDate.parse(simulationDto.getRecoveryDate());
     }
     String categoryTabName = simulationDto.getCategoryTabName();
@@ -359,8 +362,68 @@ public class AbsencesGroupsController {
         absenceForm.absenceTypeSelected, absenceForm.justifiedTypeSelected,
         absenceForm.hours, absenceForm.minutes, forceInsert, absenceManager);
 
-    AbsenceFormSimulationResponseDto dto = absenceFormSimulationResponseMapper.convert(insertReport);
+    AbsenceFormSimulationResponseDto dto = absenceFormSimulationResponseMapper.convert(
+        insertReport);
 
     return ResponseEntity.ok().body(dto);
+  }
+
+  /**
+   * Restituisce tutti i codici assenza.
+   */
+  @Operation(
+      summary = "Restituisce tutti i codici assenza.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti tutti i codici assenza."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " l'elenco delle assenze",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
+  @GetMapping("/absencesForm/findCode")
+  public ResponseEntity<Set<AbsenceTypeDto>> findCode(
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("fiscalCode") Optional<String> fiscalCode,
+      @RequestParam("from") String from) {
+    log.debug("AbsencesGroupsController::findCode id = {} from = {} ", id, from);
+    LocalDate fromDate = LocalDate.parse(from);
+
+    Person person =
+        personFinder.getPerson(id, fiscalCode)
+            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+
+    log.debug("AbsenceController::absencesInPeriod person = {}", person);
+
+    rules.checkifPermitted(person);
+
+    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromDate, null, null, null,
+        null, true, null, null, null, null, false, false);
+
+    Set<AbsenceTypeDto> allTakable = Sets.newHashSet();
+    for (GroupAbsenceType group : absenceComponentDao.allGroupAbsenceType(false)) {
+      for (AbsenceType abt : group.getTakableAbsenceBehaviour().getTakableCodes()) {
+        if (abt.defaultTakableGroup() == null) {
+          log.debug("Il defaultTakable è null per {}", abt.getCode());
+          abt.defaultTakableGroup();
+        }
+      }
+      //TODO eventualmente controllo prendibilità della persona alla data (figli, l 104 etc.)
+      for (AbsenceType tab : group.getTakableAbsenceBehaviour().getTakableCodes()) {
+        allTakable.add(absenceFormMapper.convert(tab));
+      }
+    }
+
+    return ResponseEntity.ok().body(allTakable);
   }
 }
