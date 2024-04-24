@@ -1,12 +1,15 @@
+import org.joda.time.YearMonth;
 import it.cnr.iit.epas.security.PermissionCheck
 import it.cnr.iit.epas.models.enumerate.AccountRole
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.Configuration;
+import it.cnr.iit.epas.models.PersonConfiguration;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 
@@ -148,6 +151,228 @@ when
 then
  $c.grant();
 end
+
+/*******************************************************************************
+ * Azioni utente per inserimento assenze
+ ******************************************************************************/
+/*
+ * L'amministratore del personale può modificare una determinata assenza se:
+ */
+rule AdminCanEditAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $a: Absence()
+ $at: Person() from $a.getOwner()
+ $target: Office(persons contains $at) from $uro.office
+ $c: PermissionCheck(
+     permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST'),
+     toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/* Azioni eseguibili da qualsiasi utente che abbiano come destinatario
+ * dell'azione se stesso
+*/
+rule HasRightOnHimselfExceptFor
+when
+  $p: Person(user == currentUser)
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+
+/*
+ * L'Amministratore del personale in sola lettura può fare quasi tutto sulle persone del proprio ufficio
+ */
+rule HasRightOnPerson
+when
+  $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN_MINI)
+  $o: Office() from $uro.office
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      toCheck(), $o.persons contains target, granted == false)
+then
+ $c.grant();
+end
+
+
+rule OnlyForPersonnelAdmin_Generic
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+rule OnlyForPersonnelAdmin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $o: Office(usersRolesOffices contains $uro)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $o, granted == false)
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * L'amministratore può inserire le timbrature nel passato senza limiti (per ora)
+ * il controllo che non sia una data futura viene fatta nell'action (sulle stampings)
+ ************************************************************************************/
+rule adminCanInsertStampingsAndAbsences_inDate
+when
+  $uro: UsersRolesOffices() from userRolesOffices
+  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+  $target: YearMonth()
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      toCheck(), target == $target, granted == false)
+then
+ $c.grant();
+end
+
+/**************************************************************************************
+ * Azioni per utente employee abilitato alla assenza lavoro fuori sede con convenzione
+ **************************************************************************************/
+rule Working_offsite_with_convention
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/**************************************
+ * Azioni per utente employee abilitato
+ **************************************/
+rule Absences_person
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.ADDITIONAL_HOURS
+ 				|| epasParam == EpasParam.COVID_19
+ 				|| epasParam == EpasParam.RIGHT_TO_STUDY
+ 				|| epasParam == EpasParam.DISABLED_PERSON_PERMISSION
+ 				|| epasParam == EpasParam.DISABLED_RELATIVE_PERMISSION
+ 				|| epasParam == EpasParam.TELEWORK
+ 				|| epasParam == EpasParam.ENABLE_TELEWORK_STAMPINGS_FOR_WORKTIME
+ 				|| epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE
+ 				|| epasParam == EpasParam.SMARTWORKING
+ 				|| epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/********************************************************
+ * Azioni per utente employee abilitato per visita medica
+ ********************************************************/
+rule Absences_person_medical_exam
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * Un dipendente può autocertificare le proprie assenze per il lavoro fuori Sede se...
+ ***********************************************************************************/
+rule employeeCanInsertAbsencesOffsiteWithConvention
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+ permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+ toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/************************************************************
+ * Un dipendente può autocertificare le proprie assenze se...
+ ************************************************************/
+rule employeeCanInsertAbsences
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration((epasParam == EpasParam.COVID_19 && fieldValue == true)
+ 				|| (epasParam == EpasParam.DISABLED_PERSON_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.DISABLED_RELATIVE_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.RIGHT_TO_STUDY && fieldValue == true)
+ 				|| (epasParam == EpasParam.TELEWORK && fieldValue == true)
+ 				|| (epasParam == EpasParam.ADDITIONAL_HOURS && fieldValue == true)
+ 				|| (epasParam == EpasParam.PARENTAL_LEAVE_AND_CHILD_ILLNESS && fieldValue == true)
+ 				|| (epasParam == EpasParam.SECOND_DISABLED_RELATIVE_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE && fieldValue == true)
+ 				|| (epasParam == EpasParam.SMARTWORKING && fieldValue == true)
+ 				|| (epasParam == EpasParam.AGILE_WORK && fieldValue == true)
+ 				|| (epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true)) from $p.personConfigurations
+ $c: PermissionCheck(
+ permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+     toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/******************************************************************************
+ * Un dipendente può autocertificare le proprie assenze per visita medica se...
+ *****************************************************************************/
+
+rule employeeCanInsertMedicalExam
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+      permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+      toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+
 
 /*******************************************************************************
  * Azioni utente con ruolo BADGE_READER

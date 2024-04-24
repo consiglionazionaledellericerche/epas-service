@@ -217,7 +217,7 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @GetMapping("/absencesForm/groupsForCategory")
+  @GetMapping("/groupsForCategory")
   public ResponseEntity<AbsenceFormDto> getGroupsForCategory(
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
@@ -303,7 +303,7 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @PostMapping("/absencesForm/insertSimulation")
+  @PostMapping("/insertSimulation")
   public ResponseEntity<AbsenceFormSimulationResponseDto> insertSimulation(
       @NotNull @Valid @RequestBody AbsenceFormSimulationDto simulationDto) {
 
@@ -376,10 +376,10 @@ public class AbsencesGroupsController {
   }
 
   /**
-   * Simula l'inserimento dell'assenza.
+   * Salva l'assenza.
    */
   @Operation(
-      summary = "simula l'inserimento dell'assenza.",
+      summary = "salva l'assenza.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
@@ -387,7 +387,7 @@ public class AbsencesGroupsController {
           + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Restituisce le informazioni associate alla simulazione dell'inserimento di un'assenza"),
+          description = "Restituisce l'id della persona, mese e anno dell'assenza e se è stata inserita o meno."),
       @ApiResponse(responseCode = "401",
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
@@ -398,7 +398,7 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @PostMapping("/absencesForm/save")
+  @PostMapping("/save")
   public ResponseEntity<AbsenceFormSaveResponseDto> saveAbsenceForm(
       @NotNull @Valid @RequestBody AbsenceFormSaveDto absenceFormSaveDto) {
 
@@ -499,7 +499,7 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @GetMapping("/absencesForm/findCode")
+  @GetMapping("/findCode")
   public ResponseEntity<Set<AbsenceTypeDto>> findCode(
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
