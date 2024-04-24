@@ -17,14 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.SortedMap;
 import lombok.Data;
 
@@ -35,7 +30,19 @@ import lombok.Data;
  *
  */
 @Data
-public class AbsenceFormTabDto {
-  private SortedMap<Integer, CategoryTabDto> tabsVisibile = Maps.newTreeMap();
+public class AbsenceFormSimulationDto {
+  private Optional<Long> idPerson;
+  private Optional<String> fiscalCode;
+  private String from;
+  private String to;
+  private String categoryTabName;
+  private String groupAbsenceTypeName;
+  private String absenceTypeCode;
+  private String justifiedTypeName;
+  private int hours;
+  private int minutes;
+  private boolean forceInsert;
+  private boolean switchGroup;
+  private String recoveryDate;
 
 }

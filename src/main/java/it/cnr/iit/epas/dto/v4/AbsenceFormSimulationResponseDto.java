@@ -17,22 +17,29 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
+import com.google.common.collect.Lists;
+import java.util.List;
 import lombok.Data;
 
 /**
- * DTO per le tipologie di gruppi di assenze.
+ * DTO per la risposta della simulazione dell'inserimento assenza.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-public class GroupAbsenceTypeDto {
-  private Long id;
-  private String name;
-  private String description;
-  private String chainDescription;
-  private boolean initializable;
-  private PeriodType periodType;
-  private GroupAbsenceTypeDto nextGroupToCheck;
+public class AbsenceFormSimulationResponseDto {
+  private List<CriticalErrorDto> criticalErrors = Lists.newArrayList();
+  private List<TemplateRowDto> insertTemplateRows = Lists.newArrayList();
+  private boolean usableColumn;
+  private boolean complationColumn;
+  private List<AbsenceShowDto> absencesToPersist = Lists.newArrayList();
+
+  private List<String> warningsPreviousVersion = Lists.newArrayList();
+
+  private int howManyWarning;
+  private int howManyError;
+  private int howManySuccess;
+  private int howManyReplacing;
+  private int howManyIgnored;
 }

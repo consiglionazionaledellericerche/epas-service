@@ -15,24 +15,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
-import lombok.Data;
+import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
+import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
+import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import it.cnr.iit.epas.models.absences.CategoryTab;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import org.mapstruct.Mapper;
 
 /**
- * DTO per le tipologie di gruppi di assenze.
- *
- * @author Cristian Lucchesi
- *
+ * Mapper da CategoryTab al suo DTO per la visualizzazione via REST.
  */
-@Data
-public class GroupAbsenceTypeDto {
-  private Long id;
-  private String name;
-  private String description;
-  private String chainDescription;
-  private boolean initializable;
-  private PeriodType periodType;
-  private GroupAbsenceTypeDto nextGroupToCheck;
+@Mapper(componentModel = "spring")
+public interface GroupAbsenceTypeMapper {
+
+  GroupAbsenceTypeDto convert(GroupAbsenceType groupAbsenceType);
 }

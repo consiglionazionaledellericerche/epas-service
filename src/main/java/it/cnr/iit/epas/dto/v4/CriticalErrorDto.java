@@ -17,22 +17,22 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
- * DTO per le tipologie di gruppi di assenze.
+ * DTO per i gli errori critici.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-public class GroupAbsenceTypeDto {
-  private Long id;
-  private String name;
-  private String description;
-  private String chainDescription;
-  private boolean initializable;
-  private PeriodType periodType;
-  private GroupAbsenceTypeDto nextGroupToCheck;
+public class CriticalErrorDto {
+  private String criticalProblem;
+  private LocalDate date;
+  private GroupAbsenceTypeDto groupAbsenceType;
+  private String justifiedType;
+  private AbsenceTypeDto absenceType;
+  private AbsenceTypeDto conflictingAbsenceType;
+  private AbsenceShowDto absence;
 }

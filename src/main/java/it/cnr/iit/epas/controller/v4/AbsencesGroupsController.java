@@ -29,26 +29,37 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
+import it.cnr.iit.epas.dao.AbsenceTypeDao;
+import it.cnr.iit.epas.dao.CategoryTabDao;
+import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
+import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
+import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationDto;
+import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
-import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.CategoryTabDto;
 import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceFormMapper;
+import it.cnr.iit.epas.dto.v4.mapper.AbsenceFormSimulationResponseMapper;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupsMapper;
+import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecap;
 import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecapFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
+import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.List;
@@ -57,10 +68,14 @@ import java.util.Optional;
 import java.util.SortedMap;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,7 +101,13 @@ public class AbsencesGroupsController {
   private final AbsenceGroupsRecapFactory absenceGroupsRecapFactory;
   private final AbsenceGroupsMapper absenceGroupsMapper;
   private final AbsenceFormMapper absenceFormMapper;
+  private final AbsenceFormSimulationResponseMapper absenceFormSimulationResponseMapper;
   private final AbsenceService absenceService;
+  private final CategoryTabDao categoryTabDao;
+  private final GroupAbsenceTypeDao groupAbsenceTypeDao;
+  private final AbsenceTypeDao absenceTypeDao;
+  private final AbsenceComponentDao absenceComponentDao;
+  private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
 
@@ -164,11 +185,10 @@ public class AbsencesGroupsController {
   }
 
   /**
-   * Recupero le informazioni per costruire la form dell'inserimento assenza sistemare descrizione
-   * sotto.
+   * Recupero le informazioni per costruire la form dell'inserimento assenza.
    */
   @Operation(
-      summary = "Visualizzazione della lista delle assenza di una persona in un mese.",
+      summary = "Recupera le informazioni per costruire la form dell'inserimento assenza.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
@@ -176,7 +196,7 @@ public class AbsencesGroupsController {
           + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Restituito l'elenco delle assenze in un mese"),
+          description = "Restituite le informazioni per popolare la form dell'inserimento assenza."),
       @ApiResponse(responseCode = "401",
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
@@ -187,12 +207,14 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @GetMapping("/absencesForm")
-  public ResponseEntity<AbsenceFormDto> getAbsencesForm(
+  @GetMapping("/absencesForm/groupsForCategory")
+  public ResponseEntity<AbsenceFormDto> getGroupsForCategory(
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
-      @RequestParam("from") String from) {
-    log.debug("AbsencesGroupsController::getAbsencesForm id = {} from = {}", id, from);
+      @RequestParam("from") String from,
+      @RequestParam("category") Optional<String> category) {
+    log.debug("AbsencesGroupsController::groupsForCategory id = {} from = {} category={}", id, from,
+        category);
     LocalDate fromLocalDate = LocalDate.parse(from);
 
     Person person =
@@ -203,37 +225,142 @@ public class AbsencesGroupsController {
 
     rules.checkifPermitted(person);
 
-    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromLocalDate,
-        null, null, null, null, true, null,
-        null, null, null, true, false);
+    CategoryTab categoryTabFind = null;
+    for (CategoryTab ct : categoryTabDao.findAll()) {
+      if (ct.name.equals(category.orElse(null))) {
+        categoryTabFind = ct;
+        break;
+      }
+    }
 
-    log.debug("absenceForm::tabsVisibile = {}", absenceForm.tabsVisibile);
+    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromLocalDate,
+        categoryTabFind, null, null, null, true, null,
+        null, null, null, false, false);
+
+   log.debug("absenceForm::absenceForm.groupSelected.category = {}",
+        absenceForm.groupSelected.category);
 
     AbsenceFormDto absFormDto = absenceFormMapper.convert(absenceForm);
-    log.debug("absenceForm::groupsByCategory = {}", absenceForm.groups());
-//    Map<CategoryGroupAbsenceTypeDto, List<GroupAbsenceTypeDto>> groupsByCategory =
-//        Maps.newHashMap();
-//
-//    List<GroupAbsenceTypeDto> groupAbsenceTypeDto = Lists.newArrayList();
-//    List<GroupAbsenceTypeDto> groupAbsenceTypeDtoTmp;
-//
-//    CategoryGroupAbsenceTypeDto keyGroupMap;
-//    for (GroupAbsenceType gr : absenceForm.groups()) {
-//      groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
-//      keyGroupMap = absenceFormMapper.convert(gr.category);
-//      groupAbsenceTypeDtoTmp = groupsByCategory.get(keyGroupMap);
-//      if (groupAbsenceTypeDtoTmp == null) {
-//        groupAbsenceTypeDtoTmp = Lists.newArrayList();
-//        groupAbsenceTypeDtoTmp.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
-//        groupsByCategory.put(keyGroupMap, groupAbsenceTypeDtoTmp);
-//      } else {
-//        groupAbsenceTypeDtoTmp.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
-//        groupsByCategory.replace(keyGroupMap, groupAbsenceTypeDtoTmp);
-//      }
-//    }
-//
-//    log.debug("absenceForm::groupsByCategory = {}", groupsByCategory.values());
-//    absFormDto.setgroupsByCategory(groupsByCategory);
+
+    List<GroupAbsenceType> groups = null;
+    List<GroupAbsenceTypeDto> groupsDto = Lists.newArrayList();
+    groups = absenceForm.groupsForCategory(absenceForm.groupSelected.category);
+    for (GroupAbsenceType gat : groups) {
+      groupsDto.add(absenceFormMapper.convert(gat));
+    }
+    absFormDto.setGroups(groupsDto);
+
+    Map<String, List<GroupAbsenceTypeDto>> groupsByCategory =
+        Maps.newHashMap();
+    for (CategoryGroupAbsenceType cgr : absenceForm.categories()) {
+      List<GroupAbsenceTypeDto> groupsListDto = Lists.newArrayList();
+      for (GroupAbsenceType gr : absenceForm.groupsForCategory(cgr)) {
+        groupsListDto.add(absenceFormMapper.convert(gr));
+      }
+      groupsByCategory.put(cgr.getLabel(), groupsListDto);
+    }
+    absFormDto.setGroupsByCategory(groupsByCategory);
+
+    List<String> justifiedTypes = Lists.newArrayList();
+    for (JustifiedType jt : absenceForm.justifiedTypes) {
+      justifiedTypes.add(jt.getLabel());
+    }
+    absFormDto.setJustifiedTypes(justifiedTypes);
+
     return ResponseEntity.ok().body(absFormDto);
+  }
+
+  /**
+   * Simula l'inserimento dell'assenza.
+   */
+  @Operation(
+      summary = "simula l'inserimento dell'assenza.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituisce le informazioni associate alla simulazione dell'inserimento di un'assenza"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " l'elenco delle assenze",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
+  @PostMapping("/absencesForm/insertSimulation")
+  public ResponseEntity<AbsenceFormSimulationResponseDto> insertSimulation(
+      @NotNull @Valid @RequestBody AbsenceFormSimulationDto simulationDto) {
+
+    Optional<Long> id = simulationDto.getIdPerson();
+    Optional<String> fiscalCode = simulationDto.getFiscalCode();
+    LocalDate dateFrom = LocalDate.parse(simulationDto.getFrom());
+    LocalDate dateTo = LocalDate.parse(simulationDto.getTo());
+    LocalDate recoveryDate = null;
+    if (!simulationDto.getRecoveryDate().isEmpty()){
+      recoveryDate = LocalDate.parse(simulationDto.getRecoveryDate());
+    }
+    String categoryTabName = simulationDto.getCategoryTabName();
+    String groupAbsenceTypeName = simulationDto.getGroupAbsenceTypeName();
+    String absenceTypeName = simulationDto.getAbsenceTypeCode();
+    String justifiedTypeName = simulationDto.getJustifiedTypeName();
+    Integer hours = simulationDto.getHours();
+    Integer minutes = simulationDto.getMinutes();
+    boolean forceInsert = simulationDto.isForceInsert();
+    boolean switchGroup = simulationDto.isSwitchGroup();
+
+    Person person =
+        personFinder.getPerson(id, fiscalCode)
+            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    rules.checkifPermitted(person);
+
+    CategoryTab categoryTab = null;
+    for (CategoryTab ct : categoryTabDao.findAll()) {
+      if (ct.name.equals(categoryTabName)) {
+        categoryTab = ct;
+        break;
+      }
+    }
+    AbsenceType absenceType = null;
+    for (AbsenceType at : absenceTypeDao.findAll()) {
+      if (at.code.equals(absenceTypeName)) {
+        absenceType = at;
+        break;
+      }
+    }
+
+    GroupAbsenceType groupAbsenceType = null;
+    for (GroupAbsenceType gat : groupAbsenceTypeDao.findAll()) {
+      if (gat.name.equals(groupAbsenceTypeName)) {
+        groupAbsenceType = gat;
+        break;
+      }
+    }
+
+    JustifiedType justifiedType = absenceComponentDao.getOrBuildJustifiedType(
+        JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName));
+
+    log.debug("AbsenceController::insertSimulation person = {} from={} to={}, absenceType={}",
+        person, dateFrom, dateTo, absenceType);
+
+    AbsenceForm absenceForm =
+        absenceService.buildAbsenceForm(person, dateFrom, categoryTab,
+            dateTo, recoveryDate, groupAbsenceType, switchGroup, absenceType,
+            justifiedType, hours, minutes, false, false);
+
+    InsertReport insertReport = absenceService.insert(person,
+        absenceForm.groupSelected,
+        absenceForm.from, absenceForm.to,
+        absenceForm.absenceTypeSelected, absenceForm.justifiedTypeSelected,
+        absenceForm.hours, absenceForm.minutes, forceInsert, absenceManager);
+
+    AbsenceFormSimulationResponseDto dto = absenceFormSimulationResponseMapper.convert(insertReport);
+
+    return ResponseEntity.ok().body(dto);
   }
 }

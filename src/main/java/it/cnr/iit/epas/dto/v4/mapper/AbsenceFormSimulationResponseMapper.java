@@ -17,13 +17,22 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
+import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
+import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.ContractualClauseDto;
+import it.cnr.iit.epas.dto.v4.CriticalErrorDto;
 import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
+import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
+import it.cnr.iit.epas.manager.services.absences.errors.CriticalError;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
@@ -33,34 +42,25 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * Mapper da AbsenceGroups al suo DTO per la visualizzazione via REST.
+ * Mapper da AbsenceFormSimulationResponse al suo DTO per la visualizzazione via REST.
  */
 @Mapper(componentModel = "spring")
-public interface AbsenceFormMapper {
+public interface AbsenceFormSimulationResponseMapper {
 
-  CategoryGroupAbsenceTypeDto convert(CategoryGroupAbsenceType categoryGroupAbsenceType);
-  GroupAbsenceTypeDto convert(GroupAbsenceType groupAbsenceType);
-  ContractualClauseDto convert(ContractualClause contractualClause);
-  @Mapping(target = "justifiedTypeSelected", source = "justifiedTypeSelected.name")
-  @Mapping(target = "hasGroupChoice", expression = "java(absenceForm.hasGroupChoice())")
-  @Mapping(target = "hasAbsenceTypeChoice", expression = "java(absenceForm.hasAbsenceTypeChoice())")
-  @Mapping(target = "hasJustifiedTypeChoice", expression = "java(absenceForm.hasJustifiedTypeChoice())")
-//  @Mapping(target = "theOnlyAbsenceType", expression = "java(absenceForm.theOnlyAbsenceType().getId())")
-  @Mapping(target = "hasHourMinutesChoice", expression = "java(absenceForm.hasHourMinutesChoice())")
-  @Mapping(target = "selectableHours", expression = "java(absenceForm.selectableHours())")
-  @Mapping(target = "selectableMinutes", expression = "java(absenceForm.selectableMinutes())")
-  AbsenceFormDto convert(AbsenceForm absenceForm);
+  CriticalErrorDto convert(CriticalError criticalError);
 
-  @Mapping(target = "qualification", source = "person.qualification.id")
-  PersonShowDto convert(Person person);
+  @Mapping(target = "absence", source = "rowRecap.absence")
+  TemplateRowDto convert(TemplateRow rowRecap);
 
-  @Mapping(target = "hasGroups",
-      expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
-  AbsenceTypeDto convert(AbsenceType absenceType);
+  AbsenceShowDto convert(Absence absence);
+
+  @Mapping(target = "howManySuccess", expression = "java(insertReport.howManySuccess())")
+  @Mapping(target = "howManyReplacing", expression = "java(insertReport.howManyReplacing())")
+  @Mapping(target = "howManyIgnored", expression = "java(insertReport.howManyIgnored())")
+  @Mapping(target = "howManyError", expression = "java(insertReport.howManyError())")
+  AbsenceFormSimulationResponseDto convert(InsertReport insertReport);
 
   @Mapping(target = ".", source = "name")
   String convert(JustifiedType justifiedType);
-
-
 
 }

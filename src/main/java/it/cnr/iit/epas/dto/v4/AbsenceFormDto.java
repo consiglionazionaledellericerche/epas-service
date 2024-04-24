@@ -20,8 +20,11 @@ package it.cnr.iit.epas.dto.v4;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.media.Schema;
+import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import lombok.Data;
 
@@ -44,13 +47,13 @@ public class AbsenceFormDto {
 
   //tab selected
   private CategoryTabDto categoryTabSelected;
-
   private boolean hasGroupChoice;
   private boolean hasAbsenceTypeChoice;
   private boolean hasJustifiedTypeChoice;
   private Long theOnlyAbsenceType;
   private GroupAbsenceTypeDto groupSelected;
-
+  private List<GroupAbsenceTypeDto> groups;
+  private Map<String, List<GroupAbsenceTypeDto>> groupsByCategory;
   private boolean hasHourMinutesChoice;
   private List<Integer> selectableHours;
   private List<Integer> selectableMinutes;
