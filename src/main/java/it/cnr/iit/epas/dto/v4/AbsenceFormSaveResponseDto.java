@@ -17,8 +17,8 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import java.util.Optional;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO per le tab della modale delle assenze.
@@ -27,8 +27,9 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceFormSimulationDto extends AbsenceFormSaveDto {
-  private String categoryTabName;
-  private boolean switchGroup;
+public class AbsenceFormSaveResponseDto {
+  private Long idPerson;
+  private int year;
+  private int month;
+  private boolean isSavedSuccessfully;
 }

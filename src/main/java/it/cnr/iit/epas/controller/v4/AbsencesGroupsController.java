@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -35,6 +36,8 @@ import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
+import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
+import it.cnr.iit.epas.dto.v4.AbsenceFormSaveResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
@@ -57,11 +60,14 @@ import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.List;
@@ -113,6 +119,7 @@ public class AbsencesGroupsController {
   private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
+  private SecureUtils secureUtils;
 
   /**
    * Elenco delle assenze in un mese.
@@ -366,6 +373,107 @@ public class AbsencesGroupsController {
         insertReport);
 
     return ResponseEntity.ok().body(dto);
+  }
+
+  /**
+   * Simula l'inserimento dell'assenza.
+   */
+  @Operation(
+      summary = "simula l'inserimento dell'assenza.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituisce le informazioni associate alla simulazione dell'inserimento di un'assenza"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " l'elenco delle assenze",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
+  @PostMapping("/absencesForm/save")
+  public ResponseEntity<AbsenceFormSaveResponseDto> saveAbsenceForm(
+      @NotNull @Valid @RequestBody AbsenceFormSaveDto absenceFormSaveDto) {
+
+    Optional<Long> id = absenceFormSaveDto.getIdPerson();
+    Optional<String> fiscalCode = absenceFormSaveDto.getFiscalCode();
+    LocalDate dateFrom = LocalDate.parse(absenceFormSaveDto.getFrom());
+    LocalDate dateTo = LocalDate.parse(absenceFormSaveDto.getTo());
+    LocalDate recoveryDate = null;
+    if (!absenceFormSaveDto.getRecoveryDate().isEmpty()) {
+      recoveryDate = LocalDate.parse(absenceFormSaveDto.getRecoveryDate());
+    }    String groupAbsenceTypeName = absenceFormSaveDto.getGroupAbsenceTypeName();
+    String absenceTypeName = absenceFormSaveDto.getAbsenceTypeCode();
+    String justifiedTypeName = absenceFormSaveDto.getJustifiedTypeName();
+    Integer hours = absenceFormSaveDto.getHours();
+    Integer minutes = absenceFormSaveDto.getMinutes();
+    boolean forceInsert = absenceFormSaveDto.isForceInsert();
+
+    Person person =
+        personFinder.getPerson(id, fiscalCode)
+            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
+    rules.checkifPermitted(person);
+    Preconditions.checkNotNull(person);
+    Preconditions.checkNotNull(dateFrom);
+
+    AbsenceType absenceType = null;
+    for (AbsenceType at : absenceTypeDao.findAll()) {
+      if (at.code.equals(absenceTypeName)) {
+        absenceType = at;
+        break;
+      }
+    }
+    Preconditions.checkNotNull(absenceType);
+
+    Preconditions.checkState(absenceTypeDao.isPersistent(absenceType));
+
+    GroupAbsenceType groupAbsenceType = null;
+    for (GroupAbsenceType gat : groupAbsenceTypeDao.findAll()) {
+      if (gat.name.equals(groupAbsenceTypeName)) {
+        groupAbsenceType = gat;
+        break;
+      }
+    }
+    Preconditions.checkNotNull(groupAbsenceType);
+
+    JustifiedType justifiedType = absenceComponentDao.getOrBuildJustifiedType(
+        JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName));
+
+    Preconditions.checkNotNull(justifiedType);
+
+    log.debug("AbsenceController::saveAbsenceForm person = {} from={} to={}, absenceType={} groupAbsenceType={} justifiedType={}",
+        person, dateFrom, dateTo, absenceType, groupAbsenceType, justifiedType);
+
+    InsertReport insertReport = absenceService.insert(person, groupAbsenceType, dateFrom, dateTo,
+        absenceType, justifiedType, hours, minutes, forceInsert, absenceManager);
+
+    log.info("Richiesto inserimento assenze per {}. "
+            + "Codice/Tipo {}, dal {} al {} (ore:{}, minuti:{})",
+        person.getFullname(), absenceType != null ? absenceType.getCode() : groupAbsenceType,
+        dateFrom, dateTo, hours, minutes);
+
+    absenceManager.saveAbsences(insertReport, person, dateFrom, recoveryDate,
+        justifiedType, groupAbsenceType);
+
+    log.info("Effettuato inserimento assenze per {}. "
+            + "Codice/Tipo {}, dal {} al {} (ore:{}, minuti:{})",
+        person.getFullname(), absenceType != null ? absenceType.getCode() : groupAbsenceType,
+        dateFrom, dateTo, hours, minutes);
+
+    AbsenceFormSaveResponseDto absDto = new AbsenceFormSaveResponseDto();
+    absDto.setIdPerson(person.getId());
+    absDto.setYear(dateFrom.getYear());
+    absDto.setMonth(dateFrom.getMonthValue());
+    absDto.setSavedSuccessfully(true);
+
+    return ResponseEntity.ok().body(absDto);
   }
 
   /**
