@@ -620,6 +620,26 @@ then
  $c.grant();
 end
 
+/***********************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per congedo parentale per il padre 
+ ***********************************************************************************************/
+rule EmployeeCanEditParentalLeaveForFatherAbsence
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.parentalLeaveForFathers().contains(this.getCode()), this.getOwner() == $p)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $target, granted == false )
+ //$c: PermissionCheck(action in ("AbsenceGroups.insert", "AbsenceGroups.edit", "AbsenceGroups.save", "AbsenceGroups.delete"), target == $target, granted == false )
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
 /*****************************************************************************************************
  * L'impiegato può modificare/salvare una determinata assenza per visita medica se:
  **********************************************************************************/

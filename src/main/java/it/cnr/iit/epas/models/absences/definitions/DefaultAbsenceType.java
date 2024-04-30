@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.ImmutableSet;
@@ -36,11 +35,16 @@ import java.util.Set;
  *
  */
 public enum DefaultAbsenceType {
+  
+  A_COMANDO("COMANDO",
+      "Parziale nel mese", false,
+      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, MealTicketBehaviour.notAllowMealTicket, 
+      0, null, Sets.newHashSet(), LocalDate.of(2023, 12, 1), null, true, false, true, null),
 
   A_VAC19("VAC-19",
       "Assenza per la somministrazione del vaccino contro il COVID-19", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, MealTicketBehaviour.notAllowMealTicket, 
-      0, null, Sets.newHashSet(), LocalDate.of(2022, 1, 1), null, true, false, true),
+      0, null, Sets.newHashSet(), LocalDate.of(2022, 1, 1), null, true, false, true, null),
 
   A_SMART("SMART",
       "Smartworking a completamento", false,
@@ -52,26 +56,26 @@ public enum DefaultAbsenceType {
       "Lavoro agile", false,
       ImmutableSet.of(JustifiedTypeName.complete_day_and_add_overtime), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
-      LocalDate.of(2022, 3, 29), null, true, false, true),
+      LocalDate.of(2022, 3, 29), null, true, false, true, null),
 
   A_LAGILEBP("L-AGILE",
       "Lavoro agile con maturazione buono pasto", false,
       ImmutableSet.of(JustifiedTypeName.assign_all_day), 0, false, 
       MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
-      LocalDate.of(2022, 3, 29), LocalDate.of(2022, 6, 28), true, false, true),
+      LocalDate.of(2022, 3, 29), LocalDate.of(2022, 6, 28), true, false, true, null),
 
   A_COVID19("COVID19",
       "Emergenza coronavirus, attività lavorativa presso il domicilio dei dipendenti", false,
       ImmutableSet.of(JustifiedTypeName.assign_all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), null, 
-      LocalDate.of(2022, 4, 15), true, false, true),
+      LocalDate.of(2022, 4, 15), true, false, true, null),
 
   A_COVID19BP("COVID19",
       "Emergenza coronavirus, attività lavorativa presso il domicilio dei dipendenti "
           + "con maturazione buono pasto", false,
           ImmutableSet.of(JustifiedTypeName.assign_all_day), 0, false, 
           MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), null, 
-          LocalDate.of(2022, 4, 15), true, false, true),
+          LocalDate.of(2022, 4, 15), true, false, true, null),
 
   A_98CV("98CV",
       "Assente ingiustificato no greenpass", false,
@@ -83,7 +87,7 @@ public enum DefaultAbsenceType {
       "Lavoro agile per dipendenti fragili o per assistenza a disabile/immunodepresso", false,
       ImmutableSet.of(JustifiedTypeName.assign_all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
-      null, null, true, false, true),
+      null, null, true, false, true, null),
 
   A_39LANOBP("39LA",
       "Lavoro agile per dipendenti fragili o per assistenza a disabile/immunodepresso "
@@ -96,7 +100,7 @@ public enum DefaultAbsenceType {
       "Lavoro agile per quarantena/isolamento fiduciario", false,
       ImmutableSet.of(JustifiedTypeName.assign_all_day), 0, false, 
       MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), null, 
-      LocalDate.of(2022, 7, 1), true, false, true),
+      LocalDate.of(2022, 7, 1), true, false, true, null),
 
   A_18M("18M", "Permesso assistenza parenti/affini disabili L. 104/92 in ore e minuti", true,
       ImmutableSet.of(JustifiedTypeName.specified_minutes), 0, false, 
@@ -318,7 +322,7 @@ public enum DefaultAbsenceType {
       Sets.newHashSet(new Behaviour(JustifiedBehaviourName.no_overtime),
           new Behaviour(JustifiedBehaviourName.minimumTime, 60),
           new Behaviour(JustifiedBehaviourName.maximumTime, 300)),
-      LocalDate.of(2018, 7, 1), null, true, true, true),
+      LocalDate.of(2018, 7, 1), null, true, true, true, "F"),
 
   A_661G("661G", "Permesso orario per motivi personali intera giornata", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
@@ -482,16 +486,16 @@ public enum DefaultAbsenceType {
 
   A_92("92", "Missione", false, ImmutableSet.of(JustifiedTypeName.complete_day_and_add_overtime), 0,
       true, MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
-      null, null, false, true, true), 
+      null, null, false, true, true, "T"), 
   A_92E("92E", "Missione all'estero", false,
       ImmutableSet.of(JustifiedTypeName.complete_day_and_add_overtime), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true),
+      Sets.newHashSet(), null, null, false, true, true, "T"),
 
   A_92M("92M", "Missione in ore e minuti", true,
       ImmutableSet.of(JustifiedTypeName.specified_minutes), 0, false, 
       MealTicketBehaviour.allowMealTicket, 0, null,
-      Sets.newHashSet(), LocalDate.of(2019, 2, 1), null, false, true, true), 
+      Sets.newHashSet(), LocalDate.of(2019, 2, 1), null, false, true, true, "T"), 
   A_92NG("92", "Missione che non giustifica niente ai fini del tempo a lavoro", false,
       ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
@@ -499,7 +503,7 @@ public enum DefaultAbsenceType {
   A_92RE("92RE", "Missione comune residenza BP", false,
       ImmutableSet.of(JustifiedTypeName.complete_day_and_add_overtime), 0, false, 
       MealTicketBehaviour.allowMealTicket, 0,
-      null, Sets.newHashSet(), LocalDate.of(2019, 4, 1), null, false, true, true),
+      null, Sets.newHashSet(), LocalDate.of(2019, 4, 1), null, false, true, true, "T"),
 
   A_92H1("92H1", "Missione 1 ora", false, ImmutableSet.of(JustifiedTypeName.nothing), 0, false,
       MealTicketBehaviour.notAllowMealTicket, 60, JustifiedTypeName.absence_type_minutes, 
@@ -572,11 +576,23 @@ public enum DefaultAbsenceType {
   //      ImmutableSet.of(JustifiedTypeName.all_day), 
   //      0, false, false, 0, null, Sets.newHashSet(), new LocalDate(2021, 1, 1), 
   //      new LocalDate(2021, 2, 15), false, true, true),
-  A_31_2020("31", "Ferie anno 2020 prorogate", false, 
+  //  A_31_2020("31", "Ferie anno 2020 prorogate", false, 
+  //      ImmutableSet.of(JustifiedTypeName.all_day), 
+  //      0, false, MealTicketBehaviour.notAllowMealTicket, 0, null, 
+  //      Sets.newHashSet(), new LocalDate(2021, 11, 1), 
+  //      new LocalDate(2022, 2, 28), false, true, true),
+    
+  //  A_31_2021("31", "Ferie anno 2021 prorogate", false, 
+  //      ImmutableSet.of(JustifiedTypeName.all_day), 
+  //      0, false, MealTicketBehaviour.notAllowMealTicket, 0, null, 
+  //      Sets.newHashSet(), new LocalDate(2022, 11, 1), 
+  //      new LocalDate(2023, 2, 28), false, true, true),
+  
+  A_31_2022("31", "Ferie anno 2022 prorogate", false, 
       ImmutableSet.of(JustifiedTypeName.all_day), 
       0, false, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), LocalDate.of(2021, 11, 1), 
-      LocalDate.of(2022, 2, 28), false, true, true),
+      Sets.newHashSet(), LocalDate.of(2023, 11, 1), 
+      LocalDate.of(2024, 2, 28), false, true, true, "F"),
 
   A_31("31", "Ferie anno precedente", false, ImmutableSet.of(JustifiedTypeName.all_day), 0, false,
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
@@ -598,15 +614,15 @@ public enum DefaultAbsenceType {
   A_37("37", "ferie anno precedente (dopo il 31/8)", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true),
+      Sets.newHashSet(), null, null, false, true, true, "F"),
 
   A_91("91", "Riposo compensativo", false, ImmutableSet.of(JustifiedTypeName.all_day), 0, false,
       MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, true, true, true), 
+      Sets.newHashSet(), null, null, true, true, true, "F"), 
   A_91F("91F", "Riposo compensativo recupero giornata lavorativa festiva", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
-      null, null, true, true, true),
+      null, null, true, true, true, "F"),
 
   A_91CE("91", "Riposo compensativo per chiusura ente", false,
       ImmutableSet.of(JustifiedTypeName.recover_time), 0, false, 
@@ -1124,67 +1140,67 @@ public enum DefaultAbsenceType {
   A_111VM("111VM", "gg visite/terapie/prest. spec. <= 9MM malat", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
-      null, null, false, true, true), 
+      null, null, false, true, true, "F"), 
   A_111SCM("111SCM", "sosp.cautelare malattia <= 9mesi", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_119VM("119VM", "gg visite/terapie/prest. spec. > 9MM malat", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_115VM("115VM", "gg visite/terapie/prest. spec. > 12MM malat", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11S("11S", "Malattia superiore a 15 gg lav.", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_115("115", "Malattia superiore a 12 mesi", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_116("116", "Malattia superiore a 18 mesi", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0,
-      null, Sets.newHashSet(), null, null, false, true, true), 
+      null, Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_117("117", "Terapia invalidante grave patologia", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0,
-      null, Sets.newHashSet(), null, null, false, true, true), 
+      null, Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_118("118", "Malattia con responsabilita' di terzi", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true,
       MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_119("119", "Malattia superiore a nove mesi",
       false, ImmutableSet.of(JustifiedTypeName.all_day), 0,
       true, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11R("11R", "Malattia con ricovero", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0,
       true, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11R5("11R5", "Ricovero dopo malattia superiore a 12 mesi",
       false, ImmutableSet.of(JustifiedTypeName.all_day), 0,
       true, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11R9("11R9", "Ricovero dopo malattia superiore a 9 mesi",
       false, ImmutableSet.of(JustifiedTypeName.all_day),
       0, true, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11C("11C", "Malattia post-ricovero", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11C5("11C5", "Convalescenza dopo malattia superiore a 12 mesi",
       false, ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, "F"), 
   A_11C9("11C9", "Convalescenza dopo malattia superiore a 9 mesi",
       false, ImmutableSet.of(JustifiedTypeName.all_day),
       0, true, MealTicketBehaviour.notAllowMealTicket, 0, null, 
-      Sets.newHashSet(), null, null, false, true, true),
+      Sets.newHashSet(), null, null, false, true, true, "F"),
 
   A_12("12", "malattia primo figlio/a <= 3 anni retribuita 100%", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
@@ -1325,10 +1341,10 @@ public enum DefaultAbsenceType {
       ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 420, 
       JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true), 
-  A_78("78", "permesso sindacale 8 ore", false,
-      ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
-      MealTicketBehaviour.notAllowMealTicket, 480, 
-      JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true),
+//  A_78("78", "permesso sindacale 8 ore", false,
+//      ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
+//      MealTicketBehaviour.notAllowMealTicket, 480, 
+//      JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true),
 
   A_71A("71A", "permesso sindacale 1 ora non retribuita", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 60, false, 
@@ -1419,7 +1435,13 @@ public enum DefaultAbsenceType {
   A_77R("77R", "perm. sind. 7 ore R.S.U.", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 420, false,
       MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
-      null, null, false, true, true),
+      null, null, false, true, true, null),
+  
+  A_7DM("7DM", "Permesso dirigenti sindacato in ore e minuti", true,
+      ImmutableSet.of(JustifiedTypeName.specified_minutes), 0, false, 
+      MealTicketBehaviour.allowMealTicket, 0, null,
+      Sets.newHashSet(new Behaviour(JustifiedBehaviourName.no_overtime)), null, null,
+      false, true, true, null), 
 
   A_71D("71D", "perm. sind. 1 ora dirigenti sidac.", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 60, false, 
@@ -1446,13 +1468,13 @@ public enum DefaultAbsenceType {
       MealTicketBehaviour.allowMealTicket,
       0, null, Sets.newHashSet(), null, null, false, true, true), 
   A_77D("77D", "perm. sind. 7 ore dirigenti sindac.", false,
-      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
-      MealTicketBehaviour.allowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
-  A_78D("78D", "perm. sind. 8 ore dirigenti sindac.", false,
-      ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 480,
-      false, MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
-      null, null, false, true, true),
+      ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
+      MealTicketBehaviour.notAllowMealTicket, 420, JustifiedTypeName.absence_type_minutes,
+      Sets.newHashSet(), null, null, false, true, true, null), 
+//  A_78D("78D", "perm. sind. 8 ore dirigenti sindac.", false,
+//      ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 480,
+//      false, MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
+//      null, null, false, true, true),
 
   A_FA1("FA1", "formazione e aggiornamento 1 ora", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 60, false, 
@@ -1559,8 +1581,8 @@ public enum DefaultAbsenceType {
 
   A_441("441", "permesso esami", false, ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket,
-      0, null, Sets.newHashSet(), null, null, false, true, true), 
-  A_442("442", "permesso congr.conv.seminari ecc.", false, 
+      0, null, Sets.newHashSet(), null, null, false, true, true, null), 
+  A_442("442", "Permesso componenti commissione concorso altra amministrazione", false, 
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, MealTicketBehaviour.notAllowMealTicket, 
       0, null, Sets.newHashSet(), null, null, false, true, true), 
   A_6N("6N", "permesso motivi privati non retribuito", false,
@@ -1612,7 +1634,15 @@ public enum DefaultAbsenceType {
   A_62S50V("62S50V", "dist. sind.a temp. det. p. t. 50% vert.", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
-      null, null, false, true, true),
+      null, null, false, true, true, null),
+  A_62S25V("62S25V", "dist. sind.a temp. det. p. t. 25% vert.", false,
+      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
+      MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
+      null, null, false, true, true, null),
+  A_62S75V("62S75V", "dist. sind.a temp. det. p. t. 75% vert.", false,
+      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
+      MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
+      null, null, false, true, true, null),
 
   A_ES_L133("ES-L133", "esonero servizio art.72 L.133/08", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true, 
@@ -1642,7 +1672,13 @@ public enum DefaultAbsenceType {
   A_54("54", "aspett. per mot. di famigl.o studio", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, true /* festivo capire */, 
       MealTicketBehaviour.notAllowMealTicket, 0, null,
-      Sets.newHashSet(), null, null, false, true, true), 
+      Sets.newHashSet(), null, null, false, true, true, null), 
+  
+  A_54B("54B", "asp. assistenza figli <=6 anni", false,
+      ImmutableSet.of(JustifiedTypeName.all_day), 0, true /* festivo capire */, 
+      MealTicketBehaviour.notAllowMealTicket, 0, null,
+      Sets.newHashSet(), null, null, false, true, true, null), 
+  
   A_54C("54C", "aspett. per cooperaz. Paesi in sviluppo",
       false, ImmutableSet.of(JustifiedTypeName.all_day), 0, true /* festivo capire */, 
       MealTicketBehaviour.notAllowMealTicket, 0,
@@ -2371,19 +2407,32 @@ public enum DefaultAbsenceType {
   A_410("410", "Riposo compensativo missione Antartide", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(),
-      null, LocalDate.of(2021, 12, 31), false, true, true),
-  A_401("401", "Ferie missione Antartide anno precedente", false,
+      null, LocalDate.of(2021, 12, 31), false, true, true, null),
+//  A_402("402", "Ferie missione Antartide anno precedente", false,
+//      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
+//      MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), null,
+//      new LocalDate(2023, 12, 31), false, true, true), 
+//  A_403("403", "Ferie missione Antartide anno corrente", false,
+//      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
+//      MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
+//      new LocalDate(2023, 1, 1), new LocalDate(2024, 12, 31), false, true, true), 
+//  A_413("413", "Riposo compensativo missione Antartide", false,
+//      ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
+//      MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
+//      new LocalDate(2023, 1, 1), new LocalDate(2023, 12, 31), false, true, true), 
+  
+  A_403("403", "Ferie missione Antartide anno precedente", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), null,
-      LocalDate.of(2022, 12, 31), false, true, true), 
-  A_402("402", "Ferie missione Antartide anno corrente", false,
+      LocalDate.of(2024, 12, 31), false, true, true, "F"), 
+  A_404("404", "Ferie missione Antartide anno corrente", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
-      LocalDate.of(2022, 1, 1), LocalDate.of(2023, 12, 31), false, true, true), 
-  A_412("412", "Riposo compensativo missione Antartide", false,
+      LocalDate.of(2024, 1, 1), LocalDate.of(2025, 12, 31), false, true, true, "F"), 
+  A_414("414", "Riposo compensativo missione Antartide", false,
       ImmutableSet.of(JustifiedTypeName.all_day), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 0, null, Sets.newHashSet(), 
-      LocalDate.of(2022, 1, 1), LocalDate.of(2022, 12, 31), false, true, true), 
+      LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), false, true, true, "F"), 
 
 
   A_NC("NC", "Giorno non conteggiato ai fini del tempo a lavoro", true,
@@ -2453,9 +2502,11 @@ public enum DefaultAbsenceType {
   public LocalDate validTo; // nullable
 
   public Boolean reperibilityCompatible;
-  public Boolean isRealAbsenceType;
+  public boolean isRealAbsence;
 
   public boolean toUpdate;
+  
+  public String externalId = null;
 
   /**
    * DTO con i parametri predefiniti dei tipi di assenza.
@@ -2464,7 +2515,34 @@ public enum DefaultAbsenceType {
       Set<JustifiedTypeName> justifiedTypeNamesPermitted, Integer justifiedTime,
       boolean consideredWeekEnd, MealTicketBehaviour mealTicketBehaviour, Integer replacingTime,
       JustifiedTypeName replacingType, Set<Behaviour> behaviour, LocalDate validFrom,
-      LocalDate validTo, Boolean reperibilityCompatible, Boolean isRealAbsenceType,
+      LocalDate validTo, Boolean reperibilityCompatible, boolean isRealAbsence,
+      boolean toUpdate, String externalId) {
+    this.certificationCode = certificationCode;
+    this.description = description;
+    this.internalUse = internalUse;
+    this.justifiedTypeNamesPermitted = justifiedTypeNamesPermitted;
+    this.justifiedTime = justifiedTime;
+    this.consideredWeekEnd = consideredWeekEnd;
+    this.mealTicketBehaviour = mealTicketBehaviour;
+    this.replacingTime = replacingTime;
+    this.replacingType = replacingType;
+    this.behaviour = behaviour;
+    this.validFrom = validFrom;
+    this.validTo = validTo;
+    this.reperibilityCompatible = reperibilityCompatible;
+    this.isRealAbsence = isRealAbsence;
+    this.toUpdate = toUpdate;
+    this.externalId = externalId;
+  }
+
+  /**
+   * DTO con i parametri predefiniti dei tipi di assenza.
+   */
+  private DefaultAbsenceType(String certificationCode, String description, boolean internalUse,
+      Set<JustifiedTypeName> justifiedTypeNamesPermitted, Integer justifiedTime,
+      boolean consideredWeekEnd, MealTicketBehaviour mealTicketBehaviour, Integer replacingTime,
+      JustifiedTypeName replacingType, Set<Behaviour> behaviour, LocalDate validFrom,
+      LocalDate validTo, Boolean reperibilityCompatible, Boolean isRealAbsence,
       boolean toUpdate) {
     this.certificationCode = certificationCode;
     this.description = description;
@@ -2479,10 +2557,10 @@ public enum DefaultAbsenceType {
     this.validFrom = validFrom;
     this.validTo = validTo;
     this.reperibilityCompatible = reperibilityCompatible;
-    this.isRealAbsenceType = isRealAbsenceType;
+    this.isRealAbsence = isRealAbsence;
     this.toUpdate = toUpdate;
   }
-
+  
   /**
    * sottoclasse che definisce il comportamento.
    *

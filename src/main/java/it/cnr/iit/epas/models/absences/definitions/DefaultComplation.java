@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.ImmutableSet;
@@ -89,8 +88,17 @@ public enum DefaultComplation {
           DefaultAbsenceType.A_74, 
           DefaultAbsenceType.A_75, 
           DefaultAbsenceType.A_76, 
-          DefaultAbsenceType.A_77, 
-          DefaultAbsenceType.A_78)),
+          DefaultAbsenceType.A_77)),
+  
+  C_7D(AmountType.minutes, 
+      ImmutableSet.of(DefaultAbsenceType.A_7DM), 
+      ImmutableSet.of(DefaultAbsenceType.A_71D, 
+          DefaultAbsenceType.A_72D, 
+          DefaultAbsenceType.A_73D, 
+          DefaultAbsenceType.A_74D, 
+          DefaultAbsenceType.A_75D, 
+          DefaultAbsenceType.A_76D, 
+          DefaultAbsenceType.A_77D)),
 
   C_661(AmountType.minutes, 
       ImmutableSet.of(DefaultAbsenceType.A_661MO, DefaultAbsenceType.A_661M), 
@@ -162,7 +170,11 @@ public enum DefaultComplation {
   C_43(AmountType.units, 
       ImmutableSet.of(DefaultAbsenceType.A_43), 
       ImmutableSet.of(DefaultAbsenceType.A_43)),
-
+  
+  C_45(AmountType.units, 
+      ImmutableSet.of(DefaultAbsenceType.A_45), 
+      ImmutableSet.of(DefaultAbsenceType.A_45)),
+  
   //  C_COV50(AmountType.units, 
   //      ImmutableSet.of(DefaultAbsenceType.A_COV50M), 
   //      ImmutableSet.of(DefaultAbsenceType.A_COV50H)),
