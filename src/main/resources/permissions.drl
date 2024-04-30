@@ -18,6 +18,7 @@ import it.cnr.iit.epas.manager.configurations.EpasParam;
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
 global java.util.List userRolesOffices;
+global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
 
 /*******************************************************************************
  * Azioni ruolo DEVELOPER e ADMIN
@@ -387,13 +388,11 @@ when
  PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
  /** Sostituire il metodo che valuta che tipo di assenza può inserire il dipendente utilizzando la nuova modellazione **/
  $target: Absence(DefaultGroup.employeeOffSeatCodes() contains this.getCode(), this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$h.isPersistent($target) ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth())
  )
 then
@@ -410,13 +409,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeDisabledPersonCodes() contains this.getCode(), this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -433,13 +430,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.TELEWORK, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeTeleworkCodes() contains this.getCode(), this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -455,13 +450,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeDisabledRelativeCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -477,13 +470,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.RIGHT_TO_STUDY, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeRightToStudyCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -499,13 +490,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.COVID_19, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeCovid19Codes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -521,13 +510,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.AGILE_WORK, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeAgileCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -543,13 +530,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.ADDITIONAL_HOURS, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeAdditionalHoursCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -565,13 +550,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_AND_CHILD_ILLNESS, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.parentalLeaveAndChildIllnessCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -587,13 +570,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.SECOND_DISABLED_RELATIVE_PERMISSION, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeSecondDisabledRelativeCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -609,13 +590,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeAgileWorkOrDisabledPeopleAssistanceCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -631,13 +610,11 @@ when
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.SMARTWORKING, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.employeeSmartworking() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -654,13 +631,11 @@ when
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM, fieldValue == true) from $o.configurations
  $target: Absence(DefaultGroup.medicalExamsCodes() contains this.getCode() , this.getOwner() == $p)
- $h: HistoricalDao()
- $c: PermissionCheck(
+  $c: PermissionCheck(
       (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (//!$target.isPersistent() ||
- $h.lastRevisionOperator($target) == currentUser)
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
