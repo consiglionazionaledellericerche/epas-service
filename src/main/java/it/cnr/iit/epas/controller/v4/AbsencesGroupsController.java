@@ -222,10 +222,25 @@ public class AbsencesGroupsController {
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam("from") String from,
-      @RequestParam("category") Optional<String> category) {
-    log.debug("AbsencesGroupsController::groupsForCategory id = {} from = {} category={}", id, from,
-        category);
+      @RequestParam("to") Optional<String> to,
+      @RequestParam("category") Optional<String> category,
+      @RequestParam("groupAbsenceTypeName") Optional<String> groupAbsenceTypeName,
+      @RequestParam("absenceTypeCode") Optional<String> absenceTypeCode
+  ) {
+    log.debug("AbsencesGroupsController::groupsForCategory id = {} "
+            + "from = {} "
+            + "to = {} "
+            + "category={}  "
+            + "groupAbsenceTypeName={}"
+            + "absenceTypeName={}",
+        id, from, to, category, groupAbsenceTypeName, absenceTypeCode);
+
     LocalDate fromLocalDate = LocalDate.parse(from);
+
+    LocalDate toLocalDate = null;
+    if (to.isPresent()) {
+      toLocalDate = LocalDate.parse(to.get());
+    }
 
     Person person =
         personFinder.getPerson(id, fiscalCode)
@@ -243,13 +258,35 @@ public class AbsencesGroupsController {
       }
     }
 
+    GroupAbsenceType groupAbsenceType = null;
+    for (GroupAbsenceType gat : groupAbsenceTypeDao.findAll()) {
+      if (gat.name.equals(groupAbsenceTypeName.orElse(null))) {
+        groupAbsenceType = gat;
+        break;
+      }
+    }
+    log.debug("absenceForm::groupAbsenceType = {}", groupAbsenceType);
+
+    AbsenceType absenceType = null;
+    for (AbsenceType at : absenceTypeDao.findAll()) {
+      if (at.code.equals(absenceTypeCode.orElse(null))) {
+        absenceType = at;
+        break;
+      }
+    }
+
+    boolean switchGroup = absenceType == null;
+
+    log.debug("absenceForm::absenceTypeCode = {}",absenceTypeCode);
+    log.debug("absenceForm::absenceType = {} switchGroup= {} switchGroup= {}",absenceType, switchGroup, absenceType == null);
     AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromLocalDate,
-        categoryTabFind, null, null, null, true, null,
+        categoryTabFind, toLocalDate, null, groupAbsenceType, switchGroup, absenceType,
         null, null, null, false, false);
 
     log.debug("absenceForm::absenceForm.groupSelected.category = {}",
         absenceForm.groupSelected.category);
-
+    log.debug("absenceForm::absenceForm.absenceTypeSelected = {}",
+        absenceForm.absenceTypeSelected);
     AbsenceFormDto absFormDto = absenceFormMapper.convert(absenceForm);
 
     List<GroupAbsenceType> groups = null;
@@ -409,7 +446,8 @@ public class AbsencesGroupsController {
     LocalDate recoveryDate = null;
     if (!absenceFormSaveDto.getRecoveryDate().isEmpty()) {
       recoveryDate = LocalDate.parse(absenceFormSaveDto.getRecoveryDate());
-    }    String groupAbsenceTypeName = absenceFormSaveDto.getGroupAbsenceTypeName();
+    }
+    String groupAbsenceTypeName = absenceFormSaveDto.getGroupAbsenceTypeName();
     String absenceTypeName = absenceFormSaveDto.getAbsenceTypeCode();
     String justifiedTypeName = absenceFormSaveDto.getJustifiedTypeName();
     Integer hours = absenceFormSaveDto.getHours();
@@ -448,7 +486,8 @@ public class AbsencesGroupsController {
 
     Preconditions.checkNotNull(justifiedType);
 
-    log.debug("AbsenceController::saveAbsenceForm person = {} from={} to={}, absenceType={} groupAbsenceType={} justifiedType={}",
+    log.debug(
+        "AbsenceController::saveAbsenceForm person = {} from={} to={}, absenceType={} groupAbsenceType={} justifiedType={}",
         person, dateFrom, dateTo, absenceType, groupAbsenceType, justifiedType);
 
     InsertReport insertReport = absenceService.insert(person, groupAbsenceType, dateFrom, dateTo,
