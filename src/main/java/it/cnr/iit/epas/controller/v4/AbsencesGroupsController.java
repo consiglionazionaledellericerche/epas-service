@@ -222,18 +222,27 @@ public class AbsencesGroupsController {
       @RequestParam("id") Optional<Long> id,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam("from") String from,
+      @RequestParam("switchGroup") Optional<Boolean> switchGroup,
       @RequestParam("to") Optional<String> to,
       @RequestParam("category") Optional<String> category,
       @RequestParam("groupAbsenceTypeName") Optional<String> groupAbsenceTypeName,
-      @RequestParam("absenceTypeCode") Optional<String> absenceTypeCode
+      @RequestParam("absenceTypeCode") Optional<String> absenceTypeCode,
+      @RequestParam("justifiedTypeName") Optional<String> justifiedTypeName,
+      @RequestParam("hours") Optional<Integer> hours,
+      @RequestParam("minutes") Optional<Integer> minutes
   ) {
     log.debug("AbsencesGroupsController::groupsForCategory id = {} "
             + "from = {} "
             + "to = {} "
             + "category={}  "
-            + "groupAbsenceTypeName={}"
-            + "absenceTypeName={}",
-        id, from, to, category, groupAbsenceTypeName, absenceTypeCode);
+            + "groupAbsenceTypeName={}  "
+            + "absenceTypeName={}  "
+            + "justifiedTypeName={}  "
+            + "hours={}  "
+            + "minutes={}  "
+            + "switchGroup= {}",
+        id, from, to, category, groupAbsenceTypeName, absenceTypeCode, justifiedTypeName, hours,
+        minutes, switchGroup);
 
     LocalDate fromLocalDate = LocalDate.parse(from);
 
@@ -275,18 +284,33 @@ public class AbsencesGroupsController {
       }
     }
 
-    boolean switchGroup = absenceType == null;
+    JustifiedType justifiedType = null;
+    if (justifiedTypeName.orElse(null) != null) {
+      justifiedType = absenceComponentDao.getOrBuildJustifiedType(
+          JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName.get()));
+      log.debug("absenceForm::JustifiedTypeName = {}",
+          JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName.get()));
+    }
 
-    log.debug("absenceForm::absenceTypeCode = {}",absenceTypeCode);
-    log.debug("absenceForm::absenceType = {} switchGroup= {} switchGroup= {}",absenceType, switchGroup, absenceType == null);
+    log.debug("absenceForm::justifiedType = {}", justifiedType);
+
+    log.debug("absenceForm::absenceTypeCode = {}", absenceTypeCode);
+    log.debug("absenceForm::absenceType = {} switchGroup= {} switchGroup= {}", absenceType,
+        switchGroup, absenceType == null);
+
     AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromLocalDate,
-        categoryTabFind, toLocalDate, null, groupAbsenceType, switchGroup, absenceType,
-        null, null, null, false, false);
+        categoryTabFind, toLocalDate, null, groupAbsenceType, switchGroup.orElse(false),
+        absenceType,
+        justifiedType, hours.orElse(null), minutes.orElse(null), false, false);
 
     log.debug("absenceForm::absenceForm.groupSelected.category = {}",
         absenceForm.groupSelected.category);
     log.debug("absenceForm::absenceForm.absenceTypeSelected = {}",
         absenceForm.absenceTypeSelected);
+
+    log.debug("absenceForm::absenceForm.justifiedTypeSelected = {}",
+        absenceForm.justifiedTypeSelected);
+
     AbsenceFormDto absFormDto = absenceFormMapper.convert(absenceForm);
 
     List<GroupAbsenceType> groups = null;
@@ -340,8 +364,8 @@ public class AbsencesGroupsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @PostMapping("/insertSimulation")
-  public ResponseEntity<AbsenceFormSimulationResponseDto> insertSimulation(
+  @PostMapping("/simulateInsert")
+  public ResponseEntity<AbsenceFormSimulationResponseDto> simulateInsert(
       @NotNull @Valid @RequestBody AbsenceFormSimulationDto simulationDto) {
 
     Optional<Long> id = simulationDto.getIdPerson();
@@ -349,7 +373,7 @@ public class AbsencesGroupsController {
     LocalDate dateFrom = LocalDate.parse(simulationDto.getFrom());
     LocalDate dateTo = LocalDate.parse(simulationDto.getTo());
     LocalDate recoveryDate = null;
-    if (!simulationDto.getRecoveryDate().isEmpty()) {
+    if (simulationDto.getRecoveryDate() != null) {
       recoveryDate = LocalDate.parse(simulationDto.getRecoveryDate());
     }
     String categoryTabName = simulationDto.getCategoryTabName();
@@ -389,10 +413,13 @@ public class AbsencesGroupsController {
       }
     }
 
-    JustifiedType justifiedType = absenceComponentDao.getOrBuildJustifiedType(
-        JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName));
+    JustifiedType justifiedType = null;
+    if (justifiedTypeName != null) {
+      justifiedType = absenceComponentDao.getOrBuildJustifiedType(
+          JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName));
+    }
 
-    log.debug("AbsenceController::insertSimulation person = {} from={} to={}, absenceType={}",
+    log.debug("AbsenceController::simulateInsert person = {} from={} to={}, absenceType={}",
         person, dateFrom, dateTo, absenceType);
 
     AbsenceForm absenceForm =
