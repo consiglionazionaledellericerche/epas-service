@@ -19,6 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
+import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
 import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
@@ -34,21 +35,32 @@ import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 /**
  * Mapper da AbsenceGroups al suo DTO per la visualizzazione via REST.
  */
 @Mapper(componentModel = "spring")
 public interface AbsenceGroupsMapper {
-
-  @Mapping(target = "justifiedType", source = "justifiedType.name")
+  @Named("toTerse")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "date", source = "personDay.date")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
-  AbsenceShowTerseDto convert(Absence absence);
+  AbsenceShowTerseDto convertToTerse(Absence absence);
+
+  @Named("toShow")
+  @Mapping(target = "externalId", source = "externalIdentifier")
+  @Mapping(target = "justifiedType", source = "absenceShow.justifiedType.name")
+  @Mapping(target = "justifiedTime", expression = "java(absenceShow.justifiedTime())")
+  @Mapping(target = "date", source = "personDay.date")
+  @Mapping(target = "nothingJustified", expression = "java(absenceShow.nothingJustified())")
+  AbsenceShowDto convertToShow(Absence absenceShow);
+
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   TakenAbsenceDto convert(TakenAbsence takenAbsences);
@@ -59,6 +71,7 @@ public interface AbsenceGroupsMapper {
   AbsenceGroupsDto convert(AbsenceGroupsRecap absenceGroupsRecap);
 
   @Mapping(target = "absence", source = "rowRecap.absence")
+  @Mapping(target = "absence.justifiedType", source = "rowRecap.absence.justifiedType.name")
   TemplateRowDto convertTemplateRow(DayInPeriod.TemplateRow rowRecap);
 
   DayInPeriodDto convertDayInPeriod(DayInPeriod dayInPeriod);
@@ -68,6 +81,9 @@ public interface AbsenceGroupsMapper {
   AbsencePeriodTerseDto convertAbsencePeriodTerse(AbsencePeriod absencePeriod);
 
   PeriodChainDto convertPeriodChain(PeriodChain periodChain);
+
+  @Mapping(target = ".", source = "name")
+  String convert(JustifiedType justifiedType);
 
 
 }

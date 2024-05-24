@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.dto.v4.mapper;
+import it.cnr.iit.epas.dto.v4.AbsenceErrorDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
@@ -28,6 +29,7 @@ import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
+import it.cnr.iit.epas.manager.services.absences.errors.AbsenceError;
 import it.cnr.iit.epas.manager.services.absences.errors.CriticalError;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
@@ -49,9 +51,14 @@ public interface AbsenceFormSimulationResponseMapper {
 
   CriticalErrorDto convert(CriticalError criticalError);
 
+  @Mapping(target = "absenceProblem", source = "absence.absenceProblem")
+  AbsenceErrorDto convert(AbsenceError absence);
+
   @Mapping(target = "absence", source = "rowRecap.absence")
   TemplateRowDto convert(TemplateRow rowRecap);
 
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceShowDto convert(Absence absence);
 
   @Mapping(target = "howManySuccess", expression = "java(insertReport.howManySuccess())")

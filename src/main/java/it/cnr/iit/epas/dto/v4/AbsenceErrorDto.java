@@ -20,6 +20,7 @@ package it.cnr.iit.epas.dto.v4;
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import lombok.Data;
 
 /**
@@ -29,24 +30,11 @@ import lombok.Data;
  *
  */
 @Data
-public class TemplateRowDto {
-
-  private LocalDate date;
-  private List<AbsenceErrorDto> absenceErrors = Lists.newArrayList();
-  private List<AbsenceErrorDto> absenceWarnings = Lists.newArrayList();
+public class AbsenceErrorDto {
 
   public AbsenceShowDto absence;
+  public String absenceProblem;
 
-  private GroupAbsenceTypeDto groupAbsenceType;
-  private boolean beforeInitialization = false;
-  private boolean usableColumn = false;
-  private String usableLimit;
-  private String usableTaken;
+  public Set<AbsenceShowDto> conflictingAbsences;
 
-  private boolean complationColumn = false;
-  private String consumedComplationBefore;
-  private String consumedComplationAbsence;
-  private String consumedComplationNext;
-
-  private boolean isReplacingRow = false;
 }

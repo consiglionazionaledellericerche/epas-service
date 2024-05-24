@@ -37,6 +37,8 @@ public interface CriticalErrorMapper {
 
   GroupAbsenceTypeDto convert(GroupAbsenceType groupAbsenceType);
   AbsenceTypeDto convert(AbsenceType absenceType);
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceShowDto convert(Absence absence);
 
   @Mapping(target = ".", source = "name")

@@ -35,6 +35,7 @@ import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
+import it.cnr.iit.epas.dto.v4.AbsenceErrorDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveResponseDto;
@@ -56,12 +57,14 @@ import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecapFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
+import it.cnr.iit.epas.manager.services.absences.errors.AbsenceError;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
@@ -426,6 +429,9 @@ public class AbsencesGroupsController {
         absenceService.buildAbsenceForm(person, dateFrom, categoryTab,
             dateTo, recoveryDate, groupAbsenceType, switchGroup, absenceType,
             justifiedType, hours, minutes, false, false);
+
+    log.debug("AbsenceController::simulateInsert justifiedType={}",
+        absenceForm.justifiedTypeSelected);
 
     InsertReport insertReport = absenceService.insert(person,
         absenceForm.groupSelected,

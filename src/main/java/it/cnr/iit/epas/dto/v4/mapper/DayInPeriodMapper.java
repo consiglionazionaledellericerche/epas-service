@@ -26,6 +26,7 @@ import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.JustifiedType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -36,7 +37,7 @@ import org.mapstruct.Mapping;
 public interface DayInPeriodMapper {
 
 
-  @Mapping(target = "justifiedType", source = "justifiedType.name")
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", source = "personDay.date")
@@ -52,5 +53,7 @@ public interface DayInPeriodMapper {
   TemplateRowDto convert(DayInPeriod.TemplateRow rowRecap);
 
   DayInPeriodDto convert(DayInPeriod dayInPeriod);
+  @Mapping(target = ".", source = "name")
+  String convert(JustifiedType justifiedType);
 
 }
