@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,5 +35,9 @@ public class AbsenceTypeDto extends BaseModelDto {
   private String description;
   private boolean hasGroups;
   private Integer numberOfDays = 0;
+
+  private String defaultTakableGroup;
+
+  private Optional<String> categoryTabName=null;
 
 }

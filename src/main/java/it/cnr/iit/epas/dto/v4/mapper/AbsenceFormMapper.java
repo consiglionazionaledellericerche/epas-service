@@ -56,6 +56,8 @@ public interface AbsenceFormMapper {
 
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
+  @Mapping(target = "defaultTakableGroup",
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   AbsenceTypeDto convert(AbsenceType absenceType);
 
   @Mapping(target = ".", source = "name")

@@ -35,7 +35,6 @@ import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.dto.v4.AbsenceErrorDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveResponseDto;
@@ -57,14 +56,10 @@ import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecapFactory;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
-import it.cnr.iit.epas.manager.services.absences.errors.AbsenceError;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.Role;
-import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
@@ -73,6 +68,7 @@ import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -258,8 +254,6 @@ public class AbsencesGroupsController {
         personFinder.getPerson(id, fiscalCode)
             .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
-    log.debug("AbsenceController::absencesInPeriod person = {}", person);
-
     rules.checkifPermitted(person);
 
     CategoryTab categoryTabFind = null;
@@ -277,7 +271,6 @@ public class AbsencesGroupsController {
         break;
       }
     }
-    log.debug("absenceForm::groupAbsenceType = {}", groupAbsenceType);
 
     AbsenceType absenceType = null;
     for (AbsenceType at : absenceTypeDao.findAll()) {
@@ -291,28 +284,12 @@ public class AbsencesGroupsController {
     if (justifiedTypeName.orElse(null) != null) {
       justifiedType = absenceComponentDao.getOrBuildJustifiedType(
           JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName.get()));
-      log.debug("absenceForm::JustifiedTypeName = {}",
-          JustifiedType.JustifiedTypeName.valueOf(justifiedTypeName.get()));
     }
-
-    log.debug("absenceForm::justifiedType = {}", justifiedType);
-
-    log.debug("absenceForm::absenceTypeCode = {}", absenceTypeCode);
-    log.debug("absenceForm::absenceType = {} switchGroup= {} switchGroup= {}", absenceType,
-        switchGroup, absenceType == null);
 
     AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromLocalDate,
         categoryTabFind, toLocalDate, null, groupAbsenceType, switchGroup.orElse(false),
         absenceType,
         justifiedType, hours.orElse(null), minutes.orElse(null), false, false);
-
-    log.debug("absenceForm::absenceForm.groupSelected.category = {}",
-        absenceForm.groupSelected.category);
-    log.debug("absenceForm::absenceForm.absenceTypeSelected = {}",
-        absenceForm.absenceTypeSelected);
-
-    log.debug("absenceForm::absenceForm.justifiedTypeSelected = {}",
-        absenceForm.justifiedTypeSelected);
 
     AbsenceFormDto absFormDto = absenceFormMapper.convert(absenceForm);
 
@@ -477,7 +454,7 @@ public class AbsencesGroupsController {
     LocalDate dateFrom = LocalDate.parse(absenceFormSaveDto.getFrom());
     LocalDate dateTo = LocalDate.parse(absenceFormSaveDto.getTo());
     LocalDate recoveryDate = null;
-    if (!absenceFormSaveDto.getRecoveryDate().isEmpty()) {
+    if (absenceFormSaveDto.getRecoveryDate() != null) {
       recoveryDate = LocalDate.parse(absenceFormSaveDto.getRecoveryDate());
     }
     String groupAbsenceTypeName = absenceFormSaveDto.getGroupAbsenceTypeName();
@@ -501,9 +478,10 @@ public class AbsencesGroupsController {
         break;
       }
     }
-    Preconditions.checkNotNull(absenceType);
 
-    Preconditions.checkState(absenceTypeDao.isPersistent(absenceType));
+    if (!absenceTypeDao.isPersistent(absenceType)) {
+      absenceType = null;
+    }
 
     GroupAbsenceType groupAbsenceType = null;
     for (GroupAbsenceType gat : groupAbsenceTypeDao.findAll()) {
@@ -587,10 +565,15 @@ public class AbsencesGroupsController {
 
     rules.checkifPermitted(person);
 
-    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromDate, null, null, null,
-        null, true, null, null, null, null, false, false);
+    HashMap<String, String> categoryTab = new HashMap<String, String>();
+    for (CategoryTab ct : categoryTabDao.findAll()) {
+      log.debug("CategoryTab name {}", ct.name);
+      categoryTab.put(ct.getLabel(), ct.name);
+    }
 
-    Set<AbsenceTypeDto> allTakable = Sets.newHashSet();
+    //    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromDate, null, null, null,
+//        null, true, null, null, null, null, false, false);
+    Set<AbsenceTypeDto> allTakableDto = Sets.newHashSet();
     for (GroupAbsenceType group : absenceComponentDao.allGroupAbsenceType(false)) {
       for (AbsenceType abt : group.getTakableAbsenceBehaviour().getTakableCodes()) {
         if (abt.defaultTakableGroup() == null) {
@@ -598,12 +581,18 @@ public class AbsencesGroupsController {
           abt.defaultTakableGroup();
         }
       }
+
+      AbsenceTypeDto dto = null;
       //TODO eventualmente controllo prendibilità della persona alla data (figli, l 104 etc.)
-      for (AbsenceType tab : group.getTakableAbsenceBehaviour().getTakableCodes()) {
-        allTakable.add(absenceFormMapper.convert(tab));
+      for (AbsenceType abst : group.getTakableAbsenceBehaviour().getTakableCodes()) {
+        dto = absenceFormMapper.convert(abst);
+        dto.setCategoryTabName(Optional.ofNullable(abst.defaultTakableGroup().category.tab.name));
+        allTakableDto.add(dto);
+        log.debug("defaultTakableGroup defaultTakableGroup {}",
+            abst.defaultTakableGroup().category.tab.name);
       }
     }
 
-    return ResponseEntity.ok().body(allTakable);
+    return ResponseEntity.ok().body(allTakableDto);
   }
 }
