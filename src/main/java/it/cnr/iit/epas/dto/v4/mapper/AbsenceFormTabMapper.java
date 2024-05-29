@@ -16,28 +16,9 @@
  */
 
 package it.cnr.iit.epas.dto.v4.mapper;
-
-import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
-import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
-import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.CategoryTabDto;
-import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
-import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
-import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.PeriodChainDto;
-import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
-import it.cnr.iit.epas.dto.v4.TemplateRowDto;
-import it.cnr.iit.epas.manager.recaps.absencegroups.AbsenceGroupsRecap;
-import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
-import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
-import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
-import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
-import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.CategoryTab;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * Mapper da AbsenceFormTab al suo DTO per la visualizzazione via REST.

@@ -17,29 +17,16 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsenceErrorDto;
-import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
-import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.ContractualClauseDto;
 import it.cnr.iit.epas.dto.v4.CriticalErrorDto;
-import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.TemplateRowDto;
-import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.manager.services.absences.errors.AbsenceError;
 import it.cnr.iit.epas.manager.services.absences.errors.CriticalError;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
-import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.Absence;
-import it.cnr.iit.epas.models.absences.AbsenceType;
-import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.models.contractuals.ContractualClause;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -55,6 +42,7 @@ public interface AbsenceFormSimulationResponseMapper {
   AbsenceErrorDto convert(AbsenceError absence);
 
   @Mapping(target = "absence", source = "rowRecap.absence")
+  @Mapping(target = "onlyNotOnHoliday", expression = "java(rowRecap.onlyNotOnHoliday())")
   TemplateRowDto convert(TemplateRow rowRecap);
 
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")

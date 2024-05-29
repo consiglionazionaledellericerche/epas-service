@@ -37,6 +37,8 @@ public class TemplateRowDto {
 
   public AbsenceShowDto absence;
 
+  public boolean onlyNotOnHoliday;
+
   private GroupAbsenceTypeDto groupAbsenceType;
   private boolean beforeInitialization = false;
   private boolean usableColumn = false;
