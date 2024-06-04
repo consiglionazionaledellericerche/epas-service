@@ -22,10 +22,12 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * DTO con le info principali di un contratto.
  */
+@ToString(callSuper = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ContractShowDto extends ContractShowTerseDto {

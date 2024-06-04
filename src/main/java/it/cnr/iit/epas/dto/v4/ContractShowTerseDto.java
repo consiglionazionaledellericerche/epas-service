@@ -20,6 +20,7 @@ package it.cnr.iit.epas.dto.v4;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * DTO per le informazioni di base di un contratto.
@@ -27,6 +28,7 @@ import lombok.EqualsAndHashCode;
  * @author Cristian Lucchesi
  *
  */
+@ToString
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ContractShowTerseDto extends ContractBaseDto {
