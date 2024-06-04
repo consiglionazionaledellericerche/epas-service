@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,27 +17,22 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.util.Optional;
+import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per i gli errori critici.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
-
-  private String code;
-  private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
-
-  private String defaultTakableGroup;
-
-  private Optional<String> categoryTabName=null;
-
+public class CriticalErrorDto {
+  private String criticalProblem;
+  private LocalDate date;
+  private GroupAbsenceTypeDto groupAbsenceType;
+  private String justifiedType;
+  private AbsenceTypeDto absenceType;
+  private AbsenceTypeDto conflictingAbsenceType;
+  private AbsenceShowDto absence;
 }

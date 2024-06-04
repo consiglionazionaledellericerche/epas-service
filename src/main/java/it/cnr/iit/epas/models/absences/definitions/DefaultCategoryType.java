@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.Lists;
@@ -36,7 +35,9 @@ public enum DefaultCategoryType {
   FERIE_CNR("Ferie e permessi legge", 2, DefaultTab.FERIE_PERMESSI_RIPOSI), 
   //ESENZIONE_COVID19("Esenzione da lavoro causa COVID19", 3, DefaultTab.FERIE_PERMESSI_RIPOSI),
   RIPOSI_COMPENSATIVI_CNR("Riposi compensativi", 3, DefaultTab.FERIE_PERMESSI_RIPOSI),
-  PROROGA_FERIE_2020("Proroga ferie 2020", 4, DefaultTab.FERIE_PERMESSI_RIPOSI),
+  //  PROROGA_FERIE_2020("Proroga ferie 2020", 4, DefaultTab.FERIE_PERMESSI_RIPOSI),
+  //  PROROGA_FERIE_2021("Proroga ferie 2021", 4, DefaultTab.FERIE_PERMESSI_RIPOSI),
+  PROROGA_FERIE_2022("Proroga ferie 2022", 4, DefaultTab.FERIE_PERMESSI_RIPOSI),
   ASTENSIONE_POSTPARTUM("Astensione post partum", 5, DefaultTab.CONGEDI_PARENTALI), 
   CONGEDI_PRENATALI("Congedi prenatali", 7, DefaultTab.CONGEDI_PARENTALI),
 
@@ -70,7 +71,7 @@ public enum DefaultCategoryType {
 
   ALTRI_CODICI("Altri Codici", 16, DefaultTab.ALTRI_CODICI), 
   ASPETTATIVA("Codici Aspettativa", 17, DefaultTab.ALTRI_CODICI), 
-  PUBBLICA_FUNZIOINE("Pubblica Funzione", 18, DefaultTab.ALTRI_CODICI),
+  PUBBLICA_FUNZIONE("Pubblica Funzione", 18, DefaultTab.ALTRI_CODICI),
 
   LAVORO_FUORI_SEDE("Lavoro fuori sede", 17, DefaultTab.LAVORO_FUORI_SEDE), 
   FERIE_DIPENDENTI("Ferie e permessi legge", 18, DefaultTab.FERIE_DIPENDENTI), 

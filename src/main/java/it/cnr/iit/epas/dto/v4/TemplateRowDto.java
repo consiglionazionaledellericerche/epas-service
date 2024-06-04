@@ -17,7 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 
 /**
@@ -30,7 +32,12 @@ import lombok.Data;
 public class TemplateRowDto {
 
   private LocalDate date;
-  public AbsenceShowTerseDto absence;
+  private List<AbsenceErrorDto> absenceErrors = Lists.newArrayList();
+  private List<AbsenceErrorDto> absenceWarnings = Lists.newArrayList();
+
+  public AbsenceShowDto absence;
+
+  public boolean onlyNotOnHoliday;
 
   private GroupAbsenceTypeDto groupAbsenceType;
   private boolean beforeInitialization = false;

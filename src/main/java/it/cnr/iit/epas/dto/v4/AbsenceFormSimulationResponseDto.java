@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,27 +17,29 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.util.Optional;
+import com.google.common.collect.Lists;
+import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per la risposta della simulazione dell'inserimento assenza.
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
+public class AbsenceFormSimulationResponseDto {
+  private List<CriticalErrorDto> criticalErrors = Lists.newArrayList();
+  private List<TemplateRowDto> insertTemplateRows = Lists.newArrayList();
+  private boolean usableColumn;
+  private boolean complationColumn;
+  private List<AbsenceShowDto> absencesToPersist = Lists.newArrayList();
 
-  private String code;
-  private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
+  private List<String> warningsPreviousVersion = Lists.newArrayList();
 
-  private String defaultTakableGroup;
-
-  private Optional<String> categoryTabName=null;
-
+  private int howManyWarning;
+  private int howManyError;
+  private int howManySuccess;
+  private int howManyReplacing;
+  private int howManyIgnored;
 }

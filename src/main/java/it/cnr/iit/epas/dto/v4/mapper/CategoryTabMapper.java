@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -15,29 +15,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
+package it.cnr.iit.epas.dto.v4.mapper;
 
-import java.util.Optional;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
+import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import it.cnr.iit.epas.models.absences.CategoryTab;
+import org.mapstruct.Mapper;
 
 /**
- * DTO per gli AbsenceType.
- *
- * @author Cristian Lucchesi
- *
+ * Mapper da CategoryTab al suo DTO per la visualizzazione via REST.
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
+@Mapper(componentModel = "spring")
+public interface CategoryTabMapper {
 
-  private String code;
-  private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
+  CategoryGroupAbsenceTypeDto convert(CategoryGroupAbsenceType categoryGroupAbsenceTypeDto);
 
-  private String defaultTakableGroup;
-
-  private Optional<String> categoryTabName=null;
-
+  CategoryTab convert(CategoryTab categoryTab);
 }

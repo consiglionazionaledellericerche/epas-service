@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,10 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.security;
 
 import com.google.common.collect.Lists;
+import it.cnr.iit.epas.dao.history.HistoricalDao;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
@@ -49,19 +49,22 @@ public class SecurityRules {
   private static final String CURRENT_USER = "currentUser";
   private static final String CURRENT_ROLES = "userRoles";
   private static final String CURRENT_ROLES_OFFICES = "userRolesOffices";
-
+  private static final String HISTORICAL_DAO = "historicalDao";
 
   private final KieBase kieBase;
   private final SecureUtils secureUtils;
   private final RequestScopeData requestScope;
+  private final HistoricalDao historicalDao;
 
   private static final Pattern PATH_PARAMS_PATTERN = Pattern.compile(":.*?}");
 
   @Inject
-  SecurityRules(KieBase kieBase, SecureUtils secureUtils, RequestScopeData requestScope) {
+  SecurityRules(KieBase kieBase, SecureUtils secureUtils, RequestScopeData requestScope, 
+      HistoricalDao historicalDao) {
     this.kieBase = kieBase;
     this.secureUtils = secureUtils;
     this.requestScope = requestScope;
+    this.historicalDao = historicalDao;
   }
 
   public void checkifPermitted() {
@@ -126,6 +129,7 @@ public class SecurityRules {
     session.setGlobal(CURRENT_USER, user);
     session.setGlobal(CURRENT_ROLES, userRoles);
     session.setGlobal(CURRENT_ROLES_OFFICES, userRolesOffices);
+    session.setGlobal(HISTORICAL_DAO, historicalDao);
     session.addEventListener(new AgendaLogger());
 
     commands.add(CommandFactory.newInsert(check.getTarget()));

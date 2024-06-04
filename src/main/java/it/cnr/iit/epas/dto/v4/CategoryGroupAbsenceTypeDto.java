@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,27 +17,30 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.util.Optional;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per le private ContractualClauseDto contractualClause;
  *
  * @author Cristian Lucchesi
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
+public class CategoryGroupAbsenceTypeDto {
 
-  private String code;
+  @Schema(description = "Nome categoria.")
+  private String name;
+  @Schema(description = "Descrizione categoria.")
   private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
-
-  private String defaultTakableGroup;
-
-  private Optional<String> categoryTabName=null;
+  @Schema(description = "Priorità categoria.")
+  private int priority;
+  @Schema(description = "Tipologia di gruppo di assenze.")
+  private Set<GroupAbsenceTypeDto> groupAbsenceTypes;
+  @Schema(description = "Categorie di tab da mostrare nel menu per la gestione delle assenze.")
+  private CategoryTabDto tab;
+  @Schema(description = "Documentazione delle varie disposizioni contrattuali raggruppate per tipologia di assenza")
+  private ContractualClauseDto contractualClause;
 
 }
