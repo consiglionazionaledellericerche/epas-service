@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
@@ -38,7 +37,6 @@ import it.cnr.iit.epas.dto.v4.AbsenceInMonthDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.PermissionDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupMapper;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceMapper;
 import it.cnr.iit.epas.manager.AbsenceManager;
@@ -47,40 +45,31 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
-import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
-import it.cnr.iit.epas.security.DroolsPermissionEvaluator;
-import it.cnr.iit.epas.security.PermissionCheck;
-import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import it.cnr.iit.epas.utils.DateUtility;
-import it.cnr.iit.epas.utils.RequestScopeData;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,9 +77,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
  * Metodi REST per la gestione delle informazioni sui contratti.
@@ -121,62 +107,36 @@ public class AbsencesController {
   private final PersonFinder personFinder;
   private final SecurityRules rules;
 
-  private final SecureUtils securityUtils;
-  private final DroolsPermissionEvaluator droolsPermissionEvaluator;
-  private final RequestMappingHandlerMapping handlerMapping;
-
-  private final RequestScopeData requestScope;
-
   /**
-   * Api per il controllo dei permessi
+   * Visualizzazione delle informazioni di un'assenza.
    */
   @Operation(
-      summary = "Visualizzazione della lista delle assenza di una persona in un mese.",
-      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
-          + "'Gestore Assenze', 'Amministratore Personale' o "
-          + "'Amministratore Personale sola lettura' della sede a "
-          + "appartiene la persona di cui cercare le assenze e dagli utenti con il ruolo "
-          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle assenze")
+      summary = "Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST relativo alle assenze.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Restituito l'elenco delle assenze in un mese"),
+          description = "Restituita l'autorizzazione true/false di accedere all'endpoint indicato"),
       @ApiResponse(responseCode = "401",
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
-              + " l'elenco delle assenze",
+              + " i permessi di questo controller delle assenze",
           content = @Content),
       @ApiResponse(responseCode = "404",
-          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          description = "Assenza non trovata con l'id fornito",
           content = @Content)
   })
-  @GetMapping("/permission")
-  public ResponseEntity<PermissionDto> secureCheck() {
-    Person person =
-        personFinder.getPerson(Optional.empty(), Optional.empty())
-            .orElseThrow(() -> new EntityNotFoundException("Person not found"));
-    log.debug("person {} ", person);
-
-    Map<RequestMappingInfo,
-        HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
-
-    handlerMethods.forEach((key, value) -> {
-          if (value.getBeanType().equals(AbsencesController.class)) {
-            String tmp = key.toString().replace("}", "").replace("{", "").replace("[", "")
-                .replace("]", "");
-            String[] elems = tmp.split(" ");
-            requestScope.getData().put(RequestScopeData.REQUEST_PATH, elems[1]);
-            requestScope.getData().put(RequestScopeData.REQUEST_METHOD, elems[0]);
-            boolean p = droolsPermissionEvaluator.hasPermission(
-                SecurityContextHolder.getContext().getAuthentication(), person, null);
-            log.debug("droolsPermissionEvaluator.hasPermission: {} ", p);
-
-          }
-        }
-    );
-
-
-    return ResponseEntity.ok().body(null);
+  @GetMapping("/secureCheck")
+  public ResponseEntity<Boolean> secureCheck(
+      @RequestParam("method") String method, 
+      @RequestParam("path") String path, @RequestParam("id") Optional<Long> id) {
+    Absence absence = null;
+    log.debug("AbsenceController::secureCheck method= {}, path = {}, id = {}", method, path, id);
+    if (id.isPresent()) {
+        absence = absenceDao.byId(id.get())
+            .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
+    }
+    //Le drools sulle assenze non controllano come target l'assenza ma la person
+    return ResponseEntity.ok(rules.check(method, path, absence.getPersonDay().getPerson()));
   }
 
   /**
