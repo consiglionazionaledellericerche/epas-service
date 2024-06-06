@@ -17,7 +17,11 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Sets;
+import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType.PeriodType;
+import it.cnr.iit.epas.models.enumerate.ContractualClauseContext;
+import java.util.Set;
 import lombok.Data;
 
 /**
@@ -27,12 +31,21 @@ import lombok.Data;
  *
  */
 @Data
-public class GroupAbsenceTypeDto {
-  private Long id;
+public class ContractualClauseDto {
+  @Schema(description = "Esempio: Permessi retribuiti (art. 72)")
   private String name;
-  private String description;
-  private String chainDescription;
-  private boolean initializable;
-  private PeriodType periodType;
-  private GroupAbsenceTypeDto nextGroupToCheck;
+  @Schema(description = "Tempi di fruizione.")
+  private String fruitionTime;
+  @Schema(description = "Caratteristiche Giuridico Economiche.")
+  private String legalAndEconomic;
+  @Schema(description = "Documentazione giustificativa.")
+  private String supportingDocumentation;
+  @Schema(description = "Modalità di richiesta.")
+  private String howToRequest;
+  @Schema(description = "Altre informazioni")
+  private String otherInfos;
+  @Schema(description = "Contesto a cui si applicano le clausole contrattuali.")
+  private String context;
+//  @Schema(description = "Tipologie di gruppi di assenze.")
+//  private Set<CategoryGroupAbsenceTypeDto> categoryGroupAbsenceTypes = Sets.newHashSet();
 }

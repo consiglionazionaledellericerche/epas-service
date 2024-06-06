@@ -15,28 +15,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+package it.cnr.iit.epas.dto.v4.mapper;
+import it.cnr.iit.epas.dto.v4.CategoryTabDto;
+import it.cnr.iit.epas.models.absences.CategoryTab;
+import org.mapstruct.Mapper;
 
 /**
- * DTO per le informazioni di base di un contratto.
- *
- * @author Cristian Lucchesi
- *
+ * Mapper da AbsenceFormTab al suo DTO per la visualizzazione via REST.
  */
-@ToString
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+@Mapper(componentModel = "spring")
+public interface AbsenceFormTabMapper {
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  CategoryTabDto convertCategoryTab(CategoryTab categoryTab);
 
 }

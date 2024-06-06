@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.Lists;
@@ -68,7 +67,7 @@ public enum DefaultGroup {
   G_19P("19P - Permesso provv. per dipendente disabile L. 104/92 tre giorni mese", "",
       DefaultCategoryType.PERMESSI_PROVVISORI_104, 0, GroupAbsenceTypePattern.programmed,
       PeriodType.month, DefaultTakable.T_19P, DefaultComplation.C_19P, null, false, false),
-
+  
   G_22("22 - Permesso 2h per figlio portatore di handicap con età <= 3 anni", "",
       DefaultCategoryType.ALTRI_104, 0, GroupAbsenceTypePattern.programmed, PeriodType.always,
       DefaultTakable.T_22, null, null, false, false),
@@ -127,6 +126,10 @@ public enum DefaultGroup {
   G_7("7 - Permessi sindacali", "", DefaultCategoryType.ALTRI_CODICI, 0, 
       GroupAbsenceTypePattern.programmed, PeriodType.year, DefaultTakable.T_PERMESSI_SINDACALI, 
       DefaultComplation.C_7, null, false, true),
+  
+  G_7D("7D - Permessi sindacali dirigenti", "", DefaultCategoryType.ALTRI_CODICI, 0, 
+      GroupAbsenceTypePattern.programmed, PeriodType.year, 
+      DefaultTakable.T_PERMESSI_SINDACALI_DIRIGENTI, DefaultComplation.C_7D, null, false, true),
 
   G_0("0 - Assemblea", "", DefaultCategoryType.ALTRI_CODICI, 0, GroupAbsenceTypePattern.programmed,
       PeriodType.year, DefaultTakable.T_0, DefaultComplation.C_0, null, false, true),
@@ -171,10 +174,18 @@ public enum DefaultGroup {
   //      GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, DefaultTakable.T_ESENZ_19, 
   //      null, null, false, false),
 
-  PROROGA_FERIE_2020("31_2020 - Proroga ferie 2020", "", 
-      DefaultCategoryType.PROROGA_FERIE_2020, 2, // must be greater than FERIE_CNR
+  //  PROROGA_FERIE_2020("31_2020 - Proroga ferie 2020", "", 
+  //      DefaultCategoryType.PROROGA_FERIE_2020, 2, // must be greater than FERIE_CNR
+  //      GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, 
+  //      DefaultTakable.T_FERIE_CNR_PROROGA_2020, null, null, false, false),
+  //  PROROGA_FERIE_2021("31_2021 - Proroga ferie 2021", "", 
+  //      DefaultCategoryType.PROROGA_FERIE_2021, 2, // must be greater than FERIE_CNR
+  //      GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, 
+  //      DefaultTakable.T_FERIE_CNR_PROROGA_2021, null, null, false, false),
+  PROROGA_FERIE_2022("31_2022 - Proroga ferie 2022", "", 
+      DefaultCategoryType.PROROGA_FERIE_2022, 2, // must be greater than FERIE_CNR
       GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, 
-      DefaultTakable.T_FERIE_CNR_PROROGA_2020, null, null, false, false),
+      DefaultTakable.T_FERIE_CNR_PROROGA_2022, null, null, false, false),
   FERIE_CNR_DIPENDENTI("Ferie e permessi legge", "",
       DefaultCategoryType.FERIE_DIPENDENTI, 2, // must be greater than FERIE_CNR
       GroupAbsenceTypePattern.vacationsCnr, PeriodType.always, DefaultTakable.T_FERIE_CNR, null,
@@ -345,9 +356,14 @@ public enum DefaultGroup {
   G_CONGEDI_PRENATALI("20/21 - Congedi Prenatali", "", DefaultCategoryType.CONGEDI_PRENATALI, 0,
       GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, DefaultTakable.T_CONGEDI_PRENATALI,
       null, null, false, false),
+  
+  G_54B("54B - Aspettativa assistenza figli minori di 6 anni 170 giorni",
+      "", DefaultCategoryType.ASPETTATIVA, 0, GroupAbsenceTypePattern.programmed,
+      PeriodType.year, DefaultTakable.T_54B, null,
+      null, false, true),
 
   G_CONGEDO_MATRIMONIO("45 - Congedo straordinario per matrimonio", "",
-      DefaultCategoryType.CONGEDO_MATRIMONIO, 0, GroupAbsenceTypePattern.simpleGrouping,
+      DefaultCategoryType.CONGEDO_MATRIMONIO, 0, GroupAbsenceTypePattern.programmed,
       PeriodType.always, DefaultTakable.T_CONGEDO_MATRIMONIO, null, null, false, false),
 
   G_441("441 - Permesso esami", "", DefaultCategoryType.PERMESSO_ESAMI, 0,
@@ -362,12 +378,12 @@ public enum DefaultGroup {
       GroupAbsenceTypePattern.programmed, PeriodType.year, DefaultTakable.T_20,
       DefaultComplation.C_20, null, false, false),
   
-  G_21P("21P - Congedo parentale per il padre da definire....",
+  G_21P("21P - Congedo paternità",
       "", DefaultCategoryType.ASTENSIONE_POSTPARTUM, 1, GroupAbsenceTypePattern.programmed,
       PeriodType.always, DefaultTakable.T_21P, null, null,
       false, true),
   
-  G_21P2("21P2 - Congedo parentale per il padre da definire....",
+  G_21P2("21P2 - Congedo paternità gemelli",
       "", DefaultCategoryType.ASTENSIONE_POSTPARTUM, 1, GroupAbsenceTypePattern.programmed,
       PeriodType.always, DefaultTakable.T_21P2, null, null,
       false, true),
@@ -389,7 +405,7 @@ public enum DefaultGroup {
       GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, 
       DefaultTakable.T_TELELAVORO_RT, null, null, false, false),
 
-  G_PUBBLICA_FUNZIONE("Codici Pubblica Funzione", "", DefaultCategoryType.PUBBLICA_FUNZIOINE, 2,
+  G_PUBBLICA_FUNZIONE("Codici Pubblica Funzione", "", DefaultCategoryType.PUBBLICA_FUNZIONE, 2,
       GroupAbsenceTypePattern.simpleGrouping, PeriodType.always, DefaultTakable.T_PUBBLICA_FUNZIONE,
       null, null, false, false),
 
@@ -421,7 +437,10 @@ public enum DefaultGroup {
       false, false), 
   G_683("683 - Permesso terzo lutto", "",
       DefaultCategoryType.PERMESSO_TERZO_LUTTO, 0, GroupAbsenceTypePattern.programmed,
-      PeriodType.year, DefaultTakable.T_683, null, null, false, false);
+      PeriodType.year, DefaultTakable.T_683, null, null, false, false),
+  G_662("662 - Permesso grave infermità coniuge o parente", "",
+      DefaultCategoryType.PERMESSI_PERSONALI, 0, GroupAbsenceTypePattern.programmed,
+      PeriodType.year, DefaultTakable.T_662, null, null, false, false);
 
   public String description;
   public String chainDescription;
@@ -546,7 +565,18 @@ public enum DefaultGroup {
   public static List<String> employeeSmartworking() {
     return getCodes(DefaultGroup.G_SMART);
   }
+
+  /**
+   * Ritorna la lista di codici da considerare per i congedi parentali per il padre.
+   */
   
+  public static List<String> parentalLeaveForFathers() {
+    List<String> g21p = getCodes(DefaultGroup.G_21P);
+    List<String> g21p2 = getCodes(DefaultGroup.G_21P2);
+
+    return Stream.of(g21p, g21p2).flatMap(x -> x.stream()).collect(Collectors.toList());
+  }
+
   /**
    * Ritorna la lista di codici da considerare per gli impiegati con 104.
    */
@@ -570,10 +600,6 @@ public enum DefaultGroup {
     List<String> g232 = getCodes(DefaultGroup.G_232);
     List<String> g233 = getCodes(DefaultGroup.G_233);
     List<String> g234 = getCodes(DefaultGroup.G_234);
-    //    List<String> g24 = getCodes(DefaultGroup.G_24);
-    //    List<String> g242 = getCodes(DefaultGroup.G_242);
-    //    List<String> g243 = getCodes(DefaultGroup.G_243);
-    //    List<String> g244 = getCodes(DefaultGroup.G_244);
     List<String> g25 = getCodes(DefaultGroup.G_25);
     List<String> g252 = getCodes(DefaultGroup.G_252);
     List<String> g253 = getCodes(DefaultGroup.G_253);

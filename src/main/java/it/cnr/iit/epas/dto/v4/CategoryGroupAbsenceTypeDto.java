@@ -18,25 +18,29 @@
 package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per le private ContractualClauseDto contractualClause;
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+public class CategoryGroupAbsenceTypeDto {
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  @Schema(description = "Nome categoria.")
+  private String name;
+  @Schema(description = "Descrizione categoria.")
+  private String description;
+  @Schema(description = "Priorità categoria.")
+  private int priority;
+  @Schema(description = "Tipologia di gruppo di assenze.")
+  private Set<GroupAbsenceTypeDto> groupAbsenceTypes;
+  @Schema(description = "Categorie di tab da mostrare nel menu per la gestione delle assenze.")
+  private CategoryTabDto tab;
+  @Schema(description = "Documentazione delle varie disposizioni contrattuali raggruppate per tipologia di assenza")
+  private ContractualClauseDto contractualClause;
 
 }

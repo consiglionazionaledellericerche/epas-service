@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models.absences;
 
 import com.google.common.base.Joiner;
@@ -88,7 +87,6 @@ public class AbsenceType extends BaseEntity {
   @Column(name = "considered_week_end")
   private boolean consideredWeekEnd = false;
 
-  //FIXME: da implementare prima del passaggio a spring boot
   //  @Getter
   //  @Column(name = "time_for_mealticket")
   //  public boolean timeForMealTicket = false;
@@ -145,6 +143,8 @@ public class AbsenceType extends BaseEntity {
   private boolean reperibilityCompatible;
 
   private boolean isRealAbsence = true;
+
+  private String externalId;
 
   // Metodi
   

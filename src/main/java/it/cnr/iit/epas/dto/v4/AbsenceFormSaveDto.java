@@ -17,26 +17,26 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Optional;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per le tab della modale delle assenze.
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
-
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
-
+public class AbsenceFormSaveDto {
+  private Optional<Long> idPerson;
+  private Optional<String> fiscalCode;
+  private String from;
+  private String to;
+  private String recoveryDate;
+  private String groupAbsenceTypeName;
+  private String absenceTypeCode;
+  private String justifiedTypeName;
+  private int hours;
+  private int minutes;
+  private boolean forceInsert;
 }

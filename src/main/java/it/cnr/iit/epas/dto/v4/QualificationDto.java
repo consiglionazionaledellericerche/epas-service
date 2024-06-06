@@ -17,26 +17,24 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Sets;
 import io.swagger.v3.oas.annotations.media.Schema;
+import it.cnr.iit.epas.models.Person;
+import java.util.List;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per le categorie di tab da mostrare nel menu per la gestione delle assenze.
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+public class QualificationDto {
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  private List<Person> person;
+  private int qualification;
+  private String description;
 
 }

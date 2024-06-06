@@ -20,6 +20,7 @@ package it.cnr.iit.epas.dto.v4;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * DTO con i dati per la creazione di un nuovo contratto.
@@ -27,6 +28,7 @@ import lombok.Data;
  * @author Cristian Lucchesi
  *
  */
+@ToString
 @Data
 public class ContractBaseDto {
 

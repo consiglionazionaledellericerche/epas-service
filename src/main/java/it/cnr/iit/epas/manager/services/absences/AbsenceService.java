@@ -224,7 +224,7 @@ public class AbsenceService {
       } else {
         // selezionare missione?
         for (GroupAbsenceType group : groupsPermitted) {
-          if (group.name.equals(DefaultGroup.MISSIONE_GIORNALIERA.name())) {
+          if (group.getName().equals(DefaultGroup.MISSIONE_GIORNALIERA.name())) {
             groupAbsenceType = group;
             break;
           }
@@ -286,7 +286,7 @@ public class AbsenceService {
       return forceInsert(person, from, to, absenceType, justifiedType, hours, minutes);
     }
 
-    if (groupAbsenceType.pattern.equals(GroupAbsenceTypePattern.compensatoryRestCnr)) {
+    if (groupAbsenceType.getPattern().equals(GroupAbsenceTypePattern.compensatoryRestCnr)) {
       InsertReport insertReport =
           temporaryInsertCompensatoryRest(person, groupAbsenceType, from, to, null, absenceManager);
       return insertReport;
@@ -311,10 +311,10 @@ public class AbsenceService {
       // Preparare l'assenza da inserire
       Absence absenceToInsert = new Absence();
       absenceToInsert.date = currentDate;
-      absenceToInsert.absenceType = absenceType;
-      absenceToInsert.justifiedType = justifiedType;
+      absenceToInsert.setAbsenceType(absenceType);
+      absenceToInsert.setJustifiedType(justifiedType);
       if (specifiedMinutes != null) {
-        absenceToInsert.justifiedMinutes = specifiedMinutes;
+        absenceToInsert.setJustifiedMinutes(specifiedMinutes);
       }
 
       PeriodChain periodChain =
@@ -436,10 +436,10 @@ public class AbsenceService {
       // Preparare l'assenza da inserire
       Absence absenceToInsert = new Absence();
       absenceToInsert.date = currentDate;
-      absenceToInsert.absenceType = absenceType;
-      absenceToInsert.justifiedType = justifiedType;
+      absenceToInsert.setAbsenceType(absenceType);
+      absenceToInsert.setJustifiedType(justifiedType);
       if (specifiedMinutes != null) {
-        absenceToInsert.justifiedMinutes = specifiedMinutes;
+        absenceToInsert.setJustifiedMinutes(specifiedMinutes);
       }
 
       insertReport.absencesToPersist.add(absenceToInsert);
@@ -565,8 +565,8 @@ public class AbsenceService {
     // Fetch special groups
     final GroupAbsenceType employeeVacation =
         absenceComponentDao.groupAbsenceTypeByName(DefaultGroup.FERIE_CNR_DIPENDENTI.name()).get();
-    final GroupAbsenceType employeeVacationExtension =
-        absenceComponentDao.groupAbsenceTypeByName(DefaultGroup.PROROGA_FERIE_2020.name()).get();
+    //final GroupAbsenceType employeeVacationExtension =
+    //    absenceComponentDao.groupAbsenceTypeByName(DefaultGroup.PROROGA_FERIE_2020.name()).get();
     final GroupAbsenceType employeeCompensatory =
         absenceComponentDao.groupAbsenceTypeByName(DefaultGroup.RIPOSI_CNR_DIPENDENTI.name()).get();
     final GroupAbsenceType employeeOffseat =
@@ -598,6 +598,11 @@ public class AbsenceService {
         .groupAbsenceTypeByName(DefaultGroup.G_39LA.name()).get();
     final GroupAbsenceType smart = absenceComponentDao
         .groupAbsenceTypeByName(DefaultGroup.G_SMART.name()).get();
+    final GroupAbsenceType parentalLeaveForFathers = absenceComponentDao
+        .groupAbsenceTypeByName(DefaultGroup.G_21P.name()).get();
+    final GroupAbsenceType parentalLeaveTwinsForFathers = absenceComponentDao
+        .groupAbsenceTypeByName(DefaultGroup.G_21P2.name()).get();
+    
 
     final User currentUser = secureUtils.getCurrentUser().get();
 
@@ -620,16 +625,18 @@ public class AbsenceService {
           groupsPermitted.remove(covid19);
         }
       }
-      for (AbsenceType abt : employeeVacationExtension.getCategory().getAbsenceTypes()) {
-        if (abt.isExpired()) {
-          groupsPermitted.remove(employeeVacationExtension);
-        }
-      }
+      //      for (AbsenceType abt : employeeVacationExtension.getCategory().getAbsenceTypes()) {
+      //        if (abt.isExpired()) {
+      //          groupsPermitted.remove(employeeVacationExtension);
+      //        }
+      //      }
       //groupsPermitted.remove(covid19);
       groupsPermitted.remove(medicalExams);
       groupsPermitted.remove(disabledRelativeAbsence);
       groupsPermitted.remove(additionalHours);
       groupsPermitted.remove(secondDisabledRelativeAbsence);
+      //groupsPermitted.remove(parentalLeaveForFathers);
+      //groupsPermitted.remove(parentalLeaveTwinsForFathers);
       //groupsPermitted.remove(lagile);
       //groupsPermitted.remove(cod39LA);
       for (AbsenceType abt : smart.getCategory().getAbsenceTypes()) {
@@ -720,6 +727,11 @@ public class AbsenceService {
       if ((Boolean) confManager.configValue(person, EpasParam.SMARTWORKING)) {
         groupsPermitted.add(smart);
       }
+      
+      if ((Boolean) confManager.configValue(person, EpasParam.PARENTAL_LEAVE_FOR_FATHERS)) {
+        groupsPermitted.add(parentalLeaveForFathers);
+        groupsPermitted.add(parentalLeaveTwinsForFathers);
+      }
 
       log.debug("groupPermitted = {}", groupsPermitted);
       return groupsPermitted;
@@ -731,7 +743,7 @@ public class AbsenceService {
   private List<String> namesOfChildGroups() {
     List<String> names = Lists.newArrayList();
     names.add(DefaultGroup.G_23.name());
-    //    names.add(DefaultGroup.G_24.name());
+    //  names.add(DefaultGroup.G_24.name());
     names.add(DefaultGroup.G_25.name());
     names.add(DefaultGroup.G_25A.name());
     names.add(DefaultGroup.G_232.name());
@@ -787,7 +799,7 @@ public class AbsenceService {
         templateRow.groupAbsenceType = groupAbsenceType;
         insertReport.insertTemplateRows.add(templateRow);
         insertReport.absencesToPersist.add(templateRow.absence);
-        if (!templateRow.absence.absenceType.isReperibilityCompatible()
+        if (!templateRow.absence.getAbsenceType().isReperibilityCompatible()
             && absenceResponse.isDayInReperibility()) {
           templateRow.absenceWarnings.add(AbsenceError.builder().absence(templateRow.absence)
               .absenceProblem(AbsenceProblem.InReperibility).build());
@@ -988,7 +1000,7 @@ public class AbsenceService {
       GroupAbsenceType vacationGroup, Optional<LocalDate> residualDate, boolean useCache) {
 
     VacationSituation situation = new VacationSituation();
-    situation.person = contract.person;
+    situation.person = contract.getPerson();
     situation.contract = contract;
     situation.year = year;
 
@@ -1025,7 +1037,7 @@ public class AbsenceService {
         log.debug("La situazione di {} non era cachata", contract.person.fullName());
       }
     }
-    PeriodChain periodChain = residual(contract.person, vacationGroup, date);
+    PeriodChain periodChain = residual(contract.getPerson(), vacationGroup, date);
     if (!periodChain.vacationSupportList.get(0).isEmpty()) {
       situation.lastYear = new VacationSummary(contract,
           periodChain.vacationSupportList.get(0).get(0), year - 1, date, TypeSummary.VACATION);

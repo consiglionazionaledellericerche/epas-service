@@ -17,26 +17,29 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Sets;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per le categorie di tab da mostrare nel menu per la gestione delle assenze.
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+public class CategoryTabDto {
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  @Schema(description = "Nome della tab.")
+  private String name;
+  @Schema(description = "Descrizione della tab.")
+  private String description;
+  @Schema(description = "Priorità della tab.")
+  private int priority;
+  @Schema(description = "Indica se la tab è di default o meno.")
+  private boolean isDefault = false;
+//  @Schema(description = "Tipologie di gruppi di assenze e le tab in cui mostrarle.")
+//  private Set<CategoryGroupAbsenceTypeDto> categoryGroupAbsenceTypes = Sets.newHashSet();
 
 }

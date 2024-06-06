@@ -17,26 +17,29 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.google.common.collect.Lists;
+import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per la risposta della simulazione dell'inserimento assenza.
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+public class AbsenceFormSimulationResponseDto {
+  private List<CriticalErrorDto> criticalErrors = Lists.newArrayList();
+  private List<TemplateRowDto> insertTemplateRows = Lists.newArrayList();
+  private boolean usableColumn;
+  private boolean complationColumn;
+  private List<AbsenceShowDto> absencesToPersist = Lists.newArrayList();
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  private List<String> warningsPreviousVersion = Lists.newArrayList();
 
+  private int howManyWarning;
+  private int howManyError;
+  private int howManySuccess;
+  private int howManyReplacing;
+  private int howManyIgnored;
 }

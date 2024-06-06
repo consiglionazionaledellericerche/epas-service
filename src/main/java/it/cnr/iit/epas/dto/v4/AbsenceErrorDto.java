@@ -17,26 +17,24 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.google.common.collect.Lists;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
- * DTO per le informazioni di base di un contratto.
+ * DTO per una specifica giornata all'interno di un periodo di assenze.
  *
  * @author Cristian Lucchesi
  *
  */
-@ToString
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ContractShowTerseDto extends ContractBaseDto {
-  
-  @Schema(description = "Id del contratto")
-  private Long id;
+public class AbsenceErrorDto {
 
-  @Schema(description = "Id della persona associata al contratto")
-  private Long personId;
+  public AbsenceShowDto absence;
+  public String absenceProblem;
+
+  public Set<AbsenceShowDto> conflictingAbsences;
 
 }

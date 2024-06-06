@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * DTO con i dati per la creazione di un nuovo contratto.
@@ -28,6 +29,7 @@ import lombok.EqualsAndHashCode;
  * @author Cristian Lucchesi
  *
  */
+@ToString(callSuper = true)
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ContractCreateDto extends ContractBaseDto {
