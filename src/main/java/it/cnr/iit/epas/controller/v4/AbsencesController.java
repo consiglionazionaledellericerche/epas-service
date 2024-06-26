@@ -45,6 +45,7 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
+import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
@@ -131,12 +132,15 @@ public class AbsencesController {
       @RequestParam("path") String path, @RequestParam("id") Optional<Long> id) {
     Absence absence = null;
     log.debug("AbsenceController::secureCheck method= {}, path = {}, id = {}", method, path, id);
+    Person person = null;
     if (id.isPresent()) {
         absence = absenceDao.byId(id.get())
             .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
+        person = absence.getPersonDay().getPerson();
     }
+     
     //Le drools sulle assenze non controllano come target l'assenza ma la person
-    return ResponseEntity.ok(rules.check(method, path, absence.getPersonDay().getPerson()));
+    return ResponseEntity.ok(rules.check(method, path, person));
   }
 
   /**
