@@ -31,14 +31,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
-import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
-import it.cnr.iit.epas.dao.OfficeDao;
-import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
-import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveResponseDto;
@@ -63,19 +59,14 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
-import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +79,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -121,170 +111,12 @@ public class AbsencesGroupsController {
   private final AbsenceFormSimulationResponseMapper absenceFormSimulationResponseMapper;
   private final AbsenceService absenceService;
   private final CategoryTabDao categoryTabDao;
-  private final OfficeDao officeDao;
-  private final PersonDao personDao;
-  private final AbsenceDao absenceDao;
   private final GroupAbsenceTypeDao groupAbsenceTypeDao;
   private final AbsenceTypeDao absenceTypeDao;
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
-  private SecureUtils secureUtils;
-
-  // Mappa che associa i nomi dei target alle loro classi
-  private static final Map<String, Class<?>> targetFromClassMap = new HashMap<>();
-  private static final Map<String, Class<?>> targetToClassMap = new HashMap<>();
-  private static final Map<String,Map<String,Object>> targetDaoMap = new HashMap<>();
-  private static final Map<String,List<String>> targetMethodMap = new HashMap<>();
-
-  private void init() {
-    targetFromClassMap.put("Office", Person.class);
-    targetFromClassMap.put("Person", Absence.class);
-
-    // Popolazione della mappa che associa i nomi dei target alle loro classi
-    targetToClassMap.put("Office", Office.class);
-    targetToClassMap.put("Person", Person.class);
-
-    // Popolazione della mappa che associa i nomi dei target ai loro rispettivi DAO
-    Map<String, Object> officeDaoActions = new HashMap<>();
-    officeDaoActions.put("byId", personDao);
-    targetDaoMap.put("Office", officeDaoActions);
-
-    Map<String, Object> personDaoActions = new HashMap<>();
-    personDaoActions.put("byId", absenceDao);
-    targetDaoMap.put("Person", personDaoActions);
-
-    List<String> officeMethods = new ArrayList<>();
-    officeMethods.add("getOffice");
-    targetMethodMap.put("Office", officeMethods);
-
-    List<String> personMethods = new ArrayList<>();
-    personMethods.add("getPersonDay");
-    personMethods.add("getPerson");
-    targetMethodMap.put("Person", personMethods);
-  }
-
-  private Object findEntityById(Object dao, Class<?> targetClass, String methodToCall, Long id) throws Exception {
-    Method findByIdMethod = dao.getClass().getMethod(methodToCall, Long.class);
-    Optional<?> optionalEntity = (Optional<?>) findByIdMethod.invoke(dao, id);
-    if (optionalEntity.isEmpty()) {
-      throw new EntityNotFoundException(targetClass.getSimpleName() + " not found with id: " + id);
-    }
-    return optionalEntity.get();
-  }
-  private Object entityApplyMethod(Object target, String methodToCall) throws Exception {
-    // Usa riflessione per invocare il metodo di ricerca per ID sul DAO corretto
-    return target.getClass().getMethod(methodToCall).invoke(target);
-  }
-
-  /**
-   * Visualizzazione delle informazioni di un'assenza.
-   */
-  @Operation(
-      summary = "Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST relativo alle assenze.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200",
-          description = "Restituita l'autorizzazione true/false di accedere all'endpoint indicato"),
-      @ApiResponse(responseCode = "401",
-          description = "Autenticazione non presente", content = @Content),
-      @ApiResponse(responseCode = "403",
-          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
-              + " i permessi di questo controller delle assenze",
-          content = @Content),
-      @ApiResponse(responseCode = "404",
-          description = "Assenza non trovata con l'id fornito",
-          content = @Content)
-  })
-  @GetMapping("/secureCheck")
-  public ResponseEntity<Boolean> secureCheck(
-      @RequestParam("method") String method,
-      @RequestParam("path") String path,
-      @RequestParam("target") Optional<String> target,
-      @RequestParam("id") Optional<Long> id) throws Exception {
-
-    init();
-    Object targetFromObject = null;
-    Object targetToObject = null;
-
-    log.debug("GeneralizedController::secureCheck method= {}, path = {}, id = {}, target={}",
-        method, path, id, target);
-
-    if (target.isPresent()) {
-      String targetType = target.get();
-      Class<?> targetFromClass = targetFromClassMap.get(targetType);
-      Class<?> targetToClass = targetToClassMap.get(targetType);
-      Map<String,Object> daoAction = targetDaoMap.get(targetType);
-      String action = new ArrayList<>(daoAction.keySet()).get(0);
-      log.debug("GeneralizedController::secureCheck targetType={} targetFromClass= {}, targetToClass = {}, daoAction={}",
-          targetType, targetFromClass, targetToClass, action);
-
-      if (targetFromClass == null || targetToClass == null || daoAction == null) {
-        throw new IllegalArgumentException("Invalid target type: " + targetType);
-      }
-
-      if (id.isPresent()) {
-        Long entityId = id.get();
-        targetFromObject = findEntityById(daoAction.get(action), targetFromClass, action, entityId);
-
-        log.debug("GeneralizedController::secureCheck targetFromObject={}",targetFromObject);
-        log.debug("GeneralizedController::secureCheck targetToObject={}",targetToObject);
-
-
-        if (targetFromObject == null) {
-          throw new EntityNotFoundException(targetType + " not found");
-        }
-      }
-
-      targetToObject = targetFromObject;
-      List<String> targetMethods = targetMethodMap.get(targetType);
-      for (String methodToApply : targetMethods) {
-        log.debug("GeneralizedController::secureCheck targetToObject={}",targetToObject);
-        targetToObject = entityApplyMethod(targetToObject, methodToApply);
-      }
-    }
-
-    log.debug("GeneralizedController::secureCheck targetFromObject={}",targetFromObject);
-    log.debug("GeneralizedController::secureCheck targetToObject={}",targetToObject);
-
-    //Le drools sulle assenze non controllano come target l'assenza ma la person
-    return ResponseEntity.ok(rules.check(method, path, targetToObject));
-  }
-
-  /**
-   * Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST relativo alle assenze e
-   * con target Office.
-   */
-  @Operation(
-      summary = "Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST relativo alle assenze.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200",
-          description = "Restituita l'autorizzazione true/false di accedere all'endpoint indicato"),
-      @ApiResponse(responseCode = "401",
-          description = "Autenticazione non presente", content = @Content),
-      @ApiResponse(responseCode = "403",
-          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
-              + " i permessi di questo controller delle assenze",
-          content = @Content),
-      @ApiResponse(responseCode = "404",
-          description = "Assenza non trovata con l'id fornito",
-          content = @Content)
-  })
-  @GetMapping("/secureCheckOffice")
-  public ResponseEntity<Boolean> secureCheckOffice(
-      @RequestParam("method") String method,
-      @RequestParam("path") String path, @RequestParam("personId") Optional<Long> personId) {
-    Person person = null;
-    log.debug("AbsencesGroups::secureCheck method= {}, path = {}, id = {}", method, path,
-        personId.get());
-    if (personId.isPresent()) {
-      person = personDao.byId(personId.get())
-          .orElseThrow(() -> new EntityNotFoundException("Person not found"));
-    }
-
-    Office office = person.getOffice();
-    return ResponseEntity.ok(rules.check(method, path, office));
-  }
 
   /**
    * Elenco delle assenze in un mese.
@@ -727,23 +559,17 @@ public class AbsencesGroupsController {
         personFinder.getPerson(id, fiscalCode)
             .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
-    log.debug("AbsenceController::absencesInPeriod person = {}", person);
-
     rules.checkifPermitted(person);
 
     HashMap<String, String> categoryTab = new HashMap<String, String>();
     for (CategoryTab ct : categoryTabDao.findAll()) {
-      log.debug("CategoryTab name {}", ct.name);
       categoryTab.put(ct.getLabel(), ct.name);
     }
 
-    //    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromDate, null, null, null,
-//        null, true, null, null, null, null, false, false);
     Set<AbsenceTypeDto> allTakableDto = Sets.newHashSet();
     for (GroupAbsenceType group : absenceComponentDao.allGroupAbsenceType(false)) {
       for (AbsenceType abt : group.getTakableAbsenceBehaviour().getTakableCodes()) {
         if (abt.defaultTakableGroup() == null) {
-          log.debug("Il defaultTakable è null per {}", abt.getCode());
           abt.defaultTakableGroup();
         }
       }
@@ -754,8 +580,6 @@ public class AbsencesGroupsController {
         dto = absenceFormMapper.convert(abst);
         dto.setCategoryTabName(Optional.ofNullable(abst.defaultTakableGroup().category.tab.name));
         allTakableDto.add(dto);
-        log.debug("defaultTakableGroup defaultTakableGroup {}",
-            abst.defaultTakableGroup().category.tab.name);
       }
     }
 
