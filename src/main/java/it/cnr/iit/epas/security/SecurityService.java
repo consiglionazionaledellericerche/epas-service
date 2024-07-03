@@ -16,6 +16,7 @@
  */
 package it.cnr.iit.epas.security;
 
+import org.joda.time.YearMonth;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityService {
 
   public enum EntityType {
-    Office, Person, Absence, PersonDay
+    Office, Person, Absence, PersonDay, YearMonth
   }
 
   private final SecurityRules rules;
@@ -44,75 +45,81 @@ public class SecurityService {
   private final PersonDao personDao;
   private final AbsenceDao absenceDao;
   private final PersonDayDao personDayDao;
-  
+
   public Boolean secureCheck(String method, String path,
       Optional<EntityType> entityType, Optional<EntityType> targetType,
-      Optional<Long> id) throws Exception {
+      Optional<Long> id, Optional<Integer> year, Optional<Integer> month
+      ) throws Exception {
 
     BaseEntity entity = null;
     Object entityToTarget = null;
 
-    log.debug("SecurityService::secureCheck method= {}, path = {}, id = {}, target={}",
-        method, path, id, entityType);
+    log.debug("SecurityService::secureCheck method= {}, path = {}, id = {}, year = {}, month = {},"
+            + " target={}", method, path, id, year, month, entityType);
 
     if (entityType.isPresent() && id.isPresent()) {
       switch (entityType.get()) {
-      case Office: {
-        val office = officeDao.getOfficeById(id.get());
-        entity = office; 
-        entityToTarget = office;
-        break;
-      }
-      case Person: {
-        val person = personDao.byId(id.get()).orElse(null);
-        entity = person;
-        if (targetType.isPresent() && targetType.get().equals(EntityType.Office)) {
-          entityToTarget = person.getOffice();
-        } else {
-          entityToTarget = person;
+        case Office: {
+          val office = officeDao.getOfficeById(id.get());
+          entity = office;
+          entityToTarget = office;
+          break;
         }
-        break;
-      }
-      case Absence: {
-        val absence = absenceDao.byId(id.get()).orElse(null);
-        entity = absence;
-        if (targetType.isPresent()) {
-          if (targetType.get().equals(EntityType.Absence)) {
-            entityToTarget = absence;
-          } else if (targetType.get().equals(EntityType.Office)) {
-            entityToTarget = absence.getPersonDay().getPerson().getOffice();
+        case Person: {
+          val person = personDao.byId(id.get()).orElse(null);
+          entity = person;
+          if (targetType.isPresent() && targetType.get().equals(EntityType.Office)) {
+            entityToTarget = person.getOffice();
+          } else {
+            entityToTarget = person;
           }
-        } else {
-          //Il default per i controlli sulle assenze è la verifica sulla Person.
-          entityToTarget = absence.getPersonDay().getPerson();
+          break;
         }
-        break;
-      }
-      case PersonDay: {
-        val personDay = personDayDao.getPersonDayById(id.get());
-        entity = personDay;
-        if (targetType.isPresent()) {
-          if (targetType.get().equals(EntityType.PersonDay)) {
-            entityToTarget = personDay;
-          } else if (targetType.get().equals(EntityType.Office)) {
-            entityToTarget = personDay.getPerson().getOffice();
+        case Absence: {
+          val absence = absenceDao.byId(id.get()).orElse(null);
+          entity = absence;
+          if (targetType.isPresent()) {
+            if (targetType.get().equals(EntityType.Absence)) {
+              entityToTarget = absence;
+            } else if (targetType.get().equals(EntityType.Office)) {
+              entityToTarget = absence.getPersonDay().getPerson().getOffice();
+            }
+          } else {
+            //Il default per i controlli sulle assenze è la verifica sulla Person.
+            entityToTarget = absence.getPersonDay().getPerson();
           }
-        } else {
-          //Il default per i controlli sui personDay è la verifica sulla Person.
-          entityToTarget = personDay.getPerson();
+          break;
         }
-        break;
-      }
-      default:
-        throw new IllegalArgumentException("Unexpected value: " + entityType.get());
+        case PersonDay: {
+          val personDay = personDayDao.getPersonDayById(id.get());
+          entity = personDay;
+          if (targetType.isPresent()) {
+            if (targetType.get().equals(EntityType.PersonDay)) {
+              entityToTarget = personDay;
+            } else if (targetType.get().equals(EntityType.Office)) {
+              entityToTarget = personDay.getPerson().getOffice();
+            }
+          } else {
+            //Il default per i controlli sui personDay è la verifica sulla Person.
+            entityToTarget = personDay.getPerson();
+          }
+          break;
+        }
+        case YearMonth: {
+          val yearMonth = new YearMonth(year.get(), month.get());
+          entityToTarget = yearMonth;
+          break;
+        }
+        default:
+          throw new IllegalArgumentException("Unexpected value: " + entityType.get());
       }
     }
 
-    log.debug("SecurityService::secureCheck method= {}, path = {}, id = {}, "
-        + "targetFromObject={}, targetToOject={}",
-        method, path, id, entity, entityToTarget);
+    log.debug("SecurityService::secureCheck method= {}, path = {}, id = {}, year = {}, month = {},"
+            + "targetFromObject={}, targetToOject={}",
+        method, path, id, year, month, entity, entityToTarget);
 
-    //Le drools sulle assenze non controllano come target l'assenza ma la person
+    //controllo le drools in base alla path, method e target
     return rules.check(method, path, entityToTarget);
   }
 

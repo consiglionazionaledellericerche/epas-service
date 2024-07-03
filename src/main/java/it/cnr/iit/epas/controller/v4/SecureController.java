@@ -82,10 +82,12 @@ public class SecureController {
       @RequestParam("path") String path,
       @RequestParam("entityType") Optional<EntityType> entityType,
       @RequestParam("targetType") Optional<EntityType> targetType,
-      @RequestParam("id") Optional<Long> id) throws Exception {
+      @RequestParam("id") Optional<Long> id,
+      @RequestParam("year") Optional<Integer> year,
+      @RequestParam("month") Optional<Integer> month) throws Exception {
 
     return ResponseEntity.ok(
-        securityService.secureCheck(method, path, entityType, targetType, id));
+        securityService.secureCheck(method, path, entityType, targetType, id, year, month));
 
   }
 
