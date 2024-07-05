@@ -82,7 +82,7 @@ public class SecurityRules {
     }
   }
 
-  private boolean check(String method, String permission, Object target) {
+  public boolean check(String method, String permission, Object target) {
     // Ripuliamo la stringa dalle eventuali espressioni regolari derivanti dai path
     // Es. /v1/ruoloutente/{id:^\d+$} -> /v1/ruoloutente/{id}
     final String normalized = PATH_PARAMS_PATTERN.matcher(permission).replaceAll("}");

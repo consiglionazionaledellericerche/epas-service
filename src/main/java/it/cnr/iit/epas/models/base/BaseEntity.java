@@ -27,7 +27,12 @@ import javax.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.hibernate.envers.NotAudited;
+import org.jadira.usertype.dateandtime.joda.PersistentYearMonthAsString;
+import org.joda.time.YearMonth;
+
 
 /**
  * Default base class per sovrascrivere la generazione delle nuove chiavi primarie.
@@ -38,6 +43,7 @@ import org.hibernate.envers.NotAudited;
 @Getter
 @Setter
 @MappedSuperclass
+@TypeDefs(@TypeDef(name = "YearMonth", defaultForType = YearMonth.class, typeClass = PersistentYearMonthAsString.class))
 public abstract class BaseEntity implements Serializable {
 
   private static final long serialVersionUID = 4849404810311166199L;

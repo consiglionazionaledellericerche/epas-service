@@ -65,7 +65,6 @@ import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -118,7 +117,6 @@ public class AbsencesGroupsController {
   private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
-  private SecureUtils secureUtils;
 
   /**
    * Elenco delle assenze in un mese.
@@ -561,23 +559,17 @@ public class AbsencesGroupsController {
         personFinder.getPerson(id, fiscalCode)
             .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
-    log.debug("AbsenceController::absencesInPeriod person = {}", person);
-
     rules.checkifPermitted(person);
 
     HashMap<String, String> categoryTab = new HashMap<String, String>();
     for (CategoryTab ct : categoryTabDao.findAll()) {
-      log.debug("CategoryTab name {}", ct.name);
       categoryTab.put(ct.getLabel(), ct.name);
     }
 
-    //    AbsenceForm absenceForm = absenceService.buildAbsenceForm(person, fromDate, null, null, null,
-//        null, true, null, null, null, null, false, false);
     Set<AbsenceTypeDto> allTakableDto = Sets.newHashSet();
     for (GroupAbsenceType group : absenceComponentDao.allGroupAbsenceType(false)) {
       for (AbsenceType abt : group.getTakableAbsenceBehaviour().getTakableCodes()) {
         if (abt.defaultTakableGroup() == null) {
-          log.debug("Il defaultTakable è null per {}", abt.getCode());
           abt.defaultTakableGroup();
         }
       }
@@ -588,8 +580,6 @@ public class AbsencesGroupsController {
         dto = absenceFormMapper.convert(abst);
         dto.setCategoryTabName(Optional.ofNullable(abst.defaultTakableGroup().category.tab.name));
         allTakableDto.add(dto);
-        log.debug("defaultTakableGroup defaultTakableGroup {}",
-            abst.defaultTakableGroup().category.tab.name);
       }
     }
 
