@@ -160,7 +160,7 @@ public class Stamping extends BaseEntity implements Comparable<Stamping> {
   /**
    * costruttore di default implicitamente utilizzato dal play(controllers).
    */
-  Stamping() {
+  public Stamping() {
   }
 
   /**
