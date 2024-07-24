@@ -32,4 +32,6 @@ public class StampingCreateDto {
   private String note;
   private String time;
   private String zone;
+
+  private boolean offsite=false;
 }
