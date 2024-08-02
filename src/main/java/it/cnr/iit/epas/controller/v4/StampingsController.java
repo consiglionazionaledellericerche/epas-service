@@ -15,6 +15,7 @@ import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.StampingDao;
 import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.history.HistoryValue;
+import it.cnr.iit.epas.dao.history.StampingHistoryDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperPerson;
 import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.dto.v4.StampingEditFormDto;
@@ -41,6 +42,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.google.common.base.Strings;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.persistence.EntityNotFoundException;
@@ -53,7 +57,6 @@ import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
@@ -61,12 +64,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Validator;
 
 /**
  * Metodi REST per l'inserimento delle timbrature manuali.
@@ -89,7 +92,7 @@ public class StampingsController {
   private final UserDao userDao;
   private final PersonDao personDao;
   private final StampingDao stampingDao;
-  //  private final StampingsHistoryDao stampingsHistoryDao;
+  private final StampingHistoryDao stampingsHistoryDao;
   private final EntityToDtoConverter entityToDtoConverter;
   private final DtoToEntityMapper dtoToEntityMapper;
   private final StampingManager stampingManager;
@@ -160,6 +163,10 @@ public class StampingsController {
     List<String> offsiteStrings = offsite.stream()
         .map(StampTypes::name)
         .collect(Collectors.toList());
+
+    List<String> stampTypes = Arrays.stream(StampTypes.values()).map(StampTypes::toString)
+        .collect(Collectors.toList());
+
     List<ZoneDto> zonesDto = Lists.newArrayList();
     for (Zone zone : zones) {
       zonesDto.add(stampingFormDtoMapper.convert(zone));
@@ -175,6 +182,7 @@ public class StampingsController {
       dto.setInsertNormal(insertNormal);
       dto.setAutocertification(autocertification);
       dto.setZones(zonesDto);
+      dto.setStampTypes(stampTypes);
       return ResponseEntity.ok(dto);
     }
 
@@ -247,9 +255,8 @@ public class StampingsController {
 
     rules.checkifPermitted(stamping);
 
-    // manca StampingHistoryDao
-//    final List<HistoryValue<Stamping>> historyStamping = stampingsHistoryDao
-//        .stampings(stamping.getId());
+    final List<HistoryValue<Stamping>> historyStamping = stampingsHistoryDao
+        .stampings(stamping.getId());
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
     boolean ownStamping = false;
@@ -274,7 +281,7 @@ public class StampingsController {
         .stream().map(b -> b.getBadgeReader()).collect(Collectors.toList());
 
     List<Zone> zones = badgeReaders.stream()
-        .flatMap(br ->  br.getZones().stream().filter(z -> z != null)).collect(Collectors.toList());
+        .flatMap(br -> br.getZones().stream().filter(z -> z != null)).collect(Collectors.toList());
     List<ZoneDto> zonesDto = Lists.newArrayList();
     for (Zone zone : zones) {
       zonesDto.add(stampingFormDtoMapper.convert(zone));
@@ -317,15 +324,100 @@ public class StampingsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @PutMapping(ApiRoutes.CREATE)
+  @PostMapping(ApiRoutes.CREATE)
   public ResponseEntity<String> create(
       @NotNull @RequestBody @Valid StampingCreateDto stampingCreateDto) {
     log.debug("StampingsController::insert stampingCreateDto = {}", stampingCreateDto);
 
+    Map<Integer, String> resultMap = manageStamping(stampingCreateDto, true);
+
+    Integer statusCode = resultMap.keySet().iterator().next();
+    String result = resultMap.get(statusCode);
+
+    if (statusCode == 404) {
+      return ResponseEntity.notFound().build();
+    }
+    if (statusCode == 400) {
+      return ResponseEntity.badRequest().build();
+    }
+    if (statusCode == 409) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
+    }
+
+    return ResponseEntity.ok().body(result);
+  }
+
+  /**
+   * Aggiornamento di una timbratura
+   */
+  @Operation(
+      summary = "Aggiornamento di una timbratura.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui aggiornare la timbratura e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alle timbrature")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Aggiornata la timbratura"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a eseguire "
+              + "l'inserimento delle timbrature",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content)
+  })
+  @PostMapping(ApiRoutes.UPDATE)
+  public ResponseEntity<String> update(
+      @NotNull @RequestBody @Valid StampingCreateDto stampingCreateDto) {
+    log.debug("StampingsController::insert stampingCreateDto = {}", stampingCreateDto);
+
+    Map<Integer, String> resultMap = manageStamping(stampingCreateDto, false);
+
+    Integer statusCode = resultMap.keySet().iterator().next();
+    String result = resultMap.get(statusCode);
+
+    if (statusCode == 404) {
+      return ResponseEntity.notFound().build();
+    }
+    if (statusCode == 400) {
+      return ResponseEntity.badRequest().build();
+    }
+    if (statusCode == 409) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
+    }
+
+    return ResponseEntity.ok().body(result);
+  }
+
+  @DeleteMapping(ApiRoutes.DELETE)
+  public ResponseEntity<Void> delete(@NotNull @PathVariable("id") Long id) {
+    log.debug("StampingController::delete id = {}", id);
+    Stamping stamping = stampingDao.getStampingById(id);
+
+    if (stamping == null) {
+      throw new EntityNotFoundException("Stamping not found");
+    }
+//    checkIfIsPossibileToDelete(contract);
+
+    stampingDao.delete(stamping);
+    log.info("Eliminata timbratura {}", stamping);
+
+    return ResponseEntity.ok().build();
+  }
+
+
+  private Map<Integer, String> manageStamping(StampingCreateDto stampingCreateDto,
+      boolean newInsert) {
+    Map<Integer, String> resultMap = new HashMap<>();
     Long personId = stampingCreateDto.getPersonId();
     Person person = personDao.getPersonById(personId);
     if (person == null) {
-      return ResponseEntity.notFound().build();
+      resultMap.put(404, null);
+      return resultMap;
     }
 
     Stamping stamping = entityToDtoConverter.createEntity(stampingCreateDto);
@@ -339,13 +431,14 @@ public class StampingsController {
     if (stamping.getWay() == null) {
       log.debug("StampingsController::stampingDao.isPersistent(stamping) = {}",
           stampingDao.isPersistent(stamping));
-//      List<HistoryValue<Stamping>> historyStamping = Lists.newArrayList();
-//      if (stamping.isPersistent()) {
-//        historyStamping = stampingsHistoryDao.stampings(stamping.id);
-//      }
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      List<HistoryValue<Stamping>> historyStamping = Lists.newArrayList();
+      if (stampingDao.isPersistent(stamping)) {
+        historyStamping = stampingsHistoryDao.stampings(stamping.getId());
+      }
+      //render("@edit", stamping, person, date, time, historyStamping);
+      resultMap.put(400, null);
+      return resultMap;
     }
-
 
     if (!offsite) {
       Preconditions.checkState(!stampingDate.isAfter(LocalDate.now()));
@@ -363,15 +456,13 @@ public class StampingsController {
             disableInsert = true;
           }
         }
-        return ResponseEntity.badRequest().build();
+        resultMap.put(400, null);
+        return resultMap;
         //render("@editOffSite", stamping, person, date, time, disableInsert, offsite);
       }
     }
 
     stamping.setDate(stampingManager.deparseStampingDateTime(stampingDate, time));
-
-    //boolean newInsert = !stampingDao.isPersistent(stamping); // questo non funziona
-    boolean newInsert = true;
 
     if (stampingDao.getStamping(stamping.getDate(), person, stamping.getWay()).isPresent()) {
       log.info("Timbratura delle {} già presente per {} (matricola = {}) ",
@@ -397,12 +488,17 @@ public class StampingsController {
       stamping.setStampingZone(zone);
     }
 
+    log.debug("StampingsController::newInsert = {}", newInsert);
+    log.debug("StampingsController::newInsert = {}", newInsert);
+
     String result = stampingManager
         .persistStamping(stamping, person, currentUser, newInsert, false);
+    log.debug("StampingsController::result = {}", result);
 
     if (!Strings.isNullOrEmpty(result)) {
       // Stamping already present (409)
-      return ResponseEntity.status(HttpStatus.CONFLICT).body(result);
+      resultMap.put(409, null);
+      return resultMap;
     }
 
     if (!currentUser.isSystemUser() && !currentUser.hasRoles(Role.PERSONNEL_ADMIN)
@@ -410,22 +506,9 @@ public class StampingsController {
       //stampings(date.getYear(), date.getMonthOfYear());
     }
 
-    return ResponseEntity.ok().body(result);
+    resultMap.put(200, result);
+
+    return resultMap;
   }
 
-  @DeleteMapping(ApiRoutes.DELETE)
-  public ResponseEntity<Void> delete(@NotNull @PathVariable("id") Long id) {
-    log.debug("StampingController::delete id = {}", id);
-    val stamping = stampingDao.getStampingById(id);
-
-    if (stamping == null) {
-      throw new EntityNotFoundException("Stamping not found");
-    }
-//    checkIfIsPossibileToDelete(contract);
-
-    stampingDao.delete(stamping);
-    log.info("Eliminata timbratura {}", stamping);
-
-    return ResponseEntity.ok().build();
-  }
 }

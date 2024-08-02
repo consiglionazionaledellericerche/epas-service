@@ -17,28 +17,35 @@
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
-import com.google.inject.Provider;
 
 import it.cnr.iit.epas.models.Stamping;
 
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.springframework.stereotype.Component;
 
 /**
  * Dao sullo storico delle timbrature.
  *
  * @author Marco Andreini
  */
+@Slf4j
+@Component
 public class StampingHistoryDao {
 
-  private final Provider<AuditReader> auditReader;
+  private final Provider<EntityManager> emp;
 
   @Inject
-  StampingHistoryDao(Provider<AuditReader> auditReader) {
-    this.auditReader = auditReader;
+  StampingHistoryDao(Provider<EntityManager> emp) {
+    this.emp = emp;
   }
 
   /**
@@ -49,8 +56,8 @@ public class StampingHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Stamping>> stampings(long stampingId) {
-
-    final AuditQuery query = auditReader.get().createQuery()
+    val auditReader = AuditReaderFactory.get(emp.get());
+    final AuditQuery query = auditReader.createQuery()
             .forRevisionsOfEntity(Stamping.class, false, true)
             .add(AuditEntity.id().eq(stampingId))
             .addOrder(AuditEntity.revisionNumber().asc());
