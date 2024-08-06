@@ -11,6 +11,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class StampingEditFormDto extends StampingCreateDto  {
+
+  private PersonShowDto person;
   private boolean ownStamping;
   private List<ZoneDto> zones;
 

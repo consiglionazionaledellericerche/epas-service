@@ -159,20 +159,20 @@ public class StampingsController {
     log.debug("StampingsController::stampingForm badgeReaders = {}  zones = {}", badgeReaders,
         zones);
 
+    User user = securityUtils.getCurrentUser().get();
+
     StampingFormDto dto = new StampingFormDto();
     List<String> offsiteStrings = offsite.stream()
         .map(StampTypes::name)
         .collect(Collectors.toList());
 
-    List<String> stampTypes = Arrays.stream(StampTypes.values()).map(StampTypes::toString)
+    List<String> stampTypes = UserDao.getAllowedStampTypes(user).stream().map(StampTypes::name)
         .collect(Collectors.toList());
 
     List<ZoneDto> zonesDto = Lists.newArrayList();
     for (Zone zone : zones) {
       zonesDto.add(stampingFormDtoMapper.convert(zone));
     }
-
-    User user = securityUtils.getCurrentUser().get();
 
     if (user.isSystemUser()) {
       dto.setPerson(stampingFormDtoMapper.convert(person));
@@ -290,6 +290,7 @@ public class StampingsController {
     StampingEditFormDto stampingdto = new StampingEditFormDto();
 //    render(stamping, person, date, historyStamping, ownStamping, zones);
     stampingdto.setOwnStamping(ownStamping);
+    stampingdto.setPerson(stampingFormDtoMapper.convert(person));
     stampingdto.setPersonId(person.getId());
     stampingdto.setDate(date);
     stampingdto.setTime(time);
