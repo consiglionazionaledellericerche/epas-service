@@ -27,9 +27,11 @@ import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeUpdateDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
+import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Stamping;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import lombok.val;
@@ -122,5 +124,14 @@ public class EntityToDtoConverter {
     Contract contract = new Contract();
     mapper.create(contract, contractDto);
     return contract;
+  }
+
+  /**
+   * Crea una nuova Entity Contract a partire dai dati del DTO.
+   */
+  public Stamping createEntity(StampingCreateDto stampingDto) {
+    Stamping stamping = new Stamping();
+    mapper.create(stamping, stampingDto);
+    return stamping;
   }
 }

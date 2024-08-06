@@ -20,15 +20,18 @@ package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dao.InstituteDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
+import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Stamping;
 import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -50,6 +53,8 @@ public abstract class DtoToEntityMapper {
   protected InstituteDao instituteDao;
   @Inject
   protected PersonDao personDao;
+  @Inject
+  protected PersonDayDao personDayDao;
   @Inject
   protected OfficeDao officeDao;
   @Inject
@@ -89,4 +94,11 @@ public abstract class DtoToEntityMapper {
           + "new javax.persistence."
           + "EntityNotFoundException(\"Person not found\")))")
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
+
+  @Mapping(target = "personDay",
+      expression = "java(personDayDao.getPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate())"
+          + ".orElseThrow(() -> "
+          + "new javax.persistence."
+          + "EntityNotFoundException(\"Person not found\")))")
+  public abstract void create(@MappingTarget Stamping stamping, StampingCreateDto stampingDto);
 }

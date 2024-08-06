@@ -19,6 +19,7 @@ global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
 global java.util.List userRolesOffices;
 global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
+global it.cnr.iit.epas.dao.history.StampingHistoryDao stampingHistoryDao;
 
 /*******************************************************************************
  * Azioni ruolo DEVELOPER e ADMIN
@@ -212,7 +213,12 @@ when
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null, granted == false)
 then
  $c.grant();
@@ -227,7 +233,12 @@ when
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $o, granted == false)
 then
  $c.grant();
