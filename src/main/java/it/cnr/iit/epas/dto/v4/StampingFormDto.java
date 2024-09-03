@@ -9,7 +9,7 @@ import lombok.Data;
 public class StampingFormDto {
   private PersonShowDto person;
   private LocalDate date;
-  private List<String> StampTypes= Lists.newArrayList();
+  private List<StampModificationTypeDto> StampTypes= Lists.newArrayList();
   private List<String> offsite= Lists.newArrayList();
   private boolean insertOffsite;
   private boolean insertNormal;

@@ -31,7 +31,10 @@ import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.Stamping;
+import java.time.LocalDate;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -96,9 +99,8 @@ public abstract class DtoToEntityMapper {
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
 
   @Mapping(target = "personDay",
-      expression = "java(personDayDao.getPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate())"
-          + ".orElseThrow(() -> "
-          + "new javax.persistence."
-          + "EntityNotFoundException(\"Person not found\")))")
+      expression = "java(personDayDao.getPreviousPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate()))")
+
   public abstract void create(@MappingTarget Stamping stamping, StampingCreateDto stampingDto);
+
 }

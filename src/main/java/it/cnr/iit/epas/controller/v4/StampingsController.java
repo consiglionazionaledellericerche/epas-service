@@ -17,6 +17,7 @@ import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.history.HistoryValue;
 import it.cnr.iit.epas.dao.history.StampingHistoryDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperPerson;
+import it.cnr.iit.epas.dto.v4.StampModificationTypeDto;
 import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.dto.v4.StampingEditFormDto;
 import it.cnr.iit.epas.dto.v4.StampingFormDto;
@@ -166,8 +167,11 @@ public class StampingsController {
         .map(StampTypes::name)
         .collect(Collectors.toList());
 
-    List<String> stampTypes = UserDao.getAllowedStampTypes(user).stream().map(StampTypes::name)
-        .collect(Collectors.toList());
+    List<StampModificationTypeDto> stampTypesDto = Lists.newArrayList();
+
+    for (StampTypes stampType : UserDao.getAllowedStampTypes(user)) {
+      stampTypesDto.add(stampingFormDtoMapper.convert(stampType));
+    }
 
     List<ZoneDto> zonesDto = Lists.newArrayList();
     for (Zone zone : zones) {
@@ -182,7 +186,7 @@ public class StampingsController {
       dto.setInsertNormal(insertNormal);
       dto.setAutocertification(autocertification);
       dto.setZones(zonesDto);
-      dto.setStampTypes(stampTypes);
+      dto.setStampTypes(stampTypesDto);
       return ResponseEntity.ok(dto);
     }
 
@@ -325,7 +329,7 @@ public class StampingsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content)
   })
-  @PostMapping(ApiRoutes.CREATE)
+  @PostMapping("/save")
   public ResponseEntity<String> create(
       @NotNull @RequestBody @Valid StampingCreateDto stampingCreateDto) {
     log.debug("StampingsController::insert stampingCreateDto = {}", stampingCreateDto);
@@ -415,7 +419,9 @@ public class StampingsController {
       boolean newInsert) {
     Map<Integer, String> resultMap = new HashMap<>();
     Long personId = stampingCreateDto.getPersonId();
+    log.debug("StampingsController::manageStamping  personId = {}", personId);
     Person person = personDao.getPersonById(personId);
+    log.debug("StampingsController::manageStamping  person = {}", person);
     if (person == null) {
       resultMap.put(404, null);
       return resultMap;

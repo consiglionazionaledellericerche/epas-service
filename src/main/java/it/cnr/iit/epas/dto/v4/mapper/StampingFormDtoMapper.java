@@ -22,9 +22,9 @@ import it.cnr.iit.epas.dto.v4.StampModificationTypeDto;
 import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.ZoneDto;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.Zone;
+import it.cnr.iit.epas.models.enumerate.StampTypes;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -41,4 +41,7 @@ public interface StampingFormDtoMapper {
   PersonShowDto convert(Person person);
 
   ZoneDto convert(Zone zone);
+
+  @Mapping(target = "name", expression = "java(stampType.name())")
+  StampModificationTypeDto convert(StampTypes stampType);
 }
