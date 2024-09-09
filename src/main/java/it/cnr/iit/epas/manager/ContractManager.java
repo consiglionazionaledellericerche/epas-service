@@ -272,7 +272,7 @@ public class ContractManager {
       // TODO: anche quelli sulle ferie quando ci saranno
       for (ContractMonthRecap cmr : contract.contractMonthRecaps) {
         if (!yearMonthFrom.isAfter(YearMonth.of(cmr.year, cmr.month))) {
-          if (cmr.getId() != null) {
+          if (emp.get().contains(cmr)) {
             emp.get().remove(cmr);
           }
         }
@@ -554,13 +554,12 @@ public class ContractManager {
       }
     } else {
       Contract temp = contract.getPreviousContract();
-      if (temp == null) {
-        return false;
-      }
-      contract.setPreviousContract(null);
-      if (temp.getEndDate() != null 
-          && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
-        splitVacationPeriods(contract);
+      if (temp != null) {
+        contract.setPreviousContract(null);
+        if (temp.getEndDate() != null 
+            && contract.getBeginDate().minusDays(1).isEqual(temp.getEndDate())) {
+          splitVacationPeriods(contract);
+        }
       }
     }
     return true;

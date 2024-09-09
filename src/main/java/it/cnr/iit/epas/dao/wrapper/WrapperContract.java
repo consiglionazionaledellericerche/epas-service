@@ -17,6 +17,16 @@
 
 package it.cnr.iit.epas.dao.wrapper;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
+
 import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
@@ -25,13 +35,6 @@ import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import javax.inject.Inject;
-import org.springframework.stereotype.Component;
 
 /**
  * Contract con alcune funzionalità aggiuntive.

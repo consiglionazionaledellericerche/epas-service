@@ -518,7 +518,11 @@ class ConsistencyManagerUtils {
         cmr.buoniPastoDaInizializzazione = 0;
         cmr.remainingMealTickets = 0;
       }
-      emp.get().persist(cmr);
+      if (emp.get().contains(cmr)) {
+        emp.get().merge(cmr);
+      } else {
+        emp.get().persist(cmr);
+      }
       //cmr.save();
       contract.getValue().contractMonthRecaps.add(cmr);
       emp.get().merge(contract.getValue());
@@ -529,9 +533,12 @@ class ConsistencyManagerUtils {
     // Caso complesso, combinare inizializzazione e database.
 
     ContractMonthRecap cmr = buildContractMonthRecap(contract, yearMonthToCompute);
-
     contract.getValue().contractMonthRecaps.add(cmr);
-    emp.get().merge(cmr);
+    if (emp.get().contains(cmr)) {
+      emp.get().merge(cmr);
+    } else {
+      emp.get().persist(cmr);
+    }
     //cmr.save();
 
     // Informazioni relative ai residui
@@ -539,7 +546,11 @@ class ConsistencyManagerUtils {
     contractMonthRecapManager.computeResidualModule(cmr, Optional.<ContractMonthRecap>empty(),
         yearMonthToCompute, LocalDate.now().minusDays(1), otherCompensatoryRest, Optional.empty());
 
-    emp.get().merge(cmr);
+    if (emp.get().contains(cmr)) {
+      emp.get().merge(cmr);
+    } else {
+      emp.get().persist(cmr);
+    }
     //cmr.save();
 
     emp.get().merge(contract.getValue());
@@ -556,7 +567,6 @@ class ConsistencyManagerUtils {
       YearMonth yearMonth) {
 
     Optional<ContractMonthRecap> cmrOld = contract.getContractMonthRecap(yearMonth);
-
     if (cmrOld.isPresent()) {
       cmrOld.get().clean();
       return cmrOld.get();
