@@ -99,8 +99,7 @@ public abstract class DtoToEntityMapper {
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
 
   @Mapping(target = "personDay",
-      expression = "java(personDayDao.getPreviousPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate()))")
-
+      expression = "java(personDayDao.getPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate()).orElse(null))")
   public abstract void create(@MappingTarget Stamping stamping, StampingCreateDto stampingDto);
 
 }

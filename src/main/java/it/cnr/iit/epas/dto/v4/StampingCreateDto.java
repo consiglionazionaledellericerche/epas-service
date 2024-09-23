@@ -26,12 +26,16 @@ import lombok.Data;
 @Data
 public class StampingCreateDto {
   private Long personId;
+  private Long stampingId=null;
   private String stampType;
   private String way;
   private LocalDate date;
   private String note;
   private String time;
   private String zone;
+
+  private String place=null;
+  private String reason=null;
 
   private boolean offsite=false;
 }

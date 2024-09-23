@@ -15,6 +15,15 @@ public class StampingEditFormDto extends StampingCreateDto  {
   private PersonShowDto person;
   private boolean ownStamping;
   private List<ZoneDto> zones;
+  private List<StampTypeDto> StampTypes= Lists.newArrayList();
+  private StampTypeDto stampTypeOpt;
 
-  //private List<HistoryValue<StampingDto>> historyStamping;
+  private boolean serviceReasons;
+  private boolean offSiteWork;
+
+  private String place;
+  private String reason;
+
+  private List<HistoryValueDto> historyStamping;
+
 }

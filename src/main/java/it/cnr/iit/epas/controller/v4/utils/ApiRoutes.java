@@ -34,7 +34,7 @@ public class ApiRoutes {
 
   public static final String LIST = "";
   public static final String SHOW = "/" + ID_REGEX;
-  public static final String CREATE = "/";
+  public static final String CREATE = "";
   public static final String UPDATE = "/update";
   public static final String PATCH = "/patch/" + ID_REGEX;
   public static final String DELETE = "/" + ID_REGEX;

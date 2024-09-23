@@ -26,6 +26,8 @@ import it.cnr.iit.epas.dto.v4.ContractMonthRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingDayRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
+import it.cnr.iit.epas.dto.v4.StampModificationTypeDto;
+import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.StampingTemplateDto;
 import it.cnr.iit.epas.dto.v4.WorkingTimeTypeDayDto;
 import it.cnr.iit.epas.dto.v4.WorkingTimeTypeDto;
@@ -33,6 +35,8 @@ import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingDayRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.StampingTemplate;
 import it.cnr.iit.epas.models.PersonDay;
+import it.cnr.iit.epas.models.StampModificationType;
+import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
@@ -95,6 +99,11 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
   AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);
 
+  @Mapping(target = "personDayId", source = "personDay.id")
+  StampingDto convert(Stamping stamping);
+
+  StampModificationTypeDto convert(StampModificationType stampModificationType);
+
   @Mapping(target = "id", source = "stamping.id")
   @Mapping(target = "showPopover", expression = "java(stamping.showPopover())")
   StampingTemplateDto convert(StampingTemplate stamping);
@@ -117,7 +126,12 @@ public interface PersonStampingRecapMapper {
 
   default Optional<WorkingTimeTypeDayDto> convertOptional(
       Optional<WorkingTimeTypeDay> workingTimeTypeDay) {
-    return Optional.of(convert(workingTimeTypeDay.get()));
+    if (workingTimeTypeDay.isPresent()) {
+      return Optional.of(convert(workingTimeTypeDay.get()));
+    }
+    else {
+      return null;
+    }
   }
 
 }

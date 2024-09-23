@@ -26,6 +26,7 @@ import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.transaction.Transactional;
 import javax.persistence.EntityManager;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -35,6 +36,8 @@ import org.springframework.stereotype.Component;
 /**
  * Manager per gli StampType.
  */
+
+@Transactional
 @Component
 public class StampTypeManager {
 
