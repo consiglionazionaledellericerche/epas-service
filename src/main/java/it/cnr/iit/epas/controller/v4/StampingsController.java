@@ -264,7 +264,7 @@ public class StampingsController {
     log.debug("StampingsController::editStampingForm stamping = {}", stamping);
     Preconditions.checkNotNull(stamping);
 
-    //rules.checkifPermitted(stamping);
+    rules.checkifPermitted(stamping);
 
     final List<HistoryValue<Stamping>> historyStamping = stampingsHistoryDao
         .stampings(stamping.getId());
@@ -606,7 +606,7 @@ public class StampingsController {
       log.debug("StampingsController::insert stamping = {}", stamping.toString());
     }
 
-    //rules.checkifPermitted(stamping);
+    rules.checkifPermitted(stamping);
     final User currentUser = securityUtils.getCurrentUser().get();
     if (!offsite) {
       String zone = stampingCreateDto.getZone();
