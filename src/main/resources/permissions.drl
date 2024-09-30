@@ -1026,7 +1026,7 @@ end
  ******************************************************************************/
 rule employeeCanEditStampings
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
  $o: Office() from $p.office
  $target: Stamping(this.getOwner() == $p)
@@ -1048,7 +1048,7 @@ end
  ******************************************************************************/
 rule employeeCanEditStampingsOffsite
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  $o: Office() from $p.office
  $target: Stamping(UserDao.getAllowedStampTypes(currentUser).contains(stampType), this.getOwner() == $p)
@@ -1071,7 +1071,7 @@ end
  ******************************************************************************/
 rule employeeCanEditStampingsServiceReasons
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  $o: Office() from $p.office
  $target: Stamping(isServiceReasons(), this.getOwner() == $p)
@@ -1105,7 +1105,7 @@ end
  ******************************************************************************/
 rule employeeCanEditServiceStampings
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
  $c: PermissionCheck(
@@ -1122,7 +1122,7 @@ end
  ******************************************************************************/
 rule employeeCanModifyServiceStampings
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  $target: Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
  $c: PermissionCheck(
