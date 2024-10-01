@@ -33,10 +33,9 @@ import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.dto.v4.ContractMonthRecapDto;
-import it.cnr.iit.epas.dto.v4.PersonStampingRecapDto;
-import it.cnr.iit.epas.dto.v4.WrapperContractMonthRecapDto;
+import it.cnr.iit.epas.dto.v4.PersonMonthsDto;
+import it.cnr.iit.epas.dto.v4.mapper.PersonMonthsMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonStampingRecapMapper;
-import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecap;
 import it.cnr.iit.epas.manager.recaps.personstamping.PersonStampingRecapFactory;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
@@ -50,7 +49,6 @@ import org.joda.time.LocalDate;
 //import org.joda.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,11 +79,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonMonthsController {
 
   private final IWrapperFactory wrapperFactory;
-  private final PersonStampingRecapFactory stampingRecapFactory;
-  private final PersonStampingRecapMapper personStampingRecapMapper;
+  private final PersonMonthsMapper personMonthsMapper;
   private final SecurityRules rules;
   private final SecureUtils securityUtils;
-  private final PersonFinder personFinder;
 
   @Operation(
       summary = "Visualizzazione del riepilogo orario del dipendente.",
@@ -107,7 +103,7 @@ public class PersonMonthsController {
           content = @Content)
   })
   @GetMapping("/hourRecap")
-  ResponseEntity<WrapperContractMonthRecapDto> hourRecap(
+  ResponseEntity<List<PersonMonthsDto>> hourRecap(
       @NotNull @RequestParam("year") Integer year) {
     log.debug("REST method {} invoked with parameters year={}",
         "/rest/v4/personmonths/hourRecap", year);
@@ -119,7 +115,7 @@ public class PersonMonthsController {
     if (!user.isPresent() || user.get().getPerson() == null) {
       //flash.error("Accesso negato.");
       //renderTemplate("Application/indexAdmin.html");
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      //return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
     if (year > new LocalDate().getYear()) {
@@ -132,22 +128,23 @@ public class PersonMonthsController {
 
     Optional<Contract> contract = wrapperFactory.create(person).getCurrentContract();
 
-    WrapperContractMonthRecapDto dto = new WrapperContractMonthRecapDto();
-    List<ContractMonthRecapDto> cmrDto = Lists.newArrayList();
 
+    List<PersonMonthsDto> pmListDto = Lists.newArrayList();
     Preconditions.checkState(contract.isPresent());
     List<IWrapperContractMonthRecap> recaps = Lists.newArrayList();
+    IWrapperContractMonthRecap wp;
     YearMonth actual = YearMonth.of(year, 1);
     YearMonth last =  YearMonth.of(year, 12);
     IWrapperContract con = wrapperFactory.create(contract.get());
     while (!actual.isAfter(last)) {
       Optional<ContractMonthRecap> recap = con.getContractMonthRecap(actual);
       if (recap.isPresent()) {
-        recaps.add(wrapperFactory.create(recap.get()));
+        wp = wrapperFactory.create(recap.get());
+        PersonMonthsDto pmDto = personMonthsMapper.convert(wp);
+        pmListDto.add(pmDto);
       }
       actual = actual.plusMonths(1);
     }
-    return ResponseEntity.ok().body(personStampingRecapMapper.convert(psrDto));
+    return ResponseEntity.ok().body(pmListDto);
   }
-
 }

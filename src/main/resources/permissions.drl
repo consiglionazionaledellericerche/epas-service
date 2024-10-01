@@ -77,6 +77,16 @@ then
  $c.grant();
 end
 
+rule IsEmployee
+when
+  $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/personmonths/hourRecap") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
 /*Ruolo per vedere il calendario per i reperibili e le richieste di cambio reperibilità*/
 
 rule isAvailable_general

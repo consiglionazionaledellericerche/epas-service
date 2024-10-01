@@ -17,7 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.ContractMonthRecap;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -29,13 +29,12 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class WrapperContractMonthRecapDto {
+public class PersonMonthsDto {
 
   private ContractMonthRecapDto value;
-  private boolean residualInitInYearMonth;
-  private ContractMonthRecapDto previousRecap;
-  private ContractMonthRecapDto previousRecapInYear;
-
+  private Optional<ContractMonthRecapDto> previousRecap;
+  private Optional<ContractMonthRecapDto> previousRecapInYear;
+  private boolean hasResidualInitInYearMonth;
   private boolean hasResidualLastYear;
   private int getResidualLastYearInit;
 
