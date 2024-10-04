@@ -79,7 +79,7 @@ end
 
 rule IsEmployee
 when
-  $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/personmonths/hourRecap") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null)
