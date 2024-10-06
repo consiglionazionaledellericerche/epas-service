@@ -15,13 +15,17 @@
 
 package it.cnr.iit.epas.manager.recaps.absencegroups;
 
+import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
+import it.cnr.iit.epas.security.SecureUtils;
 import java.time.LocalDate;
+import it.cnr.iit.epas.models.Role;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,15 +50,16 @@ public class AbsenceGroupsRecap {
    * @param absenceComponentDao absenceComponentDao
    * @param absenceService      absenceService
    */
-  public AbsenceGroupsRecap(AbsenceComponentDao absenceComponentDao,
-      AbsenceService absenceService, Person person, Long groupAbsenceTypeId, LocalDate from) {
+  public AbsenceGroupsRecap(UserDao userDao, AbsenceComponentDao absenceComponentDao,
+      AbsenceService absenceService, Person person, Long groupAbsenceTypeId,
+      LocalDate from, SecureUtils securityUtils) {
 
     final long start = System.currentTimeMillis();
     log.trace("inizio AbsenceGroupsRecap. Person = {}, from = {}",
         person.getFullname(), from);
 
     this.from = from;
-    this.isAdmin = false;
+    isAdmin = false;
 
     groupAbsenceType = absenceComponentDao.groupAbsenceTypeById(groupAbsenceTypeId);
     groupAbsenceType = groupAbsenceType.firstOfChain();
@@ -62,20 +67,20 @@ public class AbsenceGroupsRecap {
     periodChain = absenceService.residual(person, groupAbsenceType, from);
 
     //se l'user è amministratore visualizzo lo switcher del gruppo
-    //    Optional<User> user = secureUtils.getCurrentUser();
-    //    if (currentUser.isSystemUser()
-    //        || userDao.getUsersWithRoles(person.getOffice(),
-    //            Role.PERSONNEL_ADMIN, Role.PERSONNEL_ADMIN_MINI)
-    //        .contains(currentUser)) {
-    //      this.isAdmin = true;
-    //    }
+        User currentUser = securityUtils.getCurrentUser().get();
+        if (currentUser.isSystemUser()
+            || userDao.getUsersWithRoles(person.getOffice(),
+                Role.PERSONNEL_ADMIN, Role.PERSONNEL_ADMIN_MINI)
+            .contains(currentUser)) {
+          isAdmin = true;
+        }
 
-    if (!groupAbsenceType.isAutomatic()) {
-      //XXX
-    }
-    categorySwitcher = absenceService
-        .buildForCategorySwitch(person, from, groupAbsenceType);
-
+    /*if (!groupAbsenceType.isAutomatic()) {
+      categorySwitcher = null;
+    } else {*/
+      categorySwitcher = absenceService
+          .buildForCategorySwitch(person, from, groupAbsenceType);
+    //}
     log.debug(
         "fine creazione nuovo AbsenceGroupsRecap in {} ms. "
         + "Person = {} groupAbsenceType = {}, from = {}",

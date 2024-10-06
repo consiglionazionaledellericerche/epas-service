@@ -50,7 +50,7 @@ public abstract class AbsenceMapper {
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "externalId", source = "absence.externalIdentifier")
   @Mapping(target = "justifiedTime", 
-      expression = "java(absenceManager.getJustifiedMinutes(absence))")
+      expression = "java(absence.justifiedTime())")
   @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   public abstract AbsenceShowDto convert(Absence absence);
@@ -58,7 +58,7 @@ public abstract class AbsenceMapper {
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "externalId", source = "absence.externalIdentifier")
   @Mapping(target = "justifiedTime", 
-      expression = "java(absenceManager.getJustifiedMinutes(absence))")
+      expression = "java(absence.justifiedTime())")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   public abstract AbsenceShowTerseDto convertTerse(Absence absence);

@@ -34,6 +34,7 @@ import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
+import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
@@ -59,12 +60,15 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
+import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
+import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -105,6 +109,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ApiRoutes.BASE_PATH + "/absencesGroups")
 public class AbsencesGroupsController {
 
+
   private final AbsenceGroupsRecapFactory absenceGroupsRecapFactory;
   private final AbsenceGroupsMapper absenceGroupsMapper;
   private final AbsenceFormMapper absenceFormMapper;
@@ -117,6 +122,7 @@ public class AbsencesGroupsController {
   private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
+  private final SecureUtils securityUtils;
 
   /**
    * Elenco delle assenze in un mese.
@@ -183,8 +189,10 @@ public class AbsencesGroupsController {
     absGroupDto.setPeriodChain(newPeriodChain);
 
     List<GroupAbsenceTypeDto> groupAbsenceTypeDto = Lists.newArrayList();
-    for (GroupAbsenceType gr : psrDto.categorySwitcher.groups()) {
-      groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
+    if (psrDto.categorySwitcher != null) {
+      for (GroupAbsenceType gr : psrDto.categorySwitcher.groups()) {
+        groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
+      }
     }
     absGroupDto.setGroups(groupAbsenceTypeDto);
 

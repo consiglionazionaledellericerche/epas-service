@@ -33,6 +33,7 @@ public class AbsenceGroupsDto {
   private LocalDate from;
   private GroupAbsenceTypeDto groupAbsenceType;
   private PeriodChainDto periodChain;
-  private boolean isAdmin;
+  private boolean admin;
+  private AbsenceFormDto categorySwitcher;
   private List<GroupAbsenceTypeDto> groups;
 }

@@ -17,9 +17,11 @@
 
 package it.cnr.iit.epas.manager.recaps.absencegroups;
 
+import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.security.SecureUtils;
 import java.time.LocalDate;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
@@ -30,18 +32,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class AbsenceGroupsRecapFactory {
 
+  private final UserDao userDao;
   private final AbsenceComponentDao absenceComponentDao;
   private final AbsenceService absenceService;
+  private final SecureUtils securityUtils;
 
   /**
    * Costruttore per l'injection.
    */
   @Inject
-  AbsenceGroupsRecapFactory(AbsenceComponentDao absenceComponentDao,
-      AbsenceService absenceService) {
+  AbsenceGroupsRecapFactory(UserDao userDao, AbsenceComponentDao absenceComponentDao,
+      AbsenceService absenceService, SecureUtils securityUtils) {
 
     this.absenceComponentDao = absenceComponentDao;
+    this.userDao = userDao;
     this.absenceService = absenceService;
+    this.securityUtils = securityUtils;
   }
 
   /**
@@ -49,8 +55,8 @@ public class AbsenceGroupsRecapFactory {
    */
   public AbsenceGroupsRecap create(Person person, Long groupAbsenceTypeId, LocalDate from) {
 
-    return new AbsenceGroupsRecap(absenceComponentDao, absenceService,
-        person, groupAbsenceTypeId, from);
+    return new AbsenceGroupsRecap(userDao, absenceComponentDao, absenceService,
+        person, groupAbsenceTypeId, from, securityUtils);
   }
 
 }
