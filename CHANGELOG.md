@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - UNRELEASED
+### Added
+ - Aggiunti historyDao mancanti
+ - API Rest per inserimento, modifica e cancellazione timbrature via interfaccia web
+ - API Rest per inserimento, modifica e cancellazione  timbrature Fuori Sede via interfaccia web
+ - Creazione dei DTO e mapper per la gestione delle request/response per le timbrature
+ - Aggiunte drools per il funzionamento delle API Rest delle timbrature
+ - Sistemato problema su recupero Owner in StampingHistoryDao
+ - Aggiunto from userRolesOffices in alcune drools con target Stamping
+
 ## [0.4.1] - 2024-07-05
 ### Added
 - API Rest per il controllo della secure.check

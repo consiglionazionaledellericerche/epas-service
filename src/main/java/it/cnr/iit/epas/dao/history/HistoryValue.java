@@ -72,8 +72,8 @@ public class HistoryValue<T extends BaseEntity> {
    * Versione formattata dell'owner della revisione.
    */
   public String formattedOwner() {
-    if (this.revision.owner != null) {
-      return this.revision.owner.getUsername();
+    if (this.revision.getOwner() != null) {
+      return this.revision.getOwner().getUsername();
     } else {
       return "ePAS";
     }

@@ -156,7 +156,7 @@ public class HistoricalDao {
    * L'utente che ha effettuato l'ultima revisione dell'entity passata.
    */
   public User lastRevisionOperator(BaseEntity entity) {
-    return lastRevisionOf(entity.getClass(), entity.getId()).revision.owner;
+    return lastRevisionOf(entity.getClass(), entity.getId()).revision.getOwner();
   }
 
   public Boolean isPersistent(BaseEntity entity) {

@@ -28,6 +28,7 @@ import lombok.EqualsAndHashCode;
 public class StampModificationTypeDto extends BaseModelDto {
 
   private String code;
+  private String name;
   private String description;
 
 }

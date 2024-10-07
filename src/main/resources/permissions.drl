@@ -8,17 +8,22 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityType;
 import it.cnr.iit.epas.models.Configuration;
 import it.cnr.iit.epas.models.PersonConfiguration;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
+import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
+import it.cnr.iit.epas.dao.UserDao;
 
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
 global java.util.List userRolesOffices;
 global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
+global it.cnr.iit.epas.dao.history.StampingHistoryDao stampingHistoryDao;
+
 
 /*******************************************************************************
  * Azioni ruolo DEVELOPER e ADMIN
@@ -37,7 +42,8 @@ rule AnyUser
 when
  $c: PermissionCheck(
     permission.startsWith("/rest/v4/userinfo") ||
-    permission.startsWith("/rest/v4/personinfo"),
+    permission.startsWith("/rest/v4/personinfo") ||
+    permission.startsWith("/rest/v4/secure/check") && httpMethod.equalsIgnoreCase('GET'),
     toCheck())
 then
  $c.grant();
@@ -212,7 +218,12 @@ when
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == null, granted == false)
 then
  $c.grant();
@@ -227,8 +238,32 @@ when
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
     toCheck(), target == $o, granted == false)
+then
+ $c.grant();
+end
+
+/*
+ * L'amministratore del personale può modificare una determinata timbratura se:
+ */
+rule AdminCanEditStamping
+when
+ $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN)
+ $target: Stamping(markedByTelework == false)
+ Office(persons.contains($target.getOwner())) from $uro.office
+ $c: PermissionCheck(
+        (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('POST')) ||
+        (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+        (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+        (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+        (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+  toCheck(), target == $target, granted == false )
 then
  $c.grant();
 end
@@ -942,3 +977,159 @@ then
 end
 
 /*Fine parte dei gestori delle reperibilità*/
+
+
+/*******************************************************************************
+ * Azioni per utente employee abilitato alla timbratura fuori sede
+ ******************************************************************************/
+rule Working_offsite
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), granted == false, target == null)
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * Un dipendente può autocertificare le proprie timbrature per il lavoro fuori Sede se...
+ ***********************************************************************************/
+rule employeeCanInsertStampingsAndAbsencesOffsite
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature se...
+ ******************************************************************************/
+rule employeeCanEditStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(this.getOwner() == $p)
+ $c: PermissionCheck(
+         (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+         (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+         (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+         toCheck(), granted == false, target == $target)
+ Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations
+ eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+  /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
+  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature per il lavoro fuori Sede se...
+ ******************************************************************************/
+rule employeeCanEditStampingsOffsite
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(UserDao.getAllowedStampTypes(currentUser).contains(stampType), this.getOwner() == $p)
+ $c: PermissionCheck(
+ (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+ (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+ (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+ toCheck(), target == $target, granted == false)
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature per uscita di servizio se ...
+ ******************************************************************************/
+rule employeeCanEditStampingsServiceReasons
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(isServiceReasons(), this.getOwner() == $p)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $target, granted == false)
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+then
+ $c.grant();
+end
+
+rule employeeAutocertificationStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+   (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+   toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può entrare nella modifica delle proprie timbrature di servizio se...
+ ******************************************************************************/
+rule employeeCanEditServiceStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(),target == null, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature di servizio se...
+ ******************************************************************************/
+rule employeeCanModifyServiceStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $target: Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
+ $c: PermissionCheck(
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+   (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+   toCheck(), granted == false, target == $target)
+then
+ $c.grant();
+end

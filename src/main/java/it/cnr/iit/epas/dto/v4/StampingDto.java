@@ -32,7 +32,7 @@ public class StampingDto {
 
   private Integer personDayId;
 
-  private StampTypes stampType;
+  private StampTypeDto stampType;
 
   private StampModificationTypeDto stampModificationType;
 
