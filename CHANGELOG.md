@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Aggiunte drools per il funzionamento delle API Rest delle timbrature
  - Sistemato problema su recupero Owner in StampingHistoryDao
  - Aggiunto from userRolesOffices in alcune drools con target Stamping
-
+ 
 ## [0.4.1] - 2024-07-05
 ### Added
 - API Rest per il controllo della secure.check

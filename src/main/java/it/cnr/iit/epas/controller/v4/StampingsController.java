@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as
+ *     published by the Free Software Foundation, either version 3 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package it.cnr.iit.epas.controller.v4;
 
 import java.time.LocalDate;
@@ -46,7 +62,6 @@ import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.StampingDao;
 import it.cnr.iit.epas.dao.UserDao;
-import it.cnr.iit.epas.dao.history.HistoricalDao;
 import it.cnr.iit.epas.dao.history.HistoryValue;
 import it.cnr.iit.epas.dao.history.StampingHistoryDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperPerson;
@@ -57,7 +72,6 @@ import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.dto.v4.StampingEditFormDto;
 import it.cnr.iit.epas.dto.v4.StampingFormDto;
 import it.cnr.iit.epas.dto.v4.ZoneDto;
-import it.cnr.iit.epas.dto.v4.mapper.DtoToEntityMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
 import it.cnr.iit.epas.dto.v4.mapper.StampingFormDtoMapper;
 import it.cnr.iit.epas.manager.PersonDayManager;
@@ -94,14 +108,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(ApiRoutes.BASE_PATH + "/stampings")
 public class StampingsController {
 
-  private final UserDao userDao;
   private final PersonDao personDao;
   private final StampingDao stampingDao;
   private final StampingHistoryDao stampingsHistoryDao;
 
-  private final HistoricalDao historicalDao;
   private final EntityToDtoConverter entityToDtoConverter;
-  private final DtoToEntityMapper dtoToEntityMapper;
   private final StampingManager stampingManager;
   private final PersonDayManager personDayManager;
   private final SecurityRules rules;
@@ -200,7 +211,7 @@ public class StampingsController {
 
     IWrapperPerson wrperson = wrapperFactory.create(user.getPerson());
     if (user.getPerson() != null && user.getPerson().equals(person)) {
-      if (userDao.getAllowedStampTypes(user).contains(StampTypes.LAVORO_FUORI_SEDE)) {
+      if (UserDao.getAllowedStampTypes(user).contains(StampTypes.LAVORO_FUORI_SEDE)) {
         insertOffsite = true;
         insertNormal = false;
       }
@@ -371,7 +382,6 @@ public class StampingsController {
     Map<Integer, String> resultMap = manageStamping(stampingCreateDto, true);
     Map<String, String> response = new HashMap<>();
     Integer statusCode = resultMap.keySet().iterator().next();
-    String result = resultMap.get(statusCode);
 
     if (statusCode == 404) {
       return ResponseEntity.notFound().build();
@@ -480,7 +490,6 @@ public class StampingsController {
     final User currentUser = securityUtils.getCurrentUser().get();
 
     Person person = currentStamping.getPersonDay().getPerson();
-    LocalDateTime date = currentStamping.getDate();
 
     if (!currentUser.isSystemUser() && !currentUser.hasRoles(Role.PERSONNEL_ADMIN)
         && currentUser.getPerson().getId().equals(person.getId())) {
@@ -556,11 +565,6 @@ public class StampingsController {
     if (stamping.getWay() == null) {
       log.debug("StampingsController::stampingDao.isPersistent(stamping) = {}",
           stampingDao.isPersistent(stamping));
-      List<HistoryValue<Stamping>> historyStamping = Lists.newArrayList();
-      if (stampingDao.isPersistent(stamping)) {
-        historyStamping = stampingsHistoryDao.stampings(stamping.getId());
-      }
-      //render("@edit", stamping, person, date, time, historyStamping);
       resultMap.put(400, null);
       return resultMap;
     }
@@ -573,17 +577,8 @@ public class StampingsController {
       if (!violations.isEmpty()) {
         List<StampTypes> offsiteList = Lists.newArrayList();
         offsiteList.add(StampTypes.LAVORO_FUORI_SEDE);
-        boolean disableInsert = false;
-        User user = securityUtils.getCurrentUser().get();
-        if (user.getPerson() != null) {
-          if (person.getOffice().checkConf(EpasParam.WORKING_OFF_SITE, "true")
-              && person.checkConf(EpasParam.OFF_SITE_STAMPING, "true")) {
-            disableInsert = true;
-          }
-        }
         resultMap.put(400, null);
         return resultMap;
-        //render("@editOffSite", stamping, person, date, time, disableInsert, offsite);
       }
     }
 
@@ -613,12 +608,8 @@ public class StampingsController {
       stamping.setStampingZone(zone);
     }
 
-    log.debug("StampingsController::newInsert = {}", newInsert);
-    log.debug("StampingsController::newInsert = {}", newInsert);
-
     String result = stampingManager
         .persistStamping(stamping, person, currentUser, newInsert, false);
-    log.debug("StampingsController::result = {}", result);
 
     if (!Strings.isNullOrEmpty(result)) {
       // Stamping already present (409)

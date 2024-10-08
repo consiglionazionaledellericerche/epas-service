@@ -16,28 +16,27 @@
  */
 package it.cnr.iit.epas.dao.history;
 
-import com.google.common.collect.FluentIterable;
-
-import it.cnr.iit.epas.models.Stamping;
-
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.hibernate.envers.AuditReader;
+
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.FluentIterable;
+
+import it.cnr.iit.epas.models.Stamping;
+import lombok.val;
 
 /**
  * Dao sullo storico delle timbrature.
  *
  * @author Marco Andreini
  */
-@Slf4j
 @Component
 public class StampingHistoryDao {
 
