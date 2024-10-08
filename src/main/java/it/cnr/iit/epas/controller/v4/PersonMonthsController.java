@@ -96,10 +96,10 @@ public class PersonMonthsController {
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
-              + " i dati delle ferie e dei permessi",
+              + " i dati del riepilogo delle ore.",
           content = @Content),
       @ApiResponse(responseCode = "404",
-          description = "Ferie e permessi non trovati con l'id fornito",
+          description = "Riepilogo ore non trovato con l'anno fornito",
           content = @Content)
   })
   @GetMapping("/hourRecap")
@@ -108,14 +108,12 @@ public class PersonMonthsController {
     log.debug("REST method {} invoked with parameters year={}",
         "/rest/v4/personmonths/hourRecap", year);
 
-    ////////////////
-
     Optional<User> user = securityUtils.getCurrentUser();
 
     if (!user.isPresent() || user.get().getPerson() == null) {
       //flash.error("Accesso negato.");
       //renderTemplate("Application/indexAdmin.html");
-      //return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
     if (year > new LocalDate().getYear()) {
@@ -125,9 +123,7 @@ public class PersonMonthsController {
     }
 
     Person person = user.get().getPerson();
-
     Optional<Contract> contract = wrapperFactory.create(person).getCurrentContract();
-
 
     List<PersonMonthsDto> pmListDto = Lists.newArrayList();
     Preconditions.checkState(contract.isPresent());

@@ -27,7 +27,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * Mapper da AbsenceGroups al suo DTO per la visualizzazione via REST.
+ * Mapper da Competences al suo DTO per la visualizzazione via REST.
  */
 @Mapper(componentModel = "spring")
 public interface CompetencesMapper {
