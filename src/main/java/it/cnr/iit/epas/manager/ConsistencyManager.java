@@ -101,7 +101,7 @@ public class ConsistencyManager {
       boolean onlyRecap) throws InterruptedException, ExecutionException {
 
     Set<Office> offices = user.isPresent() ? secureManager.officesWriteAllowed(user.get())
-        : Sets.newHashSet(officeDao.getAllOffices());
+        : Sets.newHashSet(officeDao.allEnabledOffices());
 
     // (0) Costruisco la lista di persone su cui voglio operare
     List<Person> personList = Lists.newArrayList();

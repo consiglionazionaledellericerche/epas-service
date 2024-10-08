@@ -30,6 +30,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonReperibilityDayMapper {
 
+  @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
 

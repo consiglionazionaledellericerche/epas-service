@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,13 +14,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.controller.v4;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +55,6 @@ import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.dao.CategoryTabDao;
 import it.cnr.iit.epas.dao.GroupAbsenceTypeDao;
-import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSaveDto;
@@ -60,36 +80,15 @@ import it.cnr.iit.epas.manager.services.absences.AbsenceService.InsertReport;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
-import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Metodi REST per la gestione dei gruppi di assenza.
@@ -122,7 +121,6 @@ public class AbsencesGroupsController {
   private final AbsenceManager absenceManager;
   private final PersonFinder personFinder;
   private final SecurityRules rules;
-  private final SecureUtils securityUtils;
 
   /**
    * Elenco delle assenze in un mese.
@@ -561,7 +559,6 @@ public class AbsencesGroupsController {
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam("from") String from) {
     log.debug("AbsencesGroupsController::findCode id = {} from = {} ", id, from);
-    LocalDate fromDate = LocalDate.parse(from);
 
     Person person =
         personFinder.getPerson(id, fiscalCode)

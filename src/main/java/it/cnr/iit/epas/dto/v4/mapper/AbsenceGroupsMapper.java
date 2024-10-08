@@ -71,8 +71,11 @@ public interface AbsenceGroupsMapper {
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
+
+  @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
+
   @Mapping(target = "justifiedTypeSelected", source = "justifiedTypeSelected.name")
   @Mapping(target = "hasGroupChoice", expression = "java(absenceForm.hasGroupChoice())")
   @Mapping(target = "hasAbsenceTypeChoice", expression = "java(absenceForm.hasAbsenceTypeChoice())")

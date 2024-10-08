@@ -51,6 +51,7 @@ public interface AbsenceFormMapper {
   @Mapping(target = "selectableMinutes", expression = "java(absenceForm.selectableMinutes())")
   AbsenceFormDto convert(AbsenceForm absenceForm);
 
+  @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
 

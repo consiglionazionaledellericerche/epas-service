@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,11 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
-import it.cnr.iit.epas.dto.v4.StampModificationTypeDto;
 import it.cnr.iit.epas.dto.v4.StampTypeDto;
 import it.cnr.iit.epas.dto.v4.StampingDto;
 import it.cnr.iit.epas.dto.v4.ZoneDto;
@@ -26,8 +27,6 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.Zone;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * Mapper da Stamping al suo DTO per la visualizzazione via REST.
@@ -38,6 +37,7 @@ public interface StampingFormDtoMapper {
   @Mapping(target = "personDayId", source = "personDay.id")
   StampingDto convert(Stamping stamping);
 
+  @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "qualification.id")
   PersonShowDto convert(Person person);
 
@@ -45,4 +45,5 @@ public interface StampingFormDtoMapper {
 
   @Mapping(target = "name", expression = "java(stampType.name())")
   StampTypeDto convert(StampTypes stampType);
+
 }
