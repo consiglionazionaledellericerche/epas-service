@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [] - 2024-10-01
 ### Added
-- API Rest per la gestione dei PersonMonths (Riepilogo Ore, Formazione)
+- API Rest per la gestione dei PersonMonths hourRecap (Riepilogo Ore)
+- API Rest per la gestione dei PersonMonths trainingHours (Ore Formazione)
 
 ## [0.4.1] - 2024-07-05
 ### Added
