@@ -675,7 +675,7 @@ public class TemplateUtility {
     }
 
     if (user.get().isSystemUser()) {
-      return officeDao.getAllOffices();
+      return officeDao.allEnabledOffices();
     }
 
     for (UsersRolesOffices uro : user.get().getUsersRolesOffices()) {

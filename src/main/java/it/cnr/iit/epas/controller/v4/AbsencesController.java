@@ -169,11 +169,11 @@ public class AbsencesController {
   @GetMapping(ApiRoutes.SHOW)
   public ResponseEntity<AbsenceShowDto> show(@NotNull @PathVariable("id") Long id) {
     log.debug("AbsenceController::show id = {}", id);
-    val absence = absenceDao.byId(id)
+    Absence absence = absenceDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
 
     rules.checkifPermitted(absence.getPersonDay().getPerson());
-
+    
     Set<GroupAbsenceType> involvedGroups = absence.absenceType.involvedGroupAbsenceType(true);
     List<Object> objectAll = Lists.newArrayList();
 

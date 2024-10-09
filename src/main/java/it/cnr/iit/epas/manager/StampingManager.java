@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Strings;
@@ -217,6 +216,8 @@ public class StampingManager {
         stampingDao.getStamping(stamping.getDate(), person, stamping.getWay());
     //Se la timbratura allo stesso orario e con lo stesso verso non è già presente o è una modifica
     //alla timbratura esistente allora creo/modifico la timbratura.
+    log.info("alreadyPresentStamping.isPresent() = {}, alreadyPresentStamping.get().getId().equals(stamping.getId()) = {}",
+        alreadyPresentStamping.isPresent(), alreadyPresentStamping.get().getId().equals(stamping.getId()));
     if (!alreadyPresentStamping.isPresent() 
         || alreadyPresentStamping.get().getId().equals(stamping.getId())) {
 

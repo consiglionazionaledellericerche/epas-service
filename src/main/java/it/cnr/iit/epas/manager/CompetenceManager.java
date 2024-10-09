@@ -986,7 +986,7 @@ public class CompetenceManager {
       CompetenceCode code, YearMonth yearMonth) {
 
     Set<Office> offices = office.isPresent() ? Sets.newHashSet(office.get())
-        : Sets.newHashSet(officeDao.getAllOffices());
+        : Sets.newHashSet(officeDao.allEnabledOffices());
 
     List<Person> personList = Lists.newArrayList();
 

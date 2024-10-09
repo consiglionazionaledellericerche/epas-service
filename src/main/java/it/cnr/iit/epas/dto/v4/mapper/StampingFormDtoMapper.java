@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,30 +14,36 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
-import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
-import it.cnr.iit.epas.models.Office;
-import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.StampTypeDto;
+import it.cnr.iit.epas.dto.v4.StampingDto;
+import it.cnr.iit.epas.dto.v4.ZoneDto;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Stamping;
+import it.cnr.iit.epas.models.Zone;
+import it.cnr.iit.epas.models.enumerate.StampTypes;
+
 /**
- * Mapper da Person al suo DTO per la visualizzazione via REST.
+ * Mapper da Stamping al suo DTO per la visualizzazione via REST.
  */
 @Mapper(componentModel = "spring")
-public interface PersonShowMapper {
+public interface StampingFormDtoMapper {
+
+  @Mapping(target = "personDayId", source = "personDay.id")
+  StampingDto convert(Stamping stamping);
 
   @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "qualification.id")
   PersonShowDto convert(Person person);
 
-  OfficeShowTerseDto convert(Office office);
+  ZoneDto convert(Zone zone);
 
-  UserShowTerseDto convert(User user);
+  @Mapping(target = "name", expression = "java(stampType.name())")
+  StampTypeDto convert(StampTypes stampType);
 
 }

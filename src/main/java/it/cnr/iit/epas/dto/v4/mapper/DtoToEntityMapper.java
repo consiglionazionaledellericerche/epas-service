@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,27 +14,31 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
+
+import javax.inject.Inject;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
+import org.springframework.stereotype.Component;
 
 import it.cnr.iit.epas.dao.InstituteDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
+import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
-import javax.inject.Inject;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
-import org.springframework.stereotype.Component;
+import it.cnr.iit.epas.models.Stamping;
 
 /**
  * Effettua il mapping da DTO ad Entity.
@@ -50,6 +54,8 @@ public abstract class DtoToEntityMapper {
   protected InstituteDao instituteDao;
   @Inject
   protected PersonDao personDao;
+  @Inject
+  protected PersonDayDao personDayDao;
   @Inject
   protected OfficeDao officeDao;
   @Inject
@@ -89,4 +95,10 @@ public abstract class DtoToEntityMapper {
           + "new javax.persistence."
           + "EntityNotFoundException(\"Person not found\")))")
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
+
+  @Mapping(target = "id", source = "stampingId")
+  @Mapping(target = "personDay",
+      expression = "java(personDayDao.getPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate()).orElse(null))")
+  public abstract void create(@MappingTarget Stamping stamping, StampingCreateDto stampingDto);
+
 }

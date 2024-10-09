@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,37 +14,19 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * Oggetto che modella la singola timbratura nelle viste personStamping e stampings.
- *
- * @author Alessandro Martelli
+ * Tipo di timbratura.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class StampingTemplateDto extends BaseModelDto {
+public class StampTypeDto {
 
-  private String colour;
-  private int pairId;
-  private String pairPosition;            //left center right none
-  private LocalDateTime date;
-
-  private String way;
-  private String hour = "";
-
-  List<StampModificationTypeDto> stampModificationTypes = Lists.newArrayList();
-
-  public boolean valid;
-  public boolean showPopover;
-
-  public StampingDto stamping;
+  private String name;
+  private String code;
+  private String description;
+  private String identifier;
 
 }

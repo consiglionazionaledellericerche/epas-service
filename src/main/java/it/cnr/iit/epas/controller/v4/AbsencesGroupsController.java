@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,13 +14,34 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.controller.v4;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,26 +87,8 @@ import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.security.SecurityRules;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Metodi REST per la gestione dei gruppi di assenza.
@@ -104,6 +107,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/absencesGroups")
 public class AbsencesGroupsController {
+
 
   private final AbsenceGroupsRecapFactory absenceGroupsRecapFactory;
   private final AbsenceGroupsMapper absenceGroupsMapper;
@@ -183,8 +187,10 @@ public class AbsencesGroupsController {
     absGroupDto.setPeriodChain(newPeriodChain);
 
     List<GroupAbsenceTypeDto> groupAbsenceTypeDto = Lists.newArrayList();
-    for (GroupAbsenceType gr : psrDto.categorySwitcher.groups()) {
-      groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
+    if (psrDto.categorySwitcher != null) {
+      for (GroupAbsenceType gr : psrDto.categorySwitcher.groups()) {
+        groupAbsenceTypeDto.add(absenceGroupsMapper.convertGroupAbsenceType(gr));
+      }
     }
     absGroupDto.setGroups(groupAbsenceTypeDto);
 
@@ -553,7 +559,6 @@ public class AbsencesGroupsController {
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
       @RequestParam("from") String from) {
     log.debug("AbsencesGroupsController::findCode id = {} from = {} ", id, from);
-    LocalDate fromDate = LocalDate.parse(from);
 
     Person person =
         personFinder.getPerson(id, fiscalCode)

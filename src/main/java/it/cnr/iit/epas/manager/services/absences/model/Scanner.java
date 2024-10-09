@@ -211,7 +211,7 @@ public class Scanner {
         
       }
       for (AbsenceTrouble toAdd : toAddTroubles) {
-        if (absenceDao.getAbsenceById(toAdd.getAbsence().getId()) == null) {
+        if (absenceDao.byId(toAdd.getAbsence().getId()).isEmpty()) {
           // FIXME l'assenza di questo trouble è stata cancellata (probabilmente dall'algoritmo
           // che sistema i completamenti) pertanto non risulta più da persistere. 
           // Gestire questo caso all'origine.

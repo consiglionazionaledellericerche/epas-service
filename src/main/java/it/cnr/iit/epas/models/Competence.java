@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.models;
 
 import it.cnr.iit.epas.models.base.BaseEntity;
@@ -88,16 +87,16 @@ public class Competence extends BaseEntity {
    * @param competenceCode il codice di competenza
    * @param year l'anno
    * @param month il mese
-   * @param value la quantità
+   * @param valueApproved la quantità
    * @param reason la motivazione
    */
   public Competence(
-      Person person, CompetenceCode competenceCode, int year, int month, int value, String reason) {
+      Person person, CompetenceCode competenceCode, int year, int month, int valueApproved, String reason) {
     this.person = person;
     this.competenceCode = competenceCode;
     this.year = year;
     this.month = month;
-    valueApproved = value;
+    this.valueApproved = valueApproved;
     this.reason = reason;
   }
 
