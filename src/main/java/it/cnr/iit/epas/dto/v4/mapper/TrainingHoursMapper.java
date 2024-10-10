@@ -17,26 +17,21 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.CompetenceDto;
-import it.cnr.iit.epas.dto.v4.ContractShowDto;
-import it.cnr.iit.epas.dto.v4.PersonMonthCompetenceRecapDto;
-import it.cnr.iit.epas.manager.recaps.competences.PersonMonthCompetenceRecap;
-import it.cnr.iit.epas.models.Competence;
-import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.dto.v4.PersonMonthRecapDto;
+import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonMonthRecap;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * Mapper da Competences al suo DTO per la visualizzazione via REST.
+ * Mapper da TrainingHours al suo DTO per la visualizzazione via REST.
  */
 @Mapper(componentModel = "spring")
-public interface CompetencesMapper {
+public interface TrainingHoursMapper {
 
-  @Mapping(target = "personId", source = "person.id")
-  ContractShowDto convert(Contract contract);
+  @Mapping(target = "qualification", source = "person.qualification.id")
+  PersonShowDto convert(Person person);
 
-  PersonMonthCompetenceRecapDto convertPersonMonthCompetenceRecap(PersonMonthCompetenceRecap recap);
-
-  @Mapping(target = "personId", source = "person.id")
-  CompetenceDto convertCompetence(Competence competence);
+  PersonMonthRecapDto convert(PersonMonthRecap personMonthRecap);
 }
