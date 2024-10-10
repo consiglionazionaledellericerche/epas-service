@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,12 +33,14 @@ import it.cnr.iit.epas.dao.PersonMonthRecapDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
+import it.cnr.iit.epas.dto.v4.PersonMonthRecapCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonMonthRecapDto;
 import it.cnr.iit.epas.dto.v4.PersonMonthsDto;
 import it.cnr.iit.epas.dto.v4.TrainingHoursDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonMonthRecapMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonMonthsMapper;
 import it.cnr.iit.epas.dto.v4.mapper.TrainingHoursMapper;
+import it.cnr.iit.epas.manager.PersonMonthsManager;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMonthRecap;
 import it.cnr.iit.epas.models.Person;
@@ -45,18 +48,29 @@ import it.cnr.iit.epas.models.PersonMonthRecap;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,12 +95,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonMonthsController {
 
   private final IWrapperFactory wrapperFactory;
+  private final PersonMonthsManager personMonthsManager;
   private final PersonMonthsMapper personMonthsMapper;
   private final PersonMonthRecapMapper personMonthRecapMapper;
   private final TrainingHoursMapper trainingHoursMapper;
   private final PersonMonthRecapDao personMonthRecapDao;
   private final SecurityRules rules;
   private final SecureUtils securityUtils;
+  private final Validator validator;
 
   @Operation(
       summary = "Visualizzazione del riepilogo orario del dipendente.",
@@ -188,7 +204,264 @@ public class PersonMonthsController {
     dto.setPerson(trainingHoursMapper.convert(person));
     dto.setToday(today);
     dto.setPersonMonthRecaps(dtoList);
-
     return ResponseEntity.ok().body(dto);
   }
+
+  @DeleteMapping("/trainingHours" + ApiRoutes.DELETE)
+  ResponseEntity<Map<String, String>> trainingHours(
+      @NotNull @PathVariable("id") Long idTraining) {
+    log.debug("REST method {} invoked with parameters idTraining={}",
+        "/rest/v4/personmonths/trainingHours", idTraining);
+
+    Map<String, String> response = new HashMap<>();
+    PersonMonthRecap pm = personMonthRecapDao.getPersonMonthRecapById(idTraining);
+    if (pm == null) {
+      throw new EntityNotFoundException("Ore di formazioni inesistenti. Operazione annullata.");
+    }
+
+    personMonthRecapDao.delete(pm);
+
+    log.info("Eliminata trainingHour {}", pm);
+    response.put("message", "Ore di formazione eliminate con successo.");
+    return ResponseEntity.ok().body(response);
+  }
+
+  /**
+   * Inserimento delle ore di formazioni
+   */
+  @Operation(
+      summary = "Inserimento delle ore di formazione.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui inserire le ore di formazione e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alla formazione")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Inserite le ore di formazione"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a eseguire "
+              + "l'aggiornamento delle ore di formazione'",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "Ore formative già inserite per quell'intervallo di tempo e quella persona.",
+          content = @Content),
+      @ApiResponse(responseCode = "412",
+          description = "Errore di validazione dati inseriti.",
+          content = @Content)
+  })
+  @PostMapping("/trainingHours")
+  public ResponseEntity<Map<String, String>> insert(
+      @NotNull @RequestBody @Valid PersonMonthRecapCreateDto personMonthRecapCreateDto) {
+    log.debug("PersonMonthsController::insert PersonMonthRecapCreateDto = {}",
+        personMonthRecapCreateDto);
+
+    Map<Integer, String> resultMap = saveTrainingHours(personMonthRecapCreateDto);
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Ore di formazione aggiornate con successo.");
+
+    Integer statusCode = resultMap.keySet().iterator().next();
+    String message = resultMap.get(statusCode);
+
+    if (statusCode == 404) {
+      return ResponseEntity.notFound().build();
+    }
+    if (statusCode == 400) {
+      return ResponseEntity.badRequest().build();
+    }
+    if (statusCode == 403) {
+      response.put("message", message);
+      return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(response);
+    }
+    if (statusCode == 409) {
+      response.put("message", "Ore formative già presenti.");
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    response.put("message", "Ore formative salvate con successo.");
+    return ResponseEntity.ok().body(response);
+  }
+
+
+  /**
+   * Aggiornamento delle ore di formazioni
+   */
+  @Operation(
+      summary = "Aggiornamento delle ore di formazione.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore Assenze', 'Amministratore Personale' o "
+          + "'Amministratore Personale sola lettura' della sede a "
+          + "appartiene la persona di cui aggiornare le ore di formazione e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alla formazione")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Aggiornate le ore di formazione"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a eseguire "
+              + "l'aggiornamento delle ore di formazione'",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Persona non trovata con l'id e/o il codice fiscale fornito",
+          content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "Ore formative già inserite per quell'intervallo di tempo e quella persona.",
+          content = @Content),
+      @ApiResponse(responseCode = "412",
+          description = "Errore di validazione dati inseriti.",
+          content = @Content)
+  })
+  @PostMapping("/trainingHours" + ApiRoutes.UPDATE)
+  public ResponseEntity<Map<String, String>> update(
+      @NotNull @RequestBody @Valid PersonMonthRecapCreateDto personMonthRecapCreateDto) {
+    log.debug("PersonMonthsController::update PersonMonthRecapCreateDto = {}",
+        personMonthRecapCreateDto);
+
+    Map<Integer, String> resultMap = saveTrainingHours(personMonthRecapCreateDto);
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Ore di formazione aggiornate con successo.");
+
+    Integer statusCode = resultMap.keySet().iterator().next();
+    String message = resultMap.get(statusCode);
+
+    if (statusCode == 404) {
+      return ResponseEntity.notFound().build();
+    }
+    if (statusCode == 400) {
+      return ResponseEntity.badRequest().build();
+    }
+    if (statusCode == 403) {
+      response.put("message", message);
+      return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(response);
+    }
+    if (statusCode == 409) {
+      response.put("message", "Ore formative già presenti.");
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    response.put("message", "Ore formative salvate con successo.");
+    return ResponseEntity.ok().body(response);
+  }
+
+  private Map<Integer, String> saveTrainingHours(
+      PersonMonthRecapCreateDto personMonthRecapCreateDto) {
+    Map<Integer, String> resultMap = new HashMap<>();
+
+    Long personMonthSituationId = personMonthRecapCreateDto.getId();
+
+    Integer year = personMonthRecapCreateDto.getYear();
+    Integer month = personMonthRecapCreateDto.getMonth();
+    Integer begin = personMonthRecapCreateDto.getBegin();
+    Integer end = personMonthRecapCreateDto.getEnd();
+    Integer trainingHours = personMonthRecapCreateDto.getTrainingHours();;
+
+    User user = securityUtils.getCurrentUser().get();
+    Person person = user.getPerson();
+
+    if (personMonthSituationId != null) {
+      PersonMonthRecap pm = personMonthRecapDao.getPersonMonthRecapById(personMonthSituationId);
+      Verify.verify(pm.isEditable());
+      Errors errors = checkErrorsInUpdate(validator, trainingHours, pm);
+      if (errors.hasErrors()) {
+        LocalDate dateFrom = LocalDate.of(year, month, begin);
+        LocalDate dateTo = LocalDate.of(year, month, end);
+        resultMap.put(403, "Ci sono errori di validazione");
+      }
+      pm.setTrainingHours(trainingHours);
+      personMonthRecapDao.save(pm);
+      resultMap.put(200, "Ore di formazione aggiornate.");
+      return resultMap;
+    }
+
+    PersonMonthRecap pm = new PersonMonthRecap(person, year, month);
+    LocalDate beginDate = LocalDate.of(year, month, begin);
+    pm.setHoursApproved(false);
+    pm.setTrainingHours(trainingHours);
+    pm.setFromDate(beginDate);
+    pm.setToDate(LocalDate.of(year, month, end));
+
+    Errors errors = checkErrors(validator, pm, begin, end, year, month, trainingHours);
+    if (errors.hasErrors()) {
+      resultMap.put(403, "Ci sono errori di validazione.");
+    }
+    if (!personMonthsManager.checkIfAlreadySent(person, year, month).getResult()) {
+      resultMap.put(403, "Le ore di formazione per il mese selezionato sono già state approvate.");
+    }
+    personMonthsManager.saveTrainingHours(person, year, month, begin, end, false, trainingHours);
+    resultMap.put(200, String.format("Salvate %d ore di formazione", trainingHours));
+    return resultMap;
+  }
+
+
+  /**
+   * metodo privato che aggiunge al validation eventuali errori riscontrati nel passaggio
+   * dei parametri.
+   *
+   * @param begin il giorno di inizio della formazione
+   * @param end il giorno di fine della formazione
+   * @param year l'anno di formazione
+   * @param month il mese di formazione
+   * @param value la quantità di ore di formazione
+   */
+  private static Errors checkErrors(Validator validator, PersonMonthRecap pm, Integer begin, Integer end, Integer year,
+      Integer month, Integer value) {
+
+    Errors errors = new BeanPropertyBindingResult(pm,"personReperibilityDay");
+
+    if (!errors.hasErrors()) {
+      if (begin == null) {
+        errors.rejectValue("begin", "Richiesto", "Il valore è obbligatorio");
+      }
+      if (end == null) {
+        errors.rejectValue("end", "Richiesto", "Il valore è obbligatorio");
+      }
+      int endMonth = LocalDate.of(year, month, 1).lengthOfMonth();
+      if (begin > endMonth) {
+        errors.rejectValue("begin", "Mese",
+            "deve appartenere al mese selezionato");
+      }
+      if (end > endMonth) {
+        errors.rejectValue("end", "Mese",
+            "deve appartenere al mese selezionato");
+      }
+      if (begin > end) {
+        errors.rejectValue("begin", "Intervallo",
+            "inizio intervallo  non valido");
+      }
+
+      if (value > 24 * (end - begin + 1) && end - begin >= 0) {
+        errors.rejectValue("value", "valore.troppo.alto",
+            "valore troppo alto");
+      }
+    }
+      return errors;
+  }
+
+  /**
+   * aggiunge al validation l'eventuale errore relativo al quantitativo orario che può superare
+   * le ore possibili prendibili per quel giorno.
+   *
+   * @param value il quantitativo di ore di formazione
+   * @param pm il personMonthRecap da modificare con le ore passate come parametro
+   */
+  private static Errors checkErrorsInUpdate(Validator validator, Integer value, PersonMonthRecap pm) {
+
+    Errors errors = new BeanPropertyBindingResult(pm,"personReperibilityDay");
+    validator.validate(pm, errors);
+
+    if (!errors.hasErrors()) {
+      if (value > 24 * (pm.getToDate().getDayOfMonth() - pm.getFromDate().getDayOfMonth() + 1)) {
+        errors.rejectValue("value", "valore.troppo.alto", "Il valore inserito è troppo alto");
+      }
+    }
+
+    return errors;
+  }
+
 }

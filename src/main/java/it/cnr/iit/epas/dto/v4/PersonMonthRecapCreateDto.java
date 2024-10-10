@@ -19,24 +19,21 @@ package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.Data;
 
 /**
- * DTO per i PersonMonthRecap per TrainingHours.
+ * DTO per creare/aggiornare le ore di formazione PersonMonthRecap per TrainingHours.
  *
  * @author Andrea Generosi
  *
  */
 @Data
-public class PersonMonthRecapDto {
-  @Schema(description = "Persona")
-  private PersonShowDto person;
-  private Long id;
+public class PersonMonthRecapCreateDto {
+  private Long id=null;
   private Integer year;
   private Integer month;
-  private LocalDate fromDate;
-  private LocalDate toDate;
+  private Integer begin;
+  private Integer end;
   private Integer trainingHours;
-  private boolean hoursApproved = false;
-  private boolean editable = false;
 }

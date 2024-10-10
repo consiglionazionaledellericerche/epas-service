@@ -88,7 +88,10 @@ when
  $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/personmonths/hourRecap") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('GET')),
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours/update") && httpMethod.equalsIgnoreCase('POST')),
     toCheck(), target == null)
 then
  $c.grant();

@@ -35,5 +35,7 @@ public interface PersonMonthRecapMapper {
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
 
+  @Mapping(target = "id", expression = "java(personMonthRecap.getId())")
+  @Mapping(target = "editable", expression = "java(personMonthRecap.isEditable())")
   PersonMonthRecapDto convert(PersonMonthRecap personMonthRecap);
 }
