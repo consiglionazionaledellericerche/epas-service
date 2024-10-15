@@ -16,6 +16,8 @@
  */
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import it.cnr.iit.epas.dto.v4.AbsenceTypeJustifiedBehaviourDto;
+import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -34,7 +36,19 @@ import it.cnr.iit.epas.models.absences.JustifiedType;
 public interface CriticalErrorMapper {
 
   GroupAbsenceTypeDto convert(GroupAbsenceType groupAbsenceType);
+
+  @Mapping(target = "printData", expression = "java(justifiedBehaviours.printData())")
+  @Mapping(target = "justifiedBehaviour", source = "justifiedBehaviour.name")
+  AbsenceTypeJustifiedBehaviourDto convert(AbsenceTypeJustifiedBehaviour justifiedBehaviours);
+
+  @Mapping(target = "hasGroups",
+      expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
+  @Mapping(target = "defaultTakableGroup",
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+  @Mapping(target = "justifiedBehaviours",
+      source = "absenceType.justifiedBehaviours")
   AbsenceTypeDto convert(AbsenceType absenceType);
+
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
   AbsenceShowDto convert(Absence absence);

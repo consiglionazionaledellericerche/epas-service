@@ -37,7 +37,7 @@ public class DayInPeriodDto {
   private List<AbsenceShowTerseDto> existentComplations = Lists.newArrayList();
   private ComplationAbsenceDto complationAbsence; //quando è unico
 
-  private List<TemplateRowDto> rowRecap = Lists.newArrayList();
+  private List<TemplateRowDto> allTemplateRows = Lists.newArrayList();
 
   //Il rimpiazzamento
   private List<AbsenceShowTerseDto> existentReplacings = Lists.newArrayList();

@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,9 +30,16 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
+import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
+import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
+import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
+import it.cnr.iit.epas.dto.v4.TemplateRowDto;
+import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupsMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
@@ -39,11 +47,15 @@ import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecapFactory;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummaryFactory;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
+import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary.TypeSummary;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecurityRules;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedMap;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +83,7 @@ class VacationController {
   private final ContractDao contractDao;
   private final PersonVacationRecapFactory personvacationFactory;
   private final PersonVacationMapper personVacationMapper;
+  private final AbsenceGroupsMapper absenceGroupsMapper;
   private final PersonVacationSummaryFactory personVacationSummaryFactory;
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
   private final SecurityRules rules;
@@ -109,8 +122,39 @@ class VacationController {
 
     rules.checkifPermitted(person);
 
-    PersonVacationRecap psrDto = personvacationFactory.create(person, year);
-    return ResponseEntity.ok().body(personVacationMapper.convert(psrDto));
+    PersonVacationRecap personVacation = personvacationFactory.create(person, year);
+
+    PersonVacationDto vacationDto = personVacationMapper.convert(personVacation);
+
+    SortedMap<LocalDate, DayInPeriodDto> newDaysInPeriod = Maps.newTreeMap();
+    List<AbsencePeriodTerseDto> newPeriodDto = Lists.newArrayList();
+
+    for (AbsencePeriod sp : personVacation.periodChain.periods) {
+      AbsencePeriodTerseDto aspDto = absenceGroupsMapper.convertAbsencePeriodTerse(sp);
+      for (DayInPeriod dp : sp.daysInPeriod.values()) {
+        DayInPeriodDto dpDto = absenceGroupsMapper.convertDayInPeriod(dp);
+        List<TemplateRowDto> tp = Lists.newArrayList();
+        for (TemplateRow tr : dp.allTemplateRows()) {
+
+          log.debug("REST method {} invoked tr.absence.date={}",
+              "/rest/v4/vacations" + ApiRoutes.LIST, tr.absence.date);
+          log.debug("REST method {} invoked tr.absence.date={}",
+              "/rest/v4/vacations" + ApiRoutes.LIST, tr.absence.getAbsenceDate());
+
+          tp.add(absenceGroupsMapper.convertTemplateRow(tr));
+        }
+        dpDto.setAllTemplateRows(tp);
+        newDaysInPeriod.put(dp.getDate(), dpDto);
+      }
+      aspDto.setDaysInPeriod(newDaysInPeriod);
+      newPeriodDto.add(aspDto);
+    }
+
+    PeriodChainDto newPeriodChain = vacationDto.getPeriodChain();
+    newPeriodChain.setPeriods(newPeriodDto);
+    vacationDto.setPeriodChain(newPeriodChain);
+
+    return ResponseEntity.ok().body(vacationDto);
   }
 
   @Operation(
