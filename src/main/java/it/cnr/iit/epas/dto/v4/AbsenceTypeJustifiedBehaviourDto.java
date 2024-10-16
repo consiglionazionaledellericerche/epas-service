@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,33 +14,27 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Optional;
+import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
+import java.util.Set;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * DTO per gli AbsenceType.
+ * DTO per AbsenceTypeJustifiedBehaviour.
  *
  * @author Cristian Lucchesi
+ *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceTypeDto extends BaseModelDto {
+public class AbsenceTypeJustifiedBehaviourDto {
 
-  private String code;
-  private String description;
-  private boolean hasGroups;
-  private Integer numberOfDays = 0;
+  //public AbsenceTypeDto absenceType;
+  public String justifiedBehaviour;
+  public Integer data;
+  public String printData;
 
-  private String defaultTakableGroup;
-
-  private Optional<String> categoryTabName = null;
-
-  private List<AbsenceTypeJustifiedBehaviourDto> justifiedBehaviours = Lists.newArrayList();
+  public Set<AbsenceShowDto> conflictingAbsences;
 
 }

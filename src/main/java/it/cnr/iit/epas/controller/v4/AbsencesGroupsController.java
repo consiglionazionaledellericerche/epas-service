@@ -174,7 +174,7 @@ public class AbsencesGroupsController {
         for (TemplateRow tr : dp.allTemplateRows()) {
           tp.add(absenceGroupsMapper.convertTemplateRow(tr));
         }
-        dpDto.setRowRecap(tp);
+        dpDto.setAllTemplateRows(tp);
         newDaysInPeriod.put(dp.getDate(), dpDto);
       }
       aspDto.setDaysInPeriod(newDaysInPeriod);

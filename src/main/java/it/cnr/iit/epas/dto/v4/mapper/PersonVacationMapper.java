@@ -25,6 +25,7 @@ import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
+import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
@@ -40,6 +41,7 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -57,7 +59,7 @@ public interface PersonVacationMapper {
   @Mapping(target = "justifiedType", source = "justifiedType.name")
   @Mapping(target = "externalId", source = "externalIdentifier")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
-  @Mapping(target = "date", source = "personDay.date")
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 
@@ -65,22 +67,6 @@ public interface PersonVacationMapper {
   PersonVacationDto convert(PersonVacationRecap personVacation);
 
   VacationCodeDto convert(VacationCode vacationCode);
-
-  @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
-  @Mapping(target = "periodTakableAmount", expression = "java(period.getPeriodTakableAmount())")
-  @Mapping(target = "remainingAmount", expression = "java(period.getRemainingAmount())")
-  AbsencePeriodDto convert(AbsencePeriod period);
-
-  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
-  TakenAbsenceDto convert(TakenAbsence takenAbsences);
-
-  @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
-  ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
-
-  //@Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
-  DayInPeriodDto convert(DayInPeriod daysInPeriod);
-
-  PeriodChainDto convert(PeriodChain periodChain);
 
   @Mapping(target = "personId", source = "person.id")
   VacationSituationDto convert(VacationSituation vacationSituation);

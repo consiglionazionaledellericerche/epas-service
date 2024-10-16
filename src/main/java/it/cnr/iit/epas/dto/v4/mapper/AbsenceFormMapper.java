@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
+import it.cnr.iit.epas.dto.v4.AbsenceTypeJustifiedBehaviourDto;
 import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.ContractualClauseDto;
 import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
@@ -25,6 +26,7 @@ import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
 import it.cnr.iit.epas.models.absences.GroupAbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
@@ -55,10 +57,16 @@ public interface AbsenceFormMapper {
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
 
+  @Mapping(target = "printData", expression = "java(justifiedBehaviours.printData())")
+  @Mapping(target = "justifiedBehaviour", source = "justifiedBehaviour.name")
+  AbsenceTypeJustifiedBehaviourDto convert(AbsenceTypeJustifiedBehaviour justifiedBehaviours);
+
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
       expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+  @Mapping(target = "justifiedBehaviours",
+      source = "absenceType.justifiedBehaviours")
   AbsenceTypeDto convert(AbsenceType absenceType);
 
   @Mapping(target = ".", source = "name")
