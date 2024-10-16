@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.AbsenceErrorDto;
 import it.cnr.iit.epas.dto.v4.AbsenceFormSimulationResponseDto;
@@ -26,6 +25,7 @@ import it.cnr.iit.epas.manager.services.absences.errors.AbsenceError;
 import it.cnr.iit.epas.manager.services.absences.errors.CriticalError;
 import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod.TemplateRow;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,6 +44,9 @@ public interface AbsenceFormSimulationResponseMapper {
   @Mapping(target = "absence", source = "rowRecap.absence")
   @Mapping(target = "onlyNotOnHoliday", expression = "java(rowRecap.onlyNotOnHoliday())")
   TemplateRowDto convert(TemplateRow rowRecap);
+
+  @Mapping(target = ".", source = "justifiedBehaviour.name")
+  String convert(JustifiedBehaviour justifiedBehaviour);
 
   @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
   @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")

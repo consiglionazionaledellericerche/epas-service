@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
@@ -38,6 +37,7 @@ import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.Vacatio
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import java.util.List;
@@ -60,6 +60,9 @@ public interface PersonVacationSummaryMapper {
 
   @Mapping(target = "absence.justifiedType", source = "absence.justifiedType.name")
   ComplationAbsenceDto convert(ComplationAbsence complationAbsence);
+
+  @Mapping(target = ".", source = "justifiedBehaviour.name")
+  String convert(JustifiedBehaviour justifiedBehaviour);
 
   DayInPeriodDto convert(DayInPeriod daysInPeriod);
 
