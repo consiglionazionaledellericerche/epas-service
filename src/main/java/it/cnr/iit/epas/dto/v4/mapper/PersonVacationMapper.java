@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,34 +14,22 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
 import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
-import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
-import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
-import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
-import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
-import it.cnr.iit.epas.dto.v4.TemplateRowDto;
 import it.cnr.iit.epas.dto.v4.VacationCodeDto;
 import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.VacationSituationDto;
 import it.cnr.iit.epas.dto.v4.VacationSummaryTerseDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationRecap;
-import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
-import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
-import it.cnr.iit.epas.manager.services.absences.model.PeriodChain;
-import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.absences.Absence;
-import it.cnr.iit.epas.models.absences.JustifiedType;
+import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -63,6 +51,9 @@ public interface PersonVacationMapper {
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   AbsenceShowTerseDto convert(Absence absence);
 
+  @Mapping(target = ".", source = "justifiedBehaviour.name")
+  String convert(JustifiedBehaviour justifiedBehaviour);
+  
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonVacationDto convert(PersonVacationRecap personVacation);
 

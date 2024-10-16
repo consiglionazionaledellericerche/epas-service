@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dao.wrapper.IWrapperContractMonthRecap;
@@ -41,6 +40,7 @@ import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
 import java.util.List;
 import java.util.Optional;
 import org.mapstruct.Mapper;
@@ -99,6 +99,9 @@ public interface PersonStampingRecapMapper {
   @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
   AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);
 
+  @Mapping(target = ".", source = "justifiedBehaviour.name")
+  String convert(JustifiedBehaviour justifiedBehaviour);
+  
   @Mapping(target = "personDayId", source = "personDay.id")
   StampingDto convert(Stamping stamping);
 
