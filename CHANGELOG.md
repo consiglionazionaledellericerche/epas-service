@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - API Rest per inserimento, modifica e cancellazione timbrature via interfaccia web
  - API Rest per inserimento, modifica e cancellazione  timbrature Fuori Sede via interfaccia web
  - Creazione dei DTO e mapper per la gestione delle request/response per le timbrature
- - Aggiunte drools per il funzionamento delle API Rest delle timbrature
  - Sistemato problema su recupero Owner in StampingHistoryDao
  - Aggiunto from userRolesOffices in alcune drools con target Stamping
+ - API Rest per la gestione dei PersonMonths hourRecap (Riepilogo Ore)
+ - API Rest per la gestione dei PersonMonths trainingHours (Ore Formazione)
+ - Aggiunte drools per il funzionamento delle API Rest delle timbrature e delle ore di formazione
  
 ## [0.4.1] - 2024-07-05
 ### Added
