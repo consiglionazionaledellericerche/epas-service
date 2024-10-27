@@ -64,8 +64,6 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = ".", source = "justifiedBehaviour.name")
   String convert(JustifiedBehaviour justifiedBehaviour);
 
-  DayInPeriodDto convert(DayInPeriod daysInPeriod);
-
   PersonVacationSummaryDto convert(PersonVacationSummary vacationSummary);
 
   @Mapping(target = "takableWithLimit", expression = "java(period.isTakableWithLimit())")
@@ -85,7 +83,7 @@ public interface PersonVacationSummaryMapper {
   @Mapping(target = "accruedDay", expression = "java(vacationSummary.accruedDay())")
   @Mapping(target = "accruedDayTotal", expression = "java(vacationSummary.accruedDayTotal())")
   @Mapping(target = "postPartumSize", expression = "java(vacationSummary.postPartum().size())")
-  @Mapping(target = "postPartumisEmpty", 
+  @Mapping(target = "postPartumisEmpty",
       expression = "java(vacationSummary.postPartum().isEmpty())")
   @Mapping(target = "title", expression = "java(vacationSummary.title())")
   VacationSummaryDto convert(VacationSummary vacationSummary);
@@ -108,7 +106,8 @@ public interface PersonVacationSummaryMapper {
 
   List<AbsenceShowDto> convert(List<Absence> absences);
 
-  AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
+ AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
+ List<AbsenceSubPeriodDto> convertToListSubPeriod(List<AbsencePeriod> period);
 
   /**
    * Trasformazione da Enum a DTO per i VacationCode.

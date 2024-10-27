@@ -29,7 +29,7 @@ import lombok.Data;
 @Data
 public class VacationSummaryDto {
 
-  private TypeSummary type;
+  private String type;
   private ContractBaseDto contract;
   private int year;
   private LocalDate date;  //data situazione. Tipicamenete oggi. Determina maturate e scadute.
