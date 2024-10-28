@@ -28,9 +28,11 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AbsenceSubPeriodDto extends AbsencePeriodTerseDto {
+public class AbsenceSubPeriodDto {
 
+  private LocalDate from;
+  private LocalDate to;
+  private VacationCodeDto vacationCode;
   private long subAmount;
   private boolean subFixedPostPartum;
   private long subAmountBeforeFixedPostPartum;

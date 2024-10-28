@@ -39,6 +39,7 @@ import it.cnr.iit.epas.dto.v4.PeriodChainDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.TemplateRowDto;
+import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.mapper.AbsenceGroupsMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonVacationSummaryMapper;
@@ -68,11 +69,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirements(
-    value = { 
-        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+    value = {
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION),
         @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)})
 @Tag(
-    name = "Vacations controller", 
+    name = "Vacations controller",
     description = "Visualizzazione delle informazioni sulle ferie dei dipendenti.")
 @Slf4j
 @RequiredArgsConstructor
@@ -88,7 +89,7 @@ class VacationController {
   private final PersonVacationSummaryMapper personVacationSummaryMapper;
   private final SecurityRules rules;
   private final PersonFinder personFinder;
-  
+
   @Operation(
       summary = "Visualizzazione delle informazioni delle ferie e permessi.",
       description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
@@ -186,12 +187,12 @@ class VacationController {
 
     val contract = contractDao.byId(contractId)
         .orElseThrow(() -> new EntityNotFoundException(
-          "Contract not found with id = " + contractId)); 
+            "Contract not found with id = " + contractId));
     Person person = contract.getPerson();
 
     rules.checkifPermitted(person);
 
-    PersonVacationSummary pvSummary = 
+    PersonVacationSummary pvSummary =
         personVacationSummaryFactory.create(person, year, contract.getId(), typeSummary);
 
     List<AbsenceSubPeriodDto> absenceSubPeriods = Lists.newArrayList();
@@ -214,8 +215,8 @@ class VacationController {
       absenceSubPeriods.add(aspDto);
     }
 
-    val personVacationDto = personVacationSummaryMapper.convert(pvSummary);
-    val summaryDto = personVacationDto.getVacationSummary();
+    PersonVacationSummaryDto personVacationDto = personVacationSummaryMapper.convert(pvSummary);
+    VacationSummaryDto summaryDto = personVacationDto.getVacationSummary();
     summaryDto.setAbsenceSubPeriods(absenceSubPeriods);
 
     return ResponseEntity.ok().body(personVacationDto);
