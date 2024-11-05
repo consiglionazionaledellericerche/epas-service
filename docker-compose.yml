@@ -21,6 +21,5 @@ services:
       - spring.security.oauth2.resourceserver.jwt.issuer-uri=${OAUTH2_JWT_ISSUER_URI}
       - epas.security.oauth2.jwtfield=${OAUTH2_JWT_FIELD}
       - epas.security.oauth2.userAuthIdentifier=${OAUTH2_USER_AUTH_IDENTIFIER}
-	  #- epas.cors.allowedOrigins[0]=http://localhost:3000
-	  #- epas.cors.allowedOrigins[1]=https://*.cnr.it
-
+      #- epas.cors.allowedOrigins[0]=http://localhost:300
+      #- epas.cors.allowedOrigins[1]=https://*.cnr.it
