@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - API Rest per la gestione dei PersonMonths hourRecap (Riepilogo Ore)
  - API Rest per la gestione dei PersonMonths trainingHours (Ore Formazione)
  - Aggiunte drools per il funzionamento delle API Rest delle timbrature e delle ore di formazione
- 
+ - Aggiunta gestione e configurabilità CORS
+
 ## [0.4.1] - 2024-07-05
 ### Added
 - API Rest per il controllo della secure.check

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,11 +14,10 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.security.DroolsHandler;
-import javax.inject.Inject;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextListener;
@@ -31,12 +30,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Daniele Murgia
  * @author Cristian Lucchesi
  */
+@RequiredArgsConstructor
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-  @Inject
-  private DroolsHandler droolsHandler;
+  private final DroolsHandler droolsHandler;
 
+  
   /**
    * Automatizza la chiamata delle drools all'ingresso dei metodi dei controller. Non ha effetto sui
    * metodi annotati con la @Preauthorize.
