@@ -63,7 +63,7 @@ public abstract class AbsenceGroupMapper {
   @Mapping(target = "externalId", source = "absence.externalIdentifier")
   @Mapping(target = "justifiedTime",
       expression = "java(absence.justifiedTime())")
-  //@Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
   @Mapping(target = "replacingAbsencesGroup", source = "replacingAbsencesGroup")
   @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
   public abstract AbsenceShowDto convert(Absence absence, List<Object> replacingAbsencesGroup);

@@ -34,6 +34,7 @@ import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
+import it.cnr.iit.epas.security.SecurityService;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -101,15 +103,15 @@ public class PersonStampingRecap {
    * Costruisce l'oggetto contenente tutte le informazioni da renderizzare nella pagina tabellone
    * timbrature.
    *
-   * @param personDayManager personDayManager
-   * @param personDayDao personDayDao
-   * @param personManager personManager
+   * @param personDayManager        personDayManager
+   * @param personDayDao            personDayDao
+   * @param personManager           personManager
    * @param stampingDayRecapFactory stampingDayRecapFactory
-   * @param wrapperFactory wrapperFactory
-   * @param year year
-   * @param month month
-   * @param person person
-   * @param considerExitingNow se considerare nel calcolo l'uscita in questo momento
+   * @param wrapperFactory          wrapperFactory
+   * @param year                    year
+   * @param month                   month
+   * @param person                  person
+   * @param considerExitingNow      se considerare nel calcolo l'uscita in questo momento
    */
   public PersonStampingRecap(PersonDayManager personDayManager, PersonDayDao personDayDao,
       PersonManager personManager, PersonStampingDayRecapFactory stampingDayRecapFactory,
@@ -118,11 +120,13 @@ public class PersonStampingRecap {
 
     // DATI DELLA PERSONA
     //FIXME: da correggere prima dell'utilizzo di spring boot
+    //al momento messo in next.js la chiamata al securecheck per controllare se modificabile o meno
     canEditStampings = true;
-    //if (Session.current() != null && Security.getUser() != null 
-    //  && Security.getUser().isPresent()) {
-    //  canEditStampings = Resecure.check("Stampings.edit", null);
-    //}
+    /*if (Session.current() != null && Security.getUser() != null
+      && Security.getUser().isPresent()) {
+      canEditStampings = Resecure.check("Stampings.edit", null);
+    }*/
+
     final long start = System.currentTimeMillis();
     log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {}",
         person.getFullname(), year, month);
@@ -137,10 +141,8 @@ public class PersonStampingRecap {
     LocalDate begin = LocalDate.of(year, month, 1);
     LocalDate end = DateUtility.endOfMonth(begin);
 
-
     List<PersonDay> personDays =
         personDayDao.getPersonDayInPeriod(person, begin, Optional.ofNullable(end));
-
 
     this.numberOfInOut =
         Math.max(MIN_IN_OUT_COLUMN, personDayManager.getMaximumCoupleOfStampings(personDays));
