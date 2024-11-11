@@ -17,11 +17,13 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import it.cnr.iit.epas.dto.v4.CompetenceCodeDto;
 import it.cnr.iit.epas.dto.v4.CompetenceDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.PersonMonthCompetenceRecapDto;
 import it.cnr.iit.epas.manager.recaps.competences.PersonMonthCompetenceRecap;
 import it.cnr.iit.epas.models.Competence;
+import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Contract;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -36,6 +38,8 @@ public interface CompetencesMapper {
   ContractShowDto convert(Contract contract);
 
   PersonMonthCompetenceRecapDto convertPersonMonthCompetenceRecap(PersonMonthCompetenceRecap recap);
+
+  CompetenceCodeDto convert(CompetenceCode competenceCode);
 
   @Mapping(target = "personId", source = "person.id")
   CompetenceDto convertCompetence(Competence competence);

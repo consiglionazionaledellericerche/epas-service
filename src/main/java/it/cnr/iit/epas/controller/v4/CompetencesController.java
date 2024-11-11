@@ -70,7 +70,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(ApiRoutes.BASE_PATH + "/competences")
 class CompetencesController {
-
   private final WrapperFactory wrapperFactory;
   private final SecurityRules rules;
   private final PersonFinder personFinder;
@@ -149,8 +148,8 @@ class CompetencesController {
 
     for (java.util.Map.Entry<CompetenceCode, String> entry : map.entrySet()) {
       CompetenceCodeDto cptCodeDto = new CompetenceCodeDto();
-      cptCodeDto.setCode(entry.getKey().code);
-      cptCodeDto.setDescription(entry.getKey().description);
+      cptCodeDto.setCode(entry.getKey().getCode());
+      cptCodeDto.setDescription(entry.getKey().getDescription());
       cptCodeDto.setValue(entry.getValue());
       competenceCodeListDto.add(cptCodeDto);
     }
