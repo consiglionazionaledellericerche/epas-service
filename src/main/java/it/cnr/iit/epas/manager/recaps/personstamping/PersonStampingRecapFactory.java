@@ -22,6 +22,8 @@ import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.manager.PersonDayManager;
 import it.cnr.iit.epas.manager.PersonManager;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.security.SecureUtils;
+import it.cnr.iit.epas.security.SecurityRules;
 import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +39,9 @@ public class PersonStampingRecapFactory {
   private final PersonStampingDayRecapFactory stampingDayRecapFactory;
   private final IWrapperFactory wrapperFactory;
 
+  private final SecurityRules rules;
+  private final SecureUtils secureUtils;
+
   /**
    * Costruttore per l'injection.
    */
@@ -45,13 +50,17 @@ public class PersonStampingRecapFactory {
                              PersonDayDao personDayDao,
                              PersonManager personManager,
                              IWrapperFactory wrapperFactory,
-                             PersonStampingDayRecapFactory stampingDayRecapFactory) {
+                             PersonStampingDayRecapFactory stampingDayRecapFactory,
+                              SecurityRules rules,
+                              SecureUtils secureUtils) {
 
     this.personDayManager = personDayManager;
     this.personDayDao = personDayDao;
     this.personManager = personManager;
     this.stampingDayRecapFactory = stampingDayRecapFactory;
     this.wrapperFactory = wrapperFactory;
+    this.rules = rules;
+    this.secureUtils = secureUtils;
   }
 
   /**
@@ -62,7 +71,7 @@ public class PersonStampingRecapFactory {
 
     return new PersonStampingRecap(personDayManager, personDayDao,
         personManager, stampingDayRecapFactory,
-        wrapperFactory, year, month, person, considerExitingNow);
+        wrapperFactory, rules, secureUtils, year, month, person, considerExitingNow);
   }
 
 }
