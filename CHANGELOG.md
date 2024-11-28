@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.0] - UNRELEASED
+## [0.5.0] - 2024-10-28
 ### Added
  - Aggiunti historyDao mancanti
  - API Rest per inserimento, modifica e cancellazione timbrature via interfaccia web
@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - API Rest per la gestione dei PersonMonths trainingHours (Ore Formazione)
  - Aggiunte drools per il funzionamento delle API Rest delle timbrature e delle ore di formazione
  - Aggiunta gestione e configurabilità CORS
+
+### Changed
+  - Corretto controllo canEditStamping nella restituzione del PersonMonthRecap
+  - Corretta drools per /rest/v4/absencesGroups/simulateInsert
+
+## [0.4.2] - 2024-09-11
+###Changed
+  - Corretta gestione merge e persist nell'aggiornamento contratti.
 
 ## [0.4.1] - 2024-07-05
 ### Added

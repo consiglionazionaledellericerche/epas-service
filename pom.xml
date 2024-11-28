@@ -15,7 +15,7 @@
 	<description>Personnel Attendance System</description>
 	<properties>
 		<java.version>17</java.version>
-		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<guava.version>33.3.1-jre</guava.version>
 		<drools.version>7.74.0.Final</drools.version>
 		<lombok.version>1.18.34</lombok.version>

@@ -37,7 +37,6 @@ import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
-import it.cnr.iit.epas.security.SecurityService;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -46,9 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -122,12 +120,6 @@ public class PersonStampingRecap {
       int month, Person person, boolean considerExitingNow) {
 
     // DATI DELLA PERSONA
-    //FIXME: da correggere prima dell'utilizzo di spring boot
-    /*if (Session.current() != null && Security.getUser() != null
-      && Security.getUser().isPresent()) {
-      canEditStampings = Resecure.check("Stampings.edit", null);
-    }*/
-
     Optional<User> user = secureUtils.getCurrentUser();
     if (user.isPresent()) {
       canEditStampings = rules.check("/rest/v4/stampings/edit");

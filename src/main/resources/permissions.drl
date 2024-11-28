@@ -25,7 +25,6 @@ global java.util.List defaultGroup;
 global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
 global it.cnr.iit.epas.dao.history.StampingHistoryDao stampingHistoryDao;
 
-global org.slf4j.Logger logger;
 /*******************************************************************************
  * Azioni ruolo DEVELOPER e ADMIN
  ******************************************************************************/
