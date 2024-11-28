@@ -21,9 +21,9 @@ import it.cnr.iit.epas.dao.UserDao;
 global it.cnr.iit.epas.models.User currentUser;
 global java.util.Set userRoles;
 global java.util.List userRolesOffices;
+global java.util.List defaultGroup;
 global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
 global it.cnr.iit.epas.dao.history.StampingHistoryDao stampingHistoryDao;
-
 
 /*******************************************************************************
  * Azioni ruolo DEVELOPER e ADMIN
@@ -101,7 +101,7 @@ end
 
 rule isAvailable_general
 when 
-  $uro: UsersRolesOffices()
+  $uro: UsersRolesOffices() from userRolesOffices
   Role(name == Role.EMPLOYEE) from $uro.role
   $p: Person (reperibility != null) from currentUser.getPerson()
   $o: Office() from $p.office
@@ -202,7 +202,7 @@ rule HasRightOnHimselfExceptFor
 when
   $p: Person(user == currentUser)
   $c: PermissionCheck(
-      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
       toCheck(), target == $p, granted == false)
 then
  $c.grant();
@@ -214,10 +214,10 @@ end
  */
 rule HasRightOnPerson
 when
-  $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN_MINI)
+  $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN_MINI) from userRolesOffices
   $o: Office() from $uro.office
   $c: PermissionCheck(
-      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
       toCheck(), $o.persons contains target, granted == false)
 then
  $c.grant();
@@ -230,7 +230,7 @@ when
  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('GET')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
@@ -250,7 +250,7 @@ when
  $o: Office(usersRolesOffices contains $uro)
  $c: PermissionCheck(
     (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('POST')) ||
-    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
     (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
@@ -268,7 +268,7 @@ end
  */
 rule AdminCanEditStamping
 when
- $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN)
+ $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN) from userRolesOffices
  $target: Stamping(markedByTelework == false)
  Office(persons.contains($target.getOwner())) from $uro.office
  $c: PermissionCheck(
@@ -292,7 +292,7 @@ when
   Role(name == Role.PERSONNEL_ADMIN) from $uro.role
   $target: YearMonth()
   $c: PermissionCheck(
-      !permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod != 'POST',
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
       toCheck(), target == $target, granted == false)
 then
  $c.grant();
@@ -310,7 +310,7 @@ when
  Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
  PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
  $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == null, granted == false)
 then
@@ -336,7 +336,7 @@ when
  				|| epasParam == EpasParam.SMARTWORKING
  				|| epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true) from $p.personConfigurations
  $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == null, granted == false)
 then
@@ -354,7 +354,7 @@ when
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
  $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == null, granted == false)
 then
@@ -373,7 +373,7 @@ when
  Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
  PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
  $c: PermissionCheck(
- permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+ permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
  toCheck(), target == $p, granted == false)
 then
  $c.grant();
@@ -400,7 +400,7 @@ when
  				|| (epasParam == EpasParam.AGILE_WORK && fieldValue == true)
  				|| (epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true)) from $p.personConfigurations
  $c: PermissionCheck(
- permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+ permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
      toCheck(), target == $p, granted == false)
 then
  $c.grant();
@@ -418,7 +418,7 @@ when
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
  $c: PermissionCheck(
-      permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'),
+      permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
       toCheck(), target == $p, granted == false)
 then
  $c.grant();
@@ -436,9 +436,9 @@ when
  Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
  PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
  /** Sostituire il metodo che valuta che tipo di assenza può inserire il dipendente utilizzando la nuova modellazione **/
- $target: Absence(DefaultGroup.employeeOffSeatCodes() contains this.getCode(), this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeOffSeatCodes().contains(this.getCode()), this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
  eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
@@ -457,12 +457,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeDisabledPersonCodes() contains this.getCode(), this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeDisabledPersonCodes().contains(this.getCode()), this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -478,12 +478,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.TELEWORK, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeTeleworkCodes() contains this.getCode(), this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeTeleworkCodes().contains(this.getCode()), this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -498,12 +498,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeDisabledRelativeCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeDisabledRelativeCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -518,12 +518,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.RIGHT_TO_STUDY, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeRightToStudyCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeRightToStudyCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -538,12 +538,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.COVID_19, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeCovid19Codes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeCovid19Codes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -558,12 +558,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.AGILE_WORK, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeAgileCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeAgileCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -578,12 +578,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.ADDITIONAL_HOURS, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeAdditionalHoursCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeAdditionalHoursCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -598,12 +598,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_AND_CHILD_ILLNESS, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.parentalLeaveAndChildIllnessCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.parentalLeaveAndChildIllnessCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -618,12 +618,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.SECOND_DISABLED_RELATIVE_PERMISSION, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeSecondDisabledRelativeCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeSecondDisabledRelativeCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -638,12 +638,12 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeAgileWorkOrDisabledPeopleAssistanceCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeAgileWorkOrDisabledPeopleAssistanceCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -658,32 +658,32 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.SMARTWORKING, fieldValue == true) from $p.personConfigurations
- $target: Absence(DefaultGroup.employeeSmartworking() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.employeeSmartworking().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
 end
 
 /***********************************************************************************************
- * L'impiegato può modificare/salvare una determinata assenza per congedo parentale per il padre 
+ * L'impiegato può modificare/salvare una determinata assenza per congedo parentale per il padre
  ***********************************************************************************************/
 rule EmployeeCanEditParentalLeaveForFatherAbsence
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS, fieldValue == true) from $p.personConfigurations
  $target: Absence(DefaultGroup.parentalLeaveForFathers().contains(this.getCode()), this.getOwner() == $p)
  $c: PermissionCheck(
-    (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
     (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
     toCheck(), target == $target, granted == false )
  //$c: PermissionCheck(action in ("AbsenceGroups.insert", "AbsenceGroups.edit", "AbsenceGroups.save", "AbsenceGroups.delete"), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -699,12 +699,12 @@ when
  $p: Person() from currentUser.getPerson()
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM, fieldValue == true) from $o.configurations
- $target: Absence(DefaultGroup.medicalExamsCodes() contains this.getCode() , this.getOwner() == $p)
+ $target: Absence(DefaultGroup.medicalExamsCodes().contains(this.getCode()) , this.getOwner() == $p)
   $c: PermissionCheck(
-      (permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
       (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
       toCheck(), target == $target, granted == false )
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
  $c.grant();
@@ -721,7 +721,7 @@ when
  Role(name == Role.EMPLOYEE) from $uro.role
  $p: Person() from currentUser.getPerson()
  $target: YearMonth()
- $c: PermissionCheck(permission.startsWith("/rest/v4/absencesGroups/insertSimulation") && httpMethod.equalsIgnoreCase('POST'), target == $target, granted == false)
+ $c: PermissionCheck(permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'), target == $target, granted == false)
  /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
  eval($target.isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target))
 then
@@ -1020,7 +1020,7 @@ end
  ***********************************************************************************/
 rule employeeCanInsertStampingsAndAbsencesOffsite
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person() from currentUser.getPerson()
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
@@ -1050,7 +1050,7 @@ when
          (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
          toCheck(), granted == false, target == $target)
  Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations
- eval (!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
   /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
   eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
 then
@@ -1101,7 +1101,7 @@ end
 
 rule employeeAutocertificationStampings
 when
- $uro: UsersRolesOffices(role.name == Role.EMPLOYEE)
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
  $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
  $o: Office() from $p.office
  Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations

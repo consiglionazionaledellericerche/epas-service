@@ -29,12 +29,14 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
 import it.cnr.iit.epas.models.Stamping;
+import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
-import it.cnr.iit.epas.security.SecurityService;
+import it.cnr.iit.epas.security.SecureUtils;
+import it.cnr.iit.epas.security.SecurityRules;
 import it.cnr.iit.epas.utils.DateUtility;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -43,9 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -115,21 +116,18 @@ public class PersonStampingRecap {
    */
   public PersonStampingRecap(PersonDayManager personDayManager, PersonDayDao personDayDao,
       PersonManager personManager, PersonStampingDayRecapFactory stampingDayRecapFactory,
-      IWrapperFactory wrapperFactory, int year, int month, Person person,
-      boolean considerExitingNow) {
+      IWrapperFactory wrapperFactory, SecurityRules rules, SecureUtils secureUtils, int year,
+      int month, Person person, boolean considerExitingNow) {
 
     // DATI DELLA PERSONA
-    //FIXME: da correggere prima dell'utilizzo di spring boot
-    //al momento messo in next.js la chiamata al securecheck per controllare se modificabile o meno
-    canEditStampings = true;
-    /*if (Session.current() != null && Security.getUser() != null
-      && Security.getUser().isPresent()) {
-      canEditStampings = Resecure.check("Stampings.edit", null);
-    }*/
+    Optional<User> user = secureUtils.getCurrentUser();
+    if (user.isPresent()) {
+      canEditStampings = rules.check("/rest/v4/stampings/edit");
+    }
 
     final long start = System.currentTimeMillis();
-    log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {}",
-        person.getFullname(), year, month);
+    log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {} canEditStampings={}",
+        person.getFullname(), year, month, canEditStampings);
     this.person = person;
     this.month = month;
     this.year = year;

@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
     info = @Info(title = "ePAS Service", 
-    version = "4.0.0-beta.3", 
+    version = "0.5.0", 
     description = "ePAS Service contains all the business logic and related REST endpoints"
         + " to manage all the personnel information."),
     servers = {@Server(url = "/", description = "ePAS Service URL")}
