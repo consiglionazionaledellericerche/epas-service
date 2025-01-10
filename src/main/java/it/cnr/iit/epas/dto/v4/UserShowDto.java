@@ -17,9 +17,11 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
+import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,5 +41,8 @@ public class UserShowDto extends UserShowTerseDto {
   private Set<AccountRole> roles = Sets.newHashSet();
   @Schema(description = "abilitato si/no")
   private boolean disabled;
+
+  @Schema(description = "Ruoli di ufficio attribuiti all'utente")
+  private List<String> rolesOffice = Lists.newArrayList();
 
 }
