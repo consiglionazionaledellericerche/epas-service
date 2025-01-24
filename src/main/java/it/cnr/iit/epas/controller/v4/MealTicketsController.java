@@ -139,9 +139,6 @@ public class MealTicketsController {
 
     LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
 
-//    render(person, recap, recapPrevious, deliveryDate, expireDate, today,
-//        ticketNumberFrom, ticketNumberTo);
-
     MealTicketRecapShowDto dto = new MealTicketRecapShowDto();
     MealTicketRecapDto recapDto = mealTicketRecapMapper.convert(recap);
 

@@ -28,7 +28,7 @@ import java.util.List;
 import lombok.Data;
 
 /**
- * DTO per la situazione ferie di una persona.
+ * DTO per il buono pasto
  *
  * @author Cristian Lucchesi
  *
