@@ -35,9 +35,13 @@ public class UserShowDto extends UserShowTerseDto {
   private Long ownerId;
   @Schema(description = "id della persona collegata all'utente")
   private Long personId;
+  @Schema(description = "nome completo della persona collegata all'utente")
+  private String fullname;
   @Schema(description = "Ruoli di sistema attribuiti all'utente")
   private Set<AccountRole> roles = Sets.newHashSet();
   @Schema(description = "abilitato si/no")
   private boolean disabled;
+
+
 
 }

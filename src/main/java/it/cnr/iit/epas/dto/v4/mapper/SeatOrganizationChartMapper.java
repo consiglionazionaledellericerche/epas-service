@@ -55,6 +55,7 @@ public interface SeatOrganizationChartMapper {
 
     List<String> convertRoles(List<Role> roles);
 
+    @Mapping(target = "fullname", expression = "java(user.getPerson().getFullname())")
     UserShowDto userToUserShowDto(User user);
 
     List<UserShowDto> convert(List<User> users);
