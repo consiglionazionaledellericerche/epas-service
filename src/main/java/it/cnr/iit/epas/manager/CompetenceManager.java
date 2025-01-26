@@ -938,7 +938,10 @@ public class CompetenceManager {
     ShiftTimeTable stt = new ShiftTimeTable();
     stt.office = office;
     stt.calculationType = calculationType;
-    stt.paidMinutes = timeTable.paidMinutes;
+//    stt.paidMinutes = timeTable.paidMinutes;
+    stt.paidMinutesMorning = timeTable.paidMinutesMorning;
+    stt.paidMinutesAfternoon = timeTable.paidMinutesAfternoon;
+
     stt.totalWorkMinutes = timeTable.totalWorkMinutes;
     stt.startMorning = normalize(timeTable.startMorning);
     stt.endMorning = normalize(timeTable.endMorning);

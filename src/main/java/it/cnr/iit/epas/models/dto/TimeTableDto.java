@@ -64,6 +64,8 @@ public class TimeTableDto {
   public Integer totalWorkMinutes;
 
   @NotNull
-  public Integer paidMinutes;
+  public Integer paidMinutesMorning;
 
+  @NotNull
+  public Integer paidMinutesAfternoon;
 }
