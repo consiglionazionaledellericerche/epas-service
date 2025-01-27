@@ -27,7 +27,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
+import it.cnr.iit.epas.dto.v4.mapper.PersonShowExtendedMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
+import it.cnr.iit.epas.helpers.TemplateUtility;
+import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.security.SecureUtils;
@@ -63,17 +67,22 @@ public class PersonInfo {
 
   private PersonRepository repo;
   private PersonShowMapper mapper;
+  private PersonShowExtendedMapper mapperExtend;
   private SecureUtils secureUtils;
+  private TemplateUtility templateUtility;
   
   /**
    * Costruttore di default per l'injection.
    */
   @Inject
   PersonInfo(PersonRepository repo, PersonShowMapper mapper,
-      SecureUtils securityUtils) {
+      SecureUtils securityUtils, PersonShowExtendedMapper mapperExtend,
+      TemplateUtility templateUtility) {
     this.repo = repo;
     this.mapper = mapper;
     this.secureUtils = securityUtils;
+    this.mapperExtend = mapperExtend;
+    this.templateUtility = templateUtility;
   }
 
   @Operation(
@@ -95,11 +104,41 @@ public class PersonInfo {
     if (!user.isPresent()) {
       return ResponseEntity.badRequest().build();
     }
-    long personId = user.get().getId();
+    long personId = user.get().getPerson().getId();
     val entity = repo.findById(personId)
         .orElseThrow(() -> 
         new EntityNotFoundException("Person not found for user with id = "  + user.get().getId()));
     return ResponseEntity.ok().body(mapper.convert(entity));
+  }
+
+  @Operation(
+      summary = "Mostra le informazioni della persona collegata all'utente autenticato.",
+      description = "Questo endpoint è utilizzabile da tutti gli utenti autenticati.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituite le informazioni relative alla persona autenticata."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Utente che ha effettuato la richiesta non ha associato nessuna persona.",
+          content = @Content)
+  })
+  @GetMapping("/extend")
+  ResponseEntity<PersonShowExtendedDto> extend() {
+    Optional<User> user = secureUtils.getCurrentUser();
+    log.debug("UserInfo::show user = {}", user.orElse(null));
+    if (!user.isPresent()) {
+      return ResponseEntity.badRequest().build();
+    }
+    Person person = user.get().getPerson();
+    boolean isAvailable = templateUtility.isAvailable(person);
+    long personId = person.getId();
+    val entity = repo.findById(personId)
+        .orElseThrow(() ->
+            new EntityNotFoundException("Person not found for user with id = "  + user.get().getId()));
+    PersonShowExtendedDto dto = mapperExtend.convert(entity);
+    dto.setAvailable(isAvailable);
+    return ResponseEntity.ok().body(dto);
   }
 
 }
