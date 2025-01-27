@@ -20,6 +20,7 @@ package it.cnr.iit.epas.dto.v4;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.PersonShift;
 import it.cnr.iit.epas.models.ShiftCategories;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,31 +29,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * DTO per mostrare i dati principali di una persona.
+ * DTO per mostrare i dati estesi di una persona.
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PersonShowDto extends PersonMutableDto {
+public class PersonShowExtendedDto extends PersonShowDto {
 
-  @Schema(description = "Id della persona")
-  private Long id;
-
-  @Schema(description = "Data inizio validità")
-  private LocalDate beginDate;
-  @Schema(description = "Data fine validità")
-  private LocalDate endDate;
-
-  @Schema(description = "Utente collegato alla persona")
-  private UserShowTerseDto user;
-  @Schema(description = "Ufficio collegato alla persona")
-  private OfficeShowTerseDto office;
-
-  @Schema(description = "Data ultimo aggiornamento")
-  private LocalDateTime updatedAt;
-
-  @Schema(description = "Data di nascita")
-  private LocalDate birthDate;
-
-  @Schema(description = "Residenza")
-  private String residence;
+  private boolean available;
+  private List<ShiftCategoryDto> shiftCategories = Lists.newArrayList();
+  private List<PersonReperibilityTypeDto> reperibilityTypes = Lists.newArrayList();
+  private List<ShiftCategoryDto> categories = Lists.newArrayList();
+  private List<PersonReperibilityTypeDto> reperibilities = Lists.newArrayList();
+  private List<PersonShiftDto> personShifts = Lists.newArrayList();
 }

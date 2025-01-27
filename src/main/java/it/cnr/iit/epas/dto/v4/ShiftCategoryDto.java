@@ -15,29 +15,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4.mapper;
+package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.dto.v4.UserShowDto;
-import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
-import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.models.enumerate.AccountRole;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ValueMapping;
+import java.time.YearMonth;
+import lombok.Data;
 
 /**
- * Mapper per User al corrispondente DTO per la visualizzazione via REST.
+ * DTO per ShiftCategory.
  */
-@Mapper(componentModel = "spring")
-public interface UserShowMapper {
+@Data
+public class ShiftCategoryDto {
 
-  //@ValueMapping(target = ".", source = "name")
-  //String convert(AccountRole account);
-
-  @Mapping(target = "personId", source = "person.id")
-  @Mapping(target = "ownerId", source = "owner.id")
-  UserShowDto convert(User user);
-  
-  UserShowTerseDto convertTerse(User user);
+  private String description;
 }

@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,8 +30,11 @@ import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dto.v4.UserShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.UserShowMapper;
 import it.cnr.iit.epas.models.User;
+import it.cnr.iit.epas.models.UsersRolesOffices;
+import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
@@ -96,8 +100,17 @@ public class UserInfo {
       return ResponseEntity.badRequest().build();
     }
     long userId = user.get().getId();
-    val entity = repo.findById(userId)
+    User entity = repo.findById(userId)
         .orElseThrow(() -> new EntityNotFoundException("User not found"));
-    return ResponseEntity.ok().body(mapper.convert(entity));
+
+    List<String> rolesOffice = Lists.newArrayList();
+    for (UsersRolesOffices role : entity.getUsersRolesOffices()) {
+      rolesOffice.add(role.role.toString());
+    }
+    UserShowDto dto = mapper.convert(entity);
+    dto.setRolesOffice(rolesOffice);
+    log.debug("UserInfo::show roles = {}", entity.getUsersRolesOffices());
+
+    return ResponseEntity.ok().body(dto);
   }
 }
