@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,8 @@ public class UserShowDto extends UserShowTerseDto {
   private Long ownerId;
   @Schema(description = "id della persona collegata all'utente")
   private Long personId;
+  @Schema(description = "nome completo della persona collegata all'utente")
+  private String fullname;
   @Schema(description = "Ruoli di sistema attribuiti all'utente")
   private Set<AccountRole> roles = Sets.newHashSet();
   @Schema(description = "abilitato si/no")
