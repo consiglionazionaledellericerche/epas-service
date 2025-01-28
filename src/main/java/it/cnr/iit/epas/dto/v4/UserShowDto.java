@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,9 +17,11 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.cnr.iit.epas.models.enumerate.AccountRole;
+import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,9 +37,14 @@ public class UserShowDto extends UserShowTerseDto {
   private Long ownerId;
   @Schema(description = "id della persona collegata all'utente")
   private Long personId;
+  @Schema(description = "nome completo della persona collegata all'utente")
+  private String fullname;
   @Schema(description = "Ruoli di sistema attribuiti all'utente")
   private Set<AccountRole> roles = Sets.newHashSet();
   @Schema(description = "abilitato si/no")
   private boolean disabled;
+
+  @Schema(description = "Ruoli di ufficio attribuiti all'utente")
+  private List<String> rolesOffice = Lists.newArrayList();
 
 }
