@@ -41,4 +41,5 @@ public class PersonShowExtendedDto extends PersonShowDto {
   private List<ShiftCategoryDto> categories = Lists.newArrayList();
   private List<PersonReperibilityTypeDto> reperibilities = Lists.newArrayList();
   private List<PersonShiftDto> personShifts = Lists.newArrayList();
+  private List<ContractBaseDto> contracts = Lists.newArrayList();
 }

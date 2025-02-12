@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
+import it.cnr.iit.epas.dto.v4.ContractBaseDto;
 import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeTerseDto;
@@ -25,6 +26,7 @@ import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
 import it.cnr.iit.epas.dto.v4.ShiftCategoryDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonReperibilityType;
@@ -44,9 +46,11 @@ public interface PersonShowExtendedMapper {
   List<PersonReperibilityTypeDto> convertPersonReperibility(List<PersonReperibilityType> reperibilities);
   List<PersonShiftDto> convertPersonShift(List<PersonShift> personShift);
 
+  List<ContractBaseDto> convertContracts(List<Contract> contracts);
+
   PersonReperibilityTypeTerseDto convert(PersonReperibilityType reperibility);
 
-
+  ContractBaseDto convert(Contract contract);
   @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "qualification.id")
   PersonShowExtendedDto convert(Person person);

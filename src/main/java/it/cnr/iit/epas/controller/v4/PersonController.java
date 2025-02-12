@@ -17,6 +17,9 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,17 +31,23 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.GeneralSettingDao;
+import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
 import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
+import it.cnr.iit.epas.dto.v4.mapper.PersonShowExtendedMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.manager.PersonManager;
+import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.List;
@@ -82,24 +91,79 @@ public class PersonController {
 
   private final PersonDao personDao;
   private final PersonShowMapper personMapper;
+  private final PersonShowExtendedMapper personShowExtendedMapper;
   private final ContractShowMapper contractMapper;
   private final PersonManager personManager;
   private final ContractDao contractDao;
+  private final OfficeDao officeDao;
+  private final GeneralSettingDao generalSettingDao;
   private final EntityToDtoConverter entityToDtoConverter;
   private final SecurityRules rules;
 
   @Inject
   PersonController(PersonDao personRepository, PersonShowMapper personMapper,
-      ContractShowMapper contractMapper, ContractDao contractDao,
-      EntityToDtoConverter entityToDtoConverter,
-      PersonManager personManager, SecurityRules rules) {
+      ContractShowMapper contractMapper, ContractDao contractDao, OfficeDao officeDao,
+      EntityToDtoConverter entityToDtoConverter,PersonShowExtendedMapper personShowExtendedMapper,
+      PersonManager personManager, SecurityRules rules, GeneralSettingDao generalSettingDao) {
     this.personDao = personRepository;
     this.personMapper = personMapper;
     this.contractMapper = contractMapper;
     this.entityToDtoConverter = entityToDtoConverter;
+    this.personShowExtendedMapper = personShowExtendedMapper;
     this.personManager = personManager;
     this.contractDao = contractDao;
+    this.officeDao = officeDao;
+    this.generalSettingDao = generalSettingDao;
     this.rules = rules;
+  }
+
+  @Operation(
+      summary = "Visualizzazione della lista delle persone.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti la lista delle persone."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+          content = @Content)
+  })
+  @GetMapping("/list")
+  ResponseEntity<List<PersonShowExtendedDto>> list(
+      @RequestParam("officeId") Long officeId,
+      @RequestParam("name") String name) {
+    log.debug("PersonController::list officeId = {}  name = {}", officeId,name);
+    Office office;
+    /*if (officeId == null) {
+      office = officeDao.getOfficeById(Long.parseLong(session.get("officeSelected")));
+    } else {
+     */
+      office = officeDao.getOfficeById(officeId);
+    //}
+    //notFoundIfNull(office);
+    if (office == null) {
+      throw new EntityNotFoundException("Office not found");
+    }
+
+    rules.checkifPermitted(office);
+
+    boolean warningInsertPerson = false;// da errore il metodo generalSettingDao.generalSetting().isWarningInsertPerson();
+
+    List<Person> simplePersonList = personDao
+        .listFetched(Optional.ofNullable(name), ImmutableSet.of(office), false, null, null, false)
+        .list();
+
+    /*List<IWrapperPerson> personList =
+        FluentIterable.from(simplePersonList).transform(wrapperFunctionFactory.person()).toList();*/
+    List<PersonShowExtendedDto> dto = Lists.newArrayList();
+    for (Person person : simplePersonList) {
+      dto.add(personShowExtendedMapper.convert(person));
+    }
+    return ResponseEntity.ok().body(dto);
   }
 
   @Operation(
