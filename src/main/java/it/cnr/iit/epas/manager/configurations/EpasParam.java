@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * I Parametri di ePAS.
  */
@@ -147,6 +148,15 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Person.class),
+  
+  THIRD_DISABLED_RELATIVE_PERMISSION("third_disabled_relative_permission",
+
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Person.class),
 
   OFF_SITE_ABSENCE_WITH_CONVENTION("off_site_absence_with_convention",
 
@@ -223,6 +233,14 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Person.class),  
+  
+  DISABLE_OVERTIME_LIMIT("disable_overtime_limit",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Person.class),
 
   
   //#######################################################################################
