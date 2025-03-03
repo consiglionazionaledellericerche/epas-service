@@ -28,9 +28,12 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.PersonChildrenDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenCreateDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenShowDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
@@ -87,12 +90,13 @@ public class PersonController {
   private final ContractDao contractDao;
   private final EntityToDtoConverter entityToDtoConverter;
   private final SecurityRules rules;
+  private final PersonChildrenDao personChildrenDao;
 
   @Inject
   PersonController(PersonDao personRepository, PersonShowMapper personMapper,
       ContractShowMapper contractMapper, ContractDao contractDao,
       EntityToDtoConverter entityToDtoConverter,
-      PersonManager personManager, SecurityRules rules) {
+      PersonManager personManager, SecurityRules rules, PersonChildrenDao personChildrenDao) {
     this.personDao = personRepository;
     this.personMapper = personMapper;
     this.contractMapper = contractMapper;
@@ -100,6 +104,7 @@ public class PersonController {
     this.personManager = personManager;
     this.contractDao = contractDao;
     this.rules = rules;
+    this.personChildrenDao = personChildrenDao;
   }
 
   @Operation(
@@ -280,6 +285,122 @@ public class PersonController {
     return ResponseEntity.ok().body(contractMapper.convert(contract));
   }
 
+  
+  @Operation(
+      summary = "Creazione di un figlio di un dipendente.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede da modificare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Figlio creato correttamente."),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
+          content = @Content), 
+      @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
+          + "non autorizzato a creare nuovi figli.", 
+          content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona associata al figlio non trovata con i parametri forniti.", 
+          content = @Content)
+  })
+  @Transactional
+  @PutMapping(ApiRoutes.CREATE + "/personChildren")
+  ResponseEntity<PersonChildrenShowDto> create(@NotNull @Valid @RequestBody PersonChildrenCreateDto personChildrenDto) {
+    log.debug("PersonController::create PersonChildrenDto = {}", personChildrenDto);
+    val personChildren = entityToDtoConverter.createEntity(personChildrenDto);
+
+    rules.checkifPermitted(personChildren.getPerson().getOffice());
+
+    personChildrenDao.save(personChildren);
+    
+    log.info("Creato figlio {}", personChildren);
+    return ResponseEntity.status(HttpStatus.CREATED).body(personMapper.convert(personChildren));
+  }
+  
+  
+  @Operation(
+      summary = "Figlio di un dipendente",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituito il figlio di una persona."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente.", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+            content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Figlio non trovato con l'id fornito", content = @Content)
+  })
+  @GetMapping(ApiRoutes.SHOW + "/personChildren")
+  ResponseEntity<PersonChildrenShowDto> personChildren(@NotNull @PathVariable("id") Long id) {
+    log.debug("PersonController::personChildren person id = {}", id);
+    val personChildren = personChildrenDao.getById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
+    rules.checkifPermitted(personChildren.getPerson().getOffice());
+    
+    return ResponseEntity.ok().body(personMapper.convert(personChildren));
+  }
+  
+  
+  @Operation(
+      summary = "Eliminazione di un figlio.", 
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede da modificare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Figlio eliminato correttamente"),
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
+          content = @Content), 
+      @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
+          + "non autorizzato ad eliminare il figlio del dipendente.", 
+          content = @Content)
+  })
+  @Transactional
+  @DeleteMapping(ApiRoutes.DELETE + "/personChildren")
+  ResponseEntity<Void> deleteChild(@NotNull @PathVariable("id") Long id) {
+    log.debug("PersonController::delete id = {}", id);
+    val personChildren = personChildrenDao.getById(id).orElseThrow(() -> new EntityNotFoundException());
+
+    rules.checkifPermitted(personChildren.getPerson().getOffice());
+
+    personChildrenDao.delete(personChildren);
+    log.info("Eliminato figlio {} del dipendente {}", personChildren, personChildren.getPerson());
+    return ResponseEntity.ok().build();
+  }
+  
+  @Operation(
+      summary = "Lista di tutti i figli associati ad un dipendente.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Restituiti i figli associati al dipendente."),
+      @ApiResponse(responseCode = "401", 
+          description = "Autenticazione non presente.", content = @Content), 
+      @ApiResponse(responseCode = "403", 
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+            content = @Content), 
+      @ApiResponse(responseCode = "404", 
+          description = "Persona non trovata con l'id fornito.",
+          content = @Content)
+  })
+  @GetMapping(ApiRoutes.SHOW + "/personChildrens")
+  ResponseEntity<List<PersonChildrenShowDto>> personChildrenList(@NotNull @PathVariable("id") Long id) {
+    log.debug("PersonController::personChildrenList person id = {}", id);
+    val person = personDao.byId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
+    rules.checkifPermitted(person.getOffice());
+    return ResponseEntity.ok().body(person.getPersonChildren()
+        .stream().map(personChildren -> personMapper.convert(personChildren))
+        .collect(Collectors.toList()));
+  }
+  
+  
   /**
    * Verifica le condizioni per cui non è possibile cancellare una persona.
    * Solleva un eccezzione InvalidOperationOnCurrentStateException se non è 
@@ -295,4 +416,8 @@ public class PersonController {
               person.getContracts().size()));
     }
   }
+  
+  
+  
+  
 }

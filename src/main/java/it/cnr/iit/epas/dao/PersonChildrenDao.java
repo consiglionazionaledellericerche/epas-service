@@ -22,6 +22,7 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonChildren;
 import it.cnr.iit.epas.models.QPersonChildren;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
@@ -46,11 +47,11 @@ public class PersonChildrenDao extends DaoBase<PersonChildren> {
    * @param id l'identificativo del figlio del dipendente
    * @return il personChildren relativo all'id passato come parametro.
    */
-  public PersonChildren getById(Long id) {
+  public Optional<PersonChildren> getById(Long id) {
     final QPersonChildren personChildren = QPersonChildren.personChildren;
-    return getQueryFactory().selectFrom(personChildren)
+    return Optional.ofNullable(getQueryFactory().selectFrom(personChildren)
         .where(personChildren.id.eq(id))
-        .fetchOne();
+        .fetchOne());
   }
 
 

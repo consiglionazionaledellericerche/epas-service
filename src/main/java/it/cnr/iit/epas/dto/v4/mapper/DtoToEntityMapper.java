@@ -32,12 +32,14 @@ import it.cnr.iit.epas.dao.QualificationDao;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
 import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonChildren;
 import it.cnr.iit.epas.models.Stamping;
 
 /**
@@ -60,7 +62,7 @@ public abstract class DtoToEntityMapper {
   protected OfficeDao officeDao;
   @Inject
   protected QualificationDao qualificationDao;
-
+  
   @Mapping(target = "institute", 
       expression = "java(instituteDao.byId(officeDto.getInstituteId())"
           + ".orElseThrow(() -> "
@@ -100,5 +102,12 @@ public abstract class DtoToEntityMapper {
   @Mapping(target = "personDay",
       expression = "java(personDayDao.getPersonDay(personDao.getPersonById(stampingDto.getPersonId()), stampingDto.getDate()).orElse(null))")
   public abstract void create(@MappingTarget Stamping stamping, StampingCreateDto stampingDto);
+  
+  @Mapping(target = "person", 
+      expression = "java(personDao.byId(personChildrenCreateDto.getPersonId())"
+          + ".orElseThrow(() -> "
+          + "new javax.persistence."
+          + "EntityNotFoundException(\"Person not found\")))")
+  public abstract void create(@MappingTarget PersonChildren personChildren, PersonChildrenCreateDto personChildrenCreateDto);
 
 }

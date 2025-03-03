@@ -18,10 +18,12 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenShowDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonChildren;
 import it.cnr.iit.epas.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -40,4 +42,5 @@ public interface PersonShowMapper {
 
   UserShowTerseDto convert(User user);
 
+  PersonChildrenShowDto convert(PersonChildren personChildren);
 }

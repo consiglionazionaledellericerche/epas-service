@@ -25,12 +25,14 @@ import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
 import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeUpdateDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
 import it.cnr.iit.epas.dto.v4.StampingCreateDto;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonChildren;
 import it.cnr.iit.epas.models.Stamping;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
@@ -133,5 +135,12 @@ public class EntityToDtoConverter {
     Stamping stamping = new Stamping();
     mapper.create(stamping, stampingDto);
     return stamping;
+  }
+
+  public PersonChildren createEntity(PersonChildrenCreateDto personChildrenCreateDto) {
+    PersonChildren personChildren = new PersonChildren();
+    mapper.create(personChildren, personChildrenCreateDto);
+
+    return personChildren;
   }
 }

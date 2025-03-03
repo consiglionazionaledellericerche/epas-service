@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4;
 
+import javax.validation.constraints.NotNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,7 @@ import lombok.EqualsAndHashCode;
 public class PersonCreateDto extends PersonMutableDto {
 
   @Schema(description = "Id dell'Ufficio a cui è assegnata la persona")
+  @NotNull
   private Long officeId;
 
 }
