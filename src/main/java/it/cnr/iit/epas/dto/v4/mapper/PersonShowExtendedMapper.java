@@ -22,7 +22,6 @@ import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonShiftDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
 import it.cnr.iit.epas.dto.v4.ShiftCategoryDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;

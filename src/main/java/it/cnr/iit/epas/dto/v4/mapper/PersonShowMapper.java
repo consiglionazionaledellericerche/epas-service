@@ -34,6 +34,7 @@ public interface PersonShowMapper {
 
   @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "qualification.id")
+  @Mapping(target = "fullname", expression = "java(person.getFullname())")
   PersonShowDto convert(Person person);
 
   OfficeShowTerseDto convert(Office office);

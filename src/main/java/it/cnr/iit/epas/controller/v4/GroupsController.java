@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.controller.v4;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,8 +30,6 @@ import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.dao.UsersRolesOfficesDao;
 import it.cnr.iit.epas.dto.v4.SeatOrganizationChartDto;
-import it.cnr.iit.epas.dto.v4.UserShowDto;
-import it.cnr.iit.epas.dto.v4.mapper.AbsenceFormMapper;
 import it.cnr.iit.epas.dto.v4.mapper.SeatOrganizationChartMapper;
 import it.cnr.iit.epas.manager.GroupManager;
 import it.cnr.iit.epas.models.Person;

@@ -30,8 +30,6 @@ import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.ContractDao;
-import it.cnr.iit.epas.dto.v4.AbsenceGroupsDto;
-import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
 import it.cnr.iit.epas.dto.v4.AbsencePeriodTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.DayInPeriodDto;

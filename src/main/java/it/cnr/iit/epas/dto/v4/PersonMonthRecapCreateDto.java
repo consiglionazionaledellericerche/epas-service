@@ -17,9 +17,6 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
-import java.util.Optional;
 import lombok.Data;
 
 /**

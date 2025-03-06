@@ -16,8 +16,6 @@
  */
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.absences.AbsenceType;
-import it.cnr.iit.epas.models.absences.JustifiedBehaviour;
 import java.util.Set;
 import lombok.Data;
 

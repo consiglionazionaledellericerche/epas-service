@@ -31,5 +31,8 @@ public class VacationPeriodDto extends BaseModelDto {
   private String vacationCode;
   private LocalDate beginDate;
   private LocalDate endDate;
+  private String label=null;
+
+  private VacationCodeDto vacationCodeEnum;
 
 }

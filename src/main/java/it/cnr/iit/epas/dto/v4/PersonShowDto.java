@@ -17,13 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.media.Schema;
-import it.cnr.iit.epas.models.PersonReperibilityType;
-import it.cnr.iit.epas.models.ShiftCategories;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

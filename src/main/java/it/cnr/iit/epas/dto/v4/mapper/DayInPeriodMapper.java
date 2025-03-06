@@ -31,7 +31,6 @@ import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

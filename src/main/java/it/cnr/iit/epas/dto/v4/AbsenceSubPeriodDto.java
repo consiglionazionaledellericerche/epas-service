@@ -19,7 +19,6 @@ package it.cnr.iit.epas.dto.v4;
 
 import java.time.LocalDate;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * DTO per i sotto periodi di assenza (dipendono dai contratti).

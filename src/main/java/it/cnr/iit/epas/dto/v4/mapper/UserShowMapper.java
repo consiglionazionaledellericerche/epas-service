@@ -20,11 +20,8 @@ package it.cnr.iit.epas.dto.v4.mapper;
 import it.cnr.iit.epas.dto.v4.UserShowDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
 import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.models.enumerate.AccountRole;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ValueMapping;
 
 /**
  * Mapper per User al corrispondente DTO per la visualizzazione via REST.

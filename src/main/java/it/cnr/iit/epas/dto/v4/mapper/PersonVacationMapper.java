@@ -57,13 +57,16 @@ public interface PersonVacationMapper {
   @Mapping(target = "topQualification", source = "person.topQualification")
   PersonVacationDto convert(PersonVacationRecap personVacation);
 
-  VacationCodeDto convert(VacationCode vacationCode);
-
   @Mapping(target = "personId", source = "person.id")
   VacationSituationDto convert(VacationSituation vacationSituation);
 
   @Mapping(target = "personId", source = "person.id")
   ContractShowDto convert(Contract contract);
+
+  @Mapping(target = "name", expression = "java(vacationCode.name)")
+  @Mapping(target = "vacations", expression = "java(vacationCode.vacations)")
+  @Mapping(target = "permissions", expression = "java(vacationCode.permissions)")
+  VacationCodeDto convert(VacationCode vacationCode);
 
   @Mapping(target = "vacationCode", expression = "java(vacationPeriod.getLabel())")
   VacationPeriodDto convert(VacationPeriod vacationPeriod);

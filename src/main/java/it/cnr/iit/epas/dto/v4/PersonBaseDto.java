@@ -35,6 +35,10 @@ public class PersonBaseDto {
   @Schema(description = "Cognome")
   @NotNull
   private String surname;
+  @Schema(description = "Fullname")
+  @NotNull
+  private String fullname;
+
   @Schema(description = "Codice fiscale")
   private String fiscalCode;
   @Schema(description = "Email")

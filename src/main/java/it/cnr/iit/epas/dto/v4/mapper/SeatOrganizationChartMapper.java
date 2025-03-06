@@ -16,24 +16,12 @@
  */
 
 package it.cnr.iit.epas.dto.v4.mapper;
-import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
-import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.AbsenceTypeJustifiedBehaviourDto;
-import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
-import it.cnr.iit.epas.dto.v4.ContractualClauseDto;
-import it.cnr.iit.epas.dto.v4.GroupAbsenceTypeDto;
+
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.UserShowDto;
-import it.cnr.iit.epas.manager.services.absences.AbsenceForm;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
-import it.cnr.iit.epas.models.absences.AbsenceType;
-import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
-import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
-import it.cnr.iit.epas.models.absences.GroupAbsenceType;
-import it.cnr.iit.epas.models.absences.JustifiedType;
-import it.cnr.iit.epas.models.contractuals.ContractualClause;
 import java.util.List;
 import java.util.Map;
 import org.mapstruct.Mapper;

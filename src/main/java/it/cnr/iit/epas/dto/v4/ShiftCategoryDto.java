@@ -17,7 +17,6 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import java.time.YearMonth;
 import lombok.Data;
 
 /**
