@@ -17,38 +17,17 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.WorkingTimeTypeDay;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Tipologia di orario di lavoro.
- *
- * @author Cristian Lucchesi
- * @author Dario Tagliaferri
+ * DTO per mostrare i dati estesi dei contratti di una persona.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class WorkingTimeTypeDto extends BaseModelDto {
-
-  private String description;
-
-  private Boolean horizontal;
-
-  /**
-   * True se il tipo di orario corrisponde ad un "turno di lavoro" false altrimenti.
-   */
-  private boolean shift = false;
-
-  private boolean disabled = false;
-
-  private boolean enableAdjustmentForQuantity = true;
-
-  private String externalId;
-  private List<WorkingTimeTypeDayDto> workingTimeTypeDays;
-
-  private LocalDateTime updatedAt;
+public class PersonContractsDto {
+  private PersonWrapperShowDto wrPerson;
+  private ContractWrapperShowDto wrCurrentContract;
+  private List<ContractWrapperShowDto> contractList;
 }

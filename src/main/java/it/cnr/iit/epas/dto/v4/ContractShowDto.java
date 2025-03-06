@@ -64,4 +64,6 @@ public class ContractShowDto extends ContractShowTerseDto {
 
   private List<VacationPeriodDto> vacationPeriods = Lists.newArrayList();
 
+  private ContractShowDto previousContract;
+
 }

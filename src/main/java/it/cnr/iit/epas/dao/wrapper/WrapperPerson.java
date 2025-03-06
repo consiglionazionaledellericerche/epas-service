@@ -49,6 +49,7 @@ import java.util.SortedMap;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -59,6 +60,7 @@ import org.springframework.web.context.annotation.RequestScope;
  *
  * @author Marco Andreini
  */
+@Slf4j
 @Component
 @RequestScope
 public class WrapperPerson implements IWrapperPerson {
@@ -110,8 +112,26 @@ public class WrapperPerson implements IWrapperPerson {
     return value;
   }
 
+  /*public IWrapperPerson setValue(Person person) {
+    this.value = person;
+    return this;
+  }*/
+  private void resetState() {
+    this.currentContract = null;
+    this.previousContract = null;
+    this.currentWorkingTimeType = null;
+    this.currentVacationPeriod = null;
+    this.currentContractStampProfile = null;
+    this.currentContractWorkingTimeType = null;
+    this.sortedContracts = null;
+    this.properSynchronized = Optional.empty();
+  }
+
   public IWrapperPerson setValue(Person person) {
     this.value = person;
+    //AG 20250221 - aggiunto reset degli elementi perchè altrimenti non venivano caricate le
+    // informazioni corrette della persona ma teneva quelle della persona precedente
+    resetState();
     return this;
   }
   
@@ -137,15 +157,13 @@ public class WrapperPerson implements IWrapperPerson {
    */
   @Override
   public Optional<Contract> getCurrentContract() {
-
-    if (currentContract != null) {
+    if (currentContract != null && currentContract.isPresent()) {
       return currentContract;
     }
-    if (currentContract == null) {
+    if (currentContract == null || currentContract.isEmpty()) {
       currentContract = Optional.ofNullable(
-          contractDao.getContract(LocalDate.now(), value));
+          contractDao.getContract(LocalDate.now(), this.value));
     }
-
     return currentContract;
   }
 

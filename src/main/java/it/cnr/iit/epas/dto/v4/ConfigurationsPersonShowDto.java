@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,38 +17,22 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.WorkingTimeTypeDay;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import com.google.common.collect.Lists;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * Tipologia di orario di lavoro.
+ * DTO per le  Configurazioni delle persone.
  *
- * @author Cristian Lucchesi
- * @author Dario Tagliaferri
+ * @author Andrea Generosi
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class WorkingTimeTypeDto extends BaseModelDto {
+public class ConfigurationsPersonShowDto {
 
-  private String description;
+  private boolean enableCovid;
 
-  private Boolean horizontal;
+  private boolean enableSmartworking;
 
-  /**
-   * True se il tipo di orario corrisponde ad un "turno di lavoro" false altrimenti.
-   */
-  private boolean shift = false;
-
-  private boolean disabled = false;
-
-  private boolean enableAdjustmentForQuantity = true;
-
-  private String externalId;
-  private List<WorkingTimeTypeDayDto> workingTimeTypeDays;
-
-  private LocalDateTime updatedAt;
+  private List<PersonConfigurationDto> personConfigurations;
 }

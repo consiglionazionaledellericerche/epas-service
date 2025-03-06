@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,41 +14,18 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.WorkingTimeTypeDay;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Tipologia di orario di lavoro.
- *
- * @author Cristian Lucchesi
- * @author Dario Tagliaferri
+ * DTO per mostrare le informazioni di una revisione di un oggetto.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class WorkingTimeTypeDto extends BaseModelDto {
-
-  private String description;
-
-  private Boolean horizontal;
-
-  /**
-   * True se il tipo di orario corrisponde ad un "turno di lavoro" false altrimenti.
-   */
-  private boolean shift = false;
-
-  private boolean disabled = false;
-
-  private boolean enableAdjustmentForQuantity = true;
-
-  private String externalId;
-  private List<WorkingTimeTypeDayDto> workingTimeTypeDays;
-
-  private LocalDateTime updatedAt;
+@EqualsAndHashCode
+public class EpasParamDto {
+  private String name;
+  private String category;
+  private String timeType;
 }

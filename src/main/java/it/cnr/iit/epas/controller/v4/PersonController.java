@@ -34,20 +34,34 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.GeneralSettingDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
+import it.cnr.iit.epas.dao.wrapper.IWrapperPerson;
+import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
+import it.cnr.iit.epas.dto.v4.PeopleListDto;
+import it.cnr.iit.epas.dto.v4.PersonChildrenDto;
 import it.cnr.iit.epas.dto.v4.PersonCreateDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
-import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
 import it.cnr.iit.epas.dto.v4.PersonUpdateDto;
+import it.cnr.iit.epas.dto.v4.PersonWrapperShowDto;
+import it.cnr.iit.epas.dto.v4.ShowCurrentContractWTTDto;
+import it.cnr.iit.epas.dto.v4.VacationPeriodDto;
 import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
-import it.cnr.iit.epas.dto.v4.mapper.PersonShowExtendedMapper;
+import it.cnr.iit.epas.dto.v4.mapper.OfficeShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonChildrenMapper;
 import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonVacationMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonWrapperShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.ShowCurrentContractWttMapper;
 import it.cnr.iit.epas.manager.PersonManager;
+import it.cnr.iit.epas.models.ContractWorkingTimeType;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.absences.AbsenceType;
+import it.cnr.iit.epas.models.PersonChildren;
+import it.cnr.iit.epas.models.VacationPeriod;
+import it.cnr.iit.epas.models.WorkingTimeType;
+import it.cnr.iit.epas.models.enumerate.VacationCode;
 import it.cnr.iit.epas.security.SecurityRules;
 import java.time.LocalDate;
 import java.util.List;
@@ -76,11 +90,10 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller con i metodi REST relativi alla visualizzazione e gestione delle persone.
  *
  * @author Cristian Lucchesi
- *
  */
 @SecurityRequirements(
-    value = { 
-        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION), 
+    value = {
+        @SecurityRequirement(name = OpenApiConfiguration.BEARER_AUTHENTICATION),
         @SecurityRequirement(name = OpenApiConfiguration.BASIC_AUTHENTICATION)
     })
 @Tag(name = "Persons Controller", description = "Gestione delle informazioni delle persone")
@@ -91,29 +104,42 @@ public class PersonController {
 
   private final PersonDao personDao;
   private final PersonShowMapper personMapper;
-  private final PersonShowExtendedMapper personShowExtendedMapper;
+  private final OfficeShowMapper officeShowMapper;
+  private final PersonWrapperShowMapper personWrapperShowMapper;
+  private final PersonVacationMapper personVacationMapper;
+  private final ShowCurrentContractWttMapper showCurrentContractWttMapper;
   private final ContractShowMapper contractMapper;
+  private final PersonChildrenMapper personChildrenMapper;
   private final PersonManager personManager;
   private final ContractDao contractDao;
   private final OfficeDao officeDao;
   private final GeneralSettingDao generalSettingDao;
+  private final WrapperFactory wrapperFactory;
   private final EntityToDtoConverter entityToDtoConverter;
   private final SecurityRules rules;
 
   @Inject
   PersonController(PersonDao personRepository, PersonShowMapper personMapper,
       ContractShowMapper contractMapper, ContractDao contractDao, OfficeDao officeDao,
-      EntityToDtoConverter entityToDtoConverter,PersonShowExtendedMapper personShowExtendedMapper,
+      EntityToDtoConverter entityToDtoConverter, PersonWrapperShowMapper personWrapperShowMapper,
+      OfficeShowMapper officeShowMapper,WrapperFactory wrapperFactory,
+      PersonChildrenMapper personChildrenMapper,
+      ShowCurrentContractWttMapper showCurrentContractWttMapper,PersonVacationMapper personVacationMapper,
       PersonManager personManager, SecurityRules rules, GeneralSettingDao generalSettingDao) {
     this.personDao = personRepository;
     this.personMapper = personMapper;
+    this.officeShowMapper = officeShowMapper;
     this.contractMapper = contractMapper;
     this.entityToDtoConverter = entityToDtoConverter;
-    this.personShowExtendedMapper = personShowExtendedMapper;
+    this.personVacationMapper = personVacationMapper;
+    this.personWrapperShowMapper = personWrapperShowMapper;
+    this.showCurrentContractWttMapper = showCurrentContractWttMapper;
+    this.personChildrenMapper = personChildrenMapper;
     this.personManager = personManager;
     this.contractDao = contractDao;
     this.officeDao = officeDao;
     this.generalSettingDao = generalSettingDao;
+    this.wrapperFactory = wrapperFactory;
     this.rules = rules;
   }
 
@@ -133,38 +159,169 @@ public class PersonController {
           content = @Content)
   })
   @GetMapping("/list")
-  ResponseEntity<List<PersonShowExtendedDto>> list(
+  ResponseEntity<PeopleListDto> list(
       @RequestParam("officeId") Long officeId,
       @RequestParam("name") String name) {
-    log.debug("PersonController::list officeId = {}  name = {}", officeId,name);
+    log.debug("PersonController::list officeId = {}  name = {}", officeId, name);
     Office office;
-    /*if (officeId == null) {
-      office = officeDao.getOfficeById(Long.parseLong(session.get("officeSelected")));
+    if (officeId == null) {
+      office = null;
+      //office = officeDao.getOfficeById(Long.parseLong(session.get("officeSelected")));
     } else {
-     */
       office = officeDao.getOfficeById(officeId);
-    //}
-    //notFoundIfNull(office);
+    }
+
     if (office == null) {
       throw new EntityNotFoundException("Office not found");
     }
 
     rules.checkifPermitted(office);
 
+    // TODO: al momento lasciare false e non fa visualizzare il messaggio di warning nella ui
     boolean warningInsertPerson = false;// da errore il metodo generalSettingDao.generalSetting().isWarningInsertPerson();
 
     List<Person> simplePersonList = personDao
         .listFetched(Optional.ofNullable(name), ImmutableSet.of(office), false, null, null, false)
         .list();
 
-    /*List<IWrapperPerson> personList =
-        FluentIterable.from(simplePersonList).transform(wrapperFunctionFactory.person()).toList();*/
-    List<PersonShowExtendedDto> dto = Lists.newArrayList();
+    PeopleListDto dto = new PeopleListDto();
+    PersonWrapperShowDto pwdto;
+
+    List<PersonWrapperShowDto> peopleDto = Lists.newArrayList();
     for (Person person : simplePersonList) {
-      dto.add(personShowExtendedMapper.convert(person));
+      IWrapperPerson wperson = wrapperFactory.create(person);
+      pwdto = personWrapperShowMapper.convert(wperson);
+      pwdto.setCurrentContracts(personWrapperShowMapper.mapContract(wperson.getCurrentContract().orElse(null)));
+      pwdto.setCurrentVacationPeriod(personWrapperShowMapper.mapVacationPeriod(wperson.getCurrentVacationPeriod().orElse(null)));
+      pwdto.setCurrentWorkingTimeType(personWrapperShowMapper.mapWorkingTimeType(wperson.getCurrentWorkingTimeType().orElse(null)));
+      peopleDto.add(pwdto);
     }
+    dto.setPersonList(peopleDto);
+    dto.setOffice(officeShowMapper.convertTerse(office));
+
     return ResponseEntity.ok().body(dto);
   }
+
+  @Operation(
+      summary = "Visualizzazione l'attuale contratto e orario di lavoro associato della persona.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituito l'attuale contratto e orario di lavoro associato della persona."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+          content = @Content)
+  })
+  @GetMapping("/showCurrentContractWorkingTimeType")
+  ResponseEntity<ShowCurrentContractWTTDto> showCurrentContractWorkingTimeType(
+      @RequestParam("personId") Long personId) {
+    log.debug("PersonController::showCurrentContractWorkingTimeType personId = {}", personId);
+
+    Person person = personDao.getPersonById(personId);
+
+    if (person == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    rules.checkifPermitted(person.getOffice());
+
+    IWrapperPerson wrPerson = wrapperFactory.create(person);
+
+    Preconditions.checkState(wrPerson.getCurrentContractWorkingTimeType().isPresent());
+
+    ContractWorkingTimeType cwtt = wrPerson.getCurrentContractWorkingTimeType().get();
+    WorkingTimeType wtt = cwtt.getWorkingTimeType();
+
+    ShowCurrentContractWTTDto dto = new ShowCurrentContractWTTDto();
+    dto.setContractWorkingTimeType(showCurrentContractWttMapper.convert(cwtt));
+    dto.setWorkingTimeType(showCurrentContractWttMapper.convert(wtt));
+
+    return ResponseEntity.ok().body(dto);
+  }
+
+  @Operation(
+      summary = "Visualizzazione l'attuale contratto e orario di lavoro associato della persona.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituito l'attuale contratto e orario di lavoro associato della persona."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+          content = @Content)
+  })
+  @GetMapping("/showCurrentVacation")
+  ResponseEntity<VacationPeriodDto> showCurrentVacation(
+      @RequestParam("personId") Long personId) {
+    log.debug("PersonController::showCurrentVacation personId = {}", personId);
+
+    Person person = personDao.getPersonById(personId);
+
+    if (person == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    rules.checkifPermitted(person.getOffice());
+
+    IWrapperPerson wrPerson = wrapperFactory.create(person);
+
+    Preconditions.checkState(wrPerson.getCurrentVacationPeriod().isPresent());
+
+    VacationPeriod vp = wrPerson.getCurrentVacationPeriod().get();
+
+    VacationPeriodDto dto = personVacationMapper.convert(vp);
+    dto.setVacationCodeEnum(personVacationMapper.convert((VacationCode)vp.getValue()));
+
+    return ResponseEntity.ok().body(dto);
+  }
+
+  //TODO DA TAGLIERE PERCHé L'HA FATTO DARIO
+  @Operation(
+      summary = "Visualizzazione l'attuale contratto e orario di lavoro associato della persona.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituito l'attuale contratto e orario di lavoro associato della persona."),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati della persona.",
+          content = @Content)
+  })
+
+
+  @GetMapping("/children")
+  ResponseEntity<List<PersonChildrenDto>> showChildren(@RequestParam("personId") Long personId) {
+    log.debug("PersonController::showChildren personId = {}", personId);
+
+    Person person = personDao.getPersonById(personId);
+
+    if (person == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    rules.checkifPermitted(person.getOffice());
+    List<PersonChildrenDto> dto = Lists.newArrayList();
+
+    for (PersonChildren child : person.getPersonChildren()) {
+      dto.add(personChildrenMapper.convert(child));
+    }
+
+    return ResponseEntity.ok().body(dto);
+  }
+///////////////////////////////////////////////////
 
   @Operation(
       summary = "Visualizzazione delle informazioni di una persona.",
@@ -172,24 +329,25 @@ public class PersonController {
           + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", 
+      @ApiResponse(responseCode = "200",
           description = "Restituiti i dati della persona."),
-      @ApiResponse(responseCode = "401", 
-          description = "Autenticazione non presente.", content = @Content), 
-      @ApiResponse(responseCode = "403", 
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
               + " i dati della persona.",
-            content = @Content), 
-      @ApiResponse(responseCode = "404", 
+          content = @Content),
+      @ApiResponse(responseCode = "404",
           description = "Persona non trovata con l'id fornito.",
           content = @Content)
   })
   @GetMapping(ApiRoutes.SHOW)
   ResponseEntity<PersonShowDto> show(@NotNull @PathVariable("id") Long id) {
     log.debug("PersonController::show id = {}", id);
-    val person = personDao.byId(id)
+    Person person = personDao.byId(id)
         .orElseThrow(() -> new EntityNotFoundException("Person not found with id = " + id));
     rules.checkifPermitted(person.getOffice());
+
     return ResponseEntity.ok().body(personMapper.convert(person));
   }
 
@@ -200,13 +358,13 @@ public class PersonController {
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Persona creato correttamente."),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
-          content = @Content), 
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.",
+          content = @Content),
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato a creare nuove persone.", 
-          content = @Content), 
-      @ApiResponse(responseCode = "404", 
-          description = "Office associato alla persona non trovato con i parametri forniti.", 
+          + "non autorizzato a creare nuove persone.",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Office associato alla persona non trovato con i parametri forniti.",
           content = @Content)
   })
   @Transactional
@@ -219,11 +377,11 @@ public class PersonController {
 
     personManager.properPersonCreate(person);
     personDao.save(person);
-    
+
     log.info("Creata persona {}", person);
     return ResponseEntity.status(HttpStatus.CREATED).body(personMapper.convert(person));
   }
-  
+
   @Operation(
       summary = "Aggiornamento di una persona.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
@@ -231,13 +389,13 @@ public class PersonController {
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Persona aggiornata correttamente."),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.", 
-          content = @Content), 
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente.",
+          content = @Content),
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato a modificare i dati della persona.", 
-          content = @Content), 
-      @ApiResponse(responseCode = "404", 
-          description = "Qualifica associata alla persona non trovata con i parametri forniti.", 
+          + "non autorizzato a modificare i dati della persona.",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Qualifica associata alla persona non trovata con i parametri forniti.",
           content = @Content)
   })
   @Transactional
@@ -252,19 +410,19 @@ public class PersonController {
   }
 
   @Operation(
-      summary = "Eliminazione di una persona.", 
+      summary = "Eliminazione di una persona.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore anagrafica' della sede da modificare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Persona eliminata correttamente"),
-      @ApiResponse(responseCode = "401", description = "Autenticazione non presente", 
-          content = @Content), 
+      @ApiResponse(responseCode = "401", description = "Autenticazione non presente",
+          content = @Content),
       @ApiResponse(responseCode = "403", description = "Utente che ha effettuato la richiesta "
-          + "non autorizzato ad eliminare la persona.", 
-          content = @Content), 
-      @ApiResponse(responseCode = "422", 
-          description = "Informazioni importanti associate alla persona, impossibile eliminarla.", 
+          + "non autorizzato ad eliminare la persona.",
+          content = @Content),
+      @ApiResponse(responseCode = "422",
+          description = "Informazioni importanti associate alla persona, impossibile eliminarla.",
           content = @Content)
   })
   @Transactional
@@ -288,15 +446,15 @@ public class PersonController {
           + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", 
+      @ApiResponse(responseCode = "200",
           description = "Restituiti i contratti associati alla persona."),
-      @ApiResponse(responseCode = "401", 
-          description = "Autenticazione non presente.", content = @Content), 
-      @ApiResponse(responseCode = "403", 
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
               + " i dati della persona.",
-            content = @Content), 
-      @ApiResponse(responseCode = "404", 
+          content = @Content),
+      @ApiResponse(responseCode = "404",
           description = "Persona non trovata con l'id fornito.",
           content = @Content)
   })
@@ -317,15 +475,15 @@ public class PersonController {
           + "'Gestore anagrafica' della persona da visualizzare e dagli utenti con il ruolo "
           + "di sistema 'Developer' e/o 'Admin'.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", 
+      @ApiResponse(responseCode = "200",
           description = "Restituiti i contratti associati alla persona."),
-      @ApiResponse(responseCode = "401", 
-          description = "Autenticazione non presente.", content = @Content), 
-      @ApiResponse(responseCode = "403", 
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente.", content = @Content),
+      @ApiResponse(responseCode = "403",
           description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
               + " i dati della persona.",
-            content = @Content), 
-      @ApiResponse(responseCode = "404", 
+          content = @Content),
+      @ApiResponse(responseCode = "404",
           description = "Persona non trovata con l'id fornito oppure nessun contratto attivo alla "
               + "data indicata", content = @Content)
   })
@@ -338,24 +496,23 @@ public class PersonController {
     rules.checkifPermitted(person.getOffice());
     val contractAtDate = date.orElse(LocalDate.now());
     val contract = Optional.ofNullable(contractDao.getContract(contractAtDate, person))
-        .orElseThrow(() -> 
+        .orElseThrow(() ->
             new EntityNotFoundException(
                 "Contract not found for person id = " + id + " at date " + contractAtDate));
     return ResponseEntity.ok().body(contractMapper.convert(contract));
   }
 
   /**
-   * Verifica le condizioni per cui non è possibile cancellare una persona.
-   * Solleva un eccezzione InvalidOperationOnCurrentStateException se non è 
-   * possibile cancellarla.
+   * Verifica le condizioni per cui non è possibile cancellare una persona. Solleva un eccezzione
+   * InvalidOperationOnCurrentStateException se non è possibile cancellarla.
    */
-  private void checkIfIsPossibileToDelete(Person person) 
+  private void checkIfIsPossibileToDelete(Person person)
       throws InvalidOperationOnCurrentStateException {
     if (!person.getContracts().isEmpty()) {
       throw new InvalidOperationOnCurrentStateException(
           String.format("Impossibile eliminare la persona, "
-              + "sono presenti %d contratti associati alla persona. "
-              + "Cancellare prima i contratti associati.", 
+                  + "sono presenti %d contratti associati alla persona. "
+                  + "Cancellare prima i contratti associati.",
               person.getContracts().size()));
     }
   }

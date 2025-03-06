@@ -17,10 +17,10 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.WorkingTimeTypeDay;
+import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.WorkingTimeType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,23 +32,11 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class WorkingTimeTypeDto extends BaseModelDto {
+public class ContractWorkingTimeTypeDto extends BaseModelDto {
 
-  private String description;
-
-  private Boolean horizontal;
-
-  /**
-   * True se il tipo di orario corrisponde ad un "turno di lavoro" false altrimenti.
-   */
-  private boolean shift = false;
-
-  private boolean disabled = false;
-
-  private boolean enableAdjustmentForQuantity = true;
-
+  private ContractShowDto contract;
+  private LocalDate beginDate;
+  private LocalDate endDate;
   private String externalId;
-  private List<WorkingTimeTypeDayDto> workingTimeTypeDays;
 
-  private LocalDateTime updatedAt;
 }

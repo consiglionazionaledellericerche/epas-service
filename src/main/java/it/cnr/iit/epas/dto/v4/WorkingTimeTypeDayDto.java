@@ -34,8 +34,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class WorkingTimeTypeDayDto extends BaseModelDto {
 
-  private WorkingTimeTypeDto workingTimeType;
-
   private int dayOfWeek;
 
   /**

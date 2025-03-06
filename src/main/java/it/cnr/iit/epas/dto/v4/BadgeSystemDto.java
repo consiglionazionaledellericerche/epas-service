@@ -10,10 +10,6 @@ import lombok.Data;
 public class BadgeSystemDto {
   private String name;
   private String description;
-  private Set<BadgeDto> badges = Sets.newHashSet();
-
-  private List<BadgeReaderDto> badgeReaders = Lists.newArrayList();
-
   private OfficeShowTerseDto office;
 
   private boolean enabled = true;

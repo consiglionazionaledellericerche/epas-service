@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.controller.v4;
 
+import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,20 +30,30 @@ import it.cnr.iit.epas.controller.exceptions.InvalidOperationOnCurrentStateExcep
 import it.cnr.iit.epas.controller.exceptions.ValidationException;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperContract;
+import it.cnr.iit.epas.dao.wrapper.IWrapperPerson;
 import it.cnr.iit.epas.dao.wrapper.WrapperFactory;
 import it.cnr.iit.epas.dto.v4.ContractCreateDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
 import it.cnr.iit.epas.dto.v4.ContractUpdateDto;
+import it.cnr.iit.epas.dto.v4.ContractWrapperShowDto;
+import it.cnr.iit.epas.dto.v4.PersonContractsDto;
+import it.cnr.iit.epas.dto.v4.PersonWrapperShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.ContractShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.ContractWrapperShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
+import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonWrapperShowMapper;
 import it.cnr.iit.epas.manager.ContractManager;
 import it.cnr.iit.epas.manager.PeriodManager;
 import it.cnr.iit.epas.manager.recaps.recomputation.RecomputeRecap;
 import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecurityRules;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -79,9 +90,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ApiRoutes.BASE_PATH + "/contracts")
 public class ContractController {
 
+  private final PersonDao personDao;
   private final ContractDao contractDao;
   private final ContractManager contractManager;
   private final ContractShowMapper mapper;
+  private final PersonShowMapper personMapper;
+  private final PersonWrapperShowMapper personWrapperShowMapper;
+  private final ContractWrapperShowMapper contractWrapperShowMapper;
   private final EntityToDtoConverter entityToDtoConverter;
   private final PeriodManager periodManager;
   private final WrapperFactory wrapperFactory;
@@ -114,6 +129,67 @@ public class ContractController {
     rules.checkifPermitted(contract.getPerson().getOffice());
 
     return ResponseEntity.ok().body(mapper.convert(contract));
+  }
+
+  @Operation(
+      summary = "Visualizzazione delle informazioni di un contratto.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Gestore anagrafica' della sede da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Restituiti i dati del contratto"),
+      @ApiResponse(responseCode = "401",
+          description = "Autenticazione non presente", content = @Content),
+      @ApiResponse(responseCode = "403",
+          description = "Utente che ha effettuato la richiesta non autorizzato a visualizzare"
+              + " i dati del contratto",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Contratto non trovato con l'id fornito",
+          content = @Content)
+  })
+  @GetMapping("/personContracts")
+  ResponseEntity<PersonContractsDto> personContracts(
+      @RequestParam("personId") Long personId) {
+    log.debug("ContractController::personContracts personId = {}", personId);
+    Person person = personDao.getPersonById(personId);
+
+    if (person == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    rules.checkifPermitted(person.getOffice());
+
+    IWrapperPerson wrPerson = wrapperFactory.create(person);
+
+    PersonWrapperShowDto pwdto = personWrapperShowMapper.convert(wrPerson);
+    pwdto.setCurrentContracts(personWrapperShowMapper.mapContract(wrPerson.getCurrentContract().orElse(null)));
+    pwdto.setCurrentVacationPeriod(personWrapperShowMapper.mapVacationPeriod(wrPerson.getCurrentVacationPeriod().orElse(null)));
+    pwdto.setCurrentWorkingTimeType(personWrapperShowMapper.mapWorkingTimeType(wrPerson.getCurrentWorkingTimeType().orElse(null)));
+    pwdto.setCurrentContractStampProfile(personWrapperShowMapper.mapContractStampProfile(wrPerson.getCurrentContractStampProfile().orElse(null)));
+
+    PersonContractsDto dto = new PersonContractsDto();
+
+    dto.setWrPerson(pwdto);
+
+    IWrapperContract wrCurrentContract = null;
+    if (wrPerson.getCurrentContract().isPresent()) {
+      wrCurrentContract = wrapperFactory.create(wrPerson.getCurrentContract().get());
+    }
+
+    dto.setWrCurrentContract(contractWrapperShowMapper.convert(wrCurrentContract));
+
+    List<Contract> contractList = contractDao.getPersonContractList(person);
+    List<ContractWrapperShowDto> dtoList = Lists.newArrayList();
+    for (Contract contract : contractList) {
+      IWrapperContract wcontract = wrapperFactory.create(contract);
+      dtoList.add(contractWrapperShowMapper.convert(wcontract));
+    }
+
+    dto.setContractList(dtoList);
+
+    return ResponseEntity.ok().body(dto);
   }
 
   @Operation(
