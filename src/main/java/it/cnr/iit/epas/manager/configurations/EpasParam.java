@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -79,6 +79,14 @@ public enum EpasParam {
       EpasParamTimeType.GENERAL,
       EpasParamValueType.BOOLEAN,
       EpasParamValueType.formatValue(true),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
+  
+  SEND_INFO_DAYS_JOB_TO_SEAT_SUPERVISOR("send_info_days_job_to_seat_supervisor",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
   
@@ -753,8 +761,7 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-  
-  
+
   /**
    * Per i livelli IV-VIII è necessaria l'approvazione del cambio di reperibilità da parte 
    * dell'eventuale responsabile del servizio di reperibilità.
@@ -1074,7 +1081,9 @@ public enum EpasParam {
    * Categorizzazione dei parametri di ePAS.
    */
   public enum EpasParamCategory {
+
     GENERAL, YEARLY, PERIODIC, AUTOCERTIFICATION, FLOWS, COMPETENCE_FLOWS, INFORMATION_FLOWS
+
   }
 
   /**

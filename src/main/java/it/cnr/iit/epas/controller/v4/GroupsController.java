@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.controller.v4;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,8 +30,6 @@ import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
 import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.dao.UsersRolesOfficesDao;
 import it.cnr.iit.epas.dto.v4.SeatOrganizationChartDto;
-import it.cnr.iit.epas.dto.v4.UserShowDto;
-import it.cnr.iit.epas.dto.v4.mapper.AbsenceFormMapper;
 import it.cnr.iit.epas.dto.v4.mapper.SeatOrganizationChartMapper;
 import it.cnr.iit.epas.manager.GroupManager;
 import it.cnr.iit.epas.models.Person;
@@ -49,6 +48,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @SecurityRequirements(
     value = {
@@ -72,12 +72,14 @@ class GroupsController {
   private final SeatOrganizationChartMapper seatOrganizationChartMapper;
 
   @Operation(
-      summary = "Visualizzazione le informazioni sui ruoli presenti nella sede di appartenenza del dipendente.",
+      summary = "Visualizzazione le informazioni sui ruoli presenti nella sede di appartenenza "
+          + "del dipendente.",
       description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
           + "le informazioni sui ruoli presenti nella sede di appartenenza del dipendente.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Restituiti le informazioni sui ruoli presenti nella sede di appartenenza del dipendente"),
+          description = "Restituiti le informazioni sui ruoli presenti nella sede di appartenenza "
+              + "del dipendente"),
       @ApiResponse(responseCode = "401",
           description = "Autenticazione non presente", content = @Content),
       @ApiResponse(responseCode = "403",
@@ -85,7 +87,8 @@ class GroupsController {
               + " le informazioni sui ruoli.",
           content = @Content),
       @ApiResponse(responseCode = "404",
-          description = "Informazioni sui ruoli non trovati con l'id e/o il codice fiscale fornito.",
+          description = "Informazioni sui ruoli non trovati con l'id e/o il codice fiscale "
+              + "fornito.",
           content = @Content)
   })
   @GetMapping("/seatOrganizationChart")
