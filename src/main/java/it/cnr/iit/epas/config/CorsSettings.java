@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.config;
 
 import lombok.Data;
@@ -35,10 +36,10 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "epas.cors")
 public class CorsSettings {
 
-    private String[] allowedOrigins;
+  private String[] allowedOrigins;
 
-    private String[] allowedMethods;
+  private String[] allowedMethods;
 
-    private Long maxAge;
+  private Long maxAge;
 
 }

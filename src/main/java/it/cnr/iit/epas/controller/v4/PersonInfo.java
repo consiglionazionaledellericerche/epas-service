@@ -135,7 +135,8 @@ public class PersonInfo {
     long personId = person.getId();
     val entity = repo.findById(personId)
         .orElseThrow(() ->
-            new EntityNotFoundException("Person not found for user with id = "  + user.get().getId()));
+            new EntityNotFoundException("Person not found for user with id = " 
+                + user.get().getId()));
     PersonShowExtendedDto dto = mapperExtend.convert(entity);
     dto.setAvailable(isAvailable);
     return ResponseEntity.ok().body(dto);

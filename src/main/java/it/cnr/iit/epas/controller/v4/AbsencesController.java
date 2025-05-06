@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller.v4;
 
 import com.google.common.collect.Lists;
@@ -66,8 +67,8 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
@@ -112,7 +113,8 @@ public class AbsencesController {
    * Visualizzazione delle informazioni di un'assenza.
    */
   @Operation(
-      summary = "Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST relativo alle assenze.")
+      summary = "Verifica se l'utente corrente ha l'accesso ad un certo endpoint REST "
+          + "relativo alle assenze.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Restituita l'autorizzazione true/false di accedere all'endpoint indicato"),
@@ -134,9 +136,9 @@ public class AbsencesController {
     log.debug("AbsenceController::secureCheck method= {}, path = {}, id = {}", method, path, id);
     Person person = null;
     if (id.isPresent()) {
-        absence = absenceDao.byId(id.get())
-            .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
-        person = absence.getPersonDay().getPerson();
+      absence = absenceDao.byId(id.get())
+          .orElseThrow(() -> new EntityNotFoundException("Absence not found"));
+      person = absence.getPersonDay().getPerson();
     }
      
     //Le drools sulle assenze non controllano come target l'assenza ma la person

@@ -213,7 +213,6 @@ public class PersonMonthsController {
     log.debug("REST method {} invoked with parameters idTraining={}",
         "/rest/v4/personmonths/trainingHours", idTraining);
 
-    Map<String, String> response = new HashMap<>();
     PersonMonthRecap pm = personMonthRecapDao.getPersonMonthRecapById(idTraining);
     if (pm == null) {
       throw new EntityNotFoundException("Ore di formazioni inesistenti. Operazione annullata.");
@@ -221,21 +220,23 @@ public class PersonMonthsController {
 
     personMonthRecapDao.delete(pm);
 
+    Map<String, String> response = new HashMap<>();
+
     log.info("Eliminata trainingHour {}", pm);
     response.put("message", "Ore di formazione eliminate con successo.");
     return ResponseEntity.ok().body(response);
   }
 
   /**
-   * Inserimento delle ore di formazioni
+   * Inserimento delle ore di formazioni.
    */
   @Operation(
       summary = "Inserimento delle ore di formazione.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
-          + "appartiene la persona di cui inserire le ore di formazione e dagli utenti con il ruolo "
-          + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alla formazione")
+          + "appartiene la persona di cui inserire le ore di formazione e dagli utenti con il "
+          + "ruolo di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alla formazione")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Inserite le ore di formazione"),
@@ -249,7 +250,8 @@ public class PersonMonthsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content),
       @ApiResponse(responseCode = "409",
-          description = "Ore formative già inserite per quell'intervallo di tempo e quella persona.",
+          description = "Ore formative già inserite per quell'intervallo di tempo e quella "
+              + "persona.",
           content = @Content),
       @ApiResponse(responseCode = "412",
           description = "Errore di validazione dati inseriti.",
@@ -289,14 +291,15 @@ public class PersonMonthsController {
 
 
   /**
-   * Aggiornamento delle ore di formazioni
+   * Aggiornamento delle ore di formazioni.
    */
   @Operation(
       summary = "Aggiornamento delle ore di formazione.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
-          + "appartiene la persona di cui aggiornare le ore di formazione e dagli utenti con il ruolo "
+          + "appartiene la persona di cui aggiornare le ore di formazione e dagli utenti con il "
+          + "ruolo "
           + "di sistema 'Developer' e/o 'Admin' oppure dall'utente relativo alla formazione")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
