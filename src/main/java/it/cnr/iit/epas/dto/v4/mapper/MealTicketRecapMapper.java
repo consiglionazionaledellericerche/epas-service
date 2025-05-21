@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -21,21 +21,17 @@ import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.BlockMealTicketDto;
 import it.cnr.iit.epas.dto.v4.ContractShowTerseDto;
 import it.cnr.iit.epas.dto.v4.DateIntervalDto;
-import it.cnr.iit.epas.dto.v4.MealTicketCardDto;
 import it.cnr.iit.epas.dto.v4.MealTicketDto;
 import it.cnr.iit.epas.dto.v4.MealTicketRecapDto;
 import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonBaseDto;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
-import it.cnr.iit.epas.dto.v4.PersonMonthRecapDto;
 import it.cnr.iit.epas.manager.services.mealtickets.BlockMealTicket;
 import it.cnr.iit.epas.manager.services.mealtickets.MealTicketRecap;
 import it.cnr.iit.epas.models.MealTicket;
-import it.cnr.iit.epas.models.MealTicketCard;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
-import it.cnr.iit.epas.models.PersonMonthRecap;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.utils.DateInterval;
 import java.util.List;
@@ -49,6 +45,7 @@ import org.mapstruct.Mapping;
 public interface MealTicketRecapMapper {
 
   ContractShowTerseDto convert(ContractShowTerseDto contractShowTerseDto);
+
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
 

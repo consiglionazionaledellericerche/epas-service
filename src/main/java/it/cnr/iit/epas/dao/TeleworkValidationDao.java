@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,10 +20,12 @@ package it.cnr.iit.epas.dao;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.QTeleworkValidation;
 import it.cnr.iit.epas.models.TeleworkValidation;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class TeleworkValidationDao extends DaoBase<TeleworkValidation> {
 
   @Inject
-  TeleworkValidationDao(Provider<EntityManager> emp) {
+  TeleworkValidationDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

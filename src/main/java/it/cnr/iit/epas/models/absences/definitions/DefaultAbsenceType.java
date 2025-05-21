@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.ImmutableSet;
@@ -2607,7 +2608,7 @@ public enum DefaultAbsenceType {
   }
 
   /**
-   * L'enumerato corrispettivo del absenceType (se esiste...)
+   * L'enumerato corrispettivo del absenceType (se esiste...).
    *
    * @return optional dell'enumerato
    */

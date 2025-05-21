@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -34,6 +34,8 @@ import it.cnr.iit.epas.models.absences.QJustifiedType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.models.exports.FrequentAbsenceCode;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,10 +43,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -60,7 +60,7 @@ public class AbsenceDao extends DaoBase<Absence> {
   //private final IWrapperFactory factory;
 
   @Inject
-  AbsenceDao(Provider<EntityManager> emp) {
+  AbsenceDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

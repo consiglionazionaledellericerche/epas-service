@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.dto.v4;
+
 import java.util.List;
 import java.util.Map;
 import lombok.Data;

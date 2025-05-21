@@ -22,7 +22,7 @@ import java.util.Set;
 import lombok.Data;
 
 /**
- * DTO per le private ContractualClauseDto contractualClause;
+ * DTO per le private ContractualClauseDto contractualClause.
  *
  * @author Cristian Lucchesi
  *

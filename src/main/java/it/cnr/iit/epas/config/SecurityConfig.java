@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -21,9 +21,11 @@ import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
 import javax.inject.Inject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -58,20 +60,30 @@ public class SecurityConfig {
     //Senza il csrf disabilitato le POST/PUT/DELETE non funzionerebbero con
     //l'autenticazione Basic Auth.
     //Con l'autenticazione con il Bearer token il csrf non sembra essere necessario.
-    http.csrf().disable();
-    http.cors();
+    //http.csrf().disable();
+    //http.cors();
+    http.csrf(AbstractHttpConfigurer::disable);
 
-    http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
+    //http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
+    //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
+    //    http.authorizeRequests()
+    //      .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
+
+    http.authorizeHttpRequests(authz -> authz
+        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+        .requestMatchers(HttpMethod.GET, "/actuator/*").permitAll()
+        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+        .anyRequest().authenticated());
+
+
     if (securityConfig.getOauth2().isResourceserverEnabled()) {
       http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
     }
     http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);
 
-    //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
-    http.authorizeRequests()
-      .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
 
     return http.build();
+
   }
 
 }

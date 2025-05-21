@@ -22,6 +22,8 @@ import java.time.YearMonth;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,11 +35,11 @@ import org.springframework.stereotype.Component;
 public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
   private ContractMonthRecap value;
-  private final Provider<IWrapperFactory> wrapperFactoryProvider;
+  private final ObjectProvider<IWrapperFactory> wrapperFactoryProvider;
 
   @Inject
   WrapperContractMonthRecap(
-      Provider<IWrapperFactory> wrapperFactoryProvider) {
+      ObjectProvider<IWrapperFactory> wrapperFactoryProvider) {
     this.wrapperFactoryProvider = wrapperFactoryProvider;
   }
 
@@ -53,7 +55,7 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
 
   @Override
   public IWrapperContract getContract() {
-    return wrapperFactoryProvider.get().create(value.getContract());
+    return wrapperFactoryProvider.getObject().create(value.getContract());
   }
 
   @Override
@@ -70,7 +72,7 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
    */
   @Override
   public Optional<ContractMonthRecap> getPreviousRecap() {
-    return wrapperFactoryProvider.get().create(value.getContract())
+    return wrapperFactoryProvider.getObject().create(value.getContract())
               .getContractMonthRecap(YearMonth.of(value.year, value.month)
                       .minusMonths(1));
   }
@@ -82,7 +84,7 @@ public class WrapperContractMonthRecap implements IWrapperContractMonthRecap {
   public Optional<ContractMonthRecap> getPreviousRecapInYear() {
     
     if (this.value.month != 1) {
-      return wrapperFactoryProvider.get().create(value.contract)
+      return wrapperFactoryProvider.getObject().create(value.contract)
               .getContractMonthRecap(YearMonth.of(value.year, value.month)
                       .minusMonths(1));
     }

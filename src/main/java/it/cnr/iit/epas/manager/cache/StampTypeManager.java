@@ -24,10 +24,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.QStampModificationType;
 import it.cnr.iit.epas.models.StampModificationType;
 import it.cnr.iit.epas.models.StampModificationTypeCode;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.transaction.Transactional;
-import javax.persistence.EntityManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
@@ -41,18 +41,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class StampTypeManager {
 
-  protected final JPQLQueryFactory queryFactory;
+  protected final ObjectProvider<EntityManager> emp;
+  private final JPQLQueryFactory queryFactory;
+
   private static final String SMT_PREFIX = "smt";
-  private final Provider<EntityManager> emp;
   private final CacheManager cacheManager;
 
   /**
    * Default constructor per l'injection.
    */
   @Inject
-  StampTypeManager(Provider<EntityManager> emp, CacheManager cacheManager) {
-    this.queryFactory = new JPAQueryFactory(emp.get());
+  StampTypeManager(ObjectProvider<EntityManager> emp, CacheManager cacheManager) {
     this.emp = emp;
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
     this.cacheManager = cacheManager;
   }
 
@@ -93,7 +94,7 @@ public class StampTypeManager {
     } else {
       value = (StampModificationType) valueWrapper.get();
     }
-    emp.get().merge(value);
+    emp.getObject().merge(value);
     return value;
 
   }

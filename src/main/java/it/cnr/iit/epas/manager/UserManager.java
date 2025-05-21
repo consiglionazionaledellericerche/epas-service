@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,8 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -36,11 +38,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,13 +54,13 @@ import org.springframework.stereotype.Component;
 public class UserManager {
 
   private final UserDao userDao;
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * Construttore per l'injection.
    */
   @Inject
-  public UserManager(UserDao userDao, Provider<EntityManager> emp) {
+  public UserManager(UserDao userDao, ObjectProvider<EntityManager> emp) {
     this.userDao = userDao;
     this.emp = emp;
   }
@@ -80,7 +80,7 @@ public class UserManager {
 
     person.getUser().setRecoveryToken(new BigInteger(130, random).toString(32));
     person.getUser().setExpireRecoveryToken(LocalDate.now());
-    emp.get().persist(person.getUser());
+    emp.getObject().persist(person.getUser());
     //person.getUser().save();
   }
 
@@ -170,7 +170,7 @@ public class UserManager {
         uro.setUser(user);
         uro.setOffice(office);
         uro.setRole(role);
-        emp.get().persist(uro);
+        emp.getObject().persist(uro);
         //uro.save();
       }
     }
@@ -178,7 +178,7 @@ public class UserManager {
 
   /**
    * Build an hexadecimal MD5 hash for a String
-   * Metodo copiato dal play 1.5!
+   * Metodo copiato dal play 1.5!.
    *
    * @param value The String to hash
    * @return An hexadecimal Hash

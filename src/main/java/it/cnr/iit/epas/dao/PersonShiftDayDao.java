@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -28,12 +28,14 @@ import it.cnr.iit.epas.models.QShiftCategories;
 import it.cnr.iit.epas.models.ShiftCategories;
 import it.cnr.iit.epas.models.ShiftType;
 import it.cnr.iit.epas.models.enumerate.ShiftSlot;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,7 +48,7 @@ public class PersonShiftDayDao extends DaoBase<PersonShiftDay> {
 
 
   @Inject
-  PersonShiftDayDao(Provider<EntityManager> emp) {
+  PersonShiftDayDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

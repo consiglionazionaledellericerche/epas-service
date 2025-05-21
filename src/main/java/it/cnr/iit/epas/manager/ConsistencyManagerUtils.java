@@ -59,12 +59,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
 class ConsistencyManagerUtils {
@@ -82,39 +83,9 @@ class ConsistencyManagerUtils {
   private final StampTypeManager stampTypeManager;
   private final ContractMonthRecapManager contractMonthRecapManager;
   private final TimeSlotManager timeSlotManager;
-  private final Provider<IWrapperFactory> wrapperFactory;
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<EntityManager> emp;
 
-  @Inject
-  ConsistencyManagerUtils(
-      PersonDao personDao, PersonDayDao personDayDao,
-      PersonShiftDayDao personShiftDayDao, StampingDao stampingDao,
-      ContractDao contractDao, AbsenceDao absenceDao,
-      AbsenceService absenceService,
-      ShiftManager2 shiftManager,
-      PersonDayManager personDayManager,
-      ConfigurationManager configurationManager,
-      StampTypeManager stampTypeManager,
-      ContractMonthRecapManager contractMonthRecapManager,
-      TimeSlotManager timeSlotManager,
-      Provider<IWrapperFactory> wrapperFactory,
-      Provider<EntityManager> emp) {
-    this.personDao = personDao;
-    this.personDayDao = personDayDao;
-    this.personShiftDayDao = personShiftDayDao;
-    this.stampingDao = stampingDao;
-    this.contractDao = contractDao;
-    this.absenceDao = absenceDao;
-    this.absenceService = absenceService;
-    this.shiftManager2 = shiftManager;
-    this.personDayManager = personDayManager;
-    this.configurationManager = configurationManager;
-    this.stampTypeManager = stampTypeManager;
-    this.timeSlotManager = timeSlotManager;
-    this.wrapperFactory = wrapperFactory;
-    this.contractMonthRecapManager = contractMonthRecapManager;
-    this.emp = emp;
-  }
 
   /**
    * Effettua l'aggiornamento della situazione dei riepiloghi
@@ -141,7 +112,7 @@ class ConsistencyManagerUtils {
       return Optional.empty();
     }
 
-    IWrapperPerson wrPerson = wrapperFactory.get().create(person);
+    IWrapperPerson wrPerson = wrapperFactory.getObject().create(person);
 
     // Gli intervalli di ricalcolo dei person day.
     LocalDate lastPersonDayToCompute = LocalDate.now();
@@ -181,7 +152,7 @@ class ConsistencyManagerUtils {
         }
 
         Preconditions.checkNotNull(personDay);
-        IWrapperPersonDay wrPersonDay = wrapperFactory.get().create(personDay);
+        IWrapperPersonDay wrPersonDay = wrapperFactory.getObject().create(personDay);
 
         if (previous != null) {
           // set previous for progressive
@@ -353,7 +324,7 @@ class ConsistencyManagerUtils {
 
     PersonDay previous = pd.getPreviousForNightStamp().get();
 
-    Stamping lastStampingPreviousDay = wrapperFactory.get().create(previous).getLastStamping();
+    Stamping lastStampingPreviousDay = wrapperFactory.getObject().create(previous).getLastStamping();
 
     if (lastStampingPreviousDay != null && lastStampingPreviousDay.isIn()) {
 
@@ -386,7 +357,7 @@ class ConsistencyManagerUtils {
         previous.getStampings().add(exitStamp);
         personDayDao.save(previous);
 
-        populatePersonDay(wrapperFactory.get().create(previous));
+        populatePersonDay(wrapperFactory.getObject().create(previous));
 
         // timbratura apertura giorno attuale
         Stamping enterStamp =
@@ -477,7 +448,7 @@ class ConsistencyManagerUtils {
               yearMonthToCompute, lastDayInYearMonth, otherCompensatoryRest, 
               Optional.ofNullable(timeVariationList));
 
-      emp.get().merge(recap.get());
+      emp.getObject().merge(recap.get());
       contract.getValue().contractMonthRecaps.add(recap.get());
       contractDao.merge(contract.getValue());
 
@@ -518,14 +489,14 @@ class ConsistencyManagerUtils {
         cmr.buoniPastoDaInizializzazione = 0;
         cmr.remainingMealTickets = 0;
       }
-      if (emp.get().contains(cmr)) {
-        emp.get().merge(cmr);
+      if (emp.getObject().contains(cmr)) {
+        emp.getObject().merge(cmr);
       } else {
-        emp.get().persist(cmr);
+        emp.getObject().persist(cmr);
       }
       //cmr.save();
       contract.getValue().contractMonthRecaps.add(cmr);
-      emp.get().merge(contract.getValue());
+      emp.getObject().merge(contract.getValue());
       //contract.getValue().save();
       return cmr;
     }
@@ -534,10 +505,10 @@ class ConsistencyManagerUtils {
 
     ContractMonthRecap cmr = buildContractMonthRecap(contract, yearMonthToCompute);
     contract.getValue().contractMonthRecaps.add(cmr);
-    if (emp.get().contains(cmr)) {
-      emp.get().merge(cmr);
+    if (emp.getObject().contains(cmr)) {
+      emp.getObject().merge(cmr);
     } else {
-      emp.get().persist(cmr);
+      emp.getObject().persist(cmr);
     }
     //cmr.save();
 
@@ -546,14 +517,14 @@ class ConsistencyManagerUtils {
     contractMonthRecapManager.computeResidualModule(cmr, Optional.<ContractMonthRecap>empty(),
         yearMonthToCompute, LocalDate.now().minusDays(1), otherCompensatoryRest, Optional.empty());
 
-    if (emp.get().contains(cmr)) {
-      emp.get().merge(cmr);
+    if (emp.getObject().contains(cmr)) {
+      emp.getObject().merge(cmr);
     } else {
-      emp.get().persist(cmr);
+      emp.getObject().persist(cmr);
     }
     //cmr.save();
 
-    emp.get().merge(contract.getValue());
+    emp.getObject().merge(contract.getValue());
     //contract.getValue().save();
     return cmr;
 
@@ -587,7 +558,7 @@ class ConsistencyManagerUtils {
     
     for (Contract contract : person.getContracts()) {
 
-      IWrapperContract wrContract = wrapperFactory.get().create(contract);
+      IWrapperContract wrContract = wrapperFactory.getObject().create(contract);
       DateInterval contractDateInterval = wrContract.getContractDateInterval();
       YearMonth endContractYearMonth = YearMonth.from(contractDateInterval.getEnd());
 

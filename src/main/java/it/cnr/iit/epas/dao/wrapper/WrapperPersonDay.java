@@ -35,7 +35,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -46,6 +50,7 @@ import org.springframework.web.context.annotation.RequestScope;
  *
  * @author Alessandro Martelli
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 @RequestScope
@@ -54,21 +59,13 @@ public class WrapperPersonDay implements IWrapperPersonDay {
   private PersonDay value;
   private final ContractDao contractDao;
   private final PersonDayDao personDayDao;
-  private final Provider<IWrapperFactory> factory;
+  private final ObjectProvider<IWrapperFactory> factory;
   private Optional<PersonDay> previousForProgressive = null;
   private Optional<PersonDay> previousForNightStamp = null;
   private Optional<Contract> personDayContract = null;
   private Boolean isFixedTimeAtWorkk = null;
   private Optional<WorkingTimeTypeDay> workingTimeTypeDay = null;
   private Optional<PersonalWorkingTime> personalWorkingTime = null;
-
-  @Inject
-  WrapperPersonDay(ContractDao contractDao,
-                   PersonDayDao personDayDao, Provider<IWrapperFactory> factory) {
-    this.contractDao = contractDao;
-    this.personDayDao = personDayDao;
-    this.factory = factory;
-  }
 
   public IWrapperPersonDay setValue(PersonDay pd) {
     this.value = pd;
@@ -146,7 +143,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
     //Non stesso contratto
     // TODO: (equivalente a caso this.value.equals(beginDate)
     if (!DateUtility.isDateIntoInterval(candidate.getDate(),
-            factory.get().create(this.getPersonDayContract().get()).getContractDateInterval())) {
+            factory.getObject().create(this.getPersonDayContract().get()).getContractDateInterval())) {
       return;
     }
     this.previousForProgressive = Optional.ofNullable(candidate);
@@ -277,7 +274,7 @@ public class WrapperPersonDay implements IWrapperPersonDay {
               this.getPersonDayContract().get().getContractWorkingTimeType()) {
 
         if (DateUtility.isDateIntoInterval(this.value.getDate(),
-                factory.get().create(cwtt).getDateInverval())) {
+                factory.getObject().create(cwtt).getDateInverval())) {
 
           WorkingTimeTypeDay wttd = cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
                   .get(this.value.getDate().getDayOfWeek().getValue() - 1);

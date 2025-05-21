@@ -23,10 +23,11 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonShiftDayDao;
 import it.cnr.iit.epas.models.PersonDay;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Gestione dei time slot obbligatori.
@@ -41,11 +42,11 @@ public class TimeSlotManager {
   private final ContractDao contractDao;
   private final PersonShiftDayDao personShiftDayDao;
   private final AbsenceDao absenceDao;
-  private final Provider<PersonDayManager> personDayManager;
+  private final ObjectProvider<PersonDayManager> personDayManager;
 
   @Inject
   TimeSlotManager(ContractDao contractDao, PersonShiftDayDao personShiftDayDao,
-      AbsenceDao absenceDao, Provider<PersonDayManager> personDayManager) {
+      AbsenceDao absenceDao, ObjectProvider<PersonDayManager> personDayManager) {
     this.contractDao = contractDao;
     this.personShiftDayDao = personShiftDayDao;
     this.absenceDao = absenceDao;
@@ -98,7 +99,7 @@ public class TimeSlotManager {
 
     //Se sono presenti assenze giornalieri la fascia obbigatoria non deve essere 
     //rispettata anche in presenta di timbrature
-    boolean isAllDayAbsencePresent = personDayManager.get().isAllDayAbsences(personDay); 
+    boolean isAllDayAbsencePresent = personDayManager.getObject().isAllDayAbsences(personDay); 
 
     val previousShortPermission = 
         personDay.getAbsences().stream().filter(a -> a.absenceType.code.equals("PB")).findFirst();
@@ -125,7 +126,7 @@ public class TimeSlotManager {
     }
 
     val shortPermission = 
-        personDayManager.get().buildShortPermissionAbsence(
+        personDayManager.getObject().buildShortPermissionAbsence(
             personDay, mandatoryTimeSlot.get().timeSlot);
 
     if (!shortPermission.isPresent() && !previousShortPermission.isPresent()) {

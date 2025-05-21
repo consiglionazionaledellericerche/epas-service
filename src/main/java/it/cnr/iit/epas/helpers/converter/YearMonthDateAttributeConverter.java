@@ -21,6 +21,9 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import javax.persistence.AttributeConverter;
 
+/**
+ * Convertitore Hibernate da YearMonth a String e viceversa.
+ */
 public class YearMonthDateAttributeConverter
     implements AttributeConverter<YearMonth, String> {
 

@@ -66,12 +66,16 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
  * Manager per la gestione dei PersonDay.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class PersonDayManager {
@@ -84,34 +88,7 @@ public class PersonDayManager {
   private final WorkingTimeTypeDao workingTimeTypeDao;
   private final ZoneDao zoneDao;
   private final AbsenceComponentDao absenceComponentDao;
-  private final Provider<EntityManager> emp;
-
-  /**
-   * Costruttore.
-   *
-   * @param configurationManager      configurationManager
-   * @param personDayInTroubleManager personDayInTroubleManager
-   * @param personShiftDayDao         personShiftDayDao
-   */
-  @Inject
-  public PersonDayManager(ConfigurationManager configurationManager,
-      PersonDayInTroubleManager personDayInTroubleManager, 
-      PersonDayInTroubleDao personDayInTroubleDao,
-      PersonDayDao personDayDao,
-      PersonShiftDayDao personShiftDayDao, WorkingTimeTypeDao workingTimeTypeDao, ZoneDao zoneDao,
-      AbsenceComponentDao absenceComponentDao,
-      Provider<EntityManager> emp) {
-
-    this.configurationManager = configurationManager;
-    this.personDayInTroubleManager = personDayInTroubleManager;
-    this.personDayInTroubleDao = personDayInTroubleDao;
-    this.personShiftDayDao = personShiftDayDao;
-    this.personDayDao = personDayDao;
-    this.workingTimeTypeDao = workingTimeTypeDao;
-    this.zoneDao = zoneDao;
-    this.absenceComponentDao = absenceComponentDao;
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   public PersonDayDao getPersonDayDao() {
     return personDayDao;
@@ -839,7 +816,7 @@ public class PersonDayManager {
             absence.justifiedMinutes = absence.justifiedMinutes - decurted;
             recompute = true;
             if (!exitingNow.isPresent()) {
-              emp.get().merge(absence);
+              emp.getObject().merge(absence);
               //absence.save();
             }
           }
@@ -1513,7 +1490,7 @@ public class PersonDayManager {
     PersonDay personDay = new PersonDay(person, date);
     // FIXME cosa ci fa l'informazione della festività in questo metodo?
     personDay.setHoliday(isHoliday(person, date));
-    emp.get().persist(personDay);
+    emp.getObject().persist(personDay);
     //personDay.create();
     return personDay;
   }

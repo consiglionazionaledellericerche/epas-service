@@ -43,6 +43,8 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,7 +61,7 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
   private ConsistencyManager consistencyManager;
   private MealTicketRecapBuilder mealTicketRecapBuilder;
   private ConfigurationManager configurationManager;
-  private Provider<EntityManager> emp;
+  private ObjectProvider<EntityManager> emp;
 
   /**
    * Costrutture.
@@ -77,7 +79,7 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
       ConfigurationManager configurationManager,
       MealTicketRecapBuilder mealTicketRecapBuilder,
       IWrapperFactory wrapperFactory,
-      Provider<EntityManager> emp) {
+      ObjectProvider<EntityManager> emp) {
 
     this.personDao = personDao;
     this.mealTicketDao = mealTicketDao;
@@ -231,7 +233,7 @@ public class MealTicketsServiceImpl implements IMealTicketsService {
       }
       ticketToChange.setContract(contract);
       ticketToChange.setDate(contract.getBeginDate());
-      emp.get().merge(ticketToChange);
+      emp.getObject().merge(ticketToChange);
       //ticketToChange.save();
       mealTicketsTransfered++;
     }

@@ -19,12 +19,15 @@ package it.cnr.iit.epas.models.base;
 
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.security.SecureUtils;
+import jakarta.persistence.EntityManager;
+
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.hibernate.envers.RevisionListener;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -39,10 +42,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Slf4j
 public class ExtendedRevisionListener implements RevisionListener {
 
-  private final Provider<SecureUtils> secureUtils;
+  protected final ObjectProvider<SecureUtils> secureUtils;
+  
 
   @Inject
-  public ExtendedRevisionListener(Provider<SecureUtils> securityUtils) {
+  public ExtendedRevisionListener(ObjectProvider<SecureUtils> securityUtils) {
     this.secureUtils = securityUtils;
   }
 
@@ -74,7 +78,7 @@ public class ExtendedRevisionListener implements RevisionListener {
 
   private Optional<User> getUserFromCurrentSecurityContext() {
     val authentication = SecurityContextHolder.getContext().getAuthentication();
-    return secureUtils.get().getUserFromAuthentication(authentication);
+    return secureUtils.getObject().getUserFromAuthentication(authentication);
   }
 
   private Optional<String> getRemoteAddr() {

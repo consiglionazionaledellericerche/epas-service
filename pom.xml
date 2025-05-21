@@ -5,23 +5,25 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.cnr.iit</groupId>
 	<artifactId>epas-service</artifactId>
-	<version>0.5.1</version>
+	<version>0.6.0</version>
 	<name>epas-service</name>
 	<description>Personnel Attendance System</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<guava.version>33.3.1-jre</guava.version>
-		<drools.version>7.74.0.Final</drools.version>
+		<drools.version>9.44.0.Final</drools.version>
 		<lombok.version>1.18.34</lombok.version>
 		<dbunit.version>2.8.0</dbunit.version>
 		<springdoc.openapi.version>1.8.0</springdoc.openapi.version>
 		<jib.maven-plugin.version>3.4.3</jib.maven-plugin.version>
+		<joda-time.version>2.14.0</joda-time.version>
+		<querydsl.version>5.1.0</querydsl.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -104,15 +106,32 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
 		<!-- QueryDsl -->
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl.version}</version>
+			<classifier>jakarta</classifier>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
+			<version>${querydsl.version}</version>
+			<classifier>jakarta</classifier>
 		</dependency>
 		<!-- Fine QueryDsl -->
 		<dependency>

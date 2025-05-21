@@ -31,23 +31,23 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
+import lombok.RequiredArgsConstructor;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
  * Factory per alcune Function di utilità da utilizzare nei Wrapper.
  */
+@RequiredArgsConstructor
 @Deprecated
 @Component
 public class WrapperModelFunctionFactory {
 
-  private final Provider<IWrapperFactory> factory;
-
-  @Inject
-  WrapperModelFunctionFactory(Provider<IWrapperFactory> factory) {
-    this.factory = factory;
-  }
+  private final ObjectProvider<IWrapperFactory> factory;
 
   /**
    * Permette la creazione di un'istanza wrapperWorkingTyimeType a partire dall'oggetto
@@ -60,7 +60,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperWorkingTimeType apply(WorkingTimeType input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -75,7 +75,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperTimeSlot apply(TimeSlot input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -90,7 +90,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperPerson apply(Person input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -105,7 +105,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperOffice apply(Office input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -121,7 +121,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContract apply(Contract input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -137,7 +137,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContractMonthRecap apply(ContractMonthRecap input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }

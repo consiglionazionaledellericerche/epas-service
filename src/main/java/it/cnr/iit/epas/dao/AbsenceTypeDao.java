@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,7 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.QAbsence;
 import it.cnr.iit.epas.models.absences.QAbsenceType;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,7 +49,7 @@ import org.springframework.stereotype.Component;
 public class AbsenceTypeDao extends DaoBase<AbsenceType> {
 
   @Inject
-  AbsenceTypeDao(Provider<EntityManager> emp) {
+  AbsenceTypeDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

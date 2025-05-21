@@ -23,11 +23,13 @@ import it.cnr.iit.epas.models.BadgeReader;
 import it.cnr.iit.epas.models.QZoneToZones;
 import it.cnr.iit.epas.models.Zone;
 import it.cnr.iit.epas.models.ZoneToZones;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class ZoneDao extends DaoBase<Zone> {
 
   @Inject
-  ZoneDao(Provider<EntityManager> emp) {
+  ZoneDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

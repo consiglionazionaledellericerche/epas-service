@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.base.Verify;
@@ -24,14 +25,14 @@ import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.base.QRevision;
 import it.cnr.iit.epas.models.base.Revision;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,13 +42,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class HistoricalDao {
 
-  private final Provider<EntityManager> emp;
+  protected final ObjectProvider<EntityManager> emp;
   private final JPQLQueryFactory queryFactory;
 
   @Inject
-  HistoricalDao(Provider<EntityManager> emp) {
+  HistoricalDao(ObjectProvider<EntityManager> emp) {
     this.emp = emp;
-    this.queryFactory = new JPAQueryFactory(emp.get());
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
 
   }
 
@@ -76,9 +77,9 @@ public class HistoricalDao {
    */
   @Deprecated
   public <T extends BaseEntity> T valueAtRevision(Class<T> cls, long id, int revisionId) {
-    val auditReader = AuditReaderFactory.get(emp.get());
+    val auditReader = AuditReaderFactory.get(emp.getObject());
 
-    final T current = Verify.verifyNotNull(emp.get().find(cls, id));
+    final T current = Verify.verifyNotNull(emp.getObject().find(cls, id));
     final T history = cls.cast(auditReader.createQuery()
         .forEntitiesAtRevision(cls, revisionId)
         .add(AuditEntity.id().eq(current.getId()))
@@ -117,7 +118,7 @@ public class HistoricalDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<?>> lastRevisionsOf(Class<? extends BaseEntity> cls, long id) {
-    val auditReader = AuditReaderFactory.get(emp.get());
+    val auditReader = AuditReaderFactory.get(emp.getObject());
     return FluentIterable.from(auditReader.createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .add(AuditEntity.id().eq(id))
@@ -135,7 +136,7 @@ public class HistoricalDao {
    * @return la versione precedente del istanza individuata da cls e id.
    */
   public <T extends BaseEntity> T previousRevisionOf(Class<T> cls, long id) {
-    val auditReader = AuditReaderFactory.get(emp.get());
+    val auditReader = AuditReaderFactory.get(emp.getObject());
     final Integer currentRevision = (Integer) auditReader.createQuery()
         .forRevisionsOfEntity(cls, false, true)
         .add(AuditEntity.id().eq(id))
@@ -160,6 +161,6 @@ public class HistoricalDao {
   }
 
   public Boolean isPersistent(BaseEntity entity) {
-    return emp.get().contains(entity);
+    return emp.getObject().contains(entity);
   }
 }

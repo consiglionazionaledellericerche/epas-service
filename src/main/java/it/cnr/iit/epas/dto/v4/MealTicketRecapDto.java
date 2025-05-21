@@ -18,10 +18,6 @@
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
-import it.cnr.iit.epas.manager.services.mealtickets.BlockMealTicket;
-import it.cnr.iit.epas.models.MealTicket;
-import it.cnr.iit.epas.models.PersonDay;
-import it.cnr.iit.epas.utils.DateInterval;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;

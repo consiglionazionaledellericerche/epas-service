@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -24,9 +24,11 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,11 +41,11 @@ import org.springframework.stereotype.Component;
 public class ModelQuery {
 
   protected final JPQLQueryFactory queryFactory;
-  protected final Provider<EntityManager> emp;
+  protected final ObjectProvider<EntityManager> emp;
 
-  public ModelQuery(Provider<EntityManager> emp) {
+  public ModelQuery(ObjectProvider<EntityManager> emp) {
     this.emp = emp;
-    this.queryFactory = new JPAQueryFactory(emp.get());
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
   }
 
   public JPQLQuery<?> createQuery() {
@@ -60,7 +62,7 @@ public class ModelQuery {
   }
 
   public boolean isPersistent(BaseEntity model) {
-    return emp.get().contains(model);
+    return emp.getObject().contains(model);
   }
 
   public boolean isNotEmpty(BaseEntity model) {
@@ -82,7 +84,7 @@ public class ModelQuery {
    * @return la funzione per ottenere un oggetto via em.find().
    */
   public <T extends BaseEntity> Function<Integer, T> jpaFind(final Class<T> model) {
-    return id -> emp.get().find(model, id);
+    return id -> emp.getObject().find(model, id);
   }
 
   /**

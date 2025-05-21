@@ -31,14 +31,15 @@ import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.dto.HorizontalWorkingTime;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.val;
 import org.joda.time.DateTimeConstants;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,13 +53,13 @@ public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
   private final ContractDao contractDao;
 
   @Inject
-  WorkingTimeTypeDao(Provider<EntityManager> emp, ContractDao contractDao) {
+  WorkingTimeTypeDao(ObjectProvider<EntityManager> emp, ContractDao contractDao) {
     super(emp);
     this.contractDao = contractDao;
   }
 
   public WorkingTimeTypeDay merge(WorkingTimeTypeDay wttd) {
-    return emp.get().merge(wttd);
+    return emp.getObject().merge(wttd);
   }
 
   /**
@@ -205,7 +206,7 @@ public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
     wtt.setDisabled(false);
     wtt.setExternalId(pattern.getExternalId());
     wtt.setEnableAdjustmentForQuantity(pattern.isReproportionAbsenceCodesEnabled());
-    emp.get().persist(wtt);
+    emp.getObject().persist(wtt);
     //wtt.save();
     
     for (int i = 0; i < DateTimeConstants.DAYS_PER_WEEK; i++) {
@@ -239,7 +240,7 @@ public class WorkingTimeTypeDao extends DaoBase<WorkingTimeType> {
       }
 
       wttd.workingTimeType = wtt;
-      emp.get().persist(wttd);
+      emp.getObject().persist(wttd);
       //wttd.save();
     }
     return wtt;

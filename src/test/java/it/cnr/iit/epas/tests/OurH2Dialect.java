@@ -25,7 +25,7 @@ import java.sql.Types;
  * javax.persistence.PersistenceException: org.hibernate.MappingException:
  * No Dialect mapping for JDBC type: 1111
  * This makes the assumption that no other fields types will be using the java.sql.Types.OTHER
- * data type
+ * data type.
  *
  * @author Cristian Lucchesi
  *
@@ -37,7 +37,7 @@ public class OurH2Dialect extends org.hibernate.dialect.H2Dialect {
   */
   public OurH2Dialect() {
     super();
-    registerColumnType(Types.OTHER, "varchar");
-    registerHibernateType(Types.OTHER, "string");
+    //registerColumnType(Types.OTHER, "varchar");
+    //registerHibernateType(Types.OTHER, "string");
   }
 }

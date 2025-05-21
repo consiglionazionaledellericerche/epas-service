@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.Lists;
@@ -128,7 +129,7 @@ public enum DefaultCategoryType {
   }
 
   /**
-   * L'enumerato corrispettivo della categoria (se esiste...)
+   * L'enumerato corrispettivo della categoria (se esiste...).
    *
    * @return optional dell'enumerato
    */

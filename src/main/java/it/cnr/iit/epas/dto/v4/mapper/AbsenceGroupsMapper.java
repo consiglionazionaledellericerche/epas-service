@@ -84,8 +84,10 @@ public interface AbsenceGroupsMapper {
   @Mapping(target = "justifiedTypeSelected", source = "justifiedTypeSelected.name")
   @Mapping(target = "hasGroupChoice", expression = "java(absenceForm.hasGroupChoice())")
   @Mapping(target = "hasAbsenceTypeChoice", expression = "java(absenceForm.hasAbsenceTypeChoice())")
-  @Mapping(target = "hasJustifiedTypeChoice", expression = "java(absenceForm.hasJustifiedTypeChoice())")
-//  @Mapping(target = "theOnlyAbsenceType", expression = "java(absenceForm.theOnlyAbsenceType().getId())")
+  @Mapping(
+      target = "hasJustifiedTypeChoice", expression = "java(absenceForm.hasJustifiedTypeChoice())")
+  //@Mapping(
+  //  target = "theOnlyAbsenceType", expression = "java(absenceForm.theOnlyAbsenceType().getId())")
   @Mapping(target = "hasHourMinutesChoice", expression = "java(absenceForm.hasHourMinutesChoice())")
   @Mapping(target = "selectableHours", expression = "java(absenceForm.selectableHours())")
   @Mapping(target = "selectableMinutes", expression = "java(absenceForm.selectableMinutes())")

@@ -129,24 +129,25 @@ public class MealTicketsController {
       }
     }
 
-    LocalDate deliveryDate = LocalDate.now();
-    LocalDate today = LocalDate.now();
+
     //TODO mettere nel default.
     Integer ticketNumberFrom = 1;
     Integer ticketNumberTo = 22;
 
-    LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
-
     MealTicketRecapShowDto dto = new MealTicketRecapShowDto();
     MealTicketRecapDto recapDto = mealTicketRecapMapper.convert(recap);
 
-    recapDto.setBlockMealTicketReceivedDeliveryDesc(mealTicketRecapMapper.convert(recap.getBlockMealTicketReceivedDeliveryDesc()));
+    LocalDate deliveryDate = LocalDate.now();
+    LocalDate today = LocalDate.now();
+    LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
+    recapDto.setBlockMealTicketReceivedDeliveryDesc(
+        mealTicketRecapMapper.convert(recap.getBlockMealTicketReceivedDeliveryDesc()));
+    dto.setDeliveryDate(deliveryDate);
+    dto.setToday(today);
     dto.setPerson(personShowTerseMapper.convert(person));
     dto.setRecap(recapDto);
     dto.setRecapPrevious(mealTicketRecapMapper.convert(recapPrevious));
-    dto.setDeliveryDate(deliveryDate);
     dto.setExpireDate(expireDate);
-    dto.setToday(today);
     dto.setTicketNumberFrom(ticketNumberFrom);
     dto.setTicketNumberTo(ticketNumberTo);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,38 +14,35 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.history;
 
+import com.google.common.collect.FluentIterable;
+import it.cnr.iit.epas.models.Stamping;
+import jakarta.persistence.EntityManager;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
 
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.FluentIterable;
-
-import it.cnr.iit.epas.models.Stamping;
-import lombok.val;
 
 /**
  * Dao sullo storico delle timbrature.
  *
  * @author Marco Andreini
  */
+@RequiredArgsConstructor
 @Component
 public class StampingHistoryDao {
 
-  private final Provider<EntityManager> emp;
-
-  @Inject
-  StampingHistoryDao(Provider<EntityManager> emp) {
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * La lista delle revisioni sulla timbratura con id passato.
@@ -55,7 +52,7 @@ public class StampingHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Stamping>> stampings(long stampingId) {
-    val auditReader = AuditReaderFactory.get(emp.get());
+    val auditReader = AuditReaderFactory.get(emp.getObject());
     final AuditQuery query = auditReader.createQuery()
             .forRevisionsOfEntity(Stamping.class, false, true)
             .add(AuditEntity.id().eq(stampingId))

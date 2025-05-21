@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -24,9 +24,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.dao.CompetenceCodeDao;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.QCompetenceCode;
+import jakarta.persistence.EntityManager;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
@@ -44,9 +46,9 @@ public class CompetenceCodeManager {
   private final CompetenceCodeDao competenceCodeDao;
   
   @Inject
-  CompetenceCodeManager(Provider<EntityManager> emp, CacheManager cacheManager,
+  CompetenceCodeManager(ObjectProvider<EntityManager> emp, CacheManager cacheManager,
       CompetenceCodeDao competenceCodeDao) {
-    this.queryFactory = new JPAQueryFactory(emp.get());
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
     this.cacheManager = cacheManager;
     this.competenceCodeDao = competenceCodeDao;
   }

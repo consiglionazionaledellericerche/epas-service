@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -26,12 +26,14 @@ import it.cnr.iit.epas.models.QTimeSlot;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,7 +45,7 @@ public class TimeSlotDao extends DaoBase<TimeSlot> {
   private ContractDao contractDao;
   
   @Inject
-  TimeSlotDao(Provider<EntityManager> emp, ContractDao contractDao) {
+  TimeSlotDao(ObjectProvider<EntityManager> emp, ContractDao contractDao) {
     super(emp);
     this.contractDao = contractDao;
   }

@@ -35,12 +35,14 @@ import it.cnr.iit.epas.models.QPersonReperibility;
 import it.cnr.iit.epas.models.QPersonReperibilityType;
 import it.cnr.iit.epas.models.QTotalOvertime;
 import it.cnr.iit.epas.models.TotalOvertime;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -51,7 +53,7 @@ import org.springframework.stereotype.Component;
 public class CompetenceDao extends DaoBase<Competence> {
 
   @Inject
-  CompetenceDao(Provider<EntityManager> emp) {
+  CompetenceDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

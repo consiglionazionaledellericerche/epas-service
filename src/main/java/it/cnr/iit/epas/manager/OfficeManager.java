@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -30,19 +30,24 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
  * Manager per la gestione degli uffici.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class OfficeManager {
@@ -53,23 +58,7 @@ public class OfficeManager {
   private final ConfigurationManager configurationManager;
   private final PeriodManager periodManager;
   private final OfficeDao officeDao;
-  private final Provider<EntityManager> emp;
-
-  /**
-   * Default constructor.
-   */
-  @Inject
-  public OfficeManager(
-      UsersRolesOfficesDao usersRolesOfficesDao,
-      ConfigurationManager configurationManager,
-      OfficeDao officeDao, PeriodManager periodManager,
-      Provider<EntityManager> emp) {
-    this.usersRolesOfficesDao = usersRolesOfficesDao;
-    this.configurationManager = configurationManager;
-    this.periodManager = periodManager;
-    this.officeDao = officeDao;
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * True se il permesso sull'ufficio viene creato, false se è esistente.
@@ -87,7 +76,7 @@ public class OfficeManager {
       newUro.setUser(user);
       newUro.setOffice(office);
       newUro.role = role;
-      emp.get().persist(newUro);
+      emp.getObject().persist(newUro);
       //newUro.save();
       return true;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,12 +14,11 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,7 +29,7 @@ public class StampingEditFormDto extends StampingCreateDto  {
   private PersonShowDto person;
   private boolean ownStamping;
   private List<ZoneDto> zones;
-  private List<StampTypeDto> StampTypes= Lists.newArrayList();
+  private List<StampTypeDto> stampTypes = Lists.newArrayList();
   private StampTypeDto stampTypeOpt;
 
   private boolean serviceReasons;

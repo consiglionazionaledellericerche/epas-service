@@ -58,7 +58,8 @@ public interface PersonMonthsMapper {
   @Mapping(
       target = "hasResidualInitInYearMonth",
       expression =
-          "java(contractMonthRecap.residualInitInYearMonth(contractMonthRecap.getValue().getYear(), "
+          "java(contractMonthRecap.residualInitInYearMonth("
+          + "contractMonthRecap.getValue().getYear(), "
               + "contractMonthRecap.getValue().getMonth()))")
   @Mapping(
       target = "getResidualLastYearInit",

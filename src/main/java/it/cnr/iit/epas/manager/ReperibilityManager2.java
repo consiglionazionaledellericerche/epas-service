@@ -35,6 +35,7 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityDay;
 import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.QPersonReperibilityType;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,7 +151,8 @@ public class ReperibilityManager2 {
       }
     } else {
       if (currentUser.isSystemUser()) {
-        Iterable<PersonReperibilityType> iterable = this.personReperibilityTypeRepository.findAll();
+        Iterable<PersonReperibilityType> iterable = 
+            personReperibilityTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         Collection<PersonReperibilityType> collection = new ArrayList<>();
         for (PersonReperibilityType item : iterable) {
           collection.add(item);

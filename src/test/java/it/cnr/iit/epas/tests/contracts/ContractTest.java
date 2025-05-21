@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -25,10 +25,10 @@ import static org.junit.Assert.assertTrue;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,18 @@ import it.cnr.iit.epas.models.enumerate.CertificationType;
 import it.cnr.iit.epas.models.flows.Affiliation;
 import it.cnr.iit.epas.models.flows.Group;
 import it.cnr.iit.epas.models.listeners.PersonListener;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -38,18 +50,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -226,7 +226,7 @@ public class Person extends PeriodModel implements IPropertiesInPeriodOwner {
    * Sono stati implementati i metodi Equals e HashCode sulla classe Badge in modo che Se sono
    * presenti più badge per la persona che differiscono solo per il campo badgeReader venga
    * restituito un solo elemento (effettivamente per noi è lo stesso badge).Quindi person.badges non
-   * restituisce i duplicati
+   * restituisce i duplicati.
    */
   @OneToMany(mappedBy = "person", cascade = {CascadeType.REMOVE})
   private Set<Badge> badges = Sets.newHashSet();
