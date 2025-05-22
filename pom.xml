@@ -167,6 +167,12 @@
 			<artifactId>drools-mvel</artifactId>
 			<version>${drools.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.drools/drools-commands -->
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-commands</artifactId>
+			<version>${drools.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
