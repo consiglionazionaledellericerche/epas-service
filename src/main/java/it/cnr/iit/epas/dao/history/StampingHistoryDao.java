@@ -21,9 +21,6 @@ import com.google.common.collect.FluentIterable;
 import it.cnr.iit.epas.models.Stamping;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.hibernate.envers.AuditReaderFactory;

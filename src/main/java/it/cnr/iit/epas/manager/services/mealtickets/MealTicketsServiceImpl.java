@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -41,9 +41,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

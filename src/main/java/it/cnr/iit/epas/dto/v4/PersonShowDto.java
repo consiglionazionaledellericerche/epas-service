@@ -51,4 +51,7 @@ public class PersonShowDto extends PersonMutableDto {
 
   @Schema(description = "Residenza")
   private String residence;
+
+  @Schema(description = "Data di nascita")
+  private LocalDate birthday;
 }

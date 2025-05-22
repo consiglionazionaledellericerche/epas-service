@@ -23,8 +23,6 @@ import it.cnr.iit.epas.models.flows.QCompetenceRequestEvent;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

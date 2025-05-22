@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import org.joda.time.YearMonth;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;

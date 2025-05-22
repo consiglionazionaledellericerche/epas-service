@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,12 +18,9 @@
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
-import com.google.inject.Provider;
 import it.cnr.iit.epas.models.User;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
-import javax.inject.Inject;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;

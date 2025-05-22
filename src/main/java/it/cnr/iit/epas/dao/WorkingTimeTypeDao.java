@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import lombok.val;
 import org.joda.time.DateTimeConstants;
 import org.springframework.beans.factory.ObjectProvider;

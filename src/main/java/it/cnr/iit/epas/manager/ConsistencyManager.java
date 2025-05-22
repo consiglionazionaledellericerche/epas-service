@@ -37,10 +37,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 //import play.db.jpa.JPA;

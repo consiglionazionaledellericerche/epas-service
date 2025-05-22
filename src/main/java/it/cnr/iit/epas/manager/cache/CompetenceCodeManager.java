@@ -26,8 +26,6 @@ import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.QCompetenceCode;
 import jakarta.persistence.EntityManager;
 import javax.inject.Inject;
-import javax.inject.Provider;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;

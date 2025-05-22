@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,6 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.PersonReperibility;
 import it.cnr.iit.epas.models.PersonReperibilityDay;
 import it.cnr.iit.epas.models.PersonReperibilityType;
-import it.cnr.iit.epas.models.QPersonReperibilityType;
 import it.cnr.iit.epas.models.ReperibilityTypeMonth;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;

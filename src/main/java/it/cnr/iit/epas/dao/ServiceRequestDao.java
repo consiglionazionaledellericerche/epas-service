@@ -20,8 +20,6 @@ package it.cnr.iit.epas.dao;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.informationrequests.ServiceRequest;
 import jakarta.persistence.EntityManager;
-import javax.inject.Provider;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

@@ -62,10 +62,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

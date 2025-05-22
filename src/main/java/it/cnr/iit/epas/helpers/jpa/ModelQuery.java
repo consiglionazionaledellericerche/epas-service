@@ -26,8 +26,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import javax.inject.Provider;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
