@@ -125,7 +125,8 @@ public class PersonDayInTroubleManager {
 
     for (Person person : personList) {
 
-      final Optional<Contract> currentContract = factory.getObject().create(person).getCurrentContract();
+      final Optional<Contract> currentContract = 
+          factory.getObject().create(person).getCurrentContract();
       if (!currentContract.isPresent()) {
         log.error("Nessun contratto trovato attivo alla data odierna per {} - {} ", person,
             person.getOffice());

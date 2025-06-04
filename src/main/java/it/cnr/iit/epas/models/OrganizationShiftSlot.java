@@ -29,7 +29,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -72,11 +71,9 @@ public class OrganizationShiftSlot extends BaseEntity {
   private LocalTime endSlot;
 
   @Column(columnDefinition = "VARCHAR")
-  @Nullable
   private LocalTime beginMealSlot;
 
   @Column(columnDefinition = "VARCHAR")
-  @Nullable
   private LocalTime endMealSlot;
 
   @Enumerated(EnumType.STRING)

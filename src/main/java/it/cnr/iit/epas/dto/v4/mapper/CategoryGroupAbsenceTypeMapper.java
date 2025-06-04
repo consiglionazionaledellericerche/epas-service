@@ -17,10 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4.mapper;
 
-import org.mapstruct.Mapper;
-
 import it.cnr.iit.epas.dto.v4.CategoryGroupAbsenceTypeDto;
 import it.cnr.iit.epas.models.absences.CategoryGroupAbsenceType;
+import org.mapstruct.Mapper;
 
 /**
  * Mapper da CategoryTab al suo DTO per la visualizzazione via REST.

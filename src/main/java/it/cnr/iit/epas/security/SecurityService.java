@@ -17,19 +17,17 @@
 
 package it.cnr.iit.epas.security;
 
-import org.joda.time.YearMonth;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.joda.time.YearMonth;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @RequiredArgsConstructor

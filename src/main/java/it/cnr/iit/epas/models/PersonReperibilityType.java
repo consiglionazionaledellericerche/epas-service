@@ -27,6 +27,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -36,7 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
 
 /**
@@ -48,13 +48,13 @@ import org.hibernate.envers.Audited;
 @Setter
 @Audited
 @Entity
-@Table(name = "person_reperibility_types")
+@Table(name = "person_reperibility_types", 
+    uniqueConstraints = @UniqueConstraint(columnNames = {"description"}))
 public class PersonReperibilityType extends BaseEntity {
 
   private static final long serialVersionUID = 3234688199593333012L;
 
   @NotNull
-  @Unique
   private String description;
 
   @OneToMany(mappedBy = "personReperibilityType")

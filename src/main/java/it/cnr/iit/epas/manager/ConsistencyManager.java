@@ -176,7 +176,8 @@ public class ConsistencyManager {
    */
   public void updateContractSituation(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = 
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
     consistencyManagerUtils.updatePersonSituationEngine(
         contract.person.getId(), from, Optional.ofNullable(to), false);
   }
@@ -189,7 +190,8 @@ public class ConsistencyManager {
    */
   public void updateContractRecaps(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = 
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
     consistencyManagerUtils.updatePersonSituationEngine(
         contract.person.getId(), from, Optional.ofNullable(to), true);
   }

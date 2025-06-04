@@ -27,7 +27,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Una zona di timbratura. Utilizzate per calcoli particolari tra zone collegate.
@@ -46,7 +45,6 @@ public class Zone extends BaseEntity {
   
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "badge_reader_id")
-  @Nullable
   public BadgeReader badgeReader;
   
   @OneToMany(mappedBy = "zoneBase")

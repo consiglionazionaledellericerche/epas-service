@@ -30,7 +30,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
 
 
@@ -52,7 +51,6 @@ public class CompetenceCodeGroup extends BaseEntity {
   public List<CompetenceCode> competenceCodes = Lists.newArrayList();
 
   @NotNull
-  @Unique
   public String label;
 
   @NotNull
@@ -67,4 +65,5 @@ public class CompetenceCodeGroup extends BaseEntity {
   @Enumerated(EnumType.STRING)
   @Column(name = "limit_unit")
   public LimitUnit limitUnit;
+
 }

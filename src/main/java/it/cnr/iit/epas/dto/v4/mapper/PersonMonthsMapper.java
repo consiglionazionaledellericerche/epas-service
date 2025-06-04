@@ -61,8 +61,12 @@ public interface PersonMonthsMapper {
       expression = "java(contractMonthRecap.expireInMonth())")
   ContractMonthRecapDto convert(ContractMonthRecap contractMonthRecap);
 
-  // Metodo helper per mappare un Optional<ContractMonthRecap> in Optional<ContractMonthRecapDto>
-  default Optional<ContractMonthRecapDto> mapOptionalRecap(Optional<ContractMonthRecap> contractMonthRecapOptional) {
-    return contractMonthRecapOptional.map(this::convert);  // Usa il metodo convert per l'oggetto effettivo
+
+  //  Metodo helper per mappare un Optional<ContractMonthRecap> in Optional<ContractMonthRecapDto>.
+  default Optional<ContractMonthRecapDto> mapOptionalRecap(
+      Optional<ContractMonthRecap> contractMonthRecapOptional) {
+    // Usa il metodo convert per l'oggetto effettivo
+    return contractMonthRecapOptional.map(this::convert);
+
   }
 }

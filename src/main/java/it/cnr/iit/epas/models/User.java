@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -108,7 +107,6 @@ public class User extends BaseEntity {
   @Column(name = "expire_date")
   private LocalDate expireDate;
 
-  @Nullable
   @ManyToOne
   @JoinColumn(name = "office_owner_id")
   public Office owner;

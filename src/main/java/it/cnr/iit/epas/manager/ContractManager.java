@@ -75,7 +75,8 @@ public class ContractManager {
    */
   public final boolean isContractNotOverlapping(final Contract contract) {
 
-    DateInterval contractInterval = wrapperFactory.getObject().create(contract).getContractDateInterval();
+    DateInterval contractInterval = 
+        wrapperFactory.getObject().create(contract).getContractDateInterval();
     for (Contract c : contract.person.getContracts()) {
 
       if (contract.getId() != null && c.getId().equals(contract.getId())) {

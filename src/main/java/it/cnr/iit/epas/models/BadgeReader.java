@@ -28,12 +28,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -46,13 +46,12 @@ import org.hibernate.envers.NotAudited;
 @Getter
 @Setter
 @Entity
-@Table(name = "badge_readers")
+@Table(name = "badge_readers", uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
 @Audited
 public class BadgeReader extends BaseEntity {
 
   private static final long serialVersionUID = -3508739971079270193L;
 
-  @Unique
   @NotNull
   private String code;
 

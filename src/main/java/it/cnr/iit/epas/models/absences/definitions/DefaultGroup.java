@@ -498,7 +498,7 @@ public enum DefaultGroup {
   }
 
   /**
-   * L'enumerato corrispettivo del group (se esiste...)
+   * L'enumerato corrispettivo del group (se esiste...).
    *
    * @return optional dell'enumerato
    */
