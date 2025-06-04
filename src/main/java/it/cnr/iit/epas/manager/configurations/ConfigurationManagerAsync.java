@@ -19,9 +19,9 @@ package it.cnr.iit.epas.manager.configurations;
 
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.Async;

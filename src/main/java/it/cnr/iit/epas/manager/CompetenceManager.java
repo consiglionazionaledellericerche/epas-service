@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -59,6 +59,7 @@ import it.cnr.iit.epas.models.dto.TimeTableDto;
 import it.cnr.iit.epas.models.enumerate.CalculationType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,7 +78,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -938,7 +938,7 @@ public class CompetenceManager {
     ShiftTimeTable stt = new ShiftTimeTable();
     stt.office = office;
     stt.calculationType = calculationType;
-//    stt.paidMinutes = timeTable.paidMinutes;
+    //stt.paidMinutes = timeTable.paidMinutes;
     stt.paidMinutesMorning = timeTable.paidMinutesMorning;
     stt.paidMinutesAfternoon = timeTable.paidMinutesAfternoon;
 

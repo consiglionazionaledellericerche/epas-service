@@ -63,14 +63,14 @@ public abstract class DtoToEntityMapper {
   @Mapping(target = "institute", 
       expression = "java(instituteDao.byId(officeDto.getInstituteId())"
           + ".orElseThrow(() -> "
-          + "new javax.persistence."
+          + "new jakarta.persistence."
           + "EntityNotFoundException(\"Institute not found\")))")
   public abstract void update(@MappingTarget Office office, OfficeCreateDto officeDto);
 
   @Mapping(target = "qualification", 
       expression = "java(qualificationDao.byId(personDto.getQualification())"
           + ".orElseThrow(() -> "
-          + "new javax.persistence."
+          + "new jakarta.persistence."
           + "EntityNotFoundException(\"Qualification not found\")))")
   public abstract void update(@MappingTarget Person person, PersonUpdateDto personDto);
 
@@ -79,19 +79,19 @@ public abstract class DtoToEntityMapper {
   @Mapping(target = "office", 
       expression = "java(officeDao.byId(personDto.getOfficeId())"
           + ".orElseThrow(() -> "
-          + "new javax.persistence."
+          + "new jakarta.persistence."
           + "EntityNotFoundException(\"Office not found\")))")
   @Mapping(target = "qualification", 
       expression = "java(qualificationDao.byId(personDto.getQualification())"
       + ".orElseThrow(() -> "
-      + "new javax.persistence."
+      + "new jakarta.persistence."
       + "EntityNotFoundException(\"Qualification not found\")))")
   public abstract void create(@MappingTarget Person person, PersonCreateDto personDto);
 
   @Mapping(target = "person", 
       expression = "java(personDao.byId(contractDto.getPersonId())"
           + ".orElseThrow(() -> "
-          + "new javax.persistence."
+          + "new jakarta.persistence."
           + "EntityNotFoundException(\"Person not found\")))")
   public abstract void create(@MappingTarget Contract contract, ContractCreateDto contractDto);
 

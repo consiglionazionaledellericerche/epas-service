@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -27,13 +27,13 @@ import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.ObjectProvider;
@@ -79,7 +79,7 @@ public class PeriodManager {
    */
   public final List<IPropertyInPeriod> updatePeriods(
       IPropertyInPeriod propertyInPeriod, boolean persist, boolean validateAllPeriodCovered) {
-    boolean recomputeBeginSet = false;
+
 
     //controllo iniziale consistenza periodo.
     if (propertyInPeriod.getBeginDate() != null 
@@ -94,7 +94,9 @@ public class PeriodManager {
       return propertyInPeriod.getOwner().periods(propertyInPeriod.getType())
           .stream().collect(Collectors.toList());
     }
-    
+
+    boolean recomputeBeginSet = false;
+
     //copia dei periodi ordinata
     List<IPropertyInPeriod> originals = Lists.newArrayList();
     for (IPropertyInPeriod originalPeriod :

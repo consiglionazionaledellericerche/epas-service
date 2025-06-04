@@ -36,12 +36,12 @@ import it.cnr.iit.epas.models.dto.MealTicketComposition;
 import it.cnr.iit.epas.models.enumerate.BlockType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

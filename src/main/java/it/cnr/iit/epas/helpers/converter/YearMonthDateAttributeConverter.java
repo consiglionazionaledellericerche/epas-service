@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,9 +17,9 @@
 
 package it.cnr.iit.epas.helpers.converter;
 
+import jakarta.persistence.AttributeConverter;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import javax.persistence.AttributeConverter;
 
 /**
  * Convertitore Hibernate da YearMonth a String e viceversa.
