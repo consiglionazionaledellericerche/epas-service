@@ -21,7 +21,7 @@
 		<lombok.version>1.18.38</lombok.version>
 		<dbunit.version>2.8.0</dbunit.version>
 		<springdoc.openapi.version>1.8.0</springdoc.openapi.version>
-		<jib.maven-plugin.version>3.4.3</jib.maven-plugin.version>
+		<jib.maven-plugin.version>3.4.5</jib.maven-plugin.version>
 		<joda-time.version>2.14.0</joda-time.version>
 		<querydsl.version>5.1.0</querydsl.version>
 	</properties>
@@ -254,7 +254,7 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>${jib.maven-plugin.version}</version>
 				<configuration>
-					<from><image>eclipse-temurin:17-jre@sha256:4d1030a58659e0fdd77bf0880f28095344f37785d020527340caf937c49e3098</image></from>
+					<from><image>eclipse-temurin:21-jre@sha256:02df6e67e0d0ba516810a238629ae194e1d88cd6c75674bc74fc7030763ee0b6</image></from>
 					<container>
 						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
 						<mainClass>it.cnr.iit.epas.EpasApplication</mainClass>

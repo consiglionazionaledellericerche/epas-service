@@ -1,5 +1,3 @@
-version: "3.3"
-
 ##############################################################################
 #                             ePAS Service                                   #
 # Configurazione per l'avvio di ePAS Service collegandosi ad un database di  #
