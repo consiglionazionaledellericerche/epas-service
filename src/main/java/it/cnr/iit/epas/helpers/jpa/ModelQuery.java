@@ -56,7 +56,7 @@ public class ModelQuery {
    * @return a simplequery object, wrap list or listResults.
    */
   public static <T> SimpleResults<T> wrap(JPQLQuery<T> query, Expression<T> expression) {
-    return new SimpleResults<T>(query, expression);
+    return new SimpleResults<T>(query);
   }
 
   public boolean isPersistent(BaseEntity model) {
@@ -92,12 +92,10 @@ public class ModelQuery {
    */
   public static class SimpleResults<T> {
 
-    private final Expression<T> expression;
     private final JPQLQuery<T> query;
 
-    SimpleResults(JPQLQuery<T> query, Expression<T> expression) {
+    SimpleResults(JPQLQuery<T> query) {
       this.query = query;
-      this.expression = expression;
     }
 
     public long count() {

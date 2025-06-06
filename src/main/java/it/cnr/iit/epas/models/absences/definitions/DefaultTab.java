@@ -87,7 +87,7 @@ public enum DefaultTab {
   }
 
   /**
-   * L'enumerato corrispettivo della tab (se esiste...)
+   * L'enumerato corrispettivo della tab (se esiste...).
    *
    * @return optional dell'enumerato
    */

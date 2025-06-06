@@ -17,12 +17,12 @@
 
 package it.cnr.iit.epas.config;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.models.User;
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,7 +83,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
   }
 
   private String hashing(String password) {
-    return Hashing.md5().hashString(password, Charsets.UTF_8).toString();
+    return Hashing.md5().hashString(password, StandardCharsets.UTF_8).toString();
   }
   
 }

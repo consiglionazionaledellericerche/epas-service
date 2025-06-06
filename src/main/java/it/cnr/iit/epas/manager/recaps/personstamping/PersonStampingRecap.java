@@ -45,8 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 
 /**
@@ -126,8 +126,6 @@ public class PersonStampingRecap {
     }
 
     final long start = System.currentTimeMillis();
-    log.trace("inizio creazione nuovo PersonStampingRecap. Person = {}, year = {}, month = {} canEditStampings={}",
-        person.getFullname(), year, month, canEditStampings);
     this.person = person;
     this.month = month;
     this.year = year;

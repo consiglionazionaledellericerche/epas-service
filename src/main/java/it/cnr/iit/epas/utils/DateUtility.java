@@ -60,7 +60,6 @@ public class DateUtility {
       throw new IllegalArgumentException("Algorithm invalid before April 1583");
     }
 
-    LocalDate easter = null;
     int golden = (year % 19) + 1; /* E1: metonic cycle */
     int century = (year / 100) + 1; /* E2: e.g. 1984 was in 20th C */
     int z;
@@ -78,6 +77,7 @@ public class DateUtility {
     n += 30 * (n < 21 ? 1 : 0); /* E6: */
     n += 7 - ((d + n) % 7);
 
+    LocalDate easter = null;
     if (n > 31) /* E7: */ {
       easter = LocalDate.of(year, 4, n - 31);
 

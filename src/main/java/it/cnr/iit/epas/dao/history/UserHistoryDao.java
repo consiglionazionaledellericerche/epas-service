@@ -19,8 +19,8 @@ package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
 import it.cnr.iit.epas.models.User;
-import lombok.RequiredArgsConstructor;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;

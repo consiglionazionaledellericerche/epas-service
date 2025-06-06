@@ -328,7 +328,7 @@ public class StampingsController {
     }
 
     StampingEditFormDto stampingdto = new StampingEditFormDto();
-//    render(stamping, person, date, historyStamping, ownStamping, zones);
+    //    render(stamping, person, date, historyStamping, ownStamping, zones);
     stampingdto.setOwnStamping(ownStamping);
     stampingdto.setHistoryStamping(historyStampingDto);
     stampingdto.setServiceReasons(isServiceReasons);
@@ -448,7 +448,8 @@ public class StampingsController {
    * servizio.
    */
   @Operation(
-      summary = "AEffettua il salvataggio dei soli campi reason, place e note di una timbratura per motivi di servizio.",
+      summary = "Effettua il salvataggio dei soli campi reason, place e note di una timbratura"
+          + " per motivi di servizio.",
       description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
           + "'Gestore Assenze', 'Amministratore Personale' o "
           + "'Amministratore Personale sola lettura' della sede a "
@@ -532,7 +533,7 @@ public class StampingsController {
     if (stamping == null) {
       throw new EntityNotFoundException("Stamping not found");
     }
-//    checkIfIsPossibileToDelete(contract);
+    //    checkIfIsPossibileToDelete(contract);
 
     stampingDao.delete(stamping);
     log.info("Eliminata timbratura {}", stamping);

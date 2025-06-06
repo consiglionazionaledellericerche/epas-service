@@ -27,7 +27,7 @@ import lombok.Data;
  */
 @Data
 public class PersonMonthRecapCreateDto {
-  private Long id=null;
+  private Long id = null;
   private Integer year;
   private Integer month;
   private Integer begin;

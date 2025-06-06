@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -41,13 +41,14 @@ public interface SeatOrganizationChartMapper {
   @Mapping(target = "qualification", source = "person.qualification.id")
   PersonShowDto convert(Person person);
 
+  List<UserShowDto> convert(List<User> users);
+
+  // Converte Map<Role, List<User>> -> Map<String, List<UserShowDto>>
+  Map<String, List<UserShowDto>> convert(Map<Role, List<User>> users);
+  
   List<String> convertRoles(List<Role> roles);
 
   @Mapping(target = "fullname", expression = "java(user.getPerson().getFullname())")
   UserShowDto userToUserShowDto(User user);
 
-  List<UserShowDto> convert(List<User> users);
-
-  // Converte Map<Role, List<User>> -> Map<String, List<UserShowDto>>
-  Map<String, List<UserShowDto>> convert(Map<Role, List<User>> users);
 }

@@ -103,9 +103,12 @@ public interface AbsenceGroupsMapper {
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
-      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? "
+          + "absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   AbsenceTypeDto convert(AbsenceType absenceType);
 
+  @Mapping(target = ".", source = "name")
+  String convert(JustifiedType justifiedType);
 
   @Mapping(target = "absence", source = "rowRecap.absence")
   @Mapping(target = "absence.justifiedType", source = "rowRecap.absence.justifiedType.name")
@@ -119,9 +122,5 @@ public interface AbsenceGroupsMapper {
   AbsencePeriodTerseDto convertAbsencePeriodTerse(AbsencePeriod absencePeriod);
 
   PeriodChainDto convertPeriodChain(PeriodChain periodChain);
-
-  @Mapping(target = ".", source = "name")
-  String convert(JustifiedType justifiedType);
-
 
 }

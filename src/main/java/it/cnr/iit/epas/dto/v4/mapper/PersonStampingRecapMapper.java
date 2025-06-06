@@ -132,8 +132,7 @@ public interface PersonStampingRecapMapper {
       Optional<WorkingTimeTypeDay> workingTimeTypeDay) {
     if (workingTimeTypeDay.isPresent()) {
       return Optional.of(convert(workingTimeTypeDay.get()));
-    }
-    else {
+    } else {
       return null;
     }
   }

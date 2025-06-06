@@ -54,7 +54,8 @@ public abstract class AbsenceGroupMapper {
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
-      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? "
+          + "absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   @Mapping(target = "justifiedBehaviours",
       source = "absenceType.justifiedBehaviours")
   public abstract AbsenceTypeDto convert(AbsenceType absenceType);

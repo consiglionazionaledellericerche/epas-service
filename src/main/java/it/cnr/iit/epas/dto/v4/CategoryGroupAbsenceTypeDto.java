@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,8 @@ public class CategoryGroupAbsenceTypeDto {
   private Set<GroupAbsenceTypeDto> groupAbsenceTypes;
   @Schema(description = "Categorie di tab da mostrare nel menu per la gestione delle assenze.")
   private CategoryTabDto tab;
-  @Schema(description = "Documentazione delle varie disposizioni contrattuali raggruppate per tipologia di assenza")
+  @Schema(description = "Documentazione delle varie disposizioni contrattuali raggruppate "
+      + "per tipologia di assenza")
   private ContractualClauseDto contractualClause;
 
 }

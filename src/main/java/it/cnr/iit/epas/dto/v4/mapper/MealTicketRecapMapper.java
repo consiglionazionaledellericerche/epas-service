@@ -49,13 +49,6 @@ public interface MealTicketRecapMapper {
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
 
-  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
-  @Mapping(target = "externalId", source = "absence.externalIdentifier")
-  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
-  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
-  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
-  AbsenceShowTerseDto convertTerse(Absence absence);
-
   DateIntervalDto convert(DateInterval dateIntervalDto);
 
   MealTicketDto convert(MealTicket mealTicket);
@@ -73,7 +66,8 @@ public interface MealTicketRecapMapper {
 
   List<BlockMealTicketDto> convert(List<BlockMealTicket> blockMealTicketRecap);
 
-//  @Mapping(target = "blockMealTicketReceivedDeliveryDesc", expression = "java(mealTicketRecap.getBlockMealTicketReceivedDeliveryDesc())")
+  //@Mapping(target = "blockMealTicketReceivedDeliveryDesc", 
+  //expression = "java(mealTicketRecap.getBlockMealTicketReceivedDeliveryDesc())")
   MealTicketRecapDto convert(MealTicketRecap mealTicketRecap);
 
   OfficeShowTerseDto convert(Office office);
@@ -81,5 +75,12 @@ public interface MealTicketRecapMapper {
   //MealTicketCardDto convert(MealTicketCard mealTicketCard);
 
   PersonBaseDto convert(Person person);
+
+  @Mapping(target = "justifiedType", source = "absence.justifiedType.name")
+  @Mapping(target = "externalId", source = "absence.externalIdentifier")
+  @Mapping(target = "justifiedTime", expression = "java(absence.justifiedTime())")
+  @Mapping(target = "nothingJustified", expression = "java(absence.nothingJustified())")
+  @Mapping(target = "date", expression = "java(absence.getAbsenceDate())")
+  AbsenceShowTerseDto convertTerse(Absence absence);
 
 }

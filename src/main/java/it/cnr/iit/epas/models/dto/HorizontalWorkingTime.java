@@ -25,7 +25,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.inject.Inject;
 import lombok.Data;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -36,7 +35,6 @@ import org.joda.time.LocalDate;
 @Data
 public class HorizontalWorkingTime {
 
-  @Inject
   public HorizontalWorkingTime() {
     this.holidays = Lists.newArrayList();
     this.holidays.add(LocalDate.now().withDayOfWeek(
@@ -45,51 +43,6 @@ public class HorizontalWorkingTime {
             DateTimeConstants.SUNDAY).dayOfWeek().getAsText());
   }
 
-  /**
-   * Ore lavorative.
-   */
-  @Min(1)
-  @Max(DateTimeConstants.HOURS_PER_DAY - 1)
-  public int workingTimeHour = 7;
-
-  /**
-   * Frazione orario di minuti lavorativi da sommare alle ore lavorative FIXME: perché non fare un
-   * campo unico con i minuti lavorativi del giorno?.
-   */
-  @Min(0)
-  @Max(DateTimeConstants.MINUTES_PER_HOUR - 1)
-  public int workingTimeMinute = 12;
-
-  public List<String> holidays;
-
-  public boolean mealTicketEnabled = true;
-  
-  public boolean reproportionAbsenceCodesEnabled = true;
-
-  @Min(1)
-  @Max(23)
-  public int mealTicketTimeHour = 6;
-  @Min(0)
-  @Max(59)
-  public int mealTicketTimeMinute = 0;
-  @Min(30)
-  public int breakTicketTime = 30;
-
-  public boolean afternoonThresholdEnabled = false;
-
-  @Min(1)
-  @Max(23)
-  public int ticketAfternoonThresholdHour = 13;
-  @Min(0)
-  @Max(59)
-  public int ticketAfternoonThresholdMinute = 30;
-  @Min(0)
-  public int ticketAfternoonWorkingTime = 1;
-
-  @NotNull
-  public String name;
-  public String externalId;
-  
   /**
    * Dal tipo orario ricava il pattern originario.
    */
@@ -140,6 +93,51 @@ public class HorizontalWorkingTime {
       }
     }
   }
+
+  /**
+   * Ore lavorative.
+   */
+  @Min(1)
+  @Max(DateTimeConstants.HOURS_PER_DAY - 1)
+  public int workingTimeHour = 7;
+
+  /**
+   * Frazione orario di minuti lavorativi da sommare alle ore lavorative FIXME: perché non fare un
+   * campo unico con i minuti lavorativi del giorno?.
+   */
+  @Min(0)
+  @Max(DateTimeConstants.MINUTES_PER_HOUR - 1)
+  public int workingTimeMinute = 12;
+
+  public List<String> holidays;
+
+  public boolean mealTicketEnabled = true;
+  
+  public boolean reproportionAbsenceCodesEnabled = true;
+
+  @Min(1)
+  @Max(23)
+  public int mealTicketTimeHour = 6;
+  @Min(0)
+  @Max(59)
+  public int mealTicketTimeMinute = 0;
+  @Min(30)
+  public int breakTicketTime = 30;
+
+  public boolean afternoonThresholdEnabled = false;
+
+  @Min(1)
+  @Max(23)
+  public int ticketAfternoonThresholdHour = 13;
+  @Min(0)
+  @Max(59)
+  public int ticketAfternoonThresholdMinute = 30;
+  @Min(0)
+  public int ticketAfternoonWorkingTime = 1;
+
+  @NotNull
+  public String name;
+  public String externalId;
 
   private static final String holidayName(final int dayOfWeek) {
 

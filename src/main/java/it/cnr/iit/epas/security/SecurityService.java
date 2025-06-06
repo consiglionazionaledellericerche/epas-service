@@ -47,8 +47,7 @@ public class SecurityService {
 
   public Boolean secureCheck(String method, String path,
       Optional<EntityType> entityType, Optional<EntityType> targetType,
-      Optional<Long> id, Optional<Integer> year, Optional<Integer> month
-      ) throws Exception {
+      Optional<Long> id, Optional<Integer> year, Optional<Integer> month) throws Exception {
 
     BaseEntity entity = null;
     Object entityToTarget = null;

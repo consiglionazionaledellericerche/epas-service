@@ -47,12 +47,14 @@ public abstract class AbsenceMapper {
 
   @Mapping(target = "printData", expression = "java(justifiedBehaviours.printData())")
   @Mapping(target = "justifiedBehaviour", source = "justifiedBehaviour.name")
-  public abstract AbsenceTypeJustifiedBehaviourDto convert(AbsenceTypeJustifiedBehaviour justifiedBehaviours);
+  public abstract AbsenceTypeJustifiedBehaviourDto convert(
+      AbsenceTypeJustifiedBehaviour justifiedBehaviours);
 
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
-      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? "
+          + "absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   @Mapping(target = "justifiedBehaviours",
       source = "absenceType.justifiedBehaviours")
   public abstract AbsenceTypeDto convert(AbsenceType absenceType);
