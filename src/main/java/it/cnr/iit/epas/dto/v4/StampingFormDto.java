@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
 import com.google.common.collect.Lists;
@@ -26,8 +27,8 @@ public class StampingFormDto {
   
   private PersonShowDto person;
   private LocalDate date;
-  private List<StampTypeDto> StampTypes= Lists.newArrayList();
-  private List<StampTypeDto> offsite= Lists.newArrayList();
+  private List<StampTypeDto> stampTypes = Lists.newArrayList();
+  private List<StampTypeDto> offsite = Lists.newArrayList();
   private boolean insertOffsite;
   private boolean insertNormal;
   private boolean autocertification;

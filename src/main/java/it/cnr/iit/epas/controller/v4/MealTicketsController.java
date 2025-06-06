@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -40,9 +40,9 @@ import it.cnr.iit.epas.manager.services.mealtickets.MealTicketRecap;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecurityRules;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -129,24 +129,25 @@ public class MealTicketsController {
       }
     }
 
-    LocalDate deliveryDate = LocalDate.now();
-    LocalDate today = LocalDate.now();
+
     //TODO mettere nel default.
     Integer ticketNumberFrom = 1;
     Integer ticketNumberTo = 22;
 
-    LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
-
     MealTicketRecapShowDto dto = new MealTicketRecapShowDto();
     MealTicketRecapDto recapDto = mealTicketRecapMapper.convert(recap);
 
-    recapDto.setBlockMealTicketReceivedDeliveryDesc(mealTicketRecapMapper.convert(recap.getBlockMealTicketReceivedDeliveryDesc()));
+    LocalDate deliveryDate = LocalDate.now();
+    LocalDate today = LocalDate.now();
+    LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
+    recapDto.setBlockMealTicketReceivedDeliveryDesc(
+        mealTicketRecapMapper.convert(recap.getBlockMealTicketReceivedDeliveryDesc()));
+    dto.setDeliveryDate(deliveryDate);
+    dto.setToday(today);
     dto.setPerson(personShowTerseMapper.convert(person));
     dto.setRecap(recapDto);
     dto.setRecapPrevious(mealTicketRecapMapper.convert(recapPrevious));
-    dto.setDeliveryDate(deliveryDate);
     dto.setExpireDate(expireDate);
-    dto.setToday(today);
     dto.setTicketNumberFrom(ticketNumberFrom);
     dto.setTicketNumberTo(ticketNumberTo);
 

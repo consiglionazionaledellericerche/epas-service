@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.dto.v4.mapper;
+
 import it.cnr.iit.epas.dto.v4.AbsenceFormDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeDto;
 import it.cnr.iit.epas.dto.v4.AbsenceTypeJustifiedBehaviourDto;
@@ -41,13 +42,18 @@ import org.mapstruct.Mapping;
 public interface AbsenceFormMapper {
 
   CategoryGroupAbsenceTypeDto convert(CategoryGroupAbsenceType categoryGroupAbsenceType);
+
   GroupAbsenceTypeDto convert(GroupAbsenceType groupAbsenceType);
+
   ContractualClauseDto convert(ContractualClause contractualClause);
+
   @Mapping(target = "justifiedTypeSelected", source = "justifiedTypeSelected.name")
   @Mapping(target = "hasGroupChoice", expression = "java(absenceForm.hasGroupChoice())")
   @Mapping(target = "hasAbsenceTypeChoice", expression = "java(absenceForm.hasAbsenceTypeChoice())")
-  @Mapping(target = "hasJustifiedTypeChoice", expression = "java(absenceForm.hasJustifiedTypeChoice())")
-//  @Mapping(target = "theOnlyAbsenceType", expression = "java(absenceForm.theOnlyAbsenceType().getId())")
+  @Mapping(target = "hasJustifiedTypeChoice", 
+            expression = "java(absenceForm.hasJustifiedTypeChoice())")
+  //@Mapping(target = "theOnlyAbsenceType", 
+  //  expression = "java(absenceForm.theOnlyAbsenceType().getId())")
   @Mapping(target = "hasHourMinutesChoice", expression = "java(absenceForm.hasHourMinutesChoice())")
   @Mapping(target = "selectableHours", expression = "java(absenceForm.selectableHours())")
   @Mapping(target = "selectableMinutes", expression = "java(absenceForm.selectableMinutes())")
@@ -64,7 +70,8 @@ public interface AbsenceFormMapper {
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
-      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? "
+          + "absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   @Mapping(target = "justifiedBehaviours",
       source = "absenceType.justifiedBehaviours")
   AbsenceTypeDto convert(AbsenceType absenceType);

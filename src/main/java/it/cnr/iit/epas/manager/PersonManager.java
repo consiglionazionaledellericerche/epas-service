@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@ import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dao.RoleDao;
-import it.cnr.iit.epas.dao.UsersRolesOfficesDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.dao.wrapper.IWrapperPersonDay;
 import it.cnr.iit.epas.models.Contract;
@@ -39,24 +38,25 @@ import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.dto.AbsenceToRecoverDto;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 //import play.db.jpa.JPA;
 
 /**
  * Manager per la gestione delle persone.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class PersonManager {
@@ -64,46 +64,13 @@ public class PersonManager {
   private final ContractDao contractDao;
   private final PersonDayDao personDayDao;
   public final PersonDayManager personDayManager;
-  private final Provider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
   private final AbsenceDao absenceDao;
   private final OfficeManager officeManager;
   private final UserManager userManager;
   private final RoleDao roleDao;
   private final PersonDao personDao;
-  private final Provider<EntityManager> emp;
-
-  /**
-   * Costrutture.
-   *
-   * @param contractDao      contractDao
-   * @param personDayDao     personDayDao
-   * @param absenceDao       absenceDao
-   * @param personDayManager personDayManager
-   * @param wrapperFactory   wrapperFactory
-   */
-  @Inject
-  public PersonManager(ContractDao contractDao,
-      PersonDayDao personDayDao,
-      AbsenceDao absenceDao,
-      PersonDayManager personDayManager,
-      Provider<IWrapperFactory> wrapperFactory,
-      UsersRolesOfficesDao uroDao,
-      OfficeManager officeManager,
-      UserManager userManager, 
-      RoleDao roleDao,
-      PersonDao personDao,
-      Provider<EntityManager> emp) {
-    this.contractDao = contractDao;
-    this.personDayDao = personDayDao;
-    this.absenceDao = absenceDao;
-    this.personDayManager = personDayManager;
-    this.wrapperFactory = wrapperFactory;
-    this.officeManager = officeManager;
-    this.userManager = userManager;
-    this.roleDao = roleDao;
-    this.personDao = personDao;
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   @Transactional
   public Person updateEppn(Person person, String eppn) {
@@ -119,7 +86,7 @@ public class PersonManager {
    */
   public boolean canPersonTakeAbsenceInShiftOrReperibility(Person person, LocalDate date) {
     Query queryReperibility =
-        emp.get().createQuery(
+        emp.getObject().createQuery(
             "Select count(*) from PersonReperibilityDay prd where prd.date = :date "
                 + "and prd.personReperibility.person = :person");
     queryReperibility.setParameter("date", date).setParameter("person", person);
@@ -128,7 +95,7 @@ public class PersonManager {
       return false;
     }
     Query queryShift =
-        emp.get().createQuery(
+        emp.getObject().createQuery(
             "Select count(*) from PersonShiftDay psd where psd.date = :date "
                 + "and psd.personShift.person = :person");
     queryShift.setParameter("date", date).setParameter("person", person);
@@ -206,7 +173,7 @@ public class PersonManager {
       if (!find) {
         continue;
       }
-      IWrapperPersonDay day = wrapperFactory.get().create(pd);
+      IWrapperPersonDay day = wrapperFactory.getObject().create(pd);
       boolean fixed = day.isFixedTimeAtWork();
       
       if (fixed && !personDayManager.isAllDayAbsences(pd)) {

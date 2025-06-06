@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,16 +18,16 @@
 package it.cnr.iit.epas.models.listeners;
 
 import it.cnr.iit.epas.models.Person;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
-import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,17 +36,13 @@ import org.springframework.stereotype.Component;
  * @author Cristian Lucchesi
  *
  */
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 @Component
 public class PersonListener {
 
-  private final Provider<EntityManager> emp;
-
-  @Inject
-  PersonListener(Provider<EntityManager> emp) {
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   @PreUpdate
   private void onUpdate(Person person) {
@@ -67,7 +63,7 @@ public class PersonListener {
     log.debug("Invocato personListener::preRemove. Person = {}, groups = {}",
         person, person.getGroups());
     person.getAffiliations().stream().forEach(affiliation -> {
-      emp.get().remove(affiliation);
+      emp.getObject().remove(affiliation);
       log.info("Rimossa associazione {} a gruppo {}", 
           person.getFullname(), affiliation.getGroup().getName());
     });

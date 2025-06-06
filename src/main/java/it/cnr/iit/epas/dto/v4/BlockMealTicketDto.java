@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,10 +17,7 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import it.cnr.iit.epas.models.MealTicket;
-import it.cnr.iit.epas.models.enumerate.BlockType;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 
 /**
@@ -32,10 +29,10 @@ import lombok.Data;
 @Data
 public class BlockMealTicketDto {
 
-//  private ContractShowTerseDto contract;
+  //  private ContractShowTerseDto contract;
   private String codeBlock;
   private String blockType;
-//  private List<MealTicketDto> mealTickets;
+  //  private List<MealTicketDto> mealTickets;
 
   private int first;
   private int last;

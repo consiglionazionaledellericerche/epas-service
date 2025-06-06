@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -27,16 +27,16 @@ import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -49,10 +49,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class PeriodManager {
 
-  final Provider<EntityManager> emp;
+  final ObjectProvider<EntityManager> emp;
   
   @Inject
-  public PeriodManager(Provider<EntityManager> emp) {
+  public PeriodManager(ObjectProvider<EntityManager> emp) {
     this.emp = emp;
   }
 
@@ -79,7 +79,7 @@ public class PeriodManager {
    */
   public final List<IPropertyInPeriod> updatePeriods(
       IPropertyInPeriod propertyInPeriod, boolean persist, boolean validateAllPeriodCovered) {
-    boolean recomputeBeginSet = false;
+
 
     //controllo iniziale consistenza periodo.
     if (propertyInPeriod.getBeginDate() != null 
@@ -94,7 +94,9 @@ public class PeriodManager {
       return propertyInPeriod.getOwner().periods(propertyInPeriod.getType())
           .stream().collect(Collectors.toList());
     }
-    
+
+    boolean recomputeBeginSet = false;
+
     //copia dei periodi ordinata
     List<IPropertyInPeriod> originals = Lists.newArrayList();
     for (IPropertyInPeriod originalPeriod :
@@ -185,21 +187,21 @@ public class PeriodManager {
 
     if (persist) {
       for (IPropertyInPeriod periodRemoved : toRemove) {
-        emp.get().remove(periodRemoved);
+        emp.getObject().remove(periodRemoved);
         //periodRemoved._delete();
       }
       if (propertyInPeriod.getType().equals(EpasParam.WORKING_OFF_SITE)) {
         log.debug("...");
       }
       for (IPropertyInPeriod periodInsert : periodList) {
-        emp.get().persist(periodInsert);
+        emp.getObject().persist(periodInsert);
         //periodInsert._save();
       }
-      emp.get().merge(propertyInPeriod.getOwner());
+      emp.getObject().merge(propertyInPeriod.getOwner());
       //propertyInPeriod.getOwner()._save();
-      emp.get().flush();
+      emp.getObject().flush();
       //JPA.em().flush();
-      emp.get().refresh(propertyInPeriod.getOwner());
+      emp.getObject().refresh(propertyInPeriod.getOwner());
       //JPA.em().refresh(propertyInPeriod.getOwner());
     }
 
@@ -335,14 +337,14 @@ public class PeriodManager {
         if (DateUtility.intervalIntersection(ownerInterval, 
             new DateInterval(propertyInPeriod.getBeginDate(), propertyInPeriod.getEndDate())) 
             == null) {
-          emp.get().remove(propertyInPeriod);
+          emp.getObject().remove(propertyInPeriod);
           //propertyInPeriod._delete();
           toRefresh = true;
         }
       }
       if (toRefresh) {
-        emp.get().refresh(owner);
-        emp.get().flush();
+        emp.getObject().refresh(owner);
+        emp.getObject().flush();
         //JPA.em().refresh(owner);
         //JPA.em().flush();
       }
@@ -356,7 +358,7 @@ public class PeriodManager {
       // Sistemo il primo
       IPropertyInPeriod first = periods.get(0);
       first.setBeginDate(ownerInterval.getBegin());
-      emp.get().merge(first);
+      emp.getObject().merge(first);
       //first._save();
 
       // Sistemo l'ultimo
@@ -365,10 +367,10 @@ public class PeriodManager {
       if (DateUtility.isInfinity(last.getEndDate())) {
         last.setEndDate(null);
       }
-      emp.get().merge(last);
+      emp.getObject().merge(last);
       //last._save();
 
-      emp.get().flush();
+      emp.getObject().flush();
       //JPA.em().flush();
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -41,14 +41,14 @@ import it.cnr.iit.epas.models.VacationPeriod;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedMap;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -70,10 +70,10 @@ public class WrapperPerson implements IWrapperPerson {
   private final PersonDao personDao;
   private final PersonDayDao personDayDao;
   private final PersonMonthRecapDao personMonthRecapDao;
-  private final Provider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
   private final CompetenceDao competenceDao;
-  private final Provider<EntityManager> emp;
-  private final Provider<CompetenceManager> competenceManager;
+  private final ObjectProvider<EntityManager> emp;
+  private final ObjectProvider<CompetenceManager> competenceManager;
 
   private List<Contract> sortedContracts;
   private Optional<Contract> currentContract;
@@ -92,8 +92,8 @@ public class WrapperPerson implements IWrapperPerson {
       PersonManager personManager,
       PersonDao personDao, PersonMonthRecapDao personMonthRecapDao,
       PersonDayDao personDayDao, CompetenceDao competenceDao,
-      Provider<IWrapperFactory> wrapperFactory, Provider<EntityManager> emp,
-      Provider<CompetenceManager> competenceManager) {
+      ObjectProvider<IWrapperFactory> wrapperFactory, ObjectProvider<EntityManager> emp,
+      ObjectProvider<CompetenceManager> competenceManager) {
     this.contractDao = contractDao;
     this.competenceManager = competenceManager;
     this.personManager = personManager;
@@ -160,7 +160,7 @@ public class WrapperPerson implements IWrapperPerson {
 
     for (Contract contract : orderedContracts()) {
       if (DateUtility.intervalIntersection(monthInterval, wrapperFactory
-          .get().create(contract).getContractDateInterval()) != null) {
+          .getObject().create(contract).getContractDateInterval()) != null) {
         contracts.add(contract);
       }
     }
@@ -176,7 +176,7 @@ public class WrapperPerson implements IWrapperPerson {
 
     for (Contract contract : orderedContracts()) {
       if (DateUtility.intervalIntersection(yearInterval, wrapperFactory
-          .get().create(contract).getContractDateInterval()) != null) {
+          .getObject().create(contract).getContractDateInterval()) != null) {
         contracts.add(contract);
       }
     }
@@ -408,7 +408,7 @@ public class WrapperPerson implements IWrapperPerson {
     } else {
       Competence competence = new Competence(value, code, year, month);
       competence.valueApproved = 0;
-      emp.get().persist(competence);
+      emp.getObject().persist(competence);
       //competence.save();
       return competence;
     }
@@ -419,7 +419,7 @@ public class WrapperPerson implements IWrapperPerson {
    */
   @Override
   public Integer getPositiveResidualInMonth(int year, int month) {
-    return competenceManager.get().positiveResidualInMonth(value, year, month) / 60;
+    return competenceManager.getObject().positiveResidualInMonth(value, year, month) / 60;
   }
 
   /**
@@ -439,7 +439,7 @@ public class WrapperPerson implements IWrapperPerson {
   public boolean currentContractInitializationMissing() {
     getCurrentContract();
     if (currentContract.isPresent()) {
-      return wrapperFactory.get().create(currentContract.get()).initializationMissing();
+      return wrapperFactory.getObject().create(currentContract.get()).initializationMissing();
     }
     return false;
   }
@@ -449,7 +449,7 @@ public class WrapperPerson implements IWrapperPerson {
     getCurrentContract();
     if (currentContract.isPresent()) {
       YearMonth now = YearMonth.from(LocalDate.now());
-      return wrapperFactory.get().create(currentContract.get())
+      return wrapperFactory.getObject().create(currentContract.get())
           .monthRecapMissing(now);
     }
     return false;
@@ -574,14 +574,14 @@ public class WrapperPerson implements IWrapperPerson {
     // I riepiloghi mensili (uno per ogni contratto attivo nel mese)
     List<IWrapperContractMonthRecap> contractMonths = Lists.newArrayList();
     
-    List<Contract> monthContracts = wrapperFactory.get().create(value)
+    List<Contract> monthContracts = wrapperFactory.getObject().create(value)
         .orderedMonthContracts(yearMonth.getYear(), yearMonth.getMonthValue());
 
     for (Contract contract : monthContracts) {
       Optional<ContractMonthRecap> cmr =
-          wrapperFactory.get().create(contract).getContractMonthRecap(yearMonth);
+          wrapperFactory.getObject().create(contract).getContractMonthRecap(yearMonth);
       if (cmr.isPresent()) {
-        contractMonths.add(wrapperFactory.get().create(cmr.get()));
+        contractMonths.add(wrapperFactory.getObject().create(cmr.get()));
       }      
     }
 

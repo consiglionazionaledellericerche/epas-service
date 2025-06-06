@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.ImmutableSet;
@@ -597,7 +598,7 @@ public enum DefaultTakable {
           DefaultAbsenceType.A_NC, DefaultAbsenceType.A_62, DefaultAbsenceType.A_35R,
           DefaultAbsenceType.A_96, DefaultAbsenceType.A_96A, DefaultAbsenceType.A_96B,
           DefaultAbsenceType.A_98, DefaultAbsenceType.A_52, DefaultAbsenceType.A_100,
-          DefaultAbsenceType.A_403, DefaultAbsenceType.A_404,DefaultAbsenceType.A_414,
+          DefaultAbsenceType.A_403, DefaultAbsenceType.A_404, DefaultAbsenceType.A_414,
           DefaultAbsenceType.A_62,
           DefaultAbsenceType.A_62A, DefaultAbsenceType.A_62D, DefaultAbsenceType.A_98CV, 
           DefaultAbsenceType.A_39LA, DefaultAbsenceType.A_46,
@@ -643,7 +644,7 @@ public enum DefaultTakable {
           DefaultAbsenceType.A_NC, DefaultAbsenceType.A_62, DefaultAbsenceType.A_35R,
           DefaultAbsenceType.A_96, DefaultAbsenceType.A_96A, DefaultAbsenceType.A_96B,
           DefaultAbsenceType.A_98, DefaultAbsenceType.A_52, DefaultAbsenceType.A_100,
-          DefaultAbsenceType.A_403, DefaultAbsenceType.A_404,DefaultAbsenceType.A_414,
+          DefaultAbsenceType.A_403, DefaultAbsenceType.A_404, DefaultAbsenceType.A_414,
           DefaultAbsenceType.A_62,
           DefaultAbsenceType.A_62A, DefaultAbsenceType.A_62D, DefaultAbsenceType.A_98CV,
           DefaultAbsenceType.A_39LA, DefaultAbsenceType.A_46,
@@ -782,7 +783,7 @@ public enum DefaultTakable {
           DefaultAbsenceType.A_C17, DefaultAbsenceType.A_C18,
           DefaultAbsenceType.A_C16, DefaultAbsenceType.A_35R,
           DefaultAbsenceType.A_54B, DefaultAbsenceType.A_62S50V, 
-          DefaultAbsenceType.A_62S25V,DefaultAbsenceType.A_62S75V), 
+          DefaultAbsenceType.A_62S25V, DefaultAbsenceType.A_62S75V), 
       ImmutableSet.of(
           DefaultAbsenceType.A_24, DefaultAbsenceType.A_24H7,
           DefaultAbsenceType.A_25O, DefaultAbsenceType.A_25OH7,
@@ -806,7 +807,7 @@ public enum DefaultTakable {
           DefaultAbsenceType.A_C17, DefaultAbsenceType.A_C18,
           DefaultAbsenceType.A_C16, DefaultAbsenceType.A_35R,
           DefaultAbsenceType.A_54B, DefaultAbsenceType.A_62S50V, 
-          DefaultAbsenceType.A_62S25V,DefaultAbsenceType.A_62S75V), 
+          DefaultAbsenceType.A_62S25V, DefaultAbsenceType.A_62S75V), 
       -1, null),
 
   T_RIPOSI_CNR_ATTESTATI(AmountType.units, 

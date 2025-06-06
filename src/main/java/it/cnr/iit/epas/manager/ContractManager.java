@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -35,17 +35,17 @@ import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.enumerate.VacationCode;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 /**
@@ -53,44 +53,19 @@ import org.springframework.stereotype.Service;
  *
  * @author alessandro
  */
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 @Service
 public class ContractManager {
 
   private final ConsistencyManager consistencyManager;
-  private final Provider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
   private final PeriodManager periodManager;
   private final PersonDayInTroubleManager personDayInTroubleManager;
   private final WorkingTimeTypeDao workingTimeTypeDao;
   private final ContractDao contractDao;
-  private final Provider<EntityManager> emp;
-
-  /**
-   * Constructor.
-   *
-   * @param consistencyManager          {@link manager.ConsistencyManager}
-   * @param periodManager               {@link manager.PeriodManager}
-   * @param personDayInTroubleManager   {@link manager.PersonDayInTroubleManager}
-   * @param wrapperFactory              {@link IWrapperFactory}
-   */
-  @Inject
-  public ContractManager(
-      final ConsistencyManager consistencyManager,
-      final PeriodManager periodManager, final PersonDayInTroubleManager personDayInTroubleManager, 
-      final WorkingTimeTypeDao workingTimeTypeDao,
-      final Provider<IWrapperFactory> wrapperFactory, 
-      final ContractDao contractDao,
-      final Provider<EntityManager> emp) {
-
-    this.consistencyManager = consistencyManager;
-    this.periodManager = periodManager;
-    this.personDayInTroubleManager = personDayInTroubleManager;
-    this.workingTimeTypeDao = workingTimeTypeDao;
-    this.wrapperFactory = wrapperFactory;
-    this.contractDao = contractDao;
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * Check di contratto valido con gli altri contratti della persona.
@@ -100,7 +75,8 @@ public class ContractManager {
    */
   public final boolean isContractNotOverlapping(final Contract contract) {
 
-    DateInterval contractInterval = wrapperFactory.get().create(contract).getContractDateInterval();
+    DateInterval contractInterval = 
+        wrapperFactory.getObject().create(contract).getContractDateInterval();
     for (Contract c : contract.person.getContracts()) {
 
       if (contract.getId() != null && c.getId().equals(contract.getId())) {
@@ -108,7 +84,7 @@ public class ContractManager {
       }
 
       if (DateUtility.intervalIntersection(contractInterval,
-          wrapperFactory.get().create(c).getContractDateInterval()) != null) {
+          wrapperFactory.getObject().create(c).getContractDateInterval()) != null) {
         log.debug("Il contratto {} si sovrappone con il contratto {}", contract, c);
         return false;
       }
@@ -173,12 +149,12 @@ public class ContractManager {
           + "preesistenti");
       return false;
     }
-    emp.get().persist(contract);
+    emp.getObject().persist(contract);
     //contract.save();
 
     contract.vacationPeriods.addAll(contractVacationPeriods(contract));
     for (VacationPeriod vacationPeriod : contract.getVacationPeriods()) {
-      emp.get().persist(vacationPeriod);
+      emp.getObject().persist(vacationPeriod);
     }
 
     if (!wtt.isPresent()) {
@@ -194,7 +170,7 @@ public class ContractManager {
     cwtt.setEndDate(contract.calculatedEnd());
     cwtt.setWorkingTimeType(wtt.get());
     cwtt.setContract(contract);
-    emp.get().persist(cwtt);
+    emp.getObject().persist(cwtt);
     //cwtt.save();
     contract.getContractWorkingTimeType().add(cwtt);
 
@@ -203,12 +179,12 @@ public class ContractManager {
     csp.setBeginDate(contract.getBeginDate());
     csp.setEndDate(contract.calculatedEnd());
     csp.fixedworkingtime = false;
-    emp.get().persist(csp);
+    emp.getObject().persist(csp);
     //csp.save();
     contract.getContractStampProfile().add(csp);
 
     contract.setSourceDateResidual(null);
-    emp.get().merge(contract);
+    emp.getObject().merge(contract);
     //contract.save();
 
     // FIXME: comando JPA per aggiornare la person
@@ -239,7 +215,7 @@ public class ContractManager {
     if (!isContractNotOverlapping(contract)) {
       return false;
     }
-    emp.get().merge(contract);
+    emp.getObject().merge(contract);
     periodManager.updatePropertiesInPeriodOwner(contract);
     personDayInTroubleManager.cleanPersonDayInTrouble(contract.person);
 
@@ -259,7 +235,7 @@ public class ContractManager {
   public void recomputeContract(final Contract contract, final Optional<LocalDate> dateFrom,
       final boolean newContract, final boolean onlyRecaps) {
 
-    IWrapperContract wrContract = wrapperFactory.get().create(contract);
+    IWrapperContract wrContract = wrapperFactory.getObject().create(contract);
 
     LocalDate startDate = dateFrom
         .orElse(wrContract.getContractDatabaseInterval().getBegin());
@@ -272,15 +248,15 @@ public class ContractManager {
       // TODO: anche quelli sulle ferie quando ci saranno
       for (ContractMonthRecap cmr : contract.contractMonthRecaps) {
         if (!yearMonthFrom.isAfter(YearMonth.of(cmr.year, cmr.month))) {
-          if (emp.get().contains(cmr)) {
-            emp.get().remove(cmr);
+          if (emp.getObject().contains(cmr)) {
+            emp.getObject().remove(cmr);
           }
         }
       }
       //XXX: serve?
-      emp.get().flush();
+      emp.getObject().flush();
       //JPA.em().flush();
-      emp.get().refresh(contract);
+      emp.getObject().refresh(contract);
       //contract.refresh();   //per aggiornare la lista contract.contractMonthRecaps
     }
 
@@ -376,7 +352,7 @@ public class ContractManager {
     if (contract.sourceRemainingMealTicket == null) {
       contract.sourceRemainingMealTicket = 0;
     }
-    emp.get().merge(contract);
+    emp.getObject().merge(contract);
     //contract.save();
   }
 
@@ -441,8 +417,8 @@ public class ContractManager {
     VacationPeriod twentysixplus4 = null;
     VacationPeriod twentyeightplus4 = null;
     VacationPeriod other = null;
-    IWrapperContract wrappedContract = wrapperFactory.get().create(contract);
-    List<VacationPeriod> vpList = previousContract.getVacationPeriods();    
+    IWrapperContract wrappedContract = wrapperFactory.getObject().create(contract);
+    List<VacationPeriod> vpList = previousContract.getVacationPeriods();
     VacationPeriod vp = null;
     for (VacationPeriod vpPrevious : vpList) {
       if (vpPrevious.getVacationCode().equals(VacationCode.CODE_26_4)) {
@@ -483,7 +459,7 @@ public class ContractManager {
       recomputeRecap.initMissing = wrappedContract.initializationMissing();
       periodManager.updatePeriods(vp, true);
       contract = contractDao.getContractById(contract.getId());
-      emp.get().refresh(contract.getPerson());
+      emp.getObject().refresh(contract.getPerson());
       //contract.person.refresh();
       if (recomputeRecap.needRecomputation) {
         recomputeContract(contract,
@@ -501,19 +477,19 @@ public class ContractManager {
   public void splitVacationPeriods(Contract actualContract) {
 
     for (VacationPeriod vp : actualContract.getVacationPeriods()) {
-      emp.get().remove(vp);
+      emp.getObject().remove(vp);
       //vp.delete();
     }
-    emp.get().merge(actualContract);
+    emp.getObject().merge(actualContract);
     //actualContract.save();
-    emp.get().flush();
+    emp.getObject().flush();
     //JPA.em().flush();
-    emp.get().refresh(actualContract);
+    emp.getObject().refresh(actualContract);
     //actualContract.refresh(); 
 
     actualContract.vacationPeriods.addAll(contractVacationPeriods(actualContract));
     for (VacationPeriod vacationPeriod : actualContract.getVacationPeriods()) {
-      emp.get().merge(vacationPeriod);
+      emp.getObject().merge(vacationPeriod);
       //vacationPeriod.save();
     }
 

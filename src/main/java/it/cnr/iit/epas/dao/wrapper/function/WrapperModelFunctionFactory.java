@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -31,23 +31,19 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
-import javax.inject.Inject;
-import javax.inject.Provider;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
  * Factory per alcune Function di utilità da utilizzare nei Wrapper.
  */
+@RequiredArgsConstructor
 @Deprecated
 @Component
 public class WrapperModelFunctionFactory {
 
-  private final Provider<IWrapperFactory> factory;
-
-  @Inject
-  WrapperModelFunctionFactory(Provider<IWrapperFactory> factory) {
-    this.factory = factory;
-  }
+  private final ObjectProvider<IWrapperFactory> factory;
 
   /**
    * Permette la creazione di un'istanza wrapperWorkingTyimeType a partire dall'oggetto
@@ -60,7 +56,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperWorkingTimeType apply(WorkingTimeType input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -75,7 +71,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperTimeSlot apply(TimeSlot input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -90,7 +86,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperPerson apply(Person input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -105,7 +101,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperOffice apply(Office input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -121,7 +117,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContract apply(Contract input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }
@@ -137,7 +133,7 @@ public class WrapperModelFunctionFactory {
 
       @Override
       public IWrapperContractMonthRecap apply(ContractMonthRecap input) {
-        return factory.get().create(input);
+        return factory.getObject().create(input);
       }
     };
   }

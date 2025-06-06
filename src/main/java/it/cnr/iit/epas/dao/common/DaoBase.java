@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,10 +20,11 @@ package it.cnr.iit.epas.dao.common;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import org.springframework.beans.factory.ObjectProvider;
+
 
 /**
  * Base dao which provides the JPQLQueryFactory and the EntityManager.
@@ -33,22 +34,22 @@ import javax.transaction.Transactional;
 public abstract class DaoBase<T extends BaseEntity> {
 
   protected final JPQLQueryFactory queryFactory;
-  protected final Provider<EntityManager> emp;
+  protected final ObjectProvider<EntityManager> emp;
 
   @Inject
-  public DaoBase(Provider<EntityManager> emp) {
+  public DaoBase(ObjectProvider<EntityManager> emp) {
     this.emp = emp;
-    this.queryFactory = new JPAQueryFactory(emp.get());
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
   }
 
   @Transactional
   public void persist(T object) {
-    emp.get().persist(object);
+    emp.getObject().persist(object);
   }
 
   @Transactional
   public T merge(T object) {
-    return emp.get().<T>merge(object);
+    return emp.getObject().<T>merge(object);
   }
 
   /**
@@ -57,7 +58,7 @@ public abstract class DaoBase<T extends BaseEntity> {
   @Transactional
   public T save(T object) {
     if (isPersistent(object)) {
-      return emp.get().<T>merge(object);
+      return emp.getObject().<T>merge(object);
     }
     persist(object);
     return object;
@@ -65,17 +66,17 @@ public abstract class DaoBase<T extends BaseEntity> {
 
   @Transactional
   public void delete(T object) {
-    emp.get().remove(object);
+    emp.getObject().remove(object);
   }
 
   @Transactional
   public void refresh(T object) {
-    emp.get().refresh(object);
+    emp.getObject().refresh(object);
   }
 
   @Transactional
   public boolean isPersistent(T object) {
-    return emp.get().contains(object);
+    return emp.getObject().contains(object);
   }
 
   protected JPQLQueryFactory getQueryFactory() {
@@ -83,6 +84,6 @@ public abstract class DaoBase<T extends BaseEntity> {
   }
 
   public EntityManager getEntityManager() {
-    return emp.get();
+    return emp.getObject();
   }
 }

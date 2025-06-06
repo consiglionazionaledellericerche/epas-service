@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,11 +19,11 @@ package it.cnr.iit.epas.models;
 
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.base.MutableModel;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.Set;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -56,7 +56,7 @@ public class Institute extends MutableModel {
   private String cds;
 
   /**
-   * sigla, ex.: IIT
+   * sigla, ex.: IIT.
    */
   //@Unique
   private String code;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,9 +17,9 @@
 
 package it.cnr.iit.epas.models.base;
 
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import java.time.LocalDate;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

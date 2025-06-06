@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,39 +14,33 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
-import com.google.inject.Provider;
-
 import it.cnr.iit.epas.dao.AbsenceTypeDao;
 import it.cnr.iit.epas.models.Stamping;
 import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
-
 import java.util.List;
-import javax.inject.Inject;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.springframework.beans.factory.ObjectProvider;
 
 /**
  * Dao per lo storico dei PersonDay.
  *
  * @author Marco Andreini
  */
+@RequiredArgsConstructor
 public class PersonDayHistoryDao {
 
-  private final Provider<AuditReader> auditReader;
+  private final ObjectProvider<AuditReader> auditReader;
   private final AbsenceTypeDao absenceTypeDao;
-
-  @Inject
-  PersonDayHistoryDao(Provider<AuditReader> auditReader, AbsenceTypeDao absenceTypeDao) {
-    this.auditReader = auditReader;
-    this.absenceTypeDao = absenceTypeDao;
-  }
 
   /**
    * La lista delle revisioni della timbratura.
@@ -58,7 +52,7 @@ public class PersonDayHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Stamping>> stampings(long personDayId) {
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Stamping.class, false, true)
         .add(AuditEntity.relatedId("personDay").eq(personDayId))
         .addOrder(AuditEntity.property("id").asc())
@@ -77,7 +71,7 @@ public class PersonDayHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Stamping>> stampingsAtCreation(long personDayId) {
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         //Vengono prelevate solo le revisioni delle entity non cancellate
         //tramite il terzo parametro a false del metodo forRevisionsOfEntity
         .forRevisionsOfEntity(Stamping.class, false, false)
@@ -101,7 +95,7 @@ public class PersonDayHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Absence>> absences(long personDayId) {
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Absence.class, false, true)
         .add(AuditEntity.relatedId("personDay").eq(personDayId))
         .addOrder(AuditEntity.property("id").asc())
@@ -135,7 +129,7 @@ public class PersonDayHistoryDao {
     ids.add(type6);
     ids.add(type7);
 
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Absence.class, false, true)
         .add(AuditEntity.or(AuditEntity.property("absenceType").eq(type),
              AuditEntity.or(AuditEntity.property("absenceType").eq(type2),
@@ -160,7 +154,7 @@ public class PersonDayHistoryDao {
    */
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Absence>> specificAbsence(long id) {
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Absence.class, false, true)
         .add(AuditEntity.property("id").eq(id))
         .add(AuditEntity.revisionType().eq(RevisionType.DEL));

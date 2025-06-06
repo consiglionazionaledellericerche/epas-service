@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,13 +19,14 @@ package it.cnr.iit.epas.manager.configurations;
 
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Servizio per lanciare in asincrono alcuni metodi
@@ -37,12 +38,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfigurationManagerAsync {
 
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<EntityManager> emp;
   private final ConfigurationManagerUtils utils;
 
   @Inject
   ConfigurationManagerAsync(
-      Provider<EntityManager> emp,
+      ObjectProvider<EntityManager> emp,
       ConfigurationManagerUtils utils) {
     this.emp = emp;
     this.utils = utils;
@@ -54,7 +55,7 @@ public class ConfigurationManagerAsync {
   @Async
   public void updateConfigurations(Person owner) {
     log.debug("async updateConfigurations for {}", owner);
-    emp.get().merge(owner);
+    emp.getObject().merge(owner);
     utils.updateConfigurations(owner);
   }
 
@@ -64,7 +65,7 @@ public class ConfigurationManagerAsync {
   @Async
   public void updateConfigurations(Office owner) {
     log.debug("async updateConfigurations for {}", owner);
-    emp.get().merge(owner);
+    emp.getObject().merge(owner);
     utils.updateConfigurations(owner);
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.repo;
 
 import it.cnr.iit.epas.models.Person;
+import java.util.Optional;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +27,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PersonRepository extends PagingAndSortingRepository<Person, Long> {
-  //Empty
+
+  public Optional<Person> findById(Long id);
+
 }

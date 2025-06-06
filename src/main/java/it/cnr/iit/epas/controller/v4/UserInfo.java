@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -31,15 +31,13 @@ import it.cnr.iit.epas.dto.v4.UserShowDto;
 import it.cnr.iit.epas.dto.v4.mapper.UserShowMapper;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
-import it.cnr.iit.epas.models.absences.CategoryTab;
 import it.cnr.iit.epas.repo.UserRepository;
 import it.cnr.iit.epas.security.SecureUtils;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

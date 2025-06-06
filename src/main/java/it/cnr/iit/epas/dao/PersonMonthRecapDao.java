@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -25,12 +25,12 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonMonthRecap;
 import it.cnr.iit.epas.models.QCertificatedData;
 import it.cnr.iit.epas.models.QPersonMonthRecap;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 public class PersonMonthRecapDao extends DaoBase<PersonMonthRecap> {
 
   @Inject
-  PersonMonthRecapDao(Provider<EntityManager> emp) {
+  PersonMonthRecapDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

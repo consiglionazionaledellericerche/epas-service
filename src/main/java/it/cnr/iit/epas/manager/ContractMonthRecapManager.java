@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Provider;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -69,7 +69,7 @@ public class ContractMonthRecapManager {
   @Inject
   private AbsenceDao absenceDao;
   @Inject
-  private Provider<IWrapperFactory> wrapperFactory;
+  private ObjectProvider<IWrapperFactory> wrapperFactory;
   @Inject
   private ConfigurationManager configurationManager;
 
@@ -161,7 +161,7 @@ public class ContractMonthRecapManager {
 
     //////////////////////////////////////////////////////////////////////////
     //Inizio Algoritmo
-    cmr.wrContract = wrapperFactory.get().create(contract);
+    cmr.wrContract = wrapperFactory.getObject().create(contract);
     cmr.person = contract.person;
     cmr.qualifica = cmr.person.getQualification().getQualification();
 
@@ -214,7 +214,7 @@ public class ContractMonthRecapManager {
     DateInterval validDataForMealTickets = buildIntervalForMealTicket(yearMonth,
         contract);
 
-    IWrapperContract wrContract = wrapperFactory.get().create(cmr.contract);
+    IWrapperContract wrContract = wrapperFactory.getObject().create(cmr.contract);
 
     setMealTicketsInformation(cmr, validDataForMealTickets);
     setPersonDayInformation(cmr, validDataForPersonDay, otherCompensatoryRest);
@@ -264,7 +264,7 @@ public class ContractMonthRecapManager {
         new DateInterval(firstDayOfRequestedMonth, calcolaFinoA);
 
     DateInterval contractDatabaseInterval =
-        wrapperFactory.get().create(contract).getContractDatabaseInterval();
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval();
 
     LocalDate today = LocalDate.now();
 
@@ -312,7 +312,7 @@ public class ContractMonthRecapManager {
       Contract contract) {
 
     DateInterval contractDatabaseInterval =
-        wrapperFactory.get().create(contract).getContractDatabaseInterval();
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval();
 
     LocalDate today = LocalDate.now();
 
@@ -372,7 +372,7 @@ public class ContractMonthRecapManager {
 
     //Filtro per dati nel database, estremi del contratto, inizio utilizzo buoni pasto
     DateInterval contractIntervalForMealTicket =
-        wrapperFactory.get().create(contract).getContractDatabaseIntervalForMealTicket();
+        wrapperFactory.getObject().create(contract).getContractDatabaseIntervalForMealTicket();
     DateInterval mealTicketIntervalInOffice =
         DateInterval.withBegin(dateStartMealTicketInOffice, Optional.<LocalDate>empty());
 
@@ -391,7 +391,7 @@ public class ContractMonthRecapManager {
 
   /**
    * Assegna i seguenti campi del riepilogo mensile: <br> cmr.progressivoFinaleMese <br>
-   * cmr.progressivoFinalePositivoMeseAux <br> cmr.progressivoFinaleNegativoMese <br>
+   * cmr.progressivoFinalePositivoMeseAux <br> cmr.progressivoFinaleNegativoMese.
    */
   private void setPersonDayInformation(ContractMonthRecap cmr,
       DateInterval validDataForPersonDay, List<Absence> otherCompensatoryRests) {
@@ -546,7 +546,7 @@ public class ContractMonthRecapManager {
               wrContract.getValue().getContractWorkingTimeType()) {
 
             if (DateUtility.isDateIntoInterval(date,
-                wrapperFactory.get().create(cwtt).getDateInverval())) {
+                wrapperFactory.getObject().create(cwtt).getDateInverval())) {
 
               WorkingTimeTypeDay wttd = cwtt.getWorkingTimeType().getWorkingTimeTypeDays()
                   .get(date.getDayOfWeek().getValue() - 1);
@@ -565,7 +565,7 @@ public class ContractMonthRecapManager {
           absenceDao.absenceInPeriod(cmr.person, begin, end, "91");
 
       for (Absence abs : riposi) {
-        cmr.riposiCompensativiMinuti += wrapperFactory.get().create(abs.getPersonDay())
+        cmr.riposiCompensativiMinuti += wrapperFactory.getObject().create(abs.getPersonDay())
             .getWorkingTimeTypeDay().get().workingTime;
         cmr.recoveryDayUsed++;
       }

@@ -37,6 +37,7 @@ import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.enumerate.BlockType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.MonthDay;
@@ -45,9 +46,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -67,11 +67,11 @@ public class ConfigurationManager {
    * Default constructor per l'injection.
    */
   @Inject
-  ConfigurationManager(Provider<EntityManager> emp,
+  ConfigurationManager(ObjectProvider<EntityManager> emp,
       PersonDao personDao,
       OfficeDao officeDao,
       ConfigurationManagerUtils utils, ConfigurationManagerAsync async) {
-    this.queryFactory = new JPAQueryFactory(emp.get());
+    this.queryFactory = new JPAQueryFactory(emp.getObject());
     this.personDao = personDao;
     this.officeDao = officeDao;
     this.utils = utils;

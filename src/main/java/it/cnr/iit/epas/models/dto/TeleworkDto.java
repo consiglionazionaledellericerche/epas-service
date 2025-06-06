@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,10 +18,9 @@
 package it.cnr.iit.epas.models.dto;
 
 import it.cnr.iit.epas.models.enumerate.TeleworkStampTypes;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import org.joda.time.YearMonth;
@@ -62,7 +61,6 @@ public class TeleworkDto {
    *
    * @return orario della timbratura formattato come HH:mm.
    */
-  @Transient
   public String formattedHour() {
     if (this.date != null) {
       return date.format(DateTimeFormatter.ofPattern("HH:mm"));

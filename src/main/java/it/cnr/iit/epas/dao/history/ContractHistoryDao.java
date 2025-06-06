@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,32 +14,27 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
-import com.google.inject.Provider;
-
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.Contract;
-
+import lombok.RequiredArgsConstructor;
 import java.util.List;
-import javax.inject.Inject;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.springframework.beans.factory.ObjectProvider;
 
 
 /**
  * DAO per i ContractHistory.
  */
+@RequiredArgsConstructor
 public class ContractHistoryDao {
 
-  private final Provider<AuditReader> auditReader;
-
-  @Inject
-  ContractHistoryDao(Provider<AuditReader> auditReader) {
-    this.auditReader = auditReader;
-  }
+  private final ObjectProvider<AuditReader> auditReader;
 
   /**
    * Metodo di storico per le modifiche sulla competenza.
@@ -50,7 +45,7 @@ public class ContractHistoryDao {
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Competence>> competences(long competenceId) {
 
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Competence.class, false, true)
         .add(AuditEntity.id().eq(competenceId))
         .addOrder(AuditEntity.revisionNumber().asc());
@@ -70,7 +65,7 @@ public class ContractHistoryDao {
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Contract>> contracts(long contractId) {
     
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Contract.class, false, true)
         .add(AuditEntity.id().eq(contractId))
         .addOrder(AuditEntity.revisionNumber().asc());
@@ -90,7 +85,7 @@ public class ContractHistoryDao {
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Contract>> lastRevision(long contractId) {
     
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
         .forRevisionsOfEntity(Contract.class, false, true)
         .add(AuditEntity.id().eq(contractId))
         .addOrder(AuditEntity.revisionNumber().desc())

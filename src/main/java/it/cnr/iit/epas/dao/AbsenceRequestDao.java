@@ -35,6 +35,7 @@ import it.cnr.iit.epas.models.flows.QAbsenceRequest;
 import it.cnr.iit.epas.models.flows.QAffiliation;
 import it.cnr.iit.epas.models.flows.QGroup;
 import it.cnr.iit.epas.models.flows.enumerate.AbsenceRequestType;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,9 +44,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,7 +57,7 @@ import org.springframework.stereotype.Component;
 public class AbsenceRequestDao extends DaoBase<AbsenceRequest> {
 
   @Inject
-  AbsenceRequestDao(Provider<EntityManager> emp) {
+  AbsenceRequestDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

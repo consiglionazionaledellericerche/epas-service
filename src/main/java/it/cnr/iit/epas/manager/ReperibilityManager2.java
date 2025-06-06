@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,7 +150,8 @@ public class ReperibilityManager2 {
       }
     } else {
       if (currentUser.isSystemUser()) {
-        Iterable<PersonReperibilityType> iterable = this.personReperibilityTypeRepository.findAll();
+        Iterable<PersonReperibilityType> iterable = 
+            personReperibilityTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         Collection<PersonReperibilityType> collection = new ArrayList<>();
         for (PersonReperibilityType item : iterable) {
           collection.add(item);

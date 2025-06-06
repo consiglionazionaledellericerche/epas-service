@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -51,6 +51,7 @@ import it.cnr.iit.epas.models.absences.QJustifiedType;
 import it.cnr.iit.epas.models.absences.QTakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.enumerate.MealTicketBehaviour;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -61,10 +62,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -77,12 +77,12 @@ import org.springframework.stereotype.Component;
 public class AbsenceComponentDao extends DaoBase<Absence> {
 
   @Inject
-  AbsenceComponentDao(Provider<EntityManager> emp) {
+  AbsenceComponentDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 
   public Absence merge(Absence absence) {
-    return emp.get().merge(absence);
+    return emp.getObject().merge(absence);
   }
 
   /**
@@ -159,7 +159,7 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     if (obj == null) {
       obj = new JustifiedType();
       obj.setName(name);
-      emp.get().persist(obj);
+      emp.getObject().persist(obj);
       //obj.save();
     }
     return obj;
@@ -179,7 +179,7 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     if (obj == null) {
       obj = new JustifiedBehaviour();
       obj.setName(name);
-      emp.get().persist(obj);
+      emp.getObject().persist(obj);
       //obj.save();
     }
     return obj;
@@ -202,12 +202,12 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
       obj = new CategoryGroupAbsenceType();
       obj.setName(name);
       obj.setPriority(priority);
-      emp.get().persist(obj);
+      emp.getObject().persist(obj);
       //obj.save();
     }
     if (obj.getPriority() != priority) {
       obj.setPriority(priority);
-      emp.get().merge(obj);
+      emp.getObject().merge(obj);
       //obj.save();
     }
     return obj;
@@ -432,8 +432,8 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     obj.setJustifiedTime(minutes);
     obj.getJustifiedTypesPermitted().clear();
     //obj.justifiedTimeAtWork = null;
-    emp.get().persist(obj);
-    emp.get().flush();
+    emp.getObject().persist(obj);
+    emp.getObject().flush();
     //obj.save();
     //JPA.em().flush();
     for (JustifiedType justified : justifiedTypePermitted) {
@@ -450,7 +450,7 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     } else {
       obj.setValidTo(LocalDate.of(2099, 12, 31));
     }
-    emp.get().persist(obj);
+    emp.getObject().persist(obj);
     //obj.save();
     return obj;
 
@@ -479,14 +479,14 @@ public class AbsenceComponentDao extends DaoBase<Absence> {
     if (exObj != null) {
       exObj.setCode(exObj.getCode() + "ex");
       //exObj.code += "ex";
-      emp.get().merge(exObj);
-      emp.get().flush();
+      emp.getObject().merge(exObj);
+      emp.getObject().flush();
       //exObj.save();
       //JPA.em().flush();
     }
 
     obj.setCode(newCode);
-    emp.get().merge(obj);
+    emp.getObject().merge(obj);
     //obj.save();
   }
 

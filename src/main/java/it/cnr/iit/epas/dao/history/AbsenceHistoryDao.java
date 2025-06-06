@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,18 +14,17 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dao.history;
 
 import com.google.common.collect.FluentIterable;
-import com.google.inject.Provider;
-
 import it.cnr.iit.epas.models.absences.Absence;
-
+import lombok.RequiredArgsConstructor;
 import java.util.List;
-import javax.inject.Inject;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
+import org.springframework.beans.factory.ObjectProvider;
 
 
 /**
@@ -33,14 +32,10 @@ import org.hibernate.envers.query.AuditQuery;
  *
  * @author Marco Andreini
  */
+@RequiredArgsConstructor
 public class AbsenceHistoryDao {
 
-  private final Provider<AuditReader> auditReader;
-
-  @Inject
-  AbsenceHistoryDao(Provider<AuditReader> auditReader) {
-    this.auditReader = auditReader;
-  }
+  private final ObjectProvider<AuditReader> auditReader;
 
   /**
    * Lista delle revisioni sull'assenza con identificativo absenceId.
@@ -51,7 +46,7 @@ public class AbsenceHistoryDao {
   @SuppressWarnings("unchecked")
   public List<HistoryValue<Absence>> absences(long absenceId) {
 
-    final AuditQuery query = auditReader.get().createQuery()
+    final AuditQuery query = auditReader.getObject().createQuery()
             .forRevisionsOfEntity(Absence.class, false, true)
             .add(AuditEntity.id().eq(absenceId))
             .addOrder(AuditEntity.revisionNumber().asc());

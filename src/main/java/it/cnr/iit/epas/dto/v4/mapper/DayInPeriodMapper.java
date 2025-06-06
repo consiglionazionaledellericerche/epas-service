@@ -31,7 +31,6 @@ import it.cnr.iit.epas.models.absences.Absence;
 import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.AbsenceTypeJustifiedBehaviour;
 import it.cnr.iit.epas.models.absences.JustifiedType;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -56,7 +55,8 @@ public interface DayInPeriodMapper {
   @Mapping(target = "hasGroups",
       expression = "java(!absenceType.involvedGroupTaken(true).isEmpty())")
   @Mapping(target = "defaultTakableGroup",
-      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? absenceType.defaultTakableGroup().category.tab.getLabel():null)")
+      expression = "java(absenceType.defaultTakableGroup().category.tab != null ? "
+          + "absenceType.defaultTakableGroup().category.tab.getLabel():null)")
   @Mapping(target = "justifiedBehaviours",
       source = "absenceType.justifiedBehaviours")
   AbsenceTypeDto convert(AbsenceType absenceType);
@@ -70,6 +70,7 @@ public interface DayInPeriodMapper {
   TemplateRowDto convert(DayInPeriod.TemplateRow rowRecap);
 
   DayInPeriodDto convert(DayInPeriod dayInPeriod);
+
   @Mapping(target = ".", source = "name")
   String convert(JustifiedType justifiedType);
 

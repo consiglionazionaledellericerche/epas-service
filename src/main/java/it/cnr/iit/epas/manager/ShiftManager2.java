@@ -848,11 +848,13 @@ public class ShiftManager2 {
             }
           }
         } else {
-//          shiftCompetences += paidMinutes - (shift.getExceededThresholds() * SIXTY_MINUTES);
+          // shiftCompetences += paidMinutes - (shift.getExceededThresholds() * SIXTY_MINUTES);
           if (shift.getShiftSlot().equals(ShiftSlot.MORNING)) {
-            shiftCompetences += paidMinutesMorning - (shift.getExceededThresholds() * SIXTY_MINUTES);
+            shiftCompetences += 
+                paidMinutesMorning - (shift.getExceededThresholds() * SIXTY_MINUTES);
           } else {
-            shiftCompetences += paidMinutesAfternoon - (shift.getExceededThresholds() * SIXTY_MINUTES);
+            shiftCompetences += 
+                paidMinutesAfternoon - (shift.getExceededThresholds() * SIXTY_MINUTES);
           }
         }
         log.info("Competenza calcolata sul turno di {}-{}: {}", 

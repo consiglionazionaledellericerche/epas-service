@@ -17,21 +17,10 @@
 
 package it.cnr.iit.epas.manager.services.absences;
 
-import java.time.LocalDate;
-import java.time.MonthDay;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
-
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import it.cnr.iit.epas.manager.services.absences.errors.CriticalError.CriticalProblem;
 import it.cnr.iit.epas.manager.services.absences.errors.ErrorsBox;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
@@ -52,7 +41,16 @@ import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour.TakeAmountAdjustment;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import java.time.LocalDate;
+import java.time.MonthDay;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+
 
 /**
  * Funzioni di utilità per i calcoli sulle assenze.
@@ -495,7 +493,8 @@ public class AbsenceEngineUtility {
   /**
    * Ordina per data tutte le liste di assenze in una unica lista.
    *
-   * @param absences liste di assenze
+   * @param absences1 liste di assenze
+   * @param absences2 liste di assenze
    * @return entity list
    */
   public List<Absence> orderAbsences(List<Absence> absences1, List<Absence> absences2) {

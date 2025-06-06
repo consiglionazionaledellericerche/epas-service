@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -19,8 +19,8 @@ package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.flows.AbsenceRequestEvent;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AbsenceRequestEventDao extends DaoBase<AbsenceRequestEvent> {
 
-  public AbsenceRequestEventDao(Provider<EntityManager> emp) {
+  public AbsenceRequestEventDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 }

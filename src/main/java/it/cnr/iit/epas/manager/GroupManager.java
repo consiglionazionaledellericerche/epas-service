@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
  */
 
 package it.cnr.iit.epas.manager;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.cnr.iit.epas.dao.GroupDao;
@@ -28,21 +29,20 @@ import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.flows.Affiliation;
 import it.cnr.iit.epas.models.flows.Group;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
-
 
 /**
  * Manager per la gestione dei gruppi di persone.
@@ -51,6 +51,7 @@ import org.springframework.stereotype.Service;
  * @author Cristian Lucchesi
  *
  */
+@RequiredArgsConstructor
 @Transactional
 @Slf4j
 @Service
@@ -60,23 +61,8 @@ public class GroupManager {
   private final UsersRolesOfficesDao uroDao;
   private final GroupDao groupDao;
 
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<EntityManager> emp;
 
-  /**
-   * Injection.
-   *
-   * @param roleDao il dao sui ruoli
-   * @param uroDao il dao sugli usersRolesOffices
-   * @param groupDao il dao sui gruppi
-   */
-  @Inject
-  public GroupManager(RoleDao roleDao, UsersRolesOfficesDao uroDao, 
-      GroupDao groupDao, final Provider<EntityManager> emp) {
-    this.roleDao = roleDao;
-    this.uroDao = uroDao;
-    this.groupDao = groupDao;
-    this.emp = emp;
-  }
 
   /**
    * Metodo di utilità per creare il ruolo manager da associare al responsabile del 
@@ -99,7 +85,7 @@ public class GroupManager {
     uro.setUser(group.getManager().getUser());
 
     //uro.save();
-    emp.get().persist(uro);
+    emp.getObject().persist(uro);
     log.debug("Creato ruolo {} per l'utente {}", 
         role.getName(), uro.getUser().getPerson().fullName());
   }
@@ -124,7 +110,7 @@ public class GroupManager {
             group.getManager().getUser(), role, group.getManager().getOffice());
     if (uro.isPresent()) {
       //uro.get().delete();
-      emp.get().remove(uro);
+      emp.getObject().remove(uro);
       log.debug("Eliminato ruolo {} per l'utente {}", 
           uro.get().getRole().getName(), uro.get().getUser().getPerson().fullName());
       return true;
@@ -149,8 +135,8 @@ public class GroupManager {
         .collect(Collectors.toSet());
     currentAffiliationsToDisable.stream().forEach(a ->  {      
       a.setEndDate(LocalDate.now());
-//      a.save();
-      emp.get().persist(a);
+      //a.save();
+      emp.getObject().persist(a);
       log.info("Disabilita associazione di {} al gruppo {}", 
           a.getPerson().getFullname(), a.getGroup().getName());
     });
@@ -160,8 +146,8 @@ public class GroupManager {
       affiliation.setPerson(person);
       affiliation.setGroup(group);
       affiliation.setBeginDate(LocalDate.now());
-//      affiliation.save();
-      emp.get().persist(affiliation);
+      //affiliation.save();
+      emp.getObject().persist(affiliation);
       log.info("Inserita nuova associazione tra {} al gruppo {}", 
           person.getFullname(), group.getName());
     });

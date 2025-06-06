@@ -14,17 +14,16 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -74,4 +73,5 @@ public class AbsenceFormDto {
 
   //quantity
   private Integer minutes = 0;
-  private Integer hours = 0;}
+  private Integer hours = 0;
+}

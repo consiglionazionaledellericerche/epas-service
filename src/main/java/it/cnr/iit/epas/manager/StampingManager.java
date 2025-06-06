@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.manager;
 
 import com.google.common.base.Strings;
@@ -40,6 +41,7 @@ import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.models.enumerate.TeleworkStampTypes;
 import it.cnr.iit.epas.models.exports.StampingFromClient;
 import it.cnr.iit.epas.security.SecureUtils;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,7 +50,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -216,8 +217,10 @@ public class StampingManager {
         stampingDao.getStamping(stamping.getDate(), person, stamping.getWay());
     //Se la timbratura allo stesso orario e con lo stesso verso non è già presente o è una modifica
     //alla timbratura esistente allora creo/modifico la timbratura.
-    log.info("alreadyPresentStamping.isPresent() = {}, alreadyPresentStamping.get().getId().equals(stamping.getId()) = {}",
-        alreadyPresentStamping.isPresent(), alreadyPresentStamping.get().getId().equals(stamping.getId()));
+    log.info("alreadyPresentStamping.isPresent() = {}, "
+        + "alreadyPresentStamping.get().getId().equals(stamping.getId()) = {}",
+        alreadyPresentStamping.isPresent(), 
+        alreadyPresentStamping.get().getId().equals(stamping.getId()));
     if (!alreadyPresentStamping.isPresent() 
         || alreadyPresentStamping.get().getId().equals(stamping.getId())) {
 

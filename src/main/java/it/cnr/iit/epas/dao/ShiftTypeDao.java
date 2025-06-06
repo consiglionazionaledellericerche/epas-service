@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -20,12 +20,12 @@ package it.cnr.iit.epas.dao;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.QShiftType;
 import it.cnr.iit.epas.models.ShiftType;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class ShiftTypeDao extends DaoBase<ShiftType> {
 
   @Inject
-  ShiftTypeDao(Provider<EntityManager> emp) {
+  ShiftTypeDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

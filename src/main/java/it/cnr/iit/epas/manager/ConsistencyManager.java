@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,8 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -36,10 +38,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 //import play.db.jpa.JPA;
 //import play.libs.F.Promise;
@@ -61,8 +61,8 @@ public class ConsistencyManager {
   private final SecureManager secureManager;
   private final ConsistencyManagerUtils consistencyManagerUtils;
   private final ConsistencyManagerAsync consistencyManagerAsync;
-  private final Provider<IWrapperFactory> wrapperFactory;
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * Constructor for injection.
@@ -74,8 +74,8 @@ public class ConsistencyManager {
       SecureManager secureManager,
       ConsistencyManagerUtils consistencyManagerUtils,
       ConsistencyManagerAsync consistencyManagerAsync,
-      Provider<IWrapperFactory> wrapperFactory, AbsenceDao absenceDao,
-      Provider<EntityManager> emp) {
+      ObjectProvider<IWrapperFactory> wrapperFactory, AbsenceDao absenceDao,
+      ObjectProvider<EntityManager> emp) {
 
     //this.secureManager = secureManager;
     this.officeDao = officeDao;
@@ -176,7 +176,8 @@ public class ConsistencyManager {
    */
   public void updateContractSituation(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = 
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
     consistencyManagerUtils.updatePersonSituationEngine(
         contract.person.getId(), from, Optional.ofNullable(to), false);
   }
@@ -189,7 +190,8 @@ public class ConsistencyManager {
    */
   public void updateContractRecaps(Contract contract, LocalDate from) {
 
-    LocalDate to = wrapperFactory.get().create(contract).getContractDatabaseInterval().getEnd();
+    LocalDate to = 
+        wrapperFactory.getObject().create(contract).getContractDatabaseInterval().getEnd();
     consistencyManagerUtils.updatePersonSituationEngine(
         contract.person.getId(), from, Optional.ofNullable(to), true);
   }
@@ -223,8 +225,8 @@ public class ConsistencyManager {
         updatePersonRecaps(person.getId(), recomputeFrom);
       }
       //FIXME: ma servono davvero??
-      emp.get().flush();
-      emp.get().clear();
+      emp.getObject().flush();
+      emp.getObject().clear();
       //JPA.em().flush();
       //JPA.em().clear();
     }

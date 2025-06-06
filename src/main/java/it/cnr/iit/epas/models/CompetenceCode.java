@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -21,19 +21,19 @@ import com.google.common.collect.Lists;
 import it.cnr.iit.epas.models.base.BaseEntity;
 import it.cnr.iit.epas.models.enumerate.LimitType;
 import it.cnr.iit.epas.models.enumerate.LimitUnit;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -47,7 +47,8 @@ import org.hibernate.envers.NotAudited;
 @Setter
 @Audited
 @Entity
-@Table(name = "competence_codes")
+@Table(name = "competence_codes", 
+    uniqueConstraints = @UniqueConstraint(columnNames = {"code", "description"}))
 public class CompetenceCode extends BaseEntity {
 
   private static final long serialVersionUID = 9211205948423608460L;
@@ -73,13 +74,11 @@ public class CompetenceCode extends BaseEntity {
   public CompetenceCodeGroup competenceCodeGroup;
 
   @NotNull
-  @Unique
   public String code;
 
   @Column
   public String codeToPresence;
 
-  @Unique
   @NotNull
   public String description;
 
@@ -107,6 +106,5 @@ public class CompetenceCode extends BaseEntity {
   public String getLabel() {
     return String.format("%s - %s", this.code, this.description);
   }
-
 
 }

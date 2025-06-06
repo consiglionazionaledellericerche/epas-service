@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,13 +17,13 @@
 
 package it.cnr.iit.epas.models.base;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-import javax.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -43,7 +43,8 @@ import org.joda.time.YearMonth;
 @Getter
 @Setter
 @MappedSuperclass
-@TypeDefs(@TypeDef(name = "YearMonth", defaultForType = YearMonth.class, typeClass = PersistentYearMonthAsString.class))
+@TypeDefs(@TypeDef(name = "YearMonth", defaultForType = YearMonth.class, 
+    typeClass = PersistentYearMonthAsString.class))
 public abstract class BaseEntity implements Serializable {
 
   private static final long serialVersionUID = 4849404810311166199L;

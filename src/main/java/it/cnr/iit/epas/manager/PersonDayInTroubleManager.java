@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -33,54 +33,34 @@ import it.cnr.iit.epas.models.PersonDayInTrouble;
 import it.cnr.iit.epas.models.enumerate.Troubles;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.SimpleEmail;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
  * Manager per la gestione dei giorni con problemi di timbrature/assenze.
  */
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class PersonDayInTroubleManager {
 
-  private final Provider<IWrapperFactory> factory;
+  private final ObjectProvider<IWrapperFactory> factory;
   private final PersonDayInTroubleDao personDayInTroubleDao;
   private final PersonDao personDao;
   private final ConfigurationManager configurationManager;
-  private final Provider<EntityManager> emp;
-
-  /**
-   * Costruttore.
-   *
-   * @param personDayInTroubleDao       personDayInTroubleDao
-   * @param configurationManager        configurationManager
-   * @param factory                     factory
-   */
-  @Inject
-  public PersonDayInTroubleManager(
-      PersonDayInTroubleDao personDayInTroubleDao,
-      PersonDao personDao,
-      ConfigurationManager configurationManager,
-      Provider<IWrapperFactory> factory,
-      Provider<EntityManager> emp) {
-    this.personDayInTroubleDao = personDayInTroubleDao;
-    this.personDao = personDao;
-    this.configurationManager = configurationManager;
-    this.factory = factory;
-    this.emp = emp;
-  }
+  private final ObjectProvider<EntityManager> emp;
 
   /**
    * Crea il personDayInTrouble per quel giorno (se non esiste già).
@@ -117,7 +97,7 @@ public class PersonDayInTroubleManager {
 
     Iterables.removeIf(pd.getTroubles(), pdt -> {
       if (pdt.getCause() == cause) {
-        emp.get().remove(pdt);
+        emp.getObject().remove(pdt);
         //pdt.delete();
 
         log.info("Rimosso PersonDayInTrouble {} - {} - {}",
@@ -145,14 +125,15 @@ public class PersonDayInTroubleManager {
 
     for (Person person : personList) {
 
-      final Optional<Contract> currentContract = factory.get().create(person).getCurrentContract();
+      final Optional<Contract> currentContract = 
+          factory.getObject().create(person).getCurrentContract();
       if (!currentContract.isPresent()) {
         log.error("Nessun contratto trovato attivo alla data odierna per {} - {} ", person,
             person.getOffice());
         continue;
       }
       DateInterval intervalToCheck = DateUtility.intervalIntersection(
-          factory.get().create(currentContract.get()).getContractDatabaseInterval(),
+          factory.getObject().create(currentContract.get()).getContractDatabaseInterval(),
           new DateInterval(fromDate, toDate));
       if (intervalToCheck == null) {
         continue;
@@ -190,7 +171,7 @@ public class PersonDayInTroubleManager {
         // Imposto il campo e-mails inviate ...
         for (PersonDayInTrouble pd : pdList) {
           pd.setEmailSent(true);
-          emp.get().merge(pd);
+          emp.getObject().merge(pd);
           //pd.save();
         }
 
@@ -275,7 +256,7 @@ public class PersonDayInTroubleManager {
     log.debug("Trovati {} PersonDayInTrouble per {}", pdtList.size(), person.getFullname());
     List<IWrapperContract> wrapperContracts = 
         person.getContracts().stream()
-          .map(contract -> factory.get().create(contract))
+          .map(contract -> factory.getObject().create(contract))
           .collect(Collectors.toList());
 
     List<PersonDayInTrouble> deleted = Lists.newArrayList();

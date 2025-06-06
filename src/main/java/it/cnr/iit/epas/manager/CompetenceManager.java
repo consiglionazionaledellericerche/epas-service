@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -59,6 +59,7 @@ import it.cnr.iit.epas.models.dto.TimeTableDto;
 import it.cnr.iit.epas.models.enumerate.CalculationType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.persistence.EntityManager;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,10 +78,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -96,7 +96,7 @@ public class CompetenceManager {
   private final OfficeDao officeDao;
   private final PersonDayDao personDayDao;
   private final CompetenceDao competenceDao;
-  private final Provider<IWrapperFactory> wrapperFactory;
+  private final ObjectProvider<IWrapperFactory> wrapperFactory;
   private final PersonDayManager personDayManager;
   private final PersonReperibilityDayDao reperibilityDao;
   private final PersonStampingRecapFactory stampingsRecapFactory;
@@ -104,7 +104,7 @@ public class CompetenceManager {
   private final CompetenceManagerAsync competenceManagerAsync;
 
   private final PersonDao personDao;
-  private final Provider<EntityManager> emp;
+  private final ObjectProvider<EntityManager> emp;
   private final Messages messages;
 
   /**
@@ -120,10 +120,10 @@ public class CompetenceManager {
   @Inject
   public CompetenceManager(CompetenceCodeDao competenceCodeDao,
       OfficeDao officeDao, CompetenceDao competenceDao,
-      PersonDayDao personDayDao, Provider<IWrapperFactory> wrapperFactory,
+      PersonDayDao personDayDao, ObjectProvider<IWrapperFactory> wrapperFactory,
       PersonDayManager personDayManager, PersonReperibilityDayDao reperibilityDao,
       PersonStampingRecapFactory stampingsRecapFactory, PersonShiftDayDao personshiftDayDao,
-      PersonDao personDao, Provider<EntityManager> emp, 
+      PersonDao personDao, ObjectProvider<EntityManager> emp, 
       CompetenceManagerAsync competenceManagerAsync,
       Messages messages) {
 
@@ -230,7 +230,7 @@ public class CompetenceManager {
     } catch (Exception ex) {
       return false;
     }
-    emp.get().persist(total);
+    emp.getObject().persist(total);
     //total.save();
     return true;
 
@@ -327,12 +327,12 @@ public class CompetenceManager {
   public Integer positiveResidualInMonth(Person person, int year, int month) {
 
     List<Contract> monthContracts = wrapperFactory
-        .get().create(person).orderedMonthContracts(year, month);
+        .getObject().create(person).orderedMonthContracts(year, month);
     int differenceForShift = 0;
     List<PersonDay> pdList = personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
     for (Contract contract : monthContracts) {
 
-      IWrapperContract wrContract = wrapperFactory.get().create(contract);
+      IWrapperContract wrContract = wrapperFactory.getObject().create(contract);
 
       if (wrContract.isLastInMonth(month, year)) {
 
@@ -452,7 +452,7 @@ public class CompetenceManager {
    */
   public void saveCompetence(Competence competence, Integer value) {
     competence.valueApproved = value;
-    emp.get().merge(competence);
+    emp.getObject().merge(competence);
     //competence.save();
     log.debug("Salvata la competenza {} con il nuovo valore {}", competence, value);
   }
@@ -656,12 +656,12 @@ public class CompetenceManager {
             if (temp == null) {
               pccList.get(counter).setEndDate(null);
               pccList.get(counter).setBeginDate(date);
-              emp.get().merge(pccList.get(counter));
+              emp.getObject().merge(pccList.get(counter));
               //pccList.get(counter).save();
             } else {
               pccList.get(counter).setBeginDate(date);
               pccList.get(counter).setEndDate(temp.getBeginDate().minusDays(1));
-              emp.get().merge(pccList.get(counter));
+              emp.getObject().merge(pccList.get(counter));
               //pccList.get(counter).save();
             }
 
@@ -714,11 +714,11 @@ public class CompetenceManager {
       if (pcc.isPresent()) {
 
         if (pcc.get().getBeginDate().getMonth().equals(date.getMonth())) {
-          emp.get().remove(pcc.get());
+          emp.getObject().remove(pcc.get());
           //pcc.get().delete();
         } else {
           pcc.get().setEndDate(endMonth);
-          emp.get().merge(pcc.get());
+          emp.getObject().merge(pcc.get());
           //pcc.get().save();
         }
 
@@ -728,7 +728,7 @@ public class CompetenceManager {
                   pcc.get().getPerson(), pcc.get().getBeginDate());
           if (personShift != null) {
             personShift.setEndDate(endMonth);
-            emp.get().merge(personShift);
+            emp.getObject().merge(personShift);
             //personShift.save();
           } else {
             log.warn("Non è presente in tabella person_shift l'utente {}", person.fullName());
@@ -758,7 +758,7 @@ public class CompetenceManager {
     psst.setJolly(jolly);
     psst.setPersonShift(person);
     psst.setEndDate(null);
-    emp.get().persist(psst);
+    emp.getObject().persist(psst);
     //psst.save();
   }
 
@@ -775,7 +775,7 @@ public class CompetenceManager {
     rep.setPerson(person);
     rep.setStartDate(beginDate);
     rep.setPersonReperibilityType(type);
-    emp.get().persist(rep);
+    emp.getObject().persist(rep);
     //rep.save();
   }
 
@@ -922,7 +922,7 @@ public class CompetenceManager {
       st.entranceTolerance = service.entranceTolerance;
       st.maxToleranceAllowed = service.maxToleranceAllowed;
     }
-    emp.get().persist(st);
+    emp.getObject().persist(st);
     //st.save();
   }
 
@@ -938,7 +938,7 @@ public class CompetenceManager {
     ShiftTimeTable stt = new ShiftTimeTable();
     stt.office = office;
     stt.calculationType = calculationType;
-//    stt.paidMinutes = timeTable.paidMinutes;
+    //stt.paidMinutes = timeTable.paidMinutes;
     stt.paidMinutesMorning = timeTable.paidMinutesMorning;
     stt.paidMinutesAfternoon = timeTable.paidMinutesAfternoon;
 
@@ -972,7 +972,7 @@ public class CompetenceManager {
     } else {
       stt.endEveningLunchTime = null; 
     }
-    emp.get().persist(stt);
+    emp.getObject().persist(stt);
     //stt.save();
   }
 
@@ -1027,7 +1027,7 @@ public class CompetenceManager {
       personShift.setDescription("Turni di " + person.fullName());
       personShift.setDisabled(false);
       personShift.setBeginDate(date);
-      emp.get().persist(personShift);
+      emp.getObject().persist(personShift);
       //personShift.save();
       //TODO: capire come gestire eventuali buchi nel tempo...
       //es.: personShift abilitato a gennaio, non presente a febbraio, abilitato a marzo
@@ -1050,7 +1050,7 @@ public class CompetenceManager {
     if (dateEnd.isPresent()) {
       newPcc.setEndDate(dateEnd.get());
     }
-    emp.get().persist(newPcc);
+    emp.getObject().persist(newPcc);
     //newPcc.save();
   }
 
@@ -1069,7 +1069,7 @@ public class CompetenceManager {
     if (endDate.isPresent()) {
       pcc.setEndDate(endDate.get());
     }
-    emp.get().merge(pcc);
+    emp.getObject().merge(pcc);
     //pcc.save();
   }
 

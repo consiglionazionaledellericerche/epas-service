@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.models.absences.definitions;
 
 import com.google.common.collect.ImmutableSet;
@@ -1341,10 +1342,10 @@ public enum DefaultAbsenceType {
       ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 420, 
       JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true), 
-//  A_78("78", "permesso sindacale 8 ore", false,
-//      ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
-//      MealTicketBehaviour.notAllowMealTicket, 480, 
-//      JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true),
+  //  A_78("78", "permesso sindacale 8 ore", false,
+  //      ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
+  //      MealTicketBehaviour.notAllowMealTicket, 480, 
+  //      JustifiedTypeName.absence_type_minutes, Sets.newHashSet(), null, null, false, true, true),
 
   A_71A("71A", "permesso sindacale 1 ora non retribuita", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 60, false, 
@@ -1471,10 +1472,10 @@ public enum DefaultAbsenceType {
       ImmutableSet.of(JustifiedTypeName.nothing), 0, false, 
       MealTicketBehaviour.notAllowMealTicket, 420, JustifiedTypeName.absence_type_minutes,
       Sets.newHashSet(), null, null, false, true, true, null), 
-//  A_78D("78D", "perm. sind. 8 ore dirigenti sindac.", false,
-//      ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 480,
-//      false, MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
-//      null, null, false, true, true),
+  //  A_78D("78D", "perm. sind. 8 ore dirigenti sindac.", false,
+  //      ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 480,
+  //      false, MealTicketBehaviour.allowMealTicket, 0, null, Sets.newHashSet(), 
+  //      null, null, false, true, true),
 
   A_FA1("FA1", "formazione e aggiornamento 1 ora", false,
       ImmutableSet.of(JustifiedTypeName.absence_type_minutes), 60, false, 
@@ -2607,7 +2608,7 @@ public enum DefaultAbsenceType {
   }
 
   /**
-   * L'enumerato corrispettivo del absenceType (se esiste...)
+   * L'enumerato corrispettivo del absenceType (se esiste...).
    *
    * @return optional dell'enumerato
    */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,13 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import lombok.Data;
 
 /**
@@ -29,7 +28,7 @@ import lombok.Data;
 @Data
 public class StampingCreateDto {
   private Long personId;
-  private Long stampingId=null;
+  private Long stampingId = null;
   private String stampType;
   @NotNull @NotEmpty
   private String way;
@@ -39,8 +38,8 @@ public class StampingCreateDto {
   private String time;
   private String zone;
 
-  private String place=null;
-  private String reason=null;
+  private String place = null;
+  private String reason = null;
 
-  private boolean offsite=false;
+  private boolean offsite = false;
 }

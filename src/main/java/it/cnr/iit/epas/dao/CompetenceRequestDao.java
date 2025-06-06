@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -31,15 +31,15 @@ import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.flows.CompetenceRequest;
 import it.cnr.iit.epas.models.flows.QCompetenceRequest;
 import it.cnr.iit.epas.models.flows.enumerate.CompetenceRequestType;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 /**
@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
 public class CompetenceRequestDao extends DaoBase<CompetenceRequest> {
 
   @Inject
-  CompetenceRequestDao(Provider<EntityManager> emp) {
+  CompetenceRequestDao(ObjectProvider<EntityManager> emp) {
     super(emp);
   }
 

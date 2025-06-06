@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -48,6 +48,10 @@ import it.cnr.iit.epas.models.PersonMonthRecap;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -55,10 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -314,7 +314,8 @@ public class PersonMonthsController {
           description = "Persona non trovata con l'id e/o il codice fiscale fornito",
           content = @Content),
       @ApiResponse(responseCode = "409",
-          description = "Ore formative già inserite per quell'intervallo di tempo e quella persona.",
+          description = "Ore formative già inserite per quell'intervallo di tempo e quella"
+              + " persona.",
           content = @Content),
       @ApiResponse(responseCode = "412",
           description = "Errore di validazione dati inseriti.",
@@ -372,8 +373,6 @@ public class PersonMonthsController {
       Verify.verify(pm.isEditable());
       Errors errors = checkErrorsInUpdate(validator, trainingHours, pm);
       if (errors.hasErrors()) {
-        LocalDate dateFrom = LocalDate.of(year, month, begin);
-        LocalDate dateTo = LocalDate.of(year, month, end);
         resultMap.put(403, "Ci sono errori di validazione");
       }
       pm.setTrainingHours(trainingHours);
@@ -412,10 +411,11 @@ public class PersonMonthsController {
    * @param month il mese di formazione
    * @param value la quantità di ore di formazione
    */
-  private static Errors checkErrors(Validator validator, PersonMonthRecap pm, Integer begin, Integer end, Integer year,
+  private static Errors checkErrors(
+      Validator validator, PersonMonthRecap pm, Integer begin, Integer end, Integer year,
       Integer month, Integer value) {
 
-    Errors errors = new BeanPropertyBindingResult(pm,"personReperibilityDay");
+    Errors errors = new BeanPropertyBindingResult(pm, "personReperibilityDay");
 
     if (!errors.hasErrors()) {
       if (begin == null) {
@@ -443,7 +443,7 @@ public class PersonMonthsController {
             "valore troppo alto");
       }
     }
-      return errors;
+    return errors;
   }
 
   /**
@@ -453,9 +453,10 @@ public class PersonMonthsController {
    * @param value il quantitativo di ore di formazione
    * @param pm il personMonthRecap da modificare con le ore passate come parametro
    */
-  private static Errors checkErrorsInUpdate(Validator validator, Integer value, PersonMonthRecap pm) {
+  private static Errors checkErrorsInUpdate(Validator validator, Integer value, 
+      PersonMonthRecap pm) {
 
-    Errors errors = new BeanPropertyBindingResult(pm,"personReperibilityDay");
+    Errors errors = new BeanPropertyBindingResult(pm, "personReperibilityDay");
     validator.validate(pm, errors);
 
     if (!errors.hasErrors()) {

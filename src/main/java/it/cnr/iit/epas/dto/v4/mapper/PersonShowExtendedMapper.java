@@ -21,7 +21,6 @@ import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeDto;
 import it.cnr.iit.epas.dto.v4.PersonReperibilityTypeTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonShiftDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.dto.v4.PersonShowExtendedDto;
 import it.cnr.iit.epas.dto.v4.ShiftCategoryDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
@@ -41,7 +40,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PersonShowExtendedMapper {
   List<ShiftCategoryDto> convertShiftCategories(List<ShiftCategories> shiftCategories);
-  List<PersonReperibilityTypeDto> convertPersonReperibility(List<PersonReperibilityType> reperibilities);
+
+  List<PersonReperibilityTypeDto> convertPersonReperibility(
+      List<PersonReperibilityType> reperibilities);
+
   List<PersonShiftDto> convertPersonShift(List<PersonShift> personShift);
 
   PersonReperibilityTypeTerseDto convert(PersonReperibilityType reperibility);

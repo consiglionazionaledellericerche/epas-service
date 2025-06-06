@@ -14,6 +14,7 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.AbsencePeriodDto;
@@ -22,7 +23,6 @@ import it.cnr.iit.epas.dto.v4.AbsenceShowTerseDto;
 import it.cnr.iit.epas.dto.v4.AbsenceSubPeriodDto;
 import it.cnr.iit.epas.dto.v4.ComplationAbsenceDto;
 import it.cnr.iit.epas.dto.v4.ContractShowDto;
-import it.cnr.iit.epas.dto.v4.DayInPeriodDto;
 import it.cnr.iit.epas.dto.v4.PersonDayTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonVacationSummaryDto;
 import it.cnr.iit.epas.dto.v4.TakenAbsenceDto;
@@ -31,7 +31,6 @@ import it.cnr.iit.epas.dto.v4.VacationSummaryDto;
 import it.cnr.iit.epas.manager.recaps.personvacation.PersonVacationSummary;
 import it.cnr.iit.epas.manager.services.absences.model.AbsencePeriod;
 import it.cnr.iit.epas.manager.services.absences.model.ComplationAbsence;
-import it.cnr.iit.epas.manager.services.absences.model.DayInPeriod;
 import it.cnr.iit.epas.manager.services.absences.model.TakenAbsence;
 import it.cnr.iit.epas.manager.services.absences.model.VacationSituation.VacationSummary;
 import it.cnr.iit.epas.models.Contract;
@@ -106,8 +105,9 @@ public interface PersonVacationSummaryMapper {
 
   List<AbsenceShowDto> convert(List<Absence> absences);
 
- AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
- List<AbsenceSubPeriodDto> convertToListSubPeriod(List<AbsencePeriod> period);
+  AbsenceSubPeriodDto convertToSubPeriod(AbsencePeriod period);
+
+  List<AbsenceSubPeriodDto> convertToListSubPeriod(List<AbsencePeriod> period);
 
   /**
    * Trasformazione da Enum a DTO per i VacationCode.

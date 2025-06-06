@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -14,42 +14,12 @@
  *     You should have received a copy of the GNU Affero General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package it.cnr.iit.epas.controller.v4;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
-import javax.validation.Validator;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -87,8 +57,36 @@ import it.cnr.iit.epas.models.Zone;
 import it.cnr.iit.epas.models.enumerate.StampTypes;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Metodi REST per l'inserimento delle timbrature manuali.
@@ -122,7 +120,7 @@ public class StampingsController {
   private final Validator validator;
 
   /**
-   * Recupera le informazioni per costruire la form di inserimento della timbratura
+   * Recupera le informazioni per costruire la form di inserimento della timbratura.
    */
   @Operation(
       summary = "Recupera le informazioni per costruire la form di inserimento della timbratura.",
@@ -242,7 +240,7 @@ public class StampingsController {
 
 
   /**
-   * Recupera le informazioni per costruire la form di modifica della timbratura
+   * Recupera le informazioni per costruire la form di modifica della timbratura.
    */
   @Operation(
       summary = "Recupera le informazioni per costruire la form di modifica della timbratura.",
@@ -342,7 +340,8 @@ public class StampingsController {
     stampingdto.setWay(stamping.getWay().name());
     stampingdto.setStampTypeOpt(stampingFormDtoMapper.convert(stamping.getStampType()));
     stampingdto.setStampTypes(stampTypesDto);
-    stampingdto.setStampType(stamping.getStampType() != null ? stamping.getStampType().name() : null);
+    stampingdto.setStampType(stamping.getStampType() != null 
+        ? stamping.getStampType().name() : null);
     stampingdto.setZones(zonesDto);
     stampingdto.setNote(stamping.getNote());
     stampingdto.setPlace(stamping.getPlace());
@@ -352,7 +351,7 @@ public class StampingsController {
   }
 
   /**
-   * Inserimento di una timbratura
+   * Inserimento di una timbratura.
    */
   @Operation(
       summary = "Inserimento di una timbratura.",
@@ -398,7 +397,7 @@ public class StampingsController {
   }
 
   /**
-   * Aggiornamento di una timbratura
+   * Aggiornamento di una timbratura.
    */
   @Operation(
       summary = "Aggiornamento di una timbratura.",

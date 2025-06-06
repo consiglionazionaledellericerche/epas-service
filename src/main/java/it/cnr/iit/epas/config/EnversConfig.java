@@ -17,7 +17,7 @@
 
 package it.cnr.iit.epas.config;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.context.annotation.Bean;

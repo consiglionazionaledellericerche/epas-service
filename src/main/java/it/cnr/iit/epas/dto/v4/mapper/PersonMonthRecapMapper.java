@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,11 +18,9 @@
 package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.PersonMonthRecapDto;
-import it.cnr.iit.epas.dto.v4.PersonReperibilityDayDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonMonthRecap;
-import it.cnr.iit.epas.models.PersonReperibilityDay;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

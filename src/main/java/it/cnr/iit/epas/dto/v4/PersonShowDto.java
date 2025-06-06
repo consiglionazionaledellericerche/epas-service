@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -17,13 +17,9 @@
 
 package it.cnr.iit.epas.dto.v4;
 
-import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.media.Schema;
-import it.cnr.iit.epas.models.PersonReperibilityType;
-import it.cnr.iit.epas.models.ShiftCategories;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -55,4 +51,7 @@ public class PersonShowDto extends PersonMutableDto {
 
   @Schema(description = "Residenza")
   private String residence;
+
+  @Schema(description = "Data di nascita")
+  private LocalDate birthday;
 }

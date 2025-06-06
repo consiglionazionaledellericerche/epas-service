@@ -1,0 +1,1151 @@
+import java.time.YearMonth;
+import it.cnr.iit.epas.dao.history.HistoricalDao;
+import it.cnr.iit.epas.security.PermissionCheck
+import it.cnr.iit.epas.models.enumerate.AccountRole
+import it.cnr.iit.epas.models.UsersRolesOffices;
+import it.cnr.iit.epas.models.absences.Absence;
+import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
+import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.Stamping;
+import it.cnr.iit.epas.models.PersonReperibility;
+import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.Configuration;
+import it.cnr.iit.epas.models.PersonConfiguration;
+import it.cnr.iit.epas.models.ReperibilityTypeMonth;
+import it.cnr.iit.epas.models.enumerate.StampTypes;
+import it.cnr.iit.epas.manager.configurations.EpasParam;
+import it.cnr.iit.epas.dao.UserDao;
+
+global it.cnr.iit.epas.models.User currentUser;
+global java.util.Set userRoles;
+global java.util.List userRolesOffices;
+global java.util.List defaultGroup;
+global it.cnr.iit.epas.dao.history.HistoricalDao historicalDao;
+global it.cnr.iit.epas.dao.history.StampingHistoryDao stampingHistoryDao;
+
+/*******************************************************************************
+ * Azioni ruolo DEVELOPER e ADMIN
+ ******************************************************************************/
+rule SystemUsers
+salience 1
+activation-group 'admin'
+when
+  AccountRole(this in (AccountRole.DEVELOPER,AccountRole.ADMIN)) from userRoles
+  $c: PermissionCheck(toCheck())
+then
+  $c.grant();
+end
+
+rule AnyUser
+when
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/userinfo") ||
+    permission.startsWith("/rest/v4/personinfo") ||
+    permission.startsWith("/rest/v4/secure/check") && httpMethod.equalsIgnoreCase('GET'),
+    toCheck())
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente dipendente sui propri dati
+ ******************************************************************************/
+
+rule Employee_personal_data
+when
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/init/yearsdropdown") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule IsEmployee_personal_data_usingTarget
+when
+ $p: Person(user == currentUser)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET'))  ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/people") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+rule IsEmployee
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/mealtickets") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/groups/seatOrganizationChart") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/personmonths/hourRecap") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/personmonths/trainingHours/update") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+/*Ruolo per vedere il calendario per i reperibili e le richieste di cambio reperibilità*/
+
+rule isAvailable_general
+when 
+  $uro: UsersRolesOffices() from userRolesOffices
+  Role(name == Role.EMPLOYEE) from $uro.role
+  $p: Person (reperibility != null) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations	
+  $c: PermissionCheck(
+  	permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET'),
+   	target == null, granted == false)
+then
+ $c.grant();
+end
+
+rule isAvailable_personReperibilityType
+when
+	$p: Person (reperibility != null) from currentUser.getPerson()
+	$o: Office() from $p.office
+  	Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations	
+	$pr: PersonReperibility() from $p.reperibility
+	$prt: PersonReperibilityType() from $pr.personReperibilityType
+	$c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar") && httpMethod.equalsIgnoreCase('GET'), 
+      target == $prt, granted == false)
+then
+$c.grant();
+end
+
+/*******************************************************************************
+ * Visualizzazione e gestione ferie utente con ruolo PERSONNEL_ADMIN
+ ******************************************************************************/
+
+rule Vacation_show_and_manage_personnel_admin
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences") ||
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule Vacation_show_and_manage_personnel_admin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(user != currentUser, getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences") ||
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+rule Vacation_show_and_manage_personnel_admin_InOffice_own_absences
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $p: Person(qualification != null) from currentUser.getPerson()
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/vacations") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/monthrecaps") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/absences") ||
+    (permission.startsWith("/rest/v4/competences") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente per inserimento assenze
+ ******************************************************************************/
+/*
+ * L'amministratore del personale può modificare una determinata assenza se:
+ */
+rule AdminCanEditAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $a: Absence()
+ $at: Person() from $a.getOwner()
+ $target: Office(persons contains $at) from $uro.office
+ $c: PermissionCheck(
+     permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST'),
+     toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/* Azioni eseguibili da qualsiasi utente che abbiano come destinatario
+ * dell'azione se stesso
+*/
+rule HasRightOnHimselfExceptFor
+when
+  $p: Person(user == currentUser)
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
+      toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+
+/*
+ * L'Amministratore del personale in sola lettura può fare quasi tutto sulle persone del proprio ufficio
+ */
+rule HasRightOnPerson
+when
+  $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN_MINI) from userRolesOffices
+  $o: Office() from $uro.office
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
+      toCheck(), $o.persons contains target, granted == false)
+then
+ $c.grant();
+end
+
+
+rule OnlyForPersonnelAdmin_Generic
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+rule OnlyForPersonnelAdmin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+ $o: Office(usersRolesOffices contains $uro)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/groupsForCategory") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/findCode") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/update") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(), target == $o, granted == false)
+then
+ $c.grant();
+end
+
+/*
+ * L'amministratore del personale può modificare una determinata timbratura se:
+ */
+rule AdminCanEditStamping
+when
+ $uro: UsersRolesOffices(role.name == Role.PERSONNEL_ADMIN) from userRolesOffices
+ $target: Stamping(markedByTelework == false)
+ Office(persons.contains($target.getOwner())) from $uro.office
+ $c: PermissionCheck(
+        (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('POST')) ||
+        (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+        (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+        (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+        (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+  toCheck(), target == $target, granted == false )
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * L'amministratore può inserire le timbrature nel passato senza limiti (per ora)
+ * il controllo che non sia una data futura viene fatta nell'action (sulle stampings)
+ ************************************************************************************/
+rule adminCanInsertStampingsAndAbsences_inDate
+when
+  $uro: UsersRolesOffices() from userRolesOffices
+  Role(name == Role.PERSONNEL_ADMIN) from $uro.role
+  $target: YearMonth()
+  $c: PermissionCheck(
+      !permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod != 'POST',
+      toCheck(), target == $target, granted == false)
+then
+ $c.grant();
+end
+
+/**************************************************************************************
+ * Azioni per utente employee abilitato alla assenza lavoro fuori sede con convenzione
+ **************************************************************************************/
+rule Working_offsite_with_convention
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/**************************************
+ * Azioni per utente employee abilitato
+ **************************************/
+rule Absences_person
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.ADDITIONAL_HOURS
+ 				|| epasParam == EpasParam.COVID_19
+ 				|| epasParam == EpasParam.RIGHT_TO_STUDY
+ 				|| epasParam == EpasParam.DISABLED_PERSON_PERMISSION
+ 				|| epasParam == EpasParam.DISABLED_RELATIVE_PERMISSION
+ 				|| epasParam == EpasParam.TELEWORK
+ 				|| epasParam == EpasParam.ENABLE_TELEWORK_STAMPINGS_FOR_WORKTIME
+ 				|| epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE
+ 				|| epasParam == EpasParam.SMARTWORKING
+ 				|| epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/********************************************************
+ * Azioni per utente employee abilitato per visita medica
+ ********************************************************/
+rule Absences_person_medical_exam
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * Un dipendente può autocertificare le proprie assenze per il lavoro fuori Sede se...
+ ***********************************************************************************/
+rule employeeCanInsertAbsencesOffsiteWithConvention
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+ permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
+ toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/************************************************************
+ * Un dipendente può autocertificare le proprie assenze se...
+ ************************************************************/
+rule employeeCanInsertAbsences
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration((epasParam == EpasParam.COVID_19 && fieldValue == true)
+ 				|| (epasParam == EpasParam.DISABLED_PERSON_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.DISABLED_RELATIVE_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.RIGHT_TO_STUDY && fieldValue == true)
+ 				|| (epasParam == EpasParam.TELEWORK && fieldValue == true)
+ 				|| (epasParam == EpasParam.ADDITIONAL_HOURS && fieldValue == true)
+ 				|| (epasParam == EpasParam.PARENTAL_LEAVE_AND_CHILD_ILLNESS && fieldValue == true)
+ 				|| (epasParam == EpasParam.SECOND_DISABLED_RELATIVE_PERMISSION && fieldValue == true)
+ 				|| (epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE && fieldValue == true)
+ 				|| (epasParam == EpasParam.SMARTWORKING && fieldValue == true)
+ 				|| (epasParam == EpasParam.AGILE_WORK && fieldValue == true)
+ 				|| (epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS && fieldValue == true)) from $p.personConfigurations
+ $c: PermissionCheck(
+ permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
+     toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/******************************************************************************
+ * Un dipendente può autocertificare le proprie assenze per visita medica se...
+ *****************************************************************************/
+
+rule employeeCanInsertMedicalExam
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM && fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+      permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'),
+      toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per lavoro fuori sede in convenzione se:
+ *****************************************************************************************************/
+rule EmployeeCanEditOffSiteAbsenceWithConvention
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_ABSENCE_WITH_CONVENTION, fieldValue == true) from $p.personConfigurations
+ /** Sostituire il metodo che valuta che tipo di assenza può inserire il dipendente utilizzando la nuova modellazione **/
+ $target: Absence(DefaultGroup.employeeOffSeatCodes().contains(this.getCode()), this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth())
+ )
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per legge 104 se:
+ *******************************************************************************/
+ rule EmployeeCanEditDisabledPersonAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeDisabledPersonCodes().contains(this.getCode()), this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+
+ /*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per telelavoro se:
+ *******************************************************************************/
+rule EmployeeCanEditTeleworkAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.TELEWORK, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeTeleworkCodes().contains(this.getCode()), this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per legge 104 per parente disabile se:
+  ***************************************************************************************************/
+rule EmployeeCanEditDisabledRelativeAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.DISABLED_PERSON_PERMISSION, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeDisabledRelativeCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per diritto allo studio se:
+ ****************************************************************************************/
+rule EmployeeCanEditRightToStudyAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.RIGHT_TO_STUDY, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeRightToStudyCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per emergenza COVID19 se:
+ **************************************************************************************/
+rule EmployeeCanEditCovid19Absence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.COVID_19, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeCovid19Codes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per L-AGILE di cui alla nota del DG 22278 del 22 marzo 2022 se:
+***************************************************************************************************************************/
+ rule EmployeeCanEditAgileWorkAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.AGILE_WORK, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeAgileCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per ore aggiuntive se:
+ ***********************************************************************************/
+rule EmployeeCanEditAdditionalHourAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.ADDITIONAL_HOURS, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeAdditionalHoursCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per congedo parentale/malattia figlio se:
+ ******************************************************************************************************/
+rule EmployeeCanEditParentalLeaveAndChildIllnessAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_AND_CHILD_ILLNESS, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.parentalLeaveAndChildIllnessCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per secondo parente disabile se:
+ *********************************************************************************************/
+rule EmployeeCanEditSecondDisabledRelativeAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.SECOND_DISABLED_RELATIVE_PERMISSION, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeSecondDisabledRelativeCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per lavoro agile per dipendenti fragili o assistenza disabile/immunodepresso:
+ ******************************************************************************************************************************************/
+rule EmployeeCanEditAgileWorkOrDisabledPeopleAssistanceAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.AGILE_WORK_OR_DISABLED_PEOPLE_ASSISTANCE, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeAgileWorkOrDisabledPeopleAssistanceCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+* L'impiegato può modificare/salvare una determinata assenza per lavoro agile
+******************************************************************************/
+rule EmployeeCanEditSmartworkingAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.SMARTWORKING, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.employeeSmartworking().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/***********************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per congedo parentale per il padre
+ ***********************************************************************************************/
+rule EmployeeCanEditParentalLeaveForFatherAbsence
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ PersonConfiguration(epasParam == EpasParam.PARENTAL_LEAVE_FOR_FATHERS, fieldValue == true) from $p.personConfigurations
+ $target: Absence(DefaultGroup.parentalLeaveForFathers().contains(this.getCode()), this.getOwner() == $p)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $target, granted == false )
+ //$c: PermissionCheck(action in ("AbsenceGroups.insert", "AbsenceGroups.edit", "AbsenceGroups.save", "AbsenceGroups.delete"), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * L'impiegato può modificare/salvare una determinata assenza per visita medica se:
+ **********************************************************************************/
+rule EmployeeCanEditMedicalExamAbsence
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.PEOPLE_ALLOWED_INSERT_MEDICAL_EXAM, fieldValue == true) from $o.configurations
+ $target: Absence(DefaultGroup.medicalExamsCodes().contains(this.getCode()) , this.getOwner() == $p)
+  $c: PermissionCheck(
+      (permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST')) ||
+      (permission.startsWith("/rest/v4/absencesGroups/save") && httpMethod.equalsIgnoreCase('POST')),
+      toCheck(), target == $target, granted == false )
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*****************************************************************************************************
+ * Un dipendente può autocertificare le proprie timbrature entro una certa data se...
+ * Non vengono fatti i controlli sulle configurazioni che vengono già fatti nelle altre drools
+ * in modo che questa regola valga sia nel caso di
+ **********************************************************************************/
+rule employeeCanInsertStampings_inDate
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $target: YearMonth()
+ $c: PermissionCheck(permission.startsWith("/rest/v4/absencesGroups/simulateInsert") && httpMethod.equalsIgnoreCase('POST'), target == $target, granted == false)
+ /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
+ eval($target.isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target))
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente con ruolo BADGE_READER
+ ******************************************************************************/
+
+rule Stampings_create
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.BADGE_READER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/stampingsfromclient/create") ||
+    permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Stampings_create_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.BADGE_READER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/stampingsfromclient/create") ||
+    permission.startsWith("/rest/v4/stampingsfromclient/createnotrecompute"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati degli ufficio ruolo TECHNICAL_ADMIN
+ ******************************************************************************/
+
+rule Offices_show_and_update_technical_admin
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.TECHNICAL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/create") ||
+    permission.startsWith("/rest/v4/offices/show") ||
+    permission.startsWith("/rest/v4/offices/update") ||
+    permission.startsWith("/rest/v4/offices/delete") ||
+    permission.startsWith("/rest/v4/offices/users"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Offices_show_and_update_technical_admin_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.TECHNICAL_ADMIN) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/offices/create") ||
+    permission.startsWith("/rest/v4/offices/show") ||
+    permission.startsWith("/rest/v4/offices/update") ||
+    permission.startsWith("/rest/v4/offices/delete") ||
+    permission.startsWith("/rest/v4/offices/users"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati degli contratti tramite il ruolo REGISTRY_MANAGER
+ ******************************************************************************/
+
+rule Contracts_show_and_update_contract_manager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/contracts/create") ||
+    (permission.startsWith("/rest/v4/contracts/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/contracts/update") ||
+    permission.startsWith("/rest/v4/contracts/delete") ||
+    permission.startsWith("/rest/v4/contracts/linkPreviousContract") ||
+    permission.startsWith("/rest/v4/contracts/unlinkPreviousContract"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Contracts_show_and_update_contract_manager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/contracts/create") ||
+    (permission.startsWith("/rest/v4/contracts/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/contracts/update") ||
+    permission.startsWith("/rest/v4/contracts/delete") ||
+    permission.startsWith("/rest/v4/contracts/linkPreviousContract") ||
+    permission.startsWith("/rest/v4/contracts/unlinkPreviousContract"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Gestione dei dati delle persone tramite il ruolo REGISTRY_MANAGER
+ ******************************************************************************/
+
+rule Persons_show_and_update_registry_manager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
+    toCheck(), target == null)
+ then
+ $c.grant();
+end
+
+rule Persons_show_and_update_registry_manager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ Role(name == Role.REGISTRY_MANAGER) from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/people/create") ||
+    (permission.startsWith("/rest/v4/people/") && httpMethod.equalsIgnoreCase('GET')) ||
+    permission.startsWith("/rest/v4/people/update") ||
+    permission.startsWith("/rest/v4/people/delete"),
+    toCheck(), target == $o)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Azioni utente con ruolo ABSENCE_MANAGER
+ ******************************************************************************/
+rule AbsenceManager
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $r: Role(name == "absenceManager") from $uro.role
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/absences"),
+    toCheck(), target == null)
+then
+ System.out.println("uro = " + $uro);
+ $c.grant();
+end
+
+rule AbsenceManager_InOffice
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ $r: Role(name == "absenceManager") from $uro.role
+ $p: Person(getOffice() == $uro.getOffice())
+ $c: PermissionCheck(
+    permission.startsWith("/rest/v4/absences"),
+    toCheck(), target == $p)
+then
+ $c.grant();
+end
+
+
+/*******************************************************************************
+ * Questa parte per il nuovo ruolo supervisore della reperibilità
+ ******************************************************************************/
+rule isReperibilitySupervisor_generic
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $c: PermissionCheck((permission.startsWith("/rest/v4/reperibilitycalendar")),
+      toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule reperibilitySupervisorCanManagePersonReperibilityType
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $prt)
+then
+ $c.grant();
+end
+
+rule canManageReperibilityMonth
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $target: ReperibilityTypeMonth((!approved && personReperibilityType == $prt) || this == null)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+rule canEditReperibilityTypeMonth
+when
+  $p: Person(reperibilityTypes != null && !reperibilityTypes.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilityTypes
+  $target: ReperibilityTypeMonth(personReperibilityType == $prt)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/*Fine parte di ruolo supervisore delle reperibilità*/
+
+
+/*Inizio parte gestori delle reperibilità*/
+
+rule isReperibilityManager_generic
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == null)
+then
+ $c.grant();
+end
+
+
+rule reperibilityManagerCanManagePersonReperibilityType
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilities
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $prt)
+then
+ $c.grant();
+end
+
+rule reperibilityManagercanManageReperibilityMonth
+when
+  $p: Person(reperibilities != null && !reperibilities.isEmpty()) from currentUser.getPerson()
+  $o: Office() from $p.office
+  Configuration(epasParam == EpasParam.ENABLE_CALENDAR_REPERIBILITY, fieldValue == true) from $o.configurations
+  $prt: PersonReperibilityType() from $p.reperibilities
+  $target: ReperibilityTypeMonth((!approved && personReperibilityType == $prt) || this == null)
+  $c: PermissionCheck(
+      permission.startsWith("/rest/v4/reperibilitycalendar"),
+      toCheck(), target == $target)
+then
+ $c.grant();
+end
+
+/*Fine parte dei gestori delle reperibilità*/
+
+
+/*******************************************************************************
+ * Azioni per utente employee abilitato alla timbratura fuori sede
+ ******************************************************************************/
+rule Working_offsite
+when
+ $uro: UsersRolesOffices() from userRolesOffices
+ Role(name == Role.EMPLOYEE) from $uro.role
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), granted == false, target == null)
+then
+ $c.grant();
+end
+
+/************************************************************************************
+ * Un dipendente può autocertificare le proprie timbrature per il lavoro fuori Sede se...
+ ***********************************************************************************/
+rule employeeCanInsertStampingsAndAbsencesOffsite
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/insert") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings/saveServiceReasons") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $p, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature se...
+ ******************************************************************************/
+rule employeeCanEditStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(this.getOwner() == $p)
+ $c: PermissionCheck(
+         (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+         (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+         (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+         toCheck(), granted == false, target == $target)
+ Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+  /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
+  eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature per il lavoro fuori Sede se...
+ ******************************************************************************/
+rule employeeCanEditStampingsOffsite
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(UserDao.getAllowedStampTypes(currentUser).contains(stampType), this.getOwner() == $p)
+ $c: PermissionCheck(
+ (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+ (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')) ||
+ (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+ toCheck(), target == $target, granted == false)
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+ eval(!historicalDao.isPersistent($target) || historicalDao.lastRevisionOperator($target) == currentUser)
+ /** non più indietro di 2 mesi fa e solo nei mesi non ancora inviati sugli attestati **/
+ eval($target.getYearMonth().isAfter(YearMonth.now().minusMonths(2)) && $p.checkLastCertificationDate($target.getYearMonth()))
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature per uscita di servizio se ...
+ ******************************************************************************/
+rule employeeCanEditStampingsServiceReasons
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $o: Office() from $p.office
+ $target: Stamping(isServiceReasons(), this.getOwner() == $p)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')) ||
+    (permission.startsWith("/rest/v4/stampings/saveOffSite") && httpMethod.equalsIgnoreCase('POST')),
+    toCheck(), target == $target, granted == false)
+ Configuration(epasParam == EpasParam.WORKING_OFF_SITE, fieldValue == true) from $o.configurations
+ PersonConfiguration(epasParam == EpasParam.OFF_SITE_STAMPING, fieldValue == true) from $p.personConfigurations
+then
+ $c.grant();
+end
+
+rule employeeAutocertificationStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person(qualification != null && qualification.qualification <= 3) from currentUser.getPerson()
+ $o: Office() from $p.office
+ Configuration(epasParam == EpasParam.TR_AUTOCERTIFICATION, fieldValue == true) from $o.configurations
+ $c: PermissionCheck(
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+   (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+   toCheck(), target == null, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può entrare nella modifica delle proprie timbrature di servizio se...
+ ******************************************************************************/
+rule employeeCanEditServiceStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
+ $c: PermissionCheck(
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+    (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+    (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+    toCheck(),target == null, granted == false)
+then
+ $c.grant();
+end
+
+/*******************************************************************************
+ * Un dipendente può modificare le sue timbrature di servizio se...
+ ******************************************************************************/
+rule employeeCanModifyServiceStampings
+when
+ $uro: UsersRolesOffices(role.name == Role.EMPLOYEE) from userRolesOffices
+ $p: Person() from currentUser.getPerson()
+ $target: Stamping(this.getOwner() == $p && stampType == StampTypes.MOTIVI_DI_SERVIZIO)
+ $c: PermissionCheck(
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('POST')) ||
+   (permission.startsWith("/rest/v4/stampings") && httpMethod.equalsIgnoreCase('DELETE')) ||
+   (permission.startsWith("/rest/v4/stampings/edit") && httpMethod.equalsIgnoreCase('GET')),
+   toCheck(), granted == false, target == $target)
+then
+ $c.grant();
+end
