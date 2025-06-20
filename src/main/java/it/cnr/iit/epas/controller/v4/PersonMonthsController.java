@@ -148,7 +148,7 @@ public class PersonMonthsController {
 
     List<PersonMonthsDto> pmListDto = Lists.newArrayList();
     Preconditions.checkState(contract.isPresent());
-    List<IWrapperContractMonthRecap> recaps = Lists.newArrayList();
+
     IWrapperContractMonthRecap wp;
     YearMonth actual = YearMonth.of(year, 1);
     YearMonth last = YearMonth.of(year, 12);

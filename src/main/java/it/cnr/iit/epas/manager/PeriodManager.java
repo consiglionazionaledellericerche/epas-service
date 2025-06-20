@@ -21,8 +21,14 @@ import com.google.common.base.Verify;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import it.cnr.iit.epas.dao.ContractDao;
+import it.cnr.iit.epas.dao.OfficeDao;
+import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
 import it.cnr.iit.epas.manager.recaps.recomputation.RecomputeRecap;
+import it.cnr.iit.epas.models.Contract;
+import it.cnr.iit.epas.models.Office;
+import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.utils.DateInterval;
@@ -30,10 +36,11 @@ import it.cnr.iit.epas.utils.DateUtility;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,16 +52,16 @@ import org.springframework.stereotype.Component;
  * @author Alessandro Martelli
  *
  */
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class PeriodManager {
 
-  final ObjectProvider<EntityManager> emp;
+  private final ObjectProvider<EntityManager> emp;
+  private final ContractDao contractDao;
+  private final PersonDao personDao;
+  private final OfficeDao officeDao;
   
-  @Inject
-  public PeriodManager(ObjectProvider<EntityManager> emp) {
-    this.emp = emp;
-  }
 
   /**
    * Inserisce il nuovo period all'interno dei periodi in target.
@@ -80,7 +87,6 @@ public class PeriodManager {
   public final List<IPropertyInPeriod> updatePeriods(
       IPropertyInPeriod propertyInPeriod, boolean persist, boolean validateAllPeriodCovered) {
 
-
     //controllo iniziale consistenza periodo.
     if (propertyInPeriod.getBeginDate() != null 
         &&  propertyInPeriod.calculatedEnd() != null 
@@ -95,12 +101,24 @@ public class PeriodManager {
           .stream().collect(Collectors.toList());
     }
 
+    var owner = propertyInPeriod.getOwner();
+    
+    if (!emp.getObject().contains(owner)) {
+      if (owner instanceof Office) {
+        owner = officeDao.byId(((Office) owner).getId()).get();
+      } else if (owner instanceof Person) {
+        owner = personDao.byId(((Person) owner).getId()).get();
+      } else if (owner instanceof Contract) {
+        owner = contractDao.byId(((Contract) owner).getId()).get();
+      }
+    }
+
     boolean recomputeBeginSet = false;
 
     //copia dei periodi ordinata
     List<IPropertyInPeriod> originals = Lists.newArrayList();
     for (IPropertyInPeriod originalPeriod :
-          propertyInPeriod.getOwner().periods(propertyInPeriod.getType())) {
+          owner.periods(propertyInPeriod.getType())) {
       originals.add(originalPeriod);
     }
     originals = originals.stream().sorted().collect(Collectors.toList());
@@ -197,11 +215,11 @@ public class PeriodManager {
         emp.getObject().persist(periodInsert);
         //periodInsert._save();
       }
-      emp.getObject().merge(propertyInPeriod.getOwner());
+      emp.getObject().merge(owner);
       //propertyInPeriod.getOwner()._save();
       emp.getObject().flush();
       //JPA.em().flush();
-      emp.getObject().refresh(propertyInPeriod.getOwner());
+      emp.getObject().refresh(owner);
       //JPA.em().refresh(propertyInPeriod.getOwner());
     }
 
@@ -349,11 +367,12 @@ public class PeriodManager {
         //JPA.em().flush();
       }
 
-      final List<IPropertyInPeriod> periods = Lists.newArrayList(owner.periods(type));
+      List<IPropertyInPeriod> periods = Lists.newArrayList(owner.periods(type));
       if (periods.isEmpty()) {
         continue; //caso di parametro ancora non definito
       }
-      periods.stream().sorted().collect(Collectors.toList());
+      periods = periods.stream().sorted(Comparator.comparing(IPropertyInPeriod::getBeginDate))
+        .collect(Collectors.toList());
 
       // Sistemo il primo
       IPropertyInPeriod first = periods.get(0);

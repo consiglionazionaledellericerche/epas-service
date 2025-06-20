@@ -429,8 +429,6 @@ public class AbsenceManager {
     //Preconditions.checkState(absenceType.isPersistent());
     Preconditions.checkNotNull(file);
 
-    AbsencesResponse ar = new AbsencesResponse(date, absenceType.code);
-
     Absence absence = new Absence();
     absence.date = date;
     absence.absenceType = absenceType;
@@ -444,6 +442,8 @@ public class AbsenceManager {
       absence.justifiedType = absenceComponentDao
           .getOrBuildJustifiedType(JustifiedTypeName.all_day);
     }
+
+    AbsencesResponse ar = new AbsencesResponse(date, absenceType.code);
 
     //se non devo considerare festa ed è festa non inserisco l'assenza
     if (!absenceType.isConsideredWeekEnd() && personDayManager.isHoliday(person, date)) {
