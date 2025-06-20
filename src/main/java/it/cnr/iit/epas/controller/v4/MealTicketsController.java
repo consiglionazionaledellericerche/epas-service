@@ -70,6 +70,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ApiRoutes.BASE_PATH + "/mealtickets")
 public class MealTicketsController {
 
+  //TODO mettere nel default.
+  private static final Integer ticketNumberFrom = 1;
+  private static final Integer ticketNumberTo = 22;
+
   private final IWrapperFactory wrapperFactory;
   private final IMealTicketsService mealTicketService;
   private final SecurityRules rules;
@@ -79,6 +83,7 @@ public class MealTicketsController {
   private final MealTicketRecapMapper mealTicketRecapMapper;
   private final PersonShowTerseMapper personShowTerseMapper;
 
+  
   @Operation(
       summary = "Visualizzazione del riepilogo dei buoni pasto dei dipendenti.",
       description = "Questo endpoint è utilizzabile dalle persone autenticate per visualizzare "
@@ -129,17 +134,12 @@ public class MealTicketsController {
       }
     }
 
-
-    //TODO mettere nel default.
-    Integer ticketNumberFrom = 1;
-    Integer ticketNumberTo = 22;
-
     MealTicketRecapShowDto dto = new MealTicketRecapShowDto();
     MealTicketRecapDto recapDto = mealTicketRecapMapper.convert(recap);
 
     LocalDate deliveryDate = LocalDate.now();
     LocalDate today = LocalDate.now();
-    LocalDate expireDate = mealTicketDao.getFurtherExpireDateInOffice(person.getOffice());
+
     recapDto.setBlockMealTicketReceivedDeliveryDesc(
         mealTicketRecapMapper.convert(recap.getBlockMealTicketReceivedDeliveryDesc()));
     dto.setDeliveryDate(deliveryDate);
@@ -147,7 +147,7 @@ public class MealTicketsController {
     dto.setPerson(personShowTerseMapper.convert(person));
     dto.setRecap(recapDto);
     dto.setRecapPrevious(mealTicketRecapMapper.convert(recapPrevious));
-    dto.setExpireDate(expireDate);
+    dto.setExpireDate(mealTicketDao.getFurtherExpireDateInOffice(person.getOffice()));
     dto.setTicketNumberFrom(ticketNumberFrom);
     dto.setTicketNumberTo(ticketNumberTo);
 

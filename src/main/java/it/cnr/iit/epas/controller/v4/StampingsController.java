@@ -161,16 +161,14 @@ public class StampingsController {
 
     rules.checkifPermitted(person);
 
-    List<StampTypeDto> offsite = Lists.newArrayList();
     StampTypeDto offsiteDto = new StampTypeDto();
     offsiteDto.setName(StampTypes.LAVORO_FUORI_SEDE.name());
     offsiteDto.setDescription(StampTypes.LAVORO_FUORI_SEDE.getDescription());
     offsiteDto.setCode(StampTypes.LAVORO_FUORI_SEDE.getCode());
     offsiteDto.setIdentifier(StampTypes.LAVORO_FUORI_SEDE.getIdentifier());
+
+    List<StampTypeDto> offsite = Lists.newArrayList();
     offsite.add(offsiteDto);
-    boolean insertOffsite = false;
-    boolean insertNormal = true;
-    boolean autocertification = false;
 
     List<BadgeReader> badgeReaders = person.getBadges()
         .stream().map(b -> b.getBadgeReader()).collect(Collectors.toList());
@@ -194,6 +192,11 @@ public class StampingsController {
     for (Zone zone : zones) {
       zonesDto.add(stampingFormDtoMapper.convert(zone));
     }
+
+
+    boolean insertOffsite = false;
+    boolean insertNormal = true;
+    boolean autocertification = false;
 
     if (user.isSystemUser()) {
       dto.setPerson(stampingFormDtoMapper.convert(person));
@@ -472,7 +475,6 @@ public class StampingsController {
   public ResponseEntity<Map<String, String>> saveServiceReasons(
       @NotNull @RequestBody @Valid StampingCreateDto stampingCreateDto) {
     log.debug("StampingsController::saveServiceReasons stampingCreateDto = {}", stampingCreateDto);
-    Map<String, String> response = new HashMap<>();
     Long stampingId = stampingCreateDto.getStampingId();
     Stamping stamping = entityToDtoConverter.createEntity(stampingCreateDto);
     Preconditions.checkNotNull(stampingId);
@@ -495,10 +497,15 @@ public class StampingsController {
         && currentUser.getPerson().getId().equals(person.getId())) {
       //stampings(date.getYear(), date.getMonthOfYear());
     }
+
+    Map<String, String> response = new HashMap<>();
     response.put("message", "Timbratura salvata con successo.");
     return ResponseEntity.ok().body(response);
   }
 
+  /**
+   * Impostazoine del lavoro fuori sede.
+   */
   @PostMapping("/saveOffSite")
   public ResponseEntity<Map<String, String>> saveOffSite(
       @NotNull @RequestBody @Valid StampingCreateDto stampingCreateDto) {
@@ -523,11 +530,13 @@ public class StampingsController {
   }
 
 
+  /**
+   * Cancellazione di una timbratura.
+   */
   @DeleteMapping(ApiRoutes.DELETE)
   public ResponseEntity<Map<String, String>> delete(@NotNull @PathVariable("id") Long id) {
     log.debug("StampingController::delete id = {}", id);
 
-    Map<String, String> response = new HashMap<>();
     Stamping stamping = stampingDao.getStampingById(id);
 
     if (stamping == null) {
@@ -537,6 +546,7 @@ public class StampingsController {
 
     stampingDao.delete(stamping);
     log.info("Eliminata timbratura {}", stamping);
+    Map<String, String> response = new HashMap<>();
     response.put("message", "Timbratura eliminata con successo.");
     return ResponseEntity.ok().body(response);
   }
