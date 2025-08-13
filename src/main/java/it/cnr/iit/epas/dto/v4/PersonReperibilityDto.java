@@ -19,7 +19,6 @@ package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.Data;
 
 /**
@@ -34,7 +33,7 @@ import lombok.Data;
 public class PersonReperibilityDto {
 
   @Schema(description = "Persona")
-  private PersonShowDto person;
+  private PersonShowTerseDto person;
 
   @Schema(description = "Data di inizio reperibilità")
   private LocalDate startDate;
@@ -48,6 +47,4 @@ public class PersonReperibilityDto {
   @Schema(description = "Note")
   private String note;
 
-  @Schema(description = "Note")
-  private List<PersonReperibilityDto> personReperibilityDays;
 }

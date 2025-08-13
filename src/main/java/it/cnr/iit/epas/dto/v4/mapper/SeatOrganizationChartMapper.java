@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Mapper da AbsenceGroups al suo DTO per la visualizzazione via REST.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SeatOrganizationChartMapper {
 
   default String mapRoleToName(Role role) {
@@ -48,6 +49,7 @@ public interface SeatOrganizationChartMapper {
   
   List<String> convertRoles(List<Role> roles);
 
+  @Mapping(target = "ownerId", source = "owner.id")
   @Mapping(target = "fullname", expression = "java(user.getPerson().getFullname())")
   UserShowDto userToUserShowDto(User user);
 

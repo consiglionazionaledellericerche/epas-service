@@ -41,6 +41,4 @@ public class PersonReperibilityDayDto {
   @Schema(description = "Flag per indicare se si tratta di un giorno di festa")
   private Boolean holidayDay;
 
-  @Schema(description = "Tipologia di reperibilità")
-  private PersonReperibilityTypeDto personReperibilityType;
 }

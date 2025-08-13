@@ -31,13 +31,14 @@ import java.util.List;
 import javax.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
 
 /**
  * Mapper da Absence al suo DTO per la visualizzazione via REST.
  */
 @Component
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class AbsenceGroupMapper {
 
   @Inject
