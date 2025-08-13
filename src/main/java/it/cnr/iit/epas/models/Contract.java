@@ -24,9 +24,12 @@ import com.google.common.collect.Sets;
 import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.models.base.PeriodModel;
+import it.cnr.iit.epas.models.enumerate.ContractType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -159,6 +162,11 @@ public class Contract extends PeriodModel implements IPropertiesInPeriodOwner {
 
   @NotNull
   private boolean onCertificate = true;
+
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 50, columnDefinition = "VARCHAR(50)")
+  private ContractType contractType = ContractType.structured_public_administration;
 
   @Transient
   private List<ContractWorkingTimeType> contractWorkingTimeTypeAsList;

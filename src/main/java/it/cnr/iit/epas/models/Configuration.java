@@ -46,7 +46,7 @@ public class Configuration extends PropertyInPeriod {
   public Office office;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "epas_param")
+  @Column(name = "epas_param", length = 255, columnDefinition = "VARCHAR(255)")
   public EpasParam epasParam;
 
   @Column(name = "field_value")

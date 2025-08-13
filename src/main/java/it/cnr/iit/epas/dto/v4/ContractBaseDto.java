@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023  Consiglio Nazionale delle Ricerche
+ * Copyright (C) 2025  Consiglio Nazionale delle Ricerche
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.dto.v4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import it.cnr.iit.epas.models.enumerate.ContractType;
 import java.time.LocalDate;
 import lombok.Data;
 import lombok.ToString;
@@ -44,4 +45,6 @@ public class ContractBaseDto {
   private String externalId;
   @Schema(description = "Contratto con gestione delle busta paga (ex. true per i dipendenti CNR")
   private boolean onCertificate;
+  @Schema(description = "Tipo di contratto: structured_public_administration, interim, unstructured", defaultValue = "structured_public_administration")
+  private ContractType contractType = ContractType.structured_public_administration;
 }

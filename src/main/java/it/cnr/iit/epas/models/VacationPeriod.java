@@ -49,7 +49,7 @@ public class VacationPeriod extends PropertyInPeriod implements IPropertyInPerio
   private static final long serialVersionUID = 7082224747753675170L;
   
   @Enumerated(EnumType.STRING)
-  @Column(name = "vacation_code")
+  @Column(name = "vacation_code", length = 50, columnDefinition = "VARCHAR(50)")
   @NotNull
   private VacationCode vacationCode;
 
