@@ -481,8 +481,8 @@ public class PersonDao extends DaoBase<Person> {
     final QContractStampProfile csp = QContractStampProfile.contractStampProfile;
 
     return getQueryFactory().selectFrom(person)
-        .leftJoin(person.contracts, contract).fetchAll()
-        .leftJoin(contract.contractStampProfile, csp).fetchAll()
+        .leftJoin(person.contracts, contract).fetchJoin()
+        .leftJoin(contract.contractStampProfile, csp).fetchJoin()
         .where(person.id.eq(personId)).distinct()
         .fetchOne();
   }

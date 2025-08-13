@@ -17,8 +17,10 @@
 
 package it.cnr.iit.epas.models;
 
+import it.cnr.iit.epas.helpers.converter.YearMonthDateAttributeConverter;
 import it.cnr.iit.epas.models.base.MutableModel;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -49,6 +51,7 @@ public class ShiftTypeMonth extends MutableModel {
 
   @NotNull
   @Column(name = "year_month", nullable = false)
+  @Convert(converter = YearMonthDateAttributeConverter.class)
   private YearMonth yearMonth;
 
   @NotNull
