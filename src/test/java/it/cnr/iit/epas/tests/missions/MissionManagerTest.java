@@ -67,7 +67,7 @@ class MissionManagerTest {
         .anno(currentYear).codiceSede(person.getOffice().getCode())
         .destinazioneMissione("ITALIA").matricola(person.getNumber())
         .person(person)
-        .dataInizio(LocalDateTime.now()).dataFine(LocalDateTime.now().plusDays(2))
+        .dataInizio(LocalDateTime.now().plusDays(1)).dataFine(LocalDateTime.now().plusDays(3))
         .build();
 
     val missionCreated = missionManager.createMissionFromClient(mission, true);

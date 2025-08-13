@@ -15,24 +15,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.dto.v4.mapper;
-
-import it.cnr.iit.epas.dto.v4.PersonMonthRecapDto;
-import it.cnr.iit.epas.dto.v4.PersonShowDto;
-import it.cnr.iit.epas.models.Person;
-import it.cnr.iit.epas.models.PersonMonthRecap;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+package it.cnr.iit.epas.models.enumerate;
 
 /**
- * Mapper da TrainingHours al suo DTO per la visualizzazione via REST.
+ * @author dario
+ * Tipologia del contratto. Sostituisce il booleano "on_certificate".
  */
-@Mapper(componentModel = "spring")
-public interface TrainingHoursMapper {
+public enum ContractType {
 
-  @Mapping(target = "qualification", source = "person.qualification.id")
-  @Mapping(target = "birthDate", source = "birthday")
-  PersonShowDto convert(Person person);
-
-  PersonMonthRecapDto convert(PersonMonthRecap personMonthRecap);
+  interim("interinale"),
+  structured_public_administration("dipendente_strutturato"),
+  unstructured("non strutturato");
+  
+  private String description;
+  
+  ContractType(String description) {
+    this.description = description;
+  }
+  
+  public String getDescription() {
+    return description;
+  }
 }

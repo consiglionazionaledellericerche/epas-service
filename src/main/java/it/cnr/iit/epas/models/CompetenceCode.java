@@ -86,14 +86,14 @@ public class CompetenceCode extends BaseEntity {
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "limit_type")
+  @Column(name = "limit_type", nullable = false, length = 50, columnDefinition = "VARCHAR(50)")
   public LimitType limitType;
 
   @Column(name = "limit_value")
   public Integer limitValue;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "limit_unit")
+  @Column(name = "limit_unit", length = 50, columnDefinition = "VARCHAR(50)")
   public LimitUnit limitUnit;
 
 

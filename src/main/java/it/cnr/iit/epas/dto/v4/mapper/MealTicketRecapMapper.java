@@ -28,6 +28,7 @@ import it.cnr.iit.epas.dto.v4.PersonBaseDto;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.manager.services.mealtickets.BlockMealTicket;
 import it.cnr.iit.epas.manager.services.mealtickets.MealTicketRecap;
+import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.MealTicket;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
@@ -44,7 +45,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MealTicketRecapMapper {
 
-  ContractShowTerseDto convert(ContractShowTerseDto contractShowTerseDto);
+  @Mapping(target = "personId", source = "person.id")
+  ContractShowTerseDto convert(Contract contract);
 
   @Mapping(target = "personId", source = "person.id")
   PersonDayDto convert(PersonDay personDay);
@@ -66,8 +68,6 @@ public interface MealTicketRecapMapper {
 
   List<BlockMealTicketDto> convert(List<BlockMealTicket> blockMealTicketRecap);
 
-  //@Mapping(target = "blockMealTicketReceivedDeliveryDesc", 
-  //expression = "java(mealTicketRecap.getBlockMealTicketReceivedDeliveryDesc())")
   MealTicketRecapDto convert(MealTicketRecap mealTicketRecap);
 
   OfficeShowTerseDto convert(Office office);
