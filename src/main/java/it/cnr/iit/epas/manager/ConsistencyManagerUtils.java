@@ -324,8 +324,7 @@ class ConsistencyManagerUtils {
 
     PersonDay previous = pd.getPreviousForNightStamp().get();
 
-    Stamping lastStampingPreviousDay = 
-        wrapperFactory.getObject().create(previous).getLastStamping();
+    Stamping lastStampingPreviousDay = previous.getLastStamping();
 
     if (lastStampingPreviousDay != null && lastStampingPreviousDay.isIn()) {
 

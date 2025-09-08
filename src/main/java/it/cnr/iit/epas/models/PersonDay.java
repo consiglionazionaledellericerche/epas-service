@@ -277,6 +277,21 @@ public class PersonDay extends BaseEntity {
     return this.troubles.stream().anyMatch(error -> error.getCause() == trouble);
   }
 
+  /**
+   * L'ultima timbratura in ordine di tempo nel giorno.
+   */
+  public Stamping getLastStamping() {
+    Stamping last = null;
+    for (Stamping s : getStampings()) {
+      if (last == null) {
+        last = s;
+      } else if (last.getDate().isBefore(s.getDate())) {
+        last = s;
+      }
+    }
+    return last;
+  }
+
   @Override
   public String toString() {
     return String.format(
