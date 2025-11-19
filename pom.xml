@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.0</version>
+		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.cnr.iit</groupId>
 	<artifactId>epas-service</artifactId>
-	<version>0.6.2</version>
+	<version>0.8.0</version>
 	<name>epas-service</name>
 	<description>Personnel Attendance System</description>
 	<properties>

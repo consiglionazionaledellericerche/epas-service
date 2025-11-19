@@ -41,6 +41,14 @@ public enum EpasParam {
 
   //#######################################
   // GENERAL PARAMS
+  
+  HANDLE_OVERTIME("handle_overtime",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Office.class),
 
   ABSENCES_FOR_EMPLOYEE("absences_for_employee",
       EpasParamCategory.GENERAL,
@@ -509,13 +517,13 @@ public enum EpasParam {
       Lists.<RecomputationType>newArrayList(),
       Office.class),
 
-  ENABLE_37_FLOW("enable_37_flow",
-      EpasParamCategory.FLOWS,
-      EpasParamTimeType.GENERAL,
-      EpasParamValueType.BOOLEAN,
-      EpasParamValueType.formatValue(false),
-      Lists.<RecomputationType>newArrayList(),
-      Office.class),
+//  ENABLE_37_FLOW("enable_37_flow",
+//      EpasParamCategory.FLOWS,
+//      EpasParamTimeType.GENERAL,
+//      EpasParamValueType.BOOLEAN,
+//      EpasParamValueType.formatValue(false),
+//      Lists.<RecomputationType>newArrayList(),
+//      Office.class),
 
   /**
    * Per i livelli I-III è necessaria l'approvazione delle ferie da parte del responsabile di sede.
@@ -761,7 +769,20 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Office.class),
-
+  
+  /**
+   * Attivazione o meno del monte ore di straordinario per dipendente.
+   */
+//  ENABLE_OVERTIME_PER_PERSON(
+//      "enable_overtime_per_person",
+//      EpasParamCategory.COMPETENCE_FLOWS,
+//      EpasParamTimeType.GENERAL,
+//      EpasParamValueType.BOOLEAN,
+//      EpasParamValueType.formatValue(false),
+//      Lists.<RecomputationType>newArrayList(),
+//      Office.class),
+  
+  
   /**
    * Per i livelli IV-VIII è necessaria l'approvazione del cambio di reperibilità da parte 
    * dell'eventuale responsabile del servizio di reperibilità.
