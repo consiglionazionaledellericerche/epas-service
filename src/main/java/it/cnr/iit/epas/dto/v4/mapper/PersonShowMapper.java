@@ -19,6 +19,7 @@ package it.cnr.iit.epas.dto.v4.mapper;
 
 import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.PersonShowDto;
+import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
@@ -35,6 +36,8 @@ public interface PersonShowMapper {
   @Mapping(target = "birthDate", source = "birthday")
   @Mapping(target = "qualification", source = "qualification.id")
   PersonShowDto convert(Person person);
+
+  PersonShowTerseDto convertTerse(Person person);
 
   OfficeShowTerseDto convert(Office office);
 

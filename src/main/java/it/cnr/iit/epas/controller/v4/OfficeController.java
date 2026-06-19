@@ -32,9 +32,11 @@ import it.cnr.iit.epas.dto.v4.OfficeCreateDto;
 import it.cnr.iit.epas.dto.v4.OfficeShowDto;
 import it.cnr.iit.epas.dto.v4.OfficeShowTerseDto;
 import it.cnr.iit.epas.dto.v4.OfficeUpdateDto;
+import it.cnr.iit.epas.dto.v4.PersonShowTerseDto;
 import it.cnr.iit.epas.dto.v4.UserShowTerseDto;
 import it.cnr.iit.epas.dto.v4.mapper.EntityToDtoConverter;
 import it.cnr.iit.epas.dto.v4.mapper.OfficeShowMapper;
+import it.cnr.iit.epas.dto.v4.mapper.PersonShowMapper;
 import it.cnr.iit.epas.dto.v4.mapper.UserShowMapper;
 import it.cnr.iit.epas.manager.OfficeManager;
 import it.cnr.iit.epas.models.Office;
@@ -82,18 +84,21 @@ public class OfficeController {
   private final OfficeManager officeManager;
   private final OfficeShowMapper officeMapper;
   private final UserShowMapper userShowMapper;
+  private final PersonShowMapper personMapper;
   private final EntityToDtoConverter entityToDtoConverter;
   private final SecurityRules rules;
 
   @Inject
   OfficeController(OfficeDao officeDao, OfficeShowMapper officeMapper,
       OfficeManager officeManager,
-      UserShowMapper userShowMapper, EntityToDtoConverter entityToDtoConverter,
+      UserShowMapper userShowMapper, PersonShowMapper personMapper,
+      EntityToDtoConverter entityToDtoConverter,
       SecurityRules rules) {
     this.officeDao = officeDao;
     this.officeManager = officeManager;
     this.officeMapper = officeMapper;
     this.userShowMapper = userShowMapper;
+    this.personMapper = personMapper;
     this.entityToDtoConverter = entityToDtoConverter;
     this.rules = rules;
   }
@@ -299,9 +304,34 @@ public class OfficeController {
           .collect(Collectors.toList()));
   }
 
+  @Operation(
+      summary = "Visualizzazione di tutte le persone associate ad un ufficio.",
+      description = "Questo endpoint è utilizzabile dagli utenti con ruolo "
+          + "'Amministratore tecnico' della sede da visualizzare e dagli utenti con il ruolo "
+          + "di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Ufficio trovato e persone visualizzate"),
+      @ApiResponse(responseCode = "403",
+        description = "Autenticazione non presente o utente che ha effettuato la richiesta "
+            + "non autorizzato a visualizzare i dati dell'ufficio",
+         content = @Content),
+      @ApiResponse(responseCode = "404", description = "Ufficio non trovato con l'id fornito",
+          content = @Content)
+  })
+  @GetMapping(ApiRoutes.SHOW + "/persons")
+  ResponseEntity<List<PersonShowTerseDto>> persons(@NotNull @PathVariable("id") Long id) {
+    log.debug("OfficeController::persons id = {}", id);
+    val office = officeDao.byId(id).orElseThrow(() -> new EntityNotFoundException());
+    rules.checkifPermitted(office);
+    return ResponseEntity.ok().body(
+        office.getPersons().stream()
+          .map(person -> personMapper.convertTerse(person))
+          .collect(Collectors.toList()));
+  }
+
   /**
    * Verifica le condizioni per cui non è possibile cancellare un ufficio.
-   * Solleva un eccezzione InvalidOperationOnCurrentStateException se non è 
+   * Solleva un eccezzione InvalidOperationOnCurrentStateException se non è
    * possibile cancellarlo.
    */
   private void checkIfIsPossibileToDelete(Office office) 

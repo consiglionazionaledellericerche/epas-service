@@ -27,9 +27,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.cnr.iit.epas.config.OpenApiConfiguration;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.controller.v4.utils.PersonFinder;
+import it.cnr.iit.epas.dao.CompetenceCodeDao;
+import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.dto.v4.mapper.PersonDayMapper;
+import it.cnr.iit.epas.manager.CompetenceManager;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.YearMonth;
 import java.util.List;
@@ -38,11 +41,14 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Controller con i metodi REST relativi alla visualizzazione e gestione dei riepilogi
@@ -68,6 +74,9 @@ public class PersonDaysController {
   private final PersonDayDao personDayDao;
   private final PersonDayMapper personDayMapper;
   private final PersonFinder personFinder;
+  private final OfficeDao officeDao;
+  private final CompetenceCodeDao competenceCodeDao;
+  private final CompetenceManager competenceManager;
 
   @Operation(
       summary = "Visualizzazione delle informazioni giornaliere di un mese di un dipendente.",
@@ -93,16 +102,51 @@ public class PersonDaysController {
   ResponseEntity<List<PersonDayDto>> list(
       @RequestParam("personId") Optional<Long> personId,
       @RequestParam("fiscalCode") Optional<String> fiscalCode,
-      @RequestParam("year") Integer year, 
+      @RequestParam("year") Integer year,
       @RequestParam("month") Integer month) {
     log.debug("REST method {} invoked with parameters personId={}, fiscalCode = {}, year={}, "
         + "month={}", ApiRoutes.LIST, personId, fiscalCode, year, month);
     val person = personFinder.getPerson(personId, fiscalCode)
         .orElseThrow(() -> new EntityNotFoundException("Person not found"));
-    val personDays = 
+    val personDays =
         personDayDao.getPersonDayInMonth(person, YearMonth.of(year, month));
-    val personDaysDto = 
+    val personDaysDto =
         personDays.stream().map(personDayMapper::convert).collect(Collectors.toList());
     return ResponseEntity.ok().body(personDaysDto);
+  }
+
+  @Operation(
+      summary = "Ricalcolo competenza a presenza mensile per una sede.",
+      description = "Ricalcola i valori della competenza con limitType ON_MONTHLY_PRESENCE "
+          + "per tutti i dipendenti abilitati della sede nel mese indicato. "
+          + "Corrisponde a {@code Competences.recalculateBonus()} nel progetto ePAS. "
+          + "Utilizzabile dagli utenti con ruolo 'Amministratore Personale' e dagli utenti "
+          + "con il ruolo di sistema 'Developer' e/o 'Admin'.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Ricalcolo avviato correttamente."),
+      @ApiResponse(responseCode = "404",
+          description = "Ufficio o codice competenza non trovati.",
+          content = @Content)
+  })
+  @PostMapping("/recalculate-bonus")
+  ResponseEntity<Void> recalculateBonus(
+      @RequestParam("officeId") Long officeId,
+      @RequestParam("competenceCodeId") Long competenceCodeId,
+      @RequestParam("year") Integer year,
+      @RequestParam("month") Integer month) {
+    log.debug(
+        "PersonDaysController::recalculateBonus officeId={}, competenceCodeId={}, year={}, "
+        + "month={}", officeId, competenceCodeId, year, month);
+    val office = officeDao.byId(officeId)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Ufficio non trovato con id=" + officeId));
+    val code = Optional.ofNullable(competenceCodeDao.getCompetenceCodeById(competenceCodeId))
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Codice competenza non trovato con id=" + competenceCodeId));
+    competenceManager.applyBonus(Optional.of(office), code, YearMonth.of(year, month));
+    log.info("Avviato ricalcolo competenza {} per ufficio {} nel mese {}/{}",
+        code.getCode(), office.getName(), month, year);
+    return ResponseEntity.ok().build();
   }
 }
