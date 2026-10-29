@@ -17,16 +17,22 @@
 
 package it.cnr.iit.epas.config;
 
+import it.cnr.iit.epas.controller.v4.WorkflowController;
+import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
 import jakarta.inject.Inject;
+import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -74,6 +80,10 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.OPTIONS).permitAll()
         .requestMatchers(HttpMethod.GET, "/actuator/*").permitAll()
         .requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+        //Servizi riservati ai client di servizio di epas-workflow-service
+        .requestMatchers(ApiRoutes.BASE_PATH + WorkflowController.PATH + "/**")
+          .access((authentication, context) ->
+              new AuthorizationDecision(isWorkflowClient(authentication.get())))
         .anyRequest().authenticated());
 
 
@@ -86,6 +96,19 @@ public class SecurityConfig {
 
     return http.build();
 
+  }
+
+  /**
+   * Verifica che l'autenticazione sia un token di un client di servizio dei flussi.
+   */
+  private boolean isWorkflowClient(Authentication authentication) {
+    if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)) {
+      return false;
+    }
+    val jwt = jwtAuthentication.getToken();
+    val clientId = jwt.hasClaim("azp")
+        ? jwt.getClaimAsString("azp") : jwt.getClaimAsString("client_id");
+    return clientId != null && securityConfig.getWorkflowClientIds().contains(clientId);
   }
 
 }

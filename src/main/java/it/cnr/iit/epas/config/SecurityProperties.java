@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.config;
 
 import java.io.Serializable;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -38,6 +39,12 @@ public class SecurityProperties implements Serializable {
   private static final long serialVersionUID = -1250232668456383929L;
 
   private Oauth2 oauth2 = new Oauth2();
+
+  /**
+   * Client OAuth2 di servizio (claim azp o client_id del token) abilitati agli endpoint
+   * /rest/v4/workflow usati da epas-workflow-service.
+   */
+  private List<String> workflowClientIds = List.of("epas-workflow-service");
 
   /**
    * Bean per le info relative all'oauth2.

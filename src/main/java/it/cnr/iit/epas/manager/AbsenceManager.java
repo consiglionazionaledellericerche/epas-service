@@ -43,6 +43,7 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.PersonReperibilityDay;
 import it.cnr.iit.epas.models.PersonShiftDay;
+import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.models.WorkingTimeTypeDay;
 import it.cnr.iit.epas.models.absences.Absence;
@@ -159,8 +160,28 @@ public class AbsenceManager {
    * @param justifiedType il tipo di giustificazione
    * @param groupAbsenceType il gruppo di appartenenza dell'assenza
    */
-  public List<Absence> saveAbsences(InsertReport insertReport, Person person, LocalDate from, 
+  public List<Absence> saveAbsences(InsertReport insertReport, Person person, LocalDate from,
       LocalDate recoveryDate, JustifiedType justifiedType, GroupAbsenceType groupAbsenceType) {
+    return saveAbsences(insertReport, person, from, recoveryDate, justifiedType,
+        groupAbsenceType, secureUtils.getCurrentUser().get(), true);
+  }
+
+  /**
+   * Salva l'assenza per conto dell'utente indicato.
+   *
+   * @param insertReport il report di inserimento assenza
+   * @param person la persona per cui salvare l'assenza
+   * @param from la data da cui salvare
+   * @param recoveryDate se esiste una data entro cui occorre recuperare l'assenza (es.:91CE)
+   * @param justifiedType il tipo di giustificazione
+   * @param groupAbsenceType il gruppo di appartenenza dell'assenza
+   * @param operator l'utente a cui attribuire l'inserimento nelle notifiche
+   * @param checkPermissions false quando i permessi sono già stati verificati altrove, come
+   *     per le assenze inserite al termine di un flusso di approvazione
+   */
+  public List<Absence> saveAbsences(InsertReport insertReport, Person person, LocalDate from,
+      LocalDate recoveryDate, JustifiedType justifiedType, GroupAbsenceType groupAbsenceType,
+      User operator, boolean checkPermissions) {
 
     List<Absence> newAbsences = Lists.newArrayList();
     //Persistenza
@@ -174,12 +195,17 @@ public class AbsenceManager {
           absence = handleRecoveryAbsence(absence, person, recoveryDate);
         }
         personDay.getAbsences().add(absence);
-        rules.check("AbsenceGroups.save", absence);
-        absenceDao.merge(absence);
+        if (checkPermissions) {
+          rules.check("AbsenceGroups.save", absence);
+        }
+        //L'assenza è nuova e resta nella collection del personDay: con la merge verrebbe
+        //salvata una copia e al flush successivo la cascade sul personDay proverebbe a
+        //inserire anche l'originale.
+        absenceDao.persist(absence);
         newAbsences.add(absence);
         personDayDao.merge(personDay);
 
-        notificationManager.notificationAbsencePolicy(secureUtils.getCurrentUser().get(),
+        notificationManager.notificationAbsencePolicy(operator,
             absence, groupAbsenceType, true, false, false);
 
       }
