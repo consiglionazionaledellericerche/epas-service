@@ -17,8 +17,8 @@
 
 package it.cnr.iit.epas.security;
 
+import jakarta.inject.Inject;
 import java.io.Serializable;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;

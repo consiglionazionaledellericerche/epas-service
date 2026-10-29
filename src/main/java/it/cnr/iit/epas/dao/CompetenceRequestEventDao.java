@@ -20,9 +20,9 @@ package it.cnr.iit.epas.dao;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.flows.CompetenceRequestEvent;
 import it.cnr.iit.epas.models.flows.QCompetenceRequestEvent;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

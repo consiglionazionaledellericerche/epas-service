@@ -25,10 +25,10 @@ import it.cnr.iit.epas.models.Notification;
 import it.cnr.iit.epas.models.QNotification;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.enumerate.NotificationSubject;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

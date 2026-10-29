@@ -23,8 +23,8 @@ import it.cnr.iit.epas.dao.OfficeDao;
 import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Office;
+import jakarta.inject.Inject;
 import java.util.List;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

@@ -44,11 +44,11 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultComplation;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.models.absences.definitions.DefaultTab;
 import it.cnr.iit.epas.models.absences.definitions.DefaultTakable;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

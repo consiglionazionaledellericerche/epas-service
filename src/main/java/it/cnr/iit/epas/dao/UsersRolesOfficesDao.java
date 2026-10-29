@@ -31,12 +31,12 @@ import it.cnr.iit.epas.models.QUsersRolesOffices;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

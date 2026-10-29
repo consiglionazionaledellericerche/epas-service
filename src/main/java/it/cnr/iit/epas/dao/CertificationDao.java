@@ -22,9 +22,9 @@ import it.cnr.iit.epas.models.Certification;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.QCertification;
 import it.cnr.iit.epas.models.enumerate.CertificationType;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

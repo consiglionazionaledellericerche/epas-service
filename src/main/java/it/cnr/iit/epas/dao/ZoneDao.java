@@ -23,10 +23,10 @@ import it.cnr.iit.epas.models.BadgeReader;
 import it.cnr.iit.epas.models.QZoneToZones;
 import it.cnr.iit.epas.models.Zone;
 import it.cnr.iit.epas.models.ZoneToZones;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

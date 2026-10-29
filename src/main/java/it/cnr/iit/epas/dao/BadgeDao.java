@@ -25,10 +25,10 @@ import it.cnr.iit.epas.models.BadgeSystem;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.QBadge;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

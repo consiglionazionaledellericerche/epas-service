@@ -18,10 +18,10 @@
 package it.cnr.iit.epas.security;
 
 import it.cnr.iit.epas.utils.RequestScopeData;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import javax.inject.Inject;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

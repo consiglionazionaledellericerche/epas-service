@@ -24,7 +24,7 @@ import it.cnr.iit.epas.manager.PersonManager;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecureUtils;
 import it.cnr.iit.epas.security.SecurityRules;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

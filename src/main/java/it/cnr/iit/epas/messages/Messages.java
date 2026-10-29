@@ -17,8 +17,8 @@
 
 package it.cnr.iit.epas.messages;
 
+import jakarta.inject.Inject;
 import java.util.Locale;
-import javax.inject.Inject;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 

@@ -22,11 +22,11 @@ import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.UsersRolesOffices;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

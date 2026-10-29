@@ -22,7 +22,7 @@ import it.cnr.iit.epas.dto.v4.PersonDayDto;
 import it.cnr.iit.epas.manager.AbsenceManager;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.absences.Absence;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;

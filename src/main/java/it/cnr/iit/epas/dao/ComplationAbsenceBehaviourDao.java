@@ -20,9 +20,9 @@ package it.cnr.iit.epas.dao;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.absences.ComplationAbsenceBehaviour;
 import it.cnr.iit.epas.models.absences.QComplationAbsenceBehaviour;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

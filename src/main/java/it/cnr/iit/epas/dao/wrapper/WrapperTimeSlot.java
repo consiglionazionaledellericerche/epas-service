@@ -23,12 +23,12 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.ContractMandatoryTimeSlot;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.TimeSlot;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

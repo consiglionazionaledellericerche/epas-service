@@ -39,13 +39,13 @@ import it.cnr.iit.epas.models.informationrequests.QServiceRequest;
 import it.cnr.iit.epas.models.informationrequests.QTeleworkRequest;
 import it.cnr.iit.epas.models.informationrequests.ServiceRequest;
 import it.cnr.iit.epas.models.informationrequests.TeleworkRequest;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

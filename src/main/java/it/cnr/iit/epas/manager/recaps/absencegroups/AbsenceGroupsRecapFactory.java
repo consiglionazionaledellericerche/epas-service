@@ -22,8 +22,8 @@ import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.security.SecureUtils;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

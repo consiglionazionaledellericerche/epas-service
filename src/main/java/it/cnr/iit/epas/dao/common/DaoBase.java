@@ -20,9 +20,9 @@ package it.cnr.iit.epas.dao.common;
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import it.cnr.iit.epas.models.base.BaseEntity;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 
 
@@ -69,8 +69,14 @@ public abstract class DaoBase<T extends BaseEntity> {
     emp.getObject().remove(object);
   }
 
+  /**
+   * Ricarica l'entity dal db, dopo aver reso persistenti le modifiche pendenti.
+   * Con Hibernate 7 un refresh con modifiche non ancora scritte lascia nella sessione
+   * due copie delle collection dell'entity e il flush successivo fallisce.
+   */
   @Transactional
   public void refresh(T object) {
+    emp.getObject().flush();
     emp.getObject().refresh(object);
   }
 

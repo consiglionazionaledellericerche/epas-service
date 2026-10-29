@@ -32,7 +32,7 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Stamping;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

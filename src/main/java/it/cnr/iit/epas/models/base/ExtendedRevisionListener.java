@@ -19,8 +19,8 @@ package it.cnr.iit.epas.models.base;
 
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.security.SecureUtils;
+import jakarta.inject.Inject;
 import java.util.Optional;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.hibernate.envers.RevisionListener;

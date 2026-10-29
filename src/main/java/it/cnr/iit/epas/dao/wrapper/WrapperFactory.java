@@ -27,7 +27,7 @@ import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.TimeSlot;
 import it.cnr.iit.epas.models.WorkingTimeType;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

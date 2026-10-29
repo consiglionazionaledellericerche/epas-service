@@ -28,12 +28,12 @@ import it.cnr.iit.epas.models.absences.AbsenceType;
 import it.cnr.iit.epas.models.absences.JustifiedType;
 import it.cnr.iit.epas.models.absences.JustifiedType.JustifiedTypeName;
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

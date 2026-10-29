@@ -26,11 +26,11 @@ import it.cnr.iit.epas.models.Competence;
 import it.cnr.iit.epas.models.CompetenceCode;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonCompetenceCodes;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

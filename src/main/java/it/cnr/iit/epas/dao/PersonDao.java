@@ -61,6 +61,7 @@ import it.cnr.iit.epas.models.flows.QGroup;
 import it.cnr.iit.epas.repo.PersonRepository;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -68,7 +69,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

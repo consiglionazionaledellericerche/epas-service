@@ -20,7 +20,7 @@ package it.cnr.iit.epas.manager.listeners;
 import it.cnr.iit.epas.dao.PersonDayDao;
 import it.cnr.iit.epas.manager.TimeSlotManager;
 import it.cnr.iit.epas.models.PersonDay;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;

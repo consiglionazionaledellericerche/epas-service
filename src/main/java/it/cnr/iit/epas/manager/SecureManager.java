@@ -25,9 +25,9 @@ import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Role;
 import it.cnr.iit.epas.models.User;
+import jakarta.inject.Inject;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

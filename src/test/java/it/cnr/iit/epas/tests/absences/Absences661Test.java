@@ -34,11 +34,11 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
 import it.cnr.iit.epas.tests.db.h2support.base.H2AbsenceSupport;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

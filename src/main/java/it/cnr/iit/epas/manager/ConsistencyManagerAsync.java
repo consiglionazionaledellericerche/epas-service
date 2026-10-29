@@ -19,10 +19,10 @@ package it.cnr.iit.epas.manager;
 
 import it.cnr.iit.epas.dao.PersonDao;
 import it.cnr.iit.epas.models.Person;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

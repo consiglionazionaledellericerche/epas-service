@@ -20,8 +20,8 @@ package it.cnr.iit.epas.manager.recaps.reperibilitycalendar;
 import it.cnr.iit.epas.dao.ReperibilityTypeMonthDao;
 import it.cnr.iit.epas.manager.ReperibilityManager2;
 import it.cnr.iit.epas.models.PersonReperibilityType;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

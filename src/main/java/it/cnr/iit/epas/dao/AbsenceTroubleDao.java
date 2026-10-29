@@ -19,8 +19,8 @@ package it.cnr.iit.epas.dao;
 
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.absences.AbsenceTrouble;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

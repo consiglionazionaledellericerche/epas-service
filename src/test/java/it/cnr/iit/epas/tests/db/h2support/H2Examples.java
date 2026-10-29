@@ -33,10 +33,10 @@ import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.tests.db.h2support.base.H2WorkingTimeTypeSupport;
 import it.cnr.iit.epas.tests.db.h2support.base.WorkingTimeTypeDefinitions.WorkingDefinition;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-import javax.inject.Inject;
 import lombok.val;
 import org.springframework.stereotype.Component;
 

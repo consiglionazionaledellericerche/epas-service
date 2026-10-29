@@ -28,9 +28,9 @@ import it.cnr.iit.epas.models.base.IPropertiesInPeriodOwner;
 import it.cnr.iit.epas.models.base.IPropertyInPeriod;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

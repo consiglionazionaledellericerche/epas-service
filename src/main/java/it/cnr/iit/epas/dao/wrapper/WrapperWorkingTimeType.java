@@ -24,12 +24,12 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.WorkingTimeType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

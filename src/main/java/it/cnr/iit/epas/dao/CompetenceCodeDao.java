@@ -31,11 +31,11 @@ import it.cnr.iit.epas.models.QPersonCompetenceCodes;
 import it.cnr.iit.epas.models.dto.PersonCompetenceCodeDto;
 import it.cnr.iit.epas.models.enumerate.LimitType;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

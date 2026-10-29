@@ -87,11 +87,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 //import play.Play;
 //import synch.diagnostic.SynchDiagnostic;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

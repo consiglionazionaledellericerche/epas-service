@@ -32,8 +32,8 @@ import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.Stamping;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
-import javax.inject.Inject;
 import lombok.val;
 import org.springframework.stereotype.Component;
 

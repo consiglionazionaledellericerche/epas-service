@@ -20,10 +20,10 @@ package it.cnr.iit.epas.tests.base;
 import static org.junit.Assert.assertTrue;
 
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.inject.Inject;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -24,11 +24,11 @@ import it.cnr.iit.epas.models.PersonDay;
 import it.cnr.iit.epas.models.PersonDayInTrouble;
 import it.cnr.iit.epas.models.QPersonDayInTrouble;
 import it.cnr.iit.epas.models.enumerate.Troubles;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

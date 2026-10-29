@@ -361,8 +361,10 @@ public class PeriodManager {
         }
       }
       if (toRefresh) {
-        emp.getObject().refresh(owner);
+        //Il flush va fatto prima del refresh, altrimenti Hibernate 7 si ritrova
+        //due copie delle collection dell'owner.
         emp.getObject().flush();
+        emp.getObject().refresh(owner);
         //JPA.em().refresh(owner);
         //JPA.em().flush();
       }

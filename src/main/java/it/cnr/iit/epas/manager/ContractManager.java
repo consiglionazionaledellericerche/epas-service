@@ -459,6 +459,7 @@ public class ContractManager {
       recomputeRecap.initMissing = wrappedContract.initializationMissing();
       periodManager.updatePeriods(vp, true);
       contract = contractDao.getContractById(contract.getId());
+      emp.getObject().flush();
       emp.getObject().refresh(contract.getPerson());
       //contract.person.refresh();
       if (recomputeRecap.needRecomputation) {

@@ -35,11 +35,11 @@ import it.cnr.iit.epas.models.QPersonReperibility;
 import it.cnr.iit.epas.models.QPersonReperibilityType;
 import it.cnr.iit.epas.models.QTotalOvertime;
 import it.cnr.iit.epas.models.TotalOvertime;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

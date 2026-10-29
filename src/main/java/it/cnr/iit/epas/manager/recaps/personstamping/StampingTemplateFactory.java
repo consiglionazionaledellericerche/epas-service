@@ -19,7 +19,7 @@ package it.cnr.iit.epas.manager.recaps.personstamping;
 
 import it.cnr.iit.epas.manager.cache.StampTypeManager;
 import it.cnr.iit.epas.models.Stamping;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

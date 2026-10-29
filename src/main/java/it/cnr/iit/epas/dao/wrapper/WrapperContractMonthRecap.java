@@ -18,9 +18,9 @@
 package it.cnr.iit.epas.dao.wrapper;
 
 import it.cnr.iit.epas.models.ContractMonthRecap;
+import jakarta.inject.Inject;
 import java.time.YearMonth;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

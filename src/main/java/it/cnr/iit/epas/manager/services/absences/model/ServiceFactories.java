@@ -46,11 +46,11 @@ import it.cnr.iit.epas.models.absences.TakableAbsenceBehaviour.TakeCountBehaviou
 import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

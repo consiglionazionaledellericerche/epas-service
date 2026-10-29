@@ -4,8 +4,8 @@ import it.cnr.iit.epas.dao.CompetenceCodeDao;
 import it.cnr.iit.epas.dao.CompetenceDao;
 import it.cnr.iit.epas.dao.wrapper.IWrapperFactory;
 import it.cnr.iit.epas.models.Contract;
+import jakarta.inject.Inject;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

@@ -21,11 +21,11 @@ import com.querydsl.core.BooleanBuilder;
 import it.cnr.iit.epas.dao.common.DaoBase;
 import it.cnr.iit.epas.models.contractuals.ContractualClause;
 import it.cnr.iit.epas.models.contractuals.QContractualClause;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

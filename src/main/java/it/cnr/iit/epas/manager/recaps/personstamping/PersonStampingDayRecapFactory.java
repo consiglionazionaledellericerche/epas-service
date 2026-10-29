@@ -23,9 +23,9 @@ import it.cnr.iit.epas.manager.cache.StampTypeManager;
 import it.cnr.iit.epas.manager.configurations.ConfigurationManager;
 import it.cnr.iit.epas.models.Contract;
 import it.cnr.iit.epas.models.PersonDay;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 /**

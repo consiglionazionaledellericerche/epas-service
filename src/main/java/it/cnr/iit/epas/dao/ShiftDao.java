@@ -36,11 +36,11 @@ import it.cnr.iit.epas.models.ShiftCancelled;
 import it.cnr.iit.epas.models.ShiftCategories;
 import it.cnr.iit.epas.models.ShiftTimeTable;
 import it.cnr.iit.epas.models.ShiftType;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

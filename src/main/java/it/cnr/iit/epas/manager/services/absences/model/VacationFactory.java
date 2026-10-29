@@ -39,12 +39,12 @@ import it.cnr.iit.epas.models.absences.definitions.DefaultAbsenceType;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.utils.DateInterval;
 import it.cnr.iit.epas.utils.DateUtility;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

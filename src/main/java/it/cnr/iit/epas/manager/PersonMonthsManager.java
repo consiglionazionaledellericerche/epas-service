@@ -21,11 +21,11 @@ import com.google.common.collect.Maps;
 import it.cnr.iit.epas.dao.PersonMonthRecapDao;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.PersonMonthRecap;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
 /**

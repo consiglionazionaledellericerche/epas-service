@@ -18,10 +18,11 @@
 package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -77,9 +78,10 @@ public class SecurityConfig {
 
 
     if (securityConfig.getOauth2().isResourceserverEnabled()) {
-      http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
+      http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
     }
-    http.httpBasic().realmName("epas-service").authenticationEntryPoint(authenticationEntryPoint);
+    http.httpBasic(basic -> basic.realmName("epas-service")
+        .authenticationEntryPoint(authenticationEntryPoint));
 
 
     return http.build();

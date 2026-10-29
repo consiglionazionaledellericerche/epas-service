@@ -29,10 +29,10 @@ import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
 import it.cnr.iit.epas.models.User;
 import it.cnr.iit.epas.models.enumerate.BlockType;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

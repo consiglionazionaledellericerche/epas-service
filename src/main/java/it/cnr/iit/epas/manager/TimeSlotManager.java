@@ -22,7 +22,7 @@ import it.cnr.iit.epas.dao.AbsenceDao;
 import it.cnr.iit.epas.dao.ContractDao;
 import it.cnr.iit.epas.dao.PersonShiftDayDao;
 import it.cnr.iit.epas.models.PersonDay;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.ObjectProvider;
