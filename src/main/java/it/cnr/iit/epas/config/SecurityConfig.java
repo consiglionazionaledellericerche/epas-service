@@ -18,6 +18,7 @@
 package it.cnr.iit.epas.config;
 
 import it.cnr.iit.epas.controller.v4.CertificationSupportController;
+import it.cnr.iit.epas.controller.v4.ConfigurationSupportController;
 import it.cnr.iit.epas.controller.v4.WorkflowController;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
@@ -90,6 +91,10 @@ public class SecurityConfig {
         .requestMatchers(ApiRoutes.BASE_PATH + CertificationSupportController.PATH + "/**")
           .access((authentication, context) -> new AuthorizationDecision(
               isServiceClient(authentication.get(), securityConfig.getCertificationClientIds())))
+        //Servizi riservati ai client di servizio di epas-configurations-service
+        .requestMatchers(ApiRoutes.BASE_PATH + ConfigurationSupportController.PATH + "/**")
+          .access((authentication, context) -> new AuthorizationDecision(
+              isServiceClient(authentication.get(), securityConfig.getConfigurationClientIds())))
         .anyRequest().authenticated());
 
 

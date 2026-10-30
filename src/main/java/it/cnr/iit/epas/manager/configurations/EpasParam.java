@@ -233,6 +233,22 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.<RecomputationType>newArrayList(),
       Person.class),
+
+  ENABLE_632_CODE("enable_632_code",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Person.class),
+
+  ENABLE_633_CODE("enable_633_code",
+      EpasParamCategory.GENERAL,
+      EpasParamTimeType.GENERAL,
+      EpasParamValueType.BOOLEAN,
+      EpasParamValueType.formatValue(false),
+      Lists.<RecomputationType>newArrayList(),
+      Person.class),
   
   SMARTWORKING("smartworking",
       EpasParamCategory.GENERAL,
@@ -445,6 +461,14 @@ public enum EpasParam {
       EpasParamValueType.formatValue(false),
       Lists.newArrayList(RecomputationType.DAYS, RecomputationType.RESIDUAL_HOURS,
           RecomputationType.RESIDUAL_MEALTICKETS),
+      Person.class),
+
+  AGILE_WORK_MONTHLY_LIMIT("agile_work_monthly_limit",
+      EpasParamCategory.PERIODIC,
+      EpasParamTimeType.PERIODIC,
+      EpasParamValueType.INTEGER,
+      EpasParamValueType.formatValue(""),
+      Lists.newArrayList(RecomputationType.RESIDUAL_HOURS),
       Person.class),
 
   HOUR_MAX_TO_CALCULATE_WORKTIME("hour_max_to_calculate_worktime",
