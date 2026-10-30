@@ -17,10 +17,12 @@
 
 package it.cnr.iit.epas.config;
 
+import it.cnr.iit.epas.controller.v4.CertificationSupportController;
 import it.cnr.iit.epas.controller.v4.WorkflowController;
 import it.cnr.iit.epas.controller.v4.utils.ApiRoutes;
 import it.cnr.iit.epas.security.MyBasicAuthenticationEntryPoint;
 import jakarta.inject.Inject;
+import java.util.List;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,8 +84,12 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**").permitAll()
         //Servizi riservati ai client di servizio di epas-workflow-service
         .requestMatchers(ApiRoutes.BASE_PATH + WorkflowController.PATH + "/**")
-          .access((authentication, context) ->
-              new AuthorizationDecision(isWorkflowClient(authentication.get())))
+          .access((authentication, context) -> new AuthorizationDecision(
+              isServiceClient(authentication.get(), securityConfig.getWorkflowClientIds())))
+        //Servizi riservati ai client di servizio di epas-certifications-service
+        .requestMatchers(ApiRoutes.BASE_PATH + CertificationSupportController.PATH + "/**")
+          .access((authentication, context) -> new AuthorizationDecision(
+              isServiceClient(authentication.get(), securityConfig.getCertificationClientIds())))
         .anyRequest().authenticated());
 
 
@@ -99,16 +105,16 @@ public class SecurityConfig {
   }
 
   /**
-   * Verifica che l'autenticazione sia un token di un client di servizio dei flussi.
+   * Verifica che l'autenticazione sia un token di uno dei client di servizio indicati.
    */
-  private boolean isWorkflowClient(Authentication authentication) {
+  private boolean isServiceClient(Authentication authentication, List<String> clientIds) {
     if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)) {
       return false;
     }
     val jwt = jwtAuthentication.getToken();
     val clientId = jwt.hasClaim("azp")
         ? jwt.getClaimAsString("azp") : jwt.getClaimAsString("client_id");
-    return clientId != null && securityConfig.getWorkflowClientIds().contains(clientId);
+    return clientId != null && clientIds.contains(clientId);
   }
 
 }

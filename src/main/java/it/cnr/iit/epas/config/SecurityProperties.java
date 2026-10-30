@@ -47,6 +47,12 @@ public class SecurityProperties implements Serializable {
   private List<String> workflowClientIds = List.of("epas-workflow-service");
 
   /**
+   * Client OAuth2 di servizio abilitati agli endpoint /rest/v4/certifications usati da
+   * epas-certifications-service.
+   */
+  private List<String> certificationClientIds = List.of("epas-certifications-service");
+
+  /**
    * Bean per le info relative all'oauth2.
    */
   @Data

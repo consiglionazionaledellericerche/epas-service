@@ -115,4 +115,14 @@ public class GeneralSetting extends BaseEntity {
    */
   private boolean enableOvertimePerPerson = true;
 
+  /*
+   * Indica se Attestati usa il token dell'SSO invece di quello rilasciato da Attestati.
+   */
+  private boolean enableSsoForAttestati = false;
+
+  /*
+   * Timeout in secondi per le chiamate REST effettuate ad Attestati.
+   */
+  private int timeoutAttestati = 60;
+
 }
