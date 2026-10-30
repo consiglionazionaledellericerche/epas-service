@@ -110,4 +110,9 @@ public class GeneralSetting extends BaseEntity {
    */
   private boolean enableAbsenceTopLevelAuthorization = true;
 
+  /*
+   * Indica se è attivo il monte ore di straordinario per persona.
+   */
+  private boolean enableOvertimePerPerson = true;
+
 }

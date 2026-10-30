@@ -116,6 +116,10 @@ public class WorkflowSupportManager {
           .flatMap(g -> g.getPeople(LocalDate.now()).stream())
           .map(Person::getId)
           .collect(Collectors.toSet()));
+      scope.setReperibilitySupervisorOf(user.getPerson().getReperibilityTypes().stream()
+          .flatMap(type -> type.getPersonReperibilities().stream())
+          .map(pr -> pr.getPerson().getId())
+          .collect(Collectors.toSet()));
     }
     scope.setSeatSupervisorOf(peopleInOfficesWithRole(user, Role.SEAT_SUPERVISOR));
     scope.setPersonnelAdminOf(peopleInOfficesWithRole(user, Role.PERSONNEL_ADMIN));
@@ -163,6 +167,8 @@ public class WorkflowSupportManager {
     dto.setSeatSupervisorPresent(!uroDao.getUsersWithRoleOnOffice(
         roleDao.getRoleByName(Role.SEAT_SUPERVISOR), person.getOffice()).isEmpty());
     dto.setGroupManagerPresent(!groupDao.myGroups(person).isEmpty());
+    dto.setOtherEmployeesPresent(
+        personDao.peopleInOffices(Set.of(person.getOffice())).size() > 1);
     return dto;
   }
 

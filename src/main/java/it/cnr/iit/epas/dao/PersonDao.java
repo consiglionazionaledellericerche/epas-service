@@ -1015,7 +1015,8 @@ public class PersonDao extends DaoBase<Person> {
         endMonth, true, Optional.empty(), false, onlyPeopleInTelework);
 
     return lightQuery
-        .select(Projections.bean(PersonLite.class, person.id, person.name, person.surname)).fetch();
+        .select(Projections.constructor(PersonLite.class, person.id, person.name, person.surname))
+        .fetch();
   }
 
   /**
@@ -1036,7 +1037,7 @@ public class PersonDao extends DaoBase<Person> {
         Optional.empty(), true, Optional.empty(), false, false);
 
     return lightQuery
-        .select(Projections.bean(PersonLite.class, person.id, person.name, person.surname))
+        .select(Projections.constructor(PersonLite.class, person.id, person.name, person.surname))
         .fetch();
   }
 

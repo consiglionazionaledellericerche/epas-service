@@ -30,9 +30,14 @@ import it.cnr.iit.epas.dto.v4.workflow.AbsenceInsertReportDto;
 import it.cnr.iit.epas.dto.v4.workflow.ApprovalScopeDto;
 import it.cnr.iit.epas.dto.v4.workflow.ApproversCheckDto;
 import it.cnr.iit.epas.dto.v4.workflow.GeneralSettingDto;
+import it.cnr.iit.epas.dto.v4.workflow.OvertimeApprovalDto;
+import it.cnr.iit.epas.dto.v4.workflow.OvertimeSituationDto;
+import it.cnr.iit.epas.dto.v4.workflow.ReperibilityChangeDto;
+import it.cnr.iit.epas.dto.v4.workflow.TeleworkValidationDto;
 import it.cnr.iit.epas.dto.v4.workflow.WorkflowPersonDto;
 import it.cnr.iit.epas.dto.v4.workflow.WorkflowUserDto;
 import it.cnr.iit.epas.manager.configurations.EpasParam;
+import it.cnr.iit.epas.manager.workflow.WorkflowCompetenceSupportManager;
 import it.cnr.iit.epas.manager.workflow.WorkflowSupportManager;
 import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
@@ -75,6 +80,7 @@ public class WorkflowController {
   public static final String PATH = "/workflow";
 
   private final WorkflowSupportManager workflowSupportManager;
+  private final WorkflowCompetenceSupportManager competenceSupportManager;
   private final UserDao userDao;
   private final PersonDao personDao;
   private final OfficeDao officeDao;
@@ -164,6 +170,51 @@ public class WorkflowController {
       @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
     return ResponseEntity.ok(
         workflowSupportManager.shiftReperibilityDays(findPerson(personId), from, to));
+  }
+
+  @Operation(summary = "Situazione degli straordinari della persona per l'anno e il mese.")
+  @GetMapping("/people/{personId}/overtimeSituation")
+  @Transactional
+  public ResponseEntity<OvertimeSituationDto> overtimeSituation(@PathVariable Long personId,
+      @RequestParam int year, @RequestParam int month) {
+    return ResponseEntity.ok(
+        competenceSupportManager.overtimeSituation(findPerson(personId), year, month));
+  }
+
+  @Operation(summary = "Ore di straordinario ancora assegnabili dall'approvatore.")
+  @GetMapping("/people/{personId}/overtimeAvailable")
+  @Transactional
+  public ResponseEntity<Integer> overtimeAvailable(@PathVariable Long personId,
+      @RequestParam int year, @RequestParam Long approverUserId,
+      @RequestParam Optional<Long> managerUserId) {
+    return ResponseEntity.ok(competenceSupportManager.overtimeAvailable(findPerson(personId),
+        year, findUser(approverUserId), managerUserId.map(this::findUser)));
+  }
+
+  @Operation(summary = "Imposta lo straordinario approvato di una richiesta conclusa.")
+  @PostMapping("/people/{personId}/overtimes")
+  public ResponseEntity<Void> approveOvertime(@PathVariable Long personId,
+      @Valid @RequestBody OvertimeApprovalDto overtime) {
+    competenceSupportManager.approveOvertime(findPerson(personId), overtime);
+    return ResponseEntity.ok().build();
+  }
+
+  @Operation(summary = "Scambia i giorni di reperibilità di una richiesta conclusa.")
+  @PostMapping("/people/{personId}/reperibilityChanges")
+  @Transactional
+  public ResponseEntity<Void> changeReperibility(@PathVariable Long personId,
+      @Valid @RequestBody ReperibilityChangeDto change) {
+    competenceSupportManager.changeReperibility(findPerson(personId),
+        findPerson(change.getTeamMateId()), change);
+    return ResponseEntity.ok().build();
+  }
+
+  @Operation(summary = "Registra l'approvazione del telelavoro del mese.")
+  @PostMapping("/people/{personId}/teleworkValidations")
+  public ResponseEntity<Void> validateTelework(@PathVariable Long personId,
+      @Valid @RequestBody TeleworkValidationDto telework) {
+    competenceSupportManager.validateTelework(findPerson(personId), telework);
+    return ResponseEntity.ok().build();
   }
 
   private User findUser(Long userId) {

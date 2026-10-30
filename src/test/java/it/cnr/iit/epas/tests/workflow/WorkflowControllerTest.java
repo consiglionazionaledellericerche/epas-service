@@ -27,18 +27,34 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import it.cnr.iit.epas.dao.CompetenceCodeDao;
+import it.cnr.iit.epas.dao.PersonReperibilityDayDao;
+import it.cnr.iit.epas.dao.RoleDao;
 import it.cnr.iit.epas.dao.UserDao;
 import it.cnr.iit.epas.dao.absences.AbsenceComponentDao;
 import it.cnr.iit.epas.dto.v4.workflow.AbsenceInsertDto;
+import it.cnr.iit.epas.dto.v4.workflow.OvertimeApprovalDto;
+import it.cnr.iit.epas.dto.v4.workflow.ReperibilityChangeDto;
 import it.cnr.iit.epas.manager.services.absences.AbsenceService;
+import it.cnr.iit.epas.manager.workflow.WorkflowCompetenceSupportManager;
 import it.cnr.iit.epas.manager.workflow.WorkflowSupportManager;
+import it.cnr.iit.epas.models.MonthlyCompetenceType;
+import it.cnr.iit.epas.models.Office;
 import it.cnr.iit.epas.models.Person;
+import it.cnr.iit.epas.models.PersonReperibility;
+import it.cnr.iit.epas.models.PersonReperibilityDay;
+import it.cnr.iit.epas.models.PersonReperibilityType;
+import it.cnr.iit.epas.models.Role;
+import it.cnr.iit.epas.models.TeleworkValidation;
+import it.cnr.iit.epas.models.UsersRolesOffices;
 import it.cnr.iit.epas.models.absences.definitions.DefaultGroup;
 import it.cnr.iit.epas.tests.db.h2support.H2Examples;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,6 +91,16 @@ class WorkflowControllerTest {
   private WorkflowSupportManager workflowSupportManager;
   @Inject
   private UserDao userDao;
+  @Inject
+  private WorkflowCompetenceSupportManager competenceSupportManager;
+  @Inject
+  private CompetenceCodeDao competenceCodeDao;
+  @Inject
+  private PersonReperibilityDayDao reperibilityDayDao;
+  @Inject
+  private RoleDao roleDao;
+  @Inject
+  private EntityManager em;
 
   private MockMvc mvc;
 
@@ -179,6 +205,148 @@ class WorkflowControllerTest {
     val report = workflowSupportManager.simulateAbsences(person, vacation());
     assertFalse(report.isInsideContracts());
     assertFalse(report.getCriticalErrors().isEmpty());
+  }
+
+  @Test
+  void approvedOvertimeIsAssignedOnce() throws Exception {
+    // competence-codes.xml non valorizza version, che nel db reale ha default 0
+    em.createNativeQuery("update competence_codes set version = 0 where code = 'S1'")
+        .executeUpdate();
+    em.clear();
+    absenceService.enumInitializator();
+    Person person = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+    val before = competenceSupportManager.overtimeSituation(person, 2016, 11);
+    assertEquals(null, before.getApprovedInMonth());
+
+    mvc.perform(post(BASE + "/people/" + person.getId() + "/overtimes")
+        .with(client("epas-workflow-service"))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"year\":2016,\"month\":11,\"value\":12}"))
+        .andExpect(status().isOk());
+    assertEquals(12, competenceSupportManager.overtimeSituation(person, 2016, 11)
+        .getApprovedInMonth());
+
+    // una nuova approvazione dello stesso mese aggiorna il valore
+    val update = new OvertimeApprovalDto();
+    update.setYear(2016);
+    update.setMonth(11);
+    update.setValue(15);
+    competenceSupportManager.approveOvertime(person, update);
+    assertEquals(15, competenceSupportManager.overtimeSituation(person, 2016, 11)
+        .getApprovedInMonth());
+  }
+
+  @Test
+  void approvedTeleworkIsValidated() throws Exception {
+    Person person = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+
+    mvc.perform(post(BASE + "/people/" + person.getId() + "/teleworkValidations")
+        .with(client("epas-workflow-service"))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"year\":2026,\"month\":10}"))
+        .andExpect(status().isOk());
+
+    val validations = em.createQuery(
+        "select tv from TeleworkValidation tv where tv.person = :person",
+        TeleworkValidation.class).setParameter("person", person).getResultList();
+    assertEquals(1, validations.size());
+    assertEquals(10, validations.get(0).getMonth());
+    assertTrue(validations.get(0).isApproved());
+  }
+
+  @Test
+  void reperibilityChangeSwapsDaysBetweenTeamMates() {
+    Person person = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+    Person teamMate = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+    Person supervisor = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+    val type = reperibilityType(person.getOffice(), supervisor);
+    val personService = reperibility(person, type);
+    val teamMateService = reperibility(teamMate, type);
+    reperibilityDay(personService, MONDAY);
+    reperibilityDay(teamMateService, WEDNESDAY);
+    em.flush();
+
+    val change = new ReperibilityChangeDto();
+    change.setTeamMateId(teamMate.getId());
+    change.setBeginDateToGive(MONDAY);
+    change.setEndDateToGive(MONDAY);
+    change.setBeginDateToAsk(WEDNESDAY);
+    change.setEndDateToAsk(WEDNESDAY);
+    competenceSupportManager.changeReperibility(person, teamMate, change);
+    em.flush();
+
+    assertTrue(reperibilityDayDao.getPersonReperibilityDay(person, MONDAY).isEmpty());
+    assertTrue(reperibilityDayDao.getPersonReperibilityDay(teamMate, WEDNESDAY).isEmpty());
+    assertTrue(reperibilityDayDao.getPersonReperibilityDay(person, WEDNESDAY).isPresent());
+    assertTrue(reperibilityDayDao.getPersonReperibilityDay(teamMate, MONDAY).isPresent());
+
+    // la fixture non imposta i lati inversi delle relazioni, che arrivano dal db
+    em.refresh(type);
+    em.refresh(supervisor);
+    em.refresh(supervisor.getUser());
+    val scope = workflowSupportManager.approvalScope(supervisor.getUser());
+    assertEquals(Set.of(person.getId(), teamMate.getId()), scope.getReperibilitySupervisorOf());
+  }
+
+  @Test
+  void seatSupervisorScopeContainsPeopleOfTheOffice() {
+    Person employee = h2Examples.normalEmployee(LocalDate.of(2016, 1, 1), Optional.empty());
+    Person supervisor = h2Examples.createPerson(employee.getOffice(), "supervisor");
+    val uro = new UsersRolesOffices();
+    uro.setUser(supervisor.getUser());
+    uro.setOffice(employee.getOffice());
+    uro.setRole(seatSupervisorRole());
+    em.persist(uro);
+    em.flush();
+    em.refresh(supervisor.getUser());
+
+    val scope = workflowSupportManager.approvalScope(supervisor.getUser());
+    assertTrue(scope.getSeatSupervisorOf().contains(employee.getId()));
+    assertTrue(scope.getPersonnelAdminOf().isEmpty());
+  }
+
+  private Role seatSupervisorRole() {
+    val existing = roleDao.getRoleByName(Role.SEAT_SUPERVISOR);
+    if (existing != null) {
+      return existing;
+    }
+    val role = new Role();
+    role.setName(Role.SEAT_SUPERVISOR);
+    em.persist(role);
+    return role;
+  }
+
+  private PersonReperibilityType reperibilityType(Office office, Person supervisor) {
+    val code = competenceCodeDao.getCompetenceCodeByCode("S1");
+    val competenceType = new MonthlyCompetenceType();
+    competenceType.name = "Reperibilità";
+    competenceType.workdaysCode = code;
+    competenceType.holidaysCode = code;
+    em.persist(competenceType);
+    val type = new PersonReperibilityType();
+    type.setDescription("Servizio di prova");
+    type.setOffice(office);
+    type.setSupervisor(supervisor);
+    type.setMonthlyCompetenceType(competenceType);
+    em.persist(type);
+    return type;
+  }
+
+  private PersonReperibility reperibility(Person person, PersonReperibilityType type) {
+    val reperibility = new PersonReperibility();
+    reperibility.setPerson(person);
+    reperibility.setPersonReperibilityType(type);
+    reperibility.setStartDate(LocalDate.of(2016, 1, 1));
+    em.persist(reperibility);
+    return reperibility;
+  }
+
+  private void reperibilityDay(PersonReperibility reperibility, LocalDate date) {
+    val day = new PersonReperibilityDay();
+    day.setPersonReperibility(reperibility);
+    day.setReperibilityType(reperibility.getPersonReperibilityType());
+    day.setDate(date);
+    em.persist(day);
   }
 
   private static AbsenceInsertDto vacation() {

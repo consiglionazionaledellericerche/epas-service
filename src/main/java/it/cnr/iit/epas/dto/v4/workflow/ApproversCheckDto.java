@@ -28,4 +28,6 @@ public class ApproversCheckDto {
   private boolean personnelAdminPresent;
   private boolean seatSupervisorPresent;
   private boolean groupManagerPresent;
+  /** Nella sede ci sono altri dipendenti, per i cambi di reperibilità. */
+  private boolean otherEmployeesPresent;
 }

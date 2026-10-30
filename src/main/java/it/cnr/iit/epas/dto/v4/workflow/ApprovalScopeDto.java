@@ -33,4 +33,6 @@ public class ApprovalScopeDto {
   private Set<Long> seatSupervisorOf = Sets.newHashSet();
   /** Persone degli uffici di cui l'utente è amministratore del personale. */
   private Set<Long> personnelAdminOf = Sets.newHashSet();
+  /** Persone dei servizi di reperibilità di cui l'utente è supervisore. */
+  private Set<Long> reperibilitySupervisorOf = Sets.newHashSet();
 }
