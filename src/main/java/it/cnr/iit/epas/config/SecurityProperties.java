@@ -59,6 +59,12 @@ public class SecurityProperties implements Serializable {
   private List<String> configurationClientIds = List.of("epas-configurations-service");
 
   /**
+   * Client OAuth2 di servizio abilitati agli endpoint /rest/v4/mealticketservice usati da
+   * epas-meal-ticket-service.
+   */
+  private List<String> mealTicketClientIds = List.of("epas-meal-ticket-service");
+
+  /**
    * Bean per le info relative all'oauth2.
    */
   @Data
