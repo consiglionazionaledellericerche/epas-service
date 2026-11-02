@@ -63,6 +63,18 @@ public class ContractDao extends DaoBase<Contract> {
   }
 
   /**
+   * Gli id dei contratti delle persone appartenenti alla sede.
+   *
+   * @param office la sede
+   * @return gli id dei contratti, anche quelli terminati.
+   */
+  public List<Long> contractIdsByOffice(Office office) {
+    QContract contract = QContract.contract;
+    return getQueryFactory().select(contract.id).from(contract)
+        .where(contract.person.office.eq(office)).fetch();
+  }
+
+  /**
    * Il contratto relativo all'id passato come parametro e facendo la joinFetch con la persona.
    *
    * @return il contratto corrispondente all'id passato come parametro.
