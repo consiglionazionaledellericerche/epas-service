@@ -1149,3 +1149,23 @@ when
 then
  $c.grant();
 end
+
+/*******************************************************************************
+ * Gestione dei buoni pasto e delle card tramite epas-meal-ticket-service
+ ******************************************************************************/
+rule MealTicketManagement_Generic
+when
+ $uro: UsersRolesOffices(role.name in (Role.PERSONNEL_ADMIN, Role.MEAL_TICKET_MANAGER)) from userRolesOffices
+ $c: PermissionCheck(permission.startsWith("/rest/v4/mealticketmanagement"), toCheck(), target == null)
+then
+ $c.grant();
+end
+
+rule MealTicketManagement_InOffice
+when
+ $uro: UsersRolesOffices(role.name in (Role.PERSONNEL_ADMIN, Role.MEAL_TICKET_MANAGER)) from userRolesOffices
+ $o: Office(usersRolesOffices contains $uro)
+ $c: PermissionCheck(permission.startsWith("/rest/v4/mealticketmanagement"), toCheck(), target == $o)
+then
+ $c.grant();
+end
